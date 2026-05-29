@@ -1,7 +1,9 @@
 const surveySections = [
+
 {
 title: "1. Financial Power & Demographics",
 questions: [
+
 {
 id: "monthlySpend",
 text: "What is your monthly online shopping spend?",
@@ -13,6 +15,7 @@ options: [
 "Above ₹15k"
 ]
 },
+
 {
 id: "cityTier",
 text: "Which city tier are you from?",
@@ -22,6 +25,7 @@ options: [
 "Tier 3"
 ]
 },
+
 {
 id: "ageGroup",
 text: "What is your age group?",
@@ -34,6 +38,7 @@ options: [
 "45+"
 ]
 },
+
 {
 id: "userPersona",
 text: "What best describes you?",
@@ -45,12 +50,14 @@ options: [
 "Self Employed"
 ]
 }
+
 ]
 },
 
 {
 title: "2. Checkout Friction & Drop-Off Killers",
 questions: [
+
 {
 id: "purchaseBlocker",
 text: "What most often stops you from completing a purchase?",
@@ -63,26 +70,25 @@ options: [
 ]
 },
 
-```
-  {
-    id: "paymentPreference",
-    text: "How do you prefer to pay?",
-    options: [
-      "UPI",
-      "COD",
-      "Cards",
-      "BNPL",
-      "Net Banking"
-    ]
-  }
+{
+id: "paymentPreference",
+text: "How do you prefer to pay?",
+options: [
+"UPI",
+"COD",
+"Cards",
+"BNPL",
+"Net Banking"
 ]
-```
+}
 
+]
 },
 
 {
 title: "3. Discovery Engines & Trust Anchors",
 questions: [
+
 {
 id: "discoveryChannel",
 text: "Where do you discover products?",
@@ -95,26 +101,25 @@ options: [
 ]
 },
 
-```
-  {
-    id: "trustAnchor",
-    text: "What makes you trust a product?",
-    options: [
-      "Photo Reviews",
-      "4.2+ Ratings",
-      "Influencer",
-      "Friend Bought",
-      "Known Brand"
-    ]
-  }
+{
+id: "trustAnchor",
+text: "What makes you trust a product?",
+options: [
+"Photo Reviews",
+"4.2+ Ratings",
+"Influencer",
+"Friend Bought",
+"Known Brand"
 ]
-```
+}
 
+]
 },
 
 {
 title: "4. Buying Psychology & Timelines",
 questions: [
+
 {
 id: "conversionTrigger",
 text: "What triggers your purchase?",
@@ -127,58 +132,56 @@ options: [
 ]
 },
 
-```
-  {
-    id: "decisionTimeline",
-    text: "How long before buying?",
-    options: [
-      "Instant",
-      "1-3 Days",
-      "1 Week",
-      "1 Month",
-      "Only if Needed"
-    ]
-  }
+{
+id: "decisionTimeline",
+text: "How long before buying?",
+options: [
+"Instant",
+"1-3 Days",
+"1 Week",
+"1 Month",
+"Only if Needed"
 ]
-```
+}
 
+]
 },
 
 {
 title: "5. Written Experience",
 questions: [
+
 {
 id: "painPoint",
 text: "Worst shopping experience?",
 type: "textarea"
 },
 
-```
-  {
-    id: "bestPoint",
-    text: "Best shopping experience?",
-    type: "textarea"
-  },
+{
+id: "bestPoint",
+text: "Best shopping experience?",
+type: "textarea"
+},
 
-  {
-    id: "complementPoint",
-    text: "Minimum expectation?",
-    type: "textarea"
-  },
+{
+id: "complementPoint",
+text: "Minimum expectation?",
+type: "textarea"
+},
 
-  {
-    id: "referralVoice",
-    text: "Last recommendation?",
-    type: "textarea"
-  }
+{
+id: "referralVoice",
+text: "Last recommendation?",
+type: "textarea"
+}
+
 ]
-```
-
 },
 
 {
 title: "6. Shopping Categories",
 questions: [
+
 {
 id: "shoppingCategories",
 text: "Which categories do you shop most?",
@@ -192,26 +195,25 @@ options: [
 ]
 },
 
-```
-  {
-    id: "categorySpendCeiling",
-    text: "How much do you spend per purchase?",
-    options: [
-      "Under ₹300",
-      "₹300 - ₹800",
-      "₹800 - ₹2k",
-      "₹2k - ₹5k",
-      "Above ₹5k"
-    ]
-  }
+{
+id: "categorySpendCeiling",
+text: "How much do you spend per purchase?",
+options: [
+"Under ₹300",
+"₹300 - ₹800",
+"₹800 - ₹2k",
+"₹2k - ₹5k",
+"Above ₹5k"
 ]
-```
+}
 
+]
 },
 
 {
 title: "7. Post Purchase Behavior",
 questions: [
+
 {
 id: "postPurchaseAction",
 text: "What do you do after buying something you love?",
@@ -224,20 +226,21 @@ options: [
 ]
 },
 
-```
-  {
-    id: "returnHistoryReason",
-    text: "Reason for returning products?",
-    options: [
-      "Different from Photos",
-      "Poor Quality",
-      "Wrong Size",
-      "Damaged",
-      "Never Returned"
-    ]
-  }
+{
+id: "returnHistoryReason",
+text: "Reason for returning products?",
+options: [
+"Different from Photos",
+"Poor Quality",
+"Wrong Size",
+"Damaged",
+"Never Returned"
 ]
-```
-
 }
+
+]
+}
+
 ];
+
+window.surveySections = surveySections;
