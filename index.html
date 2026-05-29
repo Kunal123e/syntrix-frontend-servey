@@ -3,141 +3,196 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Syntrix Consumer Analytics Hub</title>
 
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+
+>
+
+  <title>
+    Syntrix Consumer Analytics Hub
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
 </head>
 
 <body>
 
-<div class="app">
-
-  <div class="sidebar">
+  <div class="app">
 
 ```
-<h2>SYNTRIX</h2>
+<!-- SIDEBAR -->
 
-<div class="steps">
+<div class="sidebar">
 
-  <div class="step active">
-    Financial
+  <div class="logo">
+    SYNTRIX
   </div>
 
-  <div class="step">
-    Checkout
-  </div>
+  <div class="steps">
 
-  <div class="step">
-    Discovery
-  </div>
-
-  <div class="step">
-    Psychology
-  </div>
-
-  <div class="step">
-    Experience
-  </div>
-
-  <div class="step">
-    Categories
-  </div>
-
-  <div class="step">
-    Rewards
-  </div>
-
-</div>
-```
-
-  </div>
-
-  <div class="content">
-
-```
-<div class="topbar">
-
-  <div>
-    <h1>
-      Syntrix Consumer Analytics Hub
-    </h1>
-
-    <p>
-      Complete all 7 consumer research modules
-      to claim your 10 SYNX token rewards.
-    </p>
-  </div>
-
-  <div class="progressBox">
-
-    <div class="progressText">
-      Progress 1/7
+    <div class="step active">
+      Financial
     </div>
 
-    <div class="progressBar">
-      <div class="progressFill"></div>
+    <div class="step">
+      Checkout
+    </div>
+
+    <div class="step">
+      Discovery
+    </div>
+
+    <div class="step">
+      Psychology
+    </div>
+
+    <div class="step">
+      Experience
+    </div>
+
+    <div class="step">
+      Categories
+    </div>
+
+    <div class="step">
+      Rewards
     </div>
 
   </div>
 
 </div>
 
-<form id="claimForm">
+<!-- MAIN CONTENT -->
 
-  <div id="surveyContainer"></div>
+<div class="content">
 
-  <div class="navButtons">
+  <!-- TOP -->
 
-    <button type="button" id="prevBtn">
-      Back
-    </button>
+  <div class="topbar">
 
-    <button type="button" id="nextBtn">
-      Next
-    </button>
+    <div>
 
-  </div>
+      <h1>
+        Syntrix Consumer Analytics Hub
+      </h1>
 
-  <div id="submitSection" class="hidden">
+      <p class="subtitle">
 
-    <h2>
-      Rewards Routing Node Authentication
-    </h2>
+        Complete all 7 consumer research modules
+        to claim your 10 SYNX token rewards.
 
-    <input
-      type="email"
-      id="email"
-      placeholder="User Communication Profile (Email Address)"
-      required
-    >
+      </p>
 
-    <input
-      type="text"
-      id="walletAddress"
-      placeholder="EVM Recipient Destination Node (Wallet Address)"
-      required
-    >
+    </div>
 
-    <button type="submit" class="submitBtn">
-      Authorize Matrix & Claim 10 SYNX
-    </button>
+    <div class="progressBox">
+
+      <div class="progressText">
+        Progress 1/7
+      </div>
+
+      <div class="progressBar">
+
+        <div class="progressFill"></div>
+
+      </div>
+
+    </div>
 
   </div>
 
-</form>
+  <!-- FORM -->
 
-<div id="status"></div>
+  <form id="claimForm">
+
+    <!-- QUESTIONS -->
+
+    <div id="surveyContainer"></div>
+
+    <!-- NAVIGATION -->
+
+    <div class="navButtons">
+
+      <button
+        type="button"
+        id="prevBtn"
+        class="navBtn"
+      >
+        Back
+      </button>
+
+      <button
+        type="button"
+        id="nextBtn"
+        class="navBtn"
+      >
+        Next
+      </button>
+
+    </div>
+
+    <!-- FINAL SUBMIT -->
+
+    <div
+      id="submitSection"
+      class="hidden"
+    >
+
+      <h2 class="submitTitle">
+
+        Rewards Routing Node Authentication
+
+      </h2>
+
+      <input
+        type="email"
+        id="email"
+        placeholder="User Communication Profile (Email Address)"
+        required
+      >
+
+      <input
+        type="text"
+        id="walletAddress"
+        placeholder="EVM Recipient Destination Node (Wallet Address)"
+        required
+      >
+
+      <button
+        type="submit"
+        class="submitBtn"
+      >
+
+        Authorize Matrix & Claim 10 SYNX
+
+      </button>
+
+    </div>
+
+  </form>
+
+  <!-- STATUS -->
+
+  <div id="status"></div>
+
+</div>
 ```
 
   </div>
 
-</div>
+  <!-- SCRIPTS -->
 
-<script src="data.js"></script>
+  <script src="data.js"></script>
 
-<script src="script.js"></script>
+  <script src="script.js"></script>
 
 </body>
 </html>
