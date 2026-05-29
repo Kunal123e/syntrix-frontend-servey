@@ -2,6 +2,7 @@ const surveySections = [
 
 {
 title: "1. Financial Power & Demographics",
+
 questions: [
 
 {
@@ -20,9 +21,10 @@ options: [
 id: "cityTier",
 text: "Which city tier are you from?",
 options: [
-"Metro",
-"Tier 2",
-"Tier 3"
+"Metro City",
+"Tier 2 City",
+"Tier 3 City",
+"Rural Area"
 ]
 },
 
@@ -33,9 +35,9 @@ options: [
 "16-20",
 "21-25",
 "26-30",
-"31-36",
-"37-45",
-"45+"
+"31-40",
+"41-50",
+"50+"
 ]
 },
 
@@ -44,10 +46,23 @@ id: "userPersona",
 text: "What best describes you?",
 options: [
 "Student",
-"Salaried Private",
-"Salaried Govt",
+"Salaried Employee",
+"Business Owner",
 "Freelancer",
-"Self Employed"
+"Content Creator",
+"Trader / Investor"
+]
+},
+
+{
+id: "luxuryAllocation",
+text: "How much of your income goes to non-essential / fun purchases?",
+options: [
+"Under 5%",
+"5% - 15%",
+"15% - 30%",
+"30% - 50%",
+"Above 50%"
 ]
 }
 
@@ -56,17 +71,31 @@ options: [
 
 {
 title: "2. Checkout Friction & Drop-Off Killers",
+
 questions: [
 
 {
 id: "purchaseBlocker",
 text: "What most often stops you from completing a purchase?",
 options: [
-"Shipping cost",
-"Too expensive",
-"No reviews",
-"No easy return",
-"Payment unavailable"
+"Shipping Cost",
+"Too Expensive",
+"Low Trust",
+"Poor Reviews",
+"Slow Delivery",
+"Payment Failure"
+]
+},
+
+{
+id: "shippingCostTolerance",
+text: "How much shipping cost will you accept before abandoning?",
+options: [
+"Free Only",
+"Under ₹50",
+"Under ₹100",
+"Under ₹300",
+"Any if Product is Worth it"
 ]
 },
 
@@ -75,10 +104,22 @@ id: "paymentPreference",
 text: "How do you prefer to pay?",
 options: [
 "UPI",
-"COD",
-"Cards",
-"BNPL",
-"Net Banking"
+"Cash on Delivery",
+"Debit/Credit Card",
+"Net Banking",
+"BNPL / EMI",
+"Crypto"
+]
+},
+
+{
+id: "returnPolicyImportance",
+text: "How important is a good return / exchange policy to you?",
+options: [
+"Extremely Important",
+"Important",
+"Neutral",
+"Not Important"
 ]
 }
 
@@ -87,29 +128,56 @@ options: [
 
 {
 title: "3. Discovery Engines & Trust Anchors",
+
 questions: [
 
 {
 id: "discoveryChannel",
-text: "Where do you discover products?",
+text: "Where do you usually first discover a new product you end up buying?",
 options: [
-"Instagram Reels",
+"Instagram",
 "YouTube",
-"Google",
-"Friends",
-"WhatsApp"
+"Google Search",
+"Friends & Family",
+"Influencers",
+"WhatsApp",
+"Online Ads"
 ]
 },
 
 {
 id: "trustAnchor",
-text: "What makes you trust a product?",
+text: "What finally makes you trust a product enough to buy?",
 options: [
-"Photo Reviews",
-"4.2+ Ratings",
-"Influencer",
-"Friend Bought",
-"Known Brand"
+"Ratings & Reviews",
+"Influencer Review",
+"Friend Recommendation",
+"Brand Reputation",
+"Professional Website",
+"Money Back Guarantee"
+]
+},
+
+{
+id: "brandRiskTolerance",
+text: "How do you feel about trying brands you have never heard of?",
+options: [
+"I love trying new brands",
+"I try if reviews are good",
+"I rarely try unknown brands",
+"I avoid unknown brands completely"
+]
+},
+
+{
+id: "shoppingDevice",
+text: "Which device do you mostly use to shop online?",
+options: [
+"Android Phone",
+"iPhone",
+"Laptop",
+"Tablet",
+"Desktop PC"
 ]
 }
 
@@ -118,29 +186,67 @@ options: [
 
 {
 title: "4. Buying Psychology & Timelines",
+
 questions: [
 
 {
 id: "conversionTrigger",
-text: "What triggers your purchase?",
+text: "What most directly makes you go from 'I want this' to actually buying?",
 options: [
 "Discount",
-"Review Video",
+"Urgency/FOMO",
+"Positive Reviews",
 "Friend Recommendation",
-"FOMO",
+"Limited Stock",
 "Bundle Offer"
 ]
 },
 
 {
 id: "decisionTimeline",
-text: "How long before buying?",
+text: "How long does it usually take from first seeing a product to buying it?",
 options: [
-"Instant",
+"Instantly",
+"Same Day",
 "1-3 Days",
 "1 Week",
 "1 Month",
-"Only if Needed"
+"Only if Necessary"
+]
+},
+
+{
+id: "giftingBehavior",
+text: "Do you ever buy products as gifts for others?",
+options: [
+"Very Often",
+"Sometimes",
+"Rarely",
+"Never"
+]
+},
+
+{
+id: "priceComparisonBehavior",
+text: "Before buying, do you compare prices across multiple platforms?",
+options: [
+"Always",
+"Most of the Time",
+"Sometimes",
+"Rarely",
+"Never"
+]
+},
+
+{
+id: "peakShoppingTime",
+text: "When do you shop the most online?",
+options: [
+"Morning",
+"Afternoon",
+"Evening",
+"Late Night",
+"During Sales"
 ]
 }
 
@@ -148,30 +254,31 @@ options: [
 },
 
 {
-title: "5. Written Experience",
+title: "5. High-Fidelity Sentiment (Written Experience)",
+
 questions: [
 
 {
 id: "painPoint",
-text: "Worst shopping experience?",
+text: "What makes you leave a 1-star review? Describe your worst experience.",
 type: "textarea"
 },
 
 {
 id: "bestPoint",
-text: "Best shopping experience?",
+text: "What makes you a loyal customer? Describe your best purchase experience.",
 type: "textarea"
 },
 
 {
 id: "complementPoint",
-text: "Minimum expectation?",
+text: "What is the bare minimum you expect from any online purchase?",
 type: "textarea"
 },
 
 {
 id: "referralVoice",
-text: "Last recommendation?",
+text: "Describe the last time you recommended a product to someone. What did you say?",
 type: "textarea"
 }
 
@@ -179,31 +286,37 @@ type: "textarea"
 },
 
 {
-title: "6. Shopping Categories",
+title: "6. Niche Vertical - Shopping Categories",
+
 questions: [
 
 {
 id: "shoppingCategories",
-text: "Which categories do you shop most?",
+text: "Which categories do you shop online most?",
+multiple: true,
 options: [
-"Beauty",
 "Fashion",
+"Beauty",
 "Electronics",
+"Gaming",
 "Fitness",
 "Books",
-"Jewellery"
+"Home Decor",
+"Jewellery",
+"Groceries"
 ]
 },
 
 {
 id: "categorySpendCeiling",
-text: "How much do you spend per purchase?",
+text: "How much do you typically spend per purchase in your main category?",
 options: [
 "Under ₹300",
 "₹300 - ₹800",
 "₹800 - ₹2k",
 "₹2k - ₹5k",
-"Above ₹5k"
+"₹5k - ₹15k",
+"Above ₹15k"
 ]
 }
 
@@ -211,29 +324,31 @@ options: [
 },
 
 {
-title: "7. Post Purchase Behavior",
+title: "7. Post-Purchase Behavior",
+
 questions: [
 
 {
 id: "postPurchaseAction",
-text: "What do you do after buying something you love?",
+text: "After buying something you love, what do you usually do?",
 options: [
-"Share Stories",
-"Tell Friends",
-"Leave Review",
-"Buy Again Quietly",
-"Nothing"
+"Share on Social Media",
+"Recommend to Friends",
+"Leave a Review",
+"Buy Again",
+"Keep it Private"
 ]
 },
 
 {
 id: "returnHistoryReason",
-text: "Reason for returning products?",
+text: "Have you ever returned a product? What was the reason?",
 options: [
-"Different from Photos",
 "Poor Quality",
 "Wrong Size",
-"Damaged",
+"Damaged Product",
+"Fake Product",
+"Different from Photos",
 "Never Returned"
 ]
 }
@@ -242,5 +357,3 @@ options: [
 }
 
 ];
-
-window.surveySections = surveySections;
