@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Syntrix Consumer Analytics Hub</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app">
+
+  <div class="sidebar">
+
+```
+<h2>SYNTRIX</h2>
+
+<div class="steps">
+
+  <div class="step active">
+    Financial
+  </div>
+
+  <div class="step">
+    Checkout
+  </div>
+
+  <div class="step">
+    Discovery
+  </div>
+
+  <div class="step">
+    Psychology
+  </div>
+
+  <div class="step">
+    Experience
+  </div>
+
+  <div class="step">
+    Categories
+  </div>
+
+  <div class="step">
+    Rewards
+  </div>
+
+</div>
+```
+
+  </div>
+
+  <div class="content">
+
+```
+<div class="topbar">
+
+  <div>
+    <h1>
+      Syntrix Consumer Analytics Hub
+    </h1>
+
+    <p>
+      Complete all 7 consumer research modules
+      to claim your 10 SYNX token rewards.
+    </p>
+  </div>
+
+  <div class="progressBox">
+
+    <div class="progressText">
+      Progress 1/7
+    </div>
+
+    <div class="progressBar">
+      <div class="progressFill"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<form id="claimForm">
+
+  <div id="surveyContainer"></div>
+
+  <div class="navButtons">
+
+    <button type="button" id="prevBtn">
+      Back
+    </button>
+
+    <button type="button" id="nextBtn">
+      Next
+    </button>
+
+  </div>
+
+  <div id="submitSection" class="hidden">
+
+    <h2>
+      Rewards Routing Node Authentication
+    </h2>
+
+    <input
+      type="email"
+      id="email"
+      placeholder="User Communication Profile (Email Address)"
+      required
+    >
+
+    <input
+      type="text"
+      id="walletAddress"
+      placeholder="EVM Recipient Destination Node (Wallet Address)"
+      required
+    >
+
+    <button type="submit" class="submitBtn">
+      Authorize Matrix & Claim 10 SYNX
+    </button>
+
+  </div>
+
+</form>
+
+<div id="status"></div>
+```
+
+  </div>
+
+</div>
+
+<script src="data.js"></script>
+
+<script src="script.js"></script>
+
+</body>
+</html>
