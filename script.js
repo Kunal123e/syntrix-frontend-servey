@@ -32,260 +32,245 @@ let currentSection = 0;
 
 const answers = {};
 
+// ================= RENDER SECTION =================
+
 function renderSection() {
 
-const section =
-surveySections[currentSection];
+  const section =
+  surveySections[currentSection];
 
-surveyContainer.innerHTML = `
+  surveyContainer.innerHTML = `
 
-```
-<div class="section">
+    <div class="section">
 
-  <h2 class="sectionTitle">
-    ${section.title}
-  </h2>
+      <h2 class="sectionTitle">
+        ${section.title}
+      </h2>
 
-  ${section.questions.map(q => {
+      ${section.questions.map(q => {
 
-    // ================= TEXTAREA =================
+        // ================= TEXTAREA =================
 
-    if(q.type === "textarea"){
+        if(q.type === "textarea"){
 
-      return `
-        <div class="question">
+          return `
+            <div class="question">
 
-          <h3>${q.text}</h3>
+              <h3>${q.text}</h3>
 
-          <textarea
-            data-id="${q.id}"
-            placeholder="Write your answer..."
-          >${answers[q.id] || ""}</textarea>
+              <textarea
+                data-id="${q.id}"
+                placeholder="Write your answer..."
+              >${answers[q.id] || ""}</textarea>
 
-        </div>
-      `;
-    }
+            </div>
+          `;
+        }
 
-    // ================= MULTI SELECT =================
+        // ================= MULTI SELECT =================
 
-    if(q.multiple){
+        if(q.multiple){
 
-      const selectedValues =
-      answers[q.id] || [];
+          const selectedValues =
+          answers[q.id] || [];
 
-      return `
-        <div class="question">
+          return `
+            <div class="question">
 
-          <h3>${q.text}</h3>
+              <h3>${q.text}</h3>
 
-          <div class="options">
+              <div class="options">
 
-            ${q.options.map(opt => `
+                ${q.options.map(opt => `
 
-              <div
-                class="option
-                ${selectedValues.includes(opt) ? "selected" : ""}"
-                data-question="${q.id}"
-                data-value="${opt}"
-                data-multiple="true"
-              >
+                  <div
+                    class="option ${selectedValues.includes(opt) ? "selected" : ""}"
+                    data-question="${q.id}"
+                    data-value="${opt}"
+                    data-multiple="true"
+                  >
 
-                ${opt}
+                    ${opt}
+
+                  </div>
+
+                `).join("")}
 
               </div>
 
-            `).join("")}
+            </div>
+          `;
+        }
 
-          </div>
+        // ================= SINGLE SELECT =================
 
-        </div>
-      `;
-    }
+        return `
+          <div class="question">
 
-    // ================= SINGLE SELECT =================
+            <h3>${q.text}</h3>
 
-    return `
-      <div class="question">
+            <div class="options">
 
-        <h3>${q.text}</h3>
+              ${q.options.map(opt => `
 
-        <div class="options">
+                <div
+                  class="option ${answers[q.id] === opt ? "selected" : ""}"
+                  data-question="${q.id}"
+                  data-value="${opt}"
+                >
 
-          ${q.options.map(opt => `
+                  ${opt}
 
-            <div
-              class="option
-              ${answers[q.id] === opt ? "selected" : ""}"
-              data-question="${q.id}"
-              data-value="${opt}"
-            >
+                </div>
 
-              ${opt}
+              `).join("")}
 
             </div>
 
-          `).join("")}
+          </div>
+        `;
 
-        </div>
+      }).join("")}
 
-      </div>
-    `;
+    </div>
 
-  }).join("")}
+  `;
 
-</div>
-```
+  updateProgress();
 
-`;
+  attachOptionEvents();
 
-updateProgress();
+  attachTextareaEvents();
 
-attachOptionEvents();
+  // ================= BUTTON LOGIC =================
 
-attachTextareaEvents();
+  prevBtn.style.display =
+  currentSection === 0
+  ? "none"
+  : "inline-block";
 
-// ================= BUTTON DISPLAY =================
+  if(currentSection === surveySections.length - 1){
 
-if(currentSection === 0){
+    nextBtn.style.display = "none";
 
-```
-prevBtn.style.display = "none";
-```
-
-}else{
-
-```
-prevBtn.style.display = "inline-block";
-```
-
-}
-
-if(currentSection === surveySections.length - 1){
-
-```
-nextBtn.style.display = "none";
-
-submitSection.classList.remove("hidden");
-```
-
-}else{
-
-```
-nextBtn.style.display = "inline-block";
-
-submitSection.classList.add("hidden");
-```
-
-}
-
-}
-
-function attachOptionEvents(){
-
-const options =
-document.querySelectorAll(".option");
-
-options.forEach(option => {
-
-```
-option.addEventListener("click", () => {
-
-  const question =
-  option.dataset.question;
-
-  const value =
-  option.dataset.value;
-
-  const multiple =
-  option.dataset.multiple;
-
-  // ================= MULTIPLE =================
-
-  if(multiple){
-
-    if(!answers[question]){
-
-      answers[question] = [];
-
-    }
-
-    if(answers[question].includes(value)){
-
-      answers[question] =
-      answers[question].filter(
-        item => item !== value
-      );
-
-    }else{
-
-      answers[question].push(value);
-
-    }
+    submitSection.classList.remove("hidden");
 
   }else{
 
-    // ================= SINGLE =================
+    nextBtn.style.display = "inline-block";
 
-    answers[question] = value;
+    submitSection.classList.add("hidden");
 
   }
 
-  renderSection();
+}
 
-});
-```
+// ================= OPTION EVENTS =================
 
-});
+function attachOptionEvents(){
+
+  const options =
+  document.querySelectorAll(".option");
+
+  options.forEach(option => {
+
+    option.addEventListener("click", () => {
+
+      const question =
+      option.dataset.question;
+
+      const value =
+      option.dataset.value;
+
+      const multiple =
+      option.dataset.multiple;
+
+      // ================= MULTI SELECT =================
+
+      if(multiple){
+
+        if(!answers[question]){
+
+          answers[question] = [];
+
+        }
+
+        if(answers[question].includes(value)){
+
+          answers[question] =
+          answers[question].filter(
+            item => item !== value
+          );
+
+        }else{
+
+          answers[question].push(value);
+
+        }
+
+      }else{
+
+        // ================= SINGLE SELECT =================
+
+        answers[question] = value;
+
+      }
+
+      renderSection();
+
+    });
+
+  });
 
 }
+
+// ================= TEXTAREA EVENTS =================
 
 function attachTextareaEvents(){
 
-const textareas =
-document.querySelectorAll("textarea");
+  const textareas =
+  document.querySelectorAll("textarea");
 
-textareas.forEach(textarea => {
+  textareas.forEach(textarea => {
 
-```
-textarea.addEventListener("input", () => {
+    textarea.addEventListener("input", () => {
 
-  answers[textarea.dataset.id] =
-  textarea.value;
+      answers[textarea.dataset.id] =
+      textarea.value;
 
-});
-```
+    });
 
-});
+  });
 
 }
+
+// ================= PROGRESS =================
 
 function updateProgress(){
 
-const percent =
-((currentSection + 1)
-/ surveySections.length) * 100;
+  const percent =
+  ((currentSection + 1)
+  / surveySections.length) * 100;
 
-progressFill.style.width =
-percent + "%";
+  progressFill.style.width =
+  percent + "%";
 
-progressText.innerText =
-`Progress ${currentSection + 1}/${surveySections.length}`;
+  progressText.innerText =
+  `Progress ${currentSection + 1}/${surveySections.length}`;
 
-steps.forEach((step,index)=>{
+  steps.forEach((step,index)=>{
 
-```
-if(index <= currentSection){
+    if(index <= currentSection){
 
-  step.classList.add("active");
+      step.classList.add("active");
 
-}else{
+    }else{
 
-  step.classList.remove("active");
+      step.classList.remove("active");
 
-}
-```
+    }
 
-});
+  });
 
 }
 
@@ -293,56 +278,58 @@ if(index <= currentSection){
 
 function validateCurrentSection(){
 
-const currentQuestions =
-surveySections[currentSection].questions;
+  const currentQuestions =
+  surveySections[currentSection].questions;
 
-let valid = true;
+  let valid = true;
 
-currentQuestions.forEach(q => {
+  currentQuestions.forEach(q => {
 
-```
-// textarea validation
+    // ================= TEXTAREA =================
 
-if(q.type === "textarea"){
+    if(q.type === "textarea"){
 
-  if(
-    !answers[q.id] ||
-    answers[q.id].trim() === ""
-  ){
-    valid = false;
-  }
+      if(
+        !answers[q.id] ||
+        answers[q.id].trim() === ""
+      ){
 
-}else{
+        valid = false;
 
-  // multi select validation
+      }
 
-  if(q.multiple){
+    }else{
 
-    if(
-      !answers[q.id] ||
-      answers[q.id].length === 0
-    ){
-      valid = false;
+      // ================= MULTI =================
+
+      if(q.multiple){
+
+        if(
+          !answers[q.id] ||
+          answers[q.id].length === 0
+        ){
+
+          valid = false;
+
+        }
+
+      }else{
+
+        // ================= SINGLE =================
+
+        if(!answers[q.id]){
+
+          valid = false;
+
+        }
+
+      }
+
     }
 
-  }else{
+  });
 
-    // single select validation
-
-    if(!answers[q.id]){
-
-      valid = false;
-
-    }
-
-  }
-
-}
-```
-
-});
-
-return valid;
+  return valid;
 
 }
 
@@ -350,28 +337,26 @@ return valid;
 
 nextBtn.addEventListener("click", () => {
 
-const valid =
-validateCurrentSection();
+  const valid =
+  validateCurrentSection();
 
-if(!valid){
+  if(!valid){
 
-```
-statusDiv.innerHTML =
-"❌ Please answer all questions before continuing.";
+    statusDiv.innerHTML =
+    "❌ Please answer all questions before continuing.";
 
-statusDiv.style.color =
-"#ff3b3b";
+    statusDiv.style.color =
+    "#ff4d4d";
 
-return;
-```
+    return;
 
-}
+  }
 
-statusDiv.innerHTML = "";
+  statusDiv.innerHTML = "";
 
-currentSection++;
+  currentSection++;
 
-renderSection();
+  renderSection();
 
 });
 
@@ -379,9 +364,11 @@ renderSection();
 
 prevBtn.addEventListener("click", () => {
 
-currentSection--;
+  statusDiv.innerHTML = "";
 
-renderSection();
+  currentSection--;
+
+  renderSection();
 
 });
 
@@ -389,130 +376,131 @@ renderSection();
 
 form.addEventListener("submit", async (e) => {
 
-e.preventDefault();
+  e.preventDefault();
 
-const email =
-document.getElementById("email").value;
+  const email =
+  document.getElementById("email").value;
 
-const walletAddress =
-document.getElementById("walletAddress").value;
+  const walletAddress =
+  document.getElementById("walletAddress").value;
 
-// ================= EMAIL VALIDATION =================
+  // ================= FINAL VALIDATION =================
 
-if(!email || !walletAddress){
+  if(!email || !walletAddress){
 
-```
-statusDiv.innerHTML =
-"❌ Please fill all required fields.";
+    statusDiv.innerHTML =
+    "❌ Please fill all required fields.";
 
-return;
-```
+    return;
 
-}
+  }
 
-// ================= WALLET VALIDATION =================
+  // ================= WALLET CHECK =================
 
-if(
-!walletAddress.startsWith("0x") ||
-walletAddress.length !== 42
-){
+  if(
+    !walletAddress.startsWith("0x") ||
+    walletAddress.length !== 42
+  ){
 
-```
-statusDiv.innerHTML =
-"❌ Invalid wallet address.";
+    statusDiv.innerHTML =
+    "❌ Invalid wallet address.";
 
-return;
-```
+    return;
 
-}
-
-statusDiv.innerHTML =
-"⏳ Transmitting encrypted consumer metrics array...";
-
-try{
-
-```
-const response =
-await fetch(API_URL, {
-
-  method:"POST",
-
-  headers:{
-    "Content-Type":"application/json"
-  },
-
-  body:JSON.stringify({
-
-    email,
-    walletAddress,
-
-    ...answers
-
-  })
-
-});
-
-const data =
-await response.json();
-
-// ================= SUCCESS =================
-
-if(data.success){
-
-  statusDiv.innerHTML = `
-
-    <div class="successBox">
-
-      <h2>
-        ✅ Claim Successful
-      </h2>
-
-      <p>
-        Your 10 SYNX reward has been sent successfully.
-      </p>
-
-      <div class="txBox">
-
-        <strong>
-          Transaction Hash:
-        </strong>
-
-        <br><br>
-
-        <span>
-          ${data.transactionHash}
-        </span>
-
-      </div>
-
-    </div>
-
-  `;
-
-  form.reset();
-
-  Object.keys(answers).forEach(key => {
-    delete answers[key];
-  });
-
-}else{
+  }
 
   statusDiv.innerHTML =
-  "❌ " + data.error;
+  "⏳ Submitting survey...";
 
-}
-```
+  statusDiv.style.color =
+  "#57d6c2";
 
-}catch(err){
+  try{
 
-```
-console.error(err);
+    const response =
+    await fetch(API_URL, {
 
-statusDiv.innerHTML =
-"❌ Server Error";
-```
+      method:"POST",
 
-}
+      headers:{
+        "Content-Type":"application/json"
+      },
+
+      body:JSON.stringify({
+
+        email,
+        walletAddress,
+
+        ...answers
+
+      })
+
+    });
+
+    const data =
+    await response.json();
+
+    // ================= SUCCESS =================
+
+    if(data.success){
+
+      statusDiv.innerHTML = `
+
+        <div class="successBox">
+
+          <h2>
+            ✅ Claim Successful
+          </h2>
+
+          <p>
+            Your 10 SYNX reward has been sent successfully.
+          </p>
+
+          <div class="txBox">
+
+            <strong>
+              Transaction Hash:
+            </strong>
+
+            <br><br>
+
+            <span>
+              ${data.transactionHash}
+            </span>
+
+          </div>
+
+        </div>
+
+      `;
+
+      form.reset();
+
+      Object.keys(answers).forEach(key => {
+
+        delete answers[key];
+
+      });
+
+      currentSection = 0;
+
+      renderSection();
+
+    }else{
+
+      statusDiv.innerHTML =
+      "❌ " + (data.error || "Something went wrong");
+
+    }
+
+  }catch(err){
+
+    console.error(err);
+
+    statusDiv.innerHTML =
+    "❌ Server Error";
+
+  }
 
 });
 
