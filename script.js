@@ -34,261 +34,385 @@ const answers = {};
 
 function renderSection() {
 
-const section =
-surveySections[currentSection];
+  const section =
+  surveySections[currentSection];
 
-surveyContainer.innerHTML = ` <div class="section"> <h2 class="sectionTitle">
-${section.title} </h2>
+  surveyContainer.innerHTML = `
 
-```
-  ${section.questions.map(q => {
+    <div class="section">
 
-    if(q.type === "textarea"){
+      <h2 class="sectionTitle">
+        ${section.title}
+      </h2>
 
-      return `
-        <div class="question">
+      ${section.questions.map(q => {
 
-          <h3>${q.text}</h3>
+        // ================= TEXTAREA =================
 
-          <textarea
-            data-id="${q.id}"
-            placeholder="Write your answer..."
-          >${answers[q.id] || ""}</textarea>
+        if(q.type === "textarea"){
 
-        </div>
-      `;
-    }
+          return `
+            <div class="question">
 
-    return `
-      <div class="question">
+              <h3>${q.text}</h3>
 
-        <h3>${q.text}</h3>
+              <textarea
+                data-id="${q.id}"
+                placeholder="Write your answer..."
+              >${answers[q.id] || ""}</textarea>
 
-        <div class="options">
+            </div>
+          `;
+        }
 
-          ${q.options.map(opt => `
+        // ================= CHECKBOX =================
 
-            <div
-              class="option
-              ${answers[q.id] === opt ? "selected" : ""}"
-              data-question="${q.id}"
-              data-value="${opt}"
-            >
+        if(q.multiple){
 
-              ${opt}
+          const selectedValues =
+          answers[q.id] || [];
+
+          return `
+            <div class="question">
+
+              <h3>${q.text}</h3>
+
+              <div class="options">
+
+                ${q.options.map(opt => `
+
+                  <div
+                    class="option
+                    ${selectedValues.includes(opt) ? "selected" : ""}"
+                    data-question="${q.id}"
+                    data-value="${opt}"
+                    data-multiple="true"
+                  >
+
+                    ${opt}
+
+                  </div>
+
+                `).join("")}
+
+              </div>
+
+            </div>
+          `;
+        }
+
+        // ================= SINGLE OPTION =================
+
+        return `
+          <div class="question">
+
+            <h3>${q.text}</h3>
+
+            <div class="options">
+
+              ${q.options.map(opt => `
+
+                <div
+                  class="option
+                  ${answers[q.id] === opt ? "selected" : ""}"
+                  data-question="${q.id}"
+                  data-value="${opt}"
+                >
+
+                  ${opt}
+
+                </div>
+
+              `).join("")}
 
             </div>
 
-          `).join("")}
+          </div>
+        `;
 
-        </div>
+      }).join("")}
 
-      </div>
-    `;
+    </div>
 
-  }).join("")}
+  `;
 
-</div>
-```
+  updateProgress();
 
-`;
+  attachOptionEvents();
 
-updateProgress();
+  attachTextareaEvents();
 
-attachOptionEvents();
+  // ================= BUTTON LOGIC =================
 
-attachTextareaEvents();
+  if(currentSection === 0){
 
-if(currentSection === 0){
-prevBtn.style.display = "none";
-}else{
-prevBtn.style.display = "inline-block";
-}
+    prevBtn.style.display = "none";
 
-if(currentSection === surveySections.length - 1){
+  }else{
 
-```
-nextBtn.style.display = "none";
+    prevBtn.style.display = "inline-block";
 
-submitSection.classList.remove("hidden");
-```
+  }
 
-}else{
+  if(currentSection === surveySections.length - 1){
 
-```
-nextBtn.style.display = "inline-block";
+    nextBtn.style.display = "none";
 
-submitSection.classList.add("hidden");
-```
+    submitSection.classList.remove("hidden");
 
-}
+  }else{
+
+    nextBtn.style.display = "inline-block";
+
+    submitSection.classList.add("hidden");
+
+  }
 
 }
 
 function attachOptionEvents(){
 
-const options =
-document.querySelectorAll(".option");
+  const options =
+  document.querySelectorAll(".option");
 
-options.forEach(option => {
+  options.forEach(option => {
 
-```
-option.addEventListener("click", () => {
+    option.addEventListener("click", () => {
 
-  const question =
-  option.dataset.question;
+      const question =
+      option.dataset.question;
 
-  const value =
-  option.dataset.value;
+      const value =
+      option.dataset.value;
 
-  answers[question] = value;
+      const multiple =
+      option.dataset.multiple;
 
-  renderSection();
+      // ================= MULTI SELECT =================
 
-});
-```
+      if(multiple){
 
-});
+        if(!answers[question]){
+
+          answers[question] = [];
+
+        }
+
+        if(answers[question].includes(value)){
+
+          answers[question] =
+          answers[question].filter(
+            item => item !== value
+          );
+
+        }else{
+
+          answers[question].push(value);
+
+        }
+
+      }else{
+
+        // ================= SINGLE SELECT =================
+
+        answers[question] = value;
+
+      }
+
+      renderSection();
+
+    });
+
+  });
 
 }
 
 function attachTextareaEvents(){
 
-const textareas =
-document.querySelectorAll("textarea");
+  const textareas =
+  document.querySelectorAll("textarea");
 
-textareas.forEach(textarea => {
+  textareas.forEach(textarea => {
 
-```
-textarea.addEventListener("input", () => {
+    textarea.addEventListener("input", () => {
 
-  answers[textarea.dataset.id] =
-  textarea.value;
+      answers[textarea.dataset.id] =
+      textarea.value;
 
-});
-```
+    });
 
-});
+  });
 
 }
 
 function updateProgress(){
 
-const percent =
-((currentSection + 1)
-/ surveySections.length) * 100;
+  const percent =
+  ((currentSection + 1)
+  / surveySections.length) * 100;
 
-progressFill.style.width =
-percent + "%";
+  progressFill.style.width =
+  percent + "%";
 
-progressText.innerText =
-`Progress ${currentSection + 1}/${surveySections.length}`;
+  progressText.innerText =
+  `Progress ${currentSection + 1}/${surveySections.length}`;
 
-steps.forEach((step,index)=>{
+  steps.forEach((step,index)=>{
 
-```
-if(index <= currentSection){
+    if(index <= currentSection){
 
-  step.classList.add("active");
+      step.classList.add("active");
 
-}else{
+    }else{
 
-  step.classList.remove("active");
+      step.classList.remove("active");
 
-}
-```
+    }
 
-});
+  });
 
 }
+
+// ================= NEXT =================
 
 nextBtn.addEventListener("click", () => {
 
-currentSection++;
+  currentSection++;
 
-renderSection();
+  renderSection();
 
 });
+
+// ================= PREVIOUS =================
 
 prevBtn.addEventListener("click", () => {
 
-currentSection--;
+  currentSection--;
 
-renderSection();
+  renderSection();
 
 });
+
+// ================= SUBMIT =================
 
 form.addEventListener("submit", async (e) => {
 
-e.preventDefault();
+  e.preventDefault();
 
-const email =
-document.getElementById("email").value;
+  const email =
+  document.getElementById("email").value;
 
-const walletAddress =
-document.getElementById("walletAddress").value;
+  const walletAddress =
+  document.getElementById("walletAddress").value;
 
-statusDiv.innerHTML =
-"Submitting survey...";
+  // ================= VALIDATION =================
 
-try{
+  if(!email || !walletAddress){
 
-```
-const response =
-await fetch(API_URL, {
+    statusDiv.innerHTML =
+    "❌ Please fill all fields";
 
-  method:"POST",
+    return;
+  }
 
-  headers:{
-    "Content-Type":"application/json"
-  },
+  if(!walletAddress.startsWith("0x")
+  || walletAddress.length < 42){
 
-  body:JSON.stringify({
+    statusDiv.innerHTML =
+    "❌ Invalid wallet address";
 
-    email,
-    walletAddress,
-
-    ...answers
-
-  })
-
-});
-
-const data =
-await response.json();
-
-if(data.success){
-
-  statusDiv.innerHTML = `
-    ✅ SUCCESS <br><br>
-
-    Tokens Sent Successfully.
-    <br><br>
-
-    TX HASH:
-    <br>
-    ${data.transactionHash}
-  `;
-
-  form.reset();
-
-}else{
+    return;
+  }
 
   statusDiv.innerHTML =
-  "❌ " + data.error;
+  "⏳ Transmitting encrypted consumer metrics array...";
 
-}
-```
+  statusDiv.style.color =
+  "#333";
 
-}catch(err){
+  try{
 
-```
-statusDiv.innerHTML =
-"Server Error";
-```
+    const response =
+    await fetch(API_URL, {
 
-}
+      method:"POST",
+
+      headers:{
+        "Content-Type":"application/json"
+      },
+
+      body:JSON.stringify({
+
+        email,
+        walletAddress,
+
+        ...answers
+
+      })
+
+    });
+
+    const data =
+    await response.json();
+
+    // ================= SUCCESS =================
+
+    if(data.success){
+
+      statusDiv.innerHTML = `
+
+        <div class="successBox">
+
+          <h2>
+            ✅ Claim Successful
+          </h2>
+
+          <p>
+            Your 10 SYNX reward has been sent.
+          </p>
+
+          <div class="txBox">
+
+            <strong>
+              Transaction Hash:
+            </strong>
+
+            <br><br>
+
+            <span>
+              ${data.transactionHash}
+            </span>
+
+          </div>
+
+        </div>
+
+      `;
+
+      form.reset();
+
+      Object.keys(answers).forEach(key => {
+        delete answers[key];
+      });
+
+    }else{
+
+      statusDiv.innerHTML =
+      "❌ " + data.error;
+
+    }
+
+  }catch(err){
+
+    console.error(err);
+
+    statusDiv.innerHTML =
+    "❌ Server Error";
+
+  }
 
 });
+
+// ================= START =================
 
 renderSection();
