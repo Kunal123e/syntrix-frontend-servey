@@ -2,208 +2,153 @@
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:Inter,Arial,sans-serif;
+font-family:Inter,sans-serif;
 }
 
 body{
-background:linear-gradient(
-180deg,
-#faf5ea 0%,
-#f2eadc 100%
-);
-
+background:#f8f5ef;
 min-height:100vh;
-padding:30px;
-color:#2d241d;
+padding:32px;
+color:#1f1f1f;
 }
-
-/* APP */
 
 .app{
 max-width:1450px;
 margin:auto;
 display:flex;
-
-background:#ffffff;
-
-border-radius:32px;
-
+background:#fcfaf7;
+border-radius:28px;
 overflow:hidden;
-
-border:1px solid #ece2d5;
-
-box-shadow:
-0 15px 40px rgba(0,0,0,0.08);
+border:1px solid #e8e1d8;
+box-shadow:0 10px 35px rgba(0,0,0,.05);
 }
 
 /* SIDEBAR */
 
 .sidebar{
-width:270px;
-
-background:
-linear-gradient(
-180deg,
-#fffaf2,
-#f7efe2
-);
-
-padding:40px 25px;
-
-border-right:
-1px solid #ece2d5;
+width:260px;
+background:#f4efe8;
+padding:35px 22px;
+border-right:1px solid #e8e1d8;
 }
 
 .logo{
-font-size:34px;
-font-weight:800;
-letter-spacing:1px;
-
-background:
-linear-gradient(
-135deg,
-#c9956b,
-#b45f3d
-);
-
--webkit-background-clip:text;
-color:transparent;
-
-margin-bottom:45px;
+font-size:32px;
+font-weight:900;
+letter-spacing:-1px;
+color:#1f1f1f;
+margin-bottom:40px;
 }
 
 .steps{
 display:flex;
 flex-direction:column;
-gap:15px;
+gap:10px;
 }
 
 .step{
-padding:16px 18px;
-
-border-radius:16px;
-
-background:white;
-
-border:1px solid #eadfce;
-
-color:#453a32;
-
+padding:14px 18px;
+border-radius:14px;
+color:#6b6258;
 font-weight:600;
+cursor:pointer;
+transition:.2s;
+}
 
-transition:.25s;
+.step:hover{
+background:#ebe4da;
 }
 
 .step.active{
-background:
-linear-gradient(
-135deg,
-#c9956b,
-#b45f3d
-);
-
+background:#1f1f1f;
 color:white;
-
-border:none;
-
-box-shadow:
-0 10px 20px rgba(180,95,61,.25);
 }
 
 /* CONTENT */
 
 .content{
 flex:1;
-padding:55px;
+padding:50px;
 }
-
-/* TOP */
 
 .topbar{
 display:flex;
 justify-content:space-between;
-align-items:center;
+align-items:flex-start;
 gap:30px;
-margin-bottom:40px;
+margin-bottom:35px;
 }
 
 .topbar h1{
-font-size:42px;
-margin-bottom:10px;
-color:#2d241d;
+font-size:52px;
+line-height:1.05;
+font-weight:900;
+letter-spacing:-2px;
+color:#1f1f1f;
 }
 
 .subtitle{
-color:#7a6a5b;
+font-size:17px;
 line-height:1.8;
-max-width:760px;
+color:#756c62;
+max-width:700px;
 }
 
 /* PROGRESS */
 
 .progressBox{
-min-width:300px;
+min-width:280px;
 }
 
 .progressText{
 font-weight:700;
 margin-bottom:10px;
-color:#5a4a3e;
+color:#5c544c;
 }
 
 .progressBar{
-height:14px;
-background:#e8ddd0;
-border-radius:20px;
+height:10px;
+background:#e6ddd2;
+border-radius:999px;
 overflow:hidden;
 }
 
 .progressFill{
 height:100%;
-width:14%;
-
-background:
-linear-gradient(
-135deg,
-#c9956b,
-#b45f3d
-);
-
-border-radius:20px;
+background:#1f1f1f;
+border-radius:999px;
 transition:.3s;
 }
 
 /* SECTION */
 
 .sectionTitle{
-font-size:30px;
-margin-bottom:30px;
+font-size:34px;
 font-weight:800;
-color:#2d241d;
+margin-bottom:30px;
+color:#1f1f1f;
 }
 
 /* QUESTION */
 
 .question{
-background:white;
-
-padding:25px;
-
+background:#fffdfb;
+padding:28px;
 border-radius:22px;
+border:1px solid #ece4da;
+margin-bottom:22px;
+transition:.2s;
+}
 
-border:1px solid #eee4d7;
-
-margin-bottom:24px;
-
-box-shadow:
-0 3px 10px rgba(0,0,0,.04);
+.question:hover{
+border-color:#ddd3c7;
 }
 
 .question h3{
-font-size:20px;
+font-size:18px;
+font-weight:650;
 line-height:1.6;
 margin-bottom:18px;
-color:#2d241d;
 }
 
 /* OPTIONS */
@@ -211,51 +156,31 @@ color:#2d241d;
 .options{
 display:flex;
 flex-wrap:wrap;
-gap:14px;
+gap:12px;
 }
 
 .option{
-padding:16px 22px;
-
-border-radius:16px;
-
-cursor:pointer;
-
-background:#fff;
-
-border:2px solid #eadfce;
-
-color:#3e342d;
-
+padding:14px 20px;
+border-radius:14px;
+background:white;
+border:1.5px solid #ddd4c8;
+color:#2f2f2f;
 font-weight:600;
-
-min-width:170px;
-
+cursor:pointer;
+transition:.2s;
+min-width:160px;
 text-align:center;
-
-transition:.25s;
 }
 
 .option:hover{
-transform:translateY(-2px);
-
-border-color:#c9956b;
+background:#faf7f2;
+border-color:#1f1f1f;
 }
 
 .option.selected{
-background:
-linear-gradient(
-135deg,
-#c9956b,
-#b45f3d
-);
-
+background:#1f1f1f;
+border-color:#1f1f1f;
 color:white;
-
-border-color:#b45f3d;
-
-box-shadow:
-0 8px 20px rgba(180,95,61,.3);
 }
 
 /* INPUTS */
@@ -263,38 +188,30 @@ box-shadow:
 input,
 textarea{
 width:100%;
-
 padding:18px;
-
-border-radius:18px;
-
-border:2px solid #e8ddd0;
-
+border-radius:16px;
 background:white;
-
-color:#2d241d;
-
+border:1.5px solid #ddd4c8;
+color:#1f1f1f;
 font-size:15px;
-
 outline:none;
-
 transition:.2s;
 }
 
 textarea{
 min-height:140px;
 resize:vertical;
-line-height:1.7;
 }
 
 input:focus,
 textarea:focus{
-border-color:#c9956b;
+border-color:#1f1f1f;
+box-shadow:0 0 0 4px rgba(0,0,0,.05);
 }
 
 input::placeholder,
 textarea::placeholder{
-color:#a18d7b;
+color:#999086;
 }
 
 /* BUTTONS */
@@ -302,59 +219,37 @@ color:#a18d7b;
 .navButtons{
 display:flex;
 justify-content:space-between;
+gap:15px;
 margin-top:35px;
-gap:20px;
 }
 
 button{
-padding:16px 34px;
-
+padding:15px 30px;
 border:none;
-
-border-radius:18px;
-
-background:
-linear-gradient(
-135deg,
-#c9956b,
-#b45f3d
-);
-
+border-radius:14px;
+background:#1f1f1f;
 color:white;
-
 font-weight:700;
-
 cursor:pointer;
-
-transition:.25s;
+transition:.2s;
 }
 
 button:hover{
-transform:translateY(-2px);
-
-box-shadow:
-0 10px 25px rgba(180,95,61,.25);
+background:black;
 }
 
 .submitBtn{
 width:100%;
 margin-top:20px;
-padding:20px;
-font-size:17px;
+padding:18px;
+font-size:16px;
 }
 
 /* STATUS */
 
 #status{
-margin-top:25px;
-font-weight:700;
-color:#b45f3d;
-}
-
-/* HIDDEN */
-
-.hidden{
-display:none;
+margin-top:20px;
+font-weight:600;
 }
 
 /* MOBILE */
@@ -362,7 +257,7 @@ display:none;
 @media(max-width:900px){
 
 body{
-padding:15px;
+padding:12px;
 }
 
 .app{
@@ -372,7 +267,7 @@ flex-direction:column;
 .sidebar{
 width:100%;
 border-right:none;
-border-bottom:1px solid #ece2d5;
+border-bottom:1px solid #e8e1d8;
 }
 
 .steps{
@@ -386,19 +281,13 @@ padding:25px;
 
 .topbar{
 flex-direction:column;
-align-items:flex-start;
 }
 
 .topbar h1{
-font-size:32px;
+font-size:36px;
 }
 
 .option{
 width:100%;
 }
-
-.progressBox{
-width:100%;
-}
-
 }
