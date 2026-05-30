@@ -1,30 +1,30 @@
 const surveySections = [
 
 {
-title: "1. Financial Power & Demographics",
+title: "1. Lifestyle & Spending Profile",
 
 questions: [
 
 {
 id: "monthlySpend",
-text: "What is your monthly online shopping spend?",
+text: "How much do you usually spend on online shopping each month?",
 options: [
 "Under ₹500",
-"₹500 - ₹2k",
-"₹2k - ₹5k",
-"₹5k - ₹15k",
-"Above ₹15k"
+"₹500 - ₹2,000",
+"₹2,000 - ₹5,000",
+"₹5,000 - ₹15,000",
+"Above ₹15,000"
 ]
 },
 
 {
-id: "cityTier",
-text: "Which city tier are you from?",
+id: "locationType",
+text: "Which best describes where you live?",
 options: [
-"Metro City",
-"Tier 2 City",
-"Tier 3 City",
-"Rural Area"
+"🏙️ Metro City (Mumbai, Delhi, Bengaluru, Chennai)",
+"🌆 Large City (Ahmedabad, Surat, Jaipur, Vadodara)",
+"🏘️ Small City / District City (Rajkot, Udaipur, Bhavnagar, Kota)",
+"🌿 Town / Village (Kalol, Gangapur and similar areas)"
 ]
 },
 
@@ -43,7 +43,7 @@ options: [
 
 {
 id: "userPersona",
-text: "What best describes you?",
+text: "Which best describes you?",
 options: [
 "Student",
 "Salaried Employee",
@@ -56,7 +56,7 @@ options: [
 
 {
 id: "luxuryAllocation",
-text: "How much of your income goes to non-essential / fun purchases?",
+text: "How much of your income is spent on non-essential or fun purchases?",
 options: [
 "Under 5%",
 "5% - 15%",
@@ -70,7 +70,7 @@ options: [
 },
 
 {
-title: "2. Checkout Friction & Drop-Off Killers",
+title: "2. Checkout Experience",
 
 questions: [
 
@@ -89,32 +89,32 @@ options: [
 
 {
 id: "shippingCostTolerance",
-text: "How much shipping cost will you accept before abandoning?",
+text: "How much shipping cost will you accept before leaving?",
 options: [
 "Free Only",
 "Under ₹50",
 "Under ₹100",
 "Under ₹300",
-"Any if Product is Worth it"
+"Any if Product is Worth It"
 ]
 },
 
 {
 id: "paymentPreference",
-text: "How do you prefer to pay?",
+text: "How do you usually prefer to pay?",
 options: [
 "UPI",
-"Cash on Delivery",
-"Debit/Credit Card",
+"Cash on Delivery (COD)",
+"Debit / Credit Card",
 "Net Banking",
-"BNPL / EMI",
+"Buy Now Pay Later / EMI",
 "Crypto"
 ]
 },
 
 {
 id: "returnPolicyImportance",
-text: "How important is a good return / exchange policy to you?",
+text: "How important is a good return or exchange policy?",
 options: [
 "Extremely Important",
 "Important",
@@ -127,13 +127,13 @@ options: [
 },
 
 {
-title: "3. Discovery Engines & Trust Anchors",
+title: "3. Product Discovery & Trust",
 
 questions: [
 
 {
 id: "discoveryChannel",
-text: "Where do you usually first discover a new product you end up buying?",
+text: "Where do you usually discover products you end up buying?",
 options: [
 "Instagram",
 "YouTube",
@@ -147,7 +147,7 @@ options: [
 
 {
 id: "trustAnchor",
-text: "What finally makes you trust a product enough to buy?",
+text: "What makes you trust a product enough to buy it?",
 options: [
 "Ratings & Reviews",
 "Influencer Review",
@@ -160,7 +160,7 @@ options: [
 
 {
 id: "brandRiskTolerance",
-text: "How do you feel about trying brands you have never heard of?",
+text: "How comfortable are you trying a brand you've never heard of?",
 options: [
 "I love trying new brands",
 "I try if reviews are good",
@@ -171,13 +171,13 @@ options: [
 
 {
 id: "shoppingDevice",
-text: "Which device do you mostly use to shop online?",
+text: "Which device do you mostly use for online shopping?",
 options: [
-"Android Phone",
+"Android Smartphone",
 "iPhone",
 "Laptop",
 "Tablet",
-"Desktop PC"
+"Desktop Computer"
 ]
 }
 
@@ -185,16 +185,16 @@ options: [
 },
 
 {
-title: "4. Buying Psychology & Timelines",
+title: "4. Buying Behaviour & Decisions",
 
 questions: [
 
 {
 id: "conversionTrigger",
-text: "What most directly makes you go from 'I want this' to actually buying?",
+text: "What most often turns interest into a purchase?",
 options: [
 "Discount",
-"Urgency/FOMO",
+"Urgency / FOMO",
 "Positive Reviews",
 "Friend Recommendation",
 "Limited Stock",
@@ -204,7 +204,7 @@ options: [
 
 {
 id: "decisionTimeline",
-text: "How long does it usually take from first seeing a product to buying it?",
+text: "How long does it usually take you to buy after first seeing a product?",
 options: [
 "Instantly",
 "Same Day",
@@ -216,8 +216,20 @@ options: [
 },
 
 {
+id: "saleParticipation",
+text: "Do you actively wait for sales before buying?",
+options: [
+"Always",
+"Often",
+"Sometimes",
+"Rarely",
+"Never"
+]
+},
+
+{
 id: "giftingBehavior",
-text: "Do you ever buy products as gifts for others?",
+text: "Do you buy products as gifts for others?",
 options: [
 "Very Often",
 "Sometimes",
@@ -240,7 +252,7 @@ options: [
 
 {
 id: "peakShoppingTime",
-text: "When do you shop the most online?",
+text: "When do you shop online the most?",
 options: [
 "Morning",
 "Afternoon",
@@ -254,31 +266,31 @@ options: [
 },
 
 {
-title: "5. High-Fidelity Sentiment (Written Experience)",
+title: "5. Shopping Experiences",
 
 questions: [
 
 {
 id: "painPoint",
-text: "What makes you leave a 1-star review? Describe your worst experience.",
+text: "Tell us about the worst online shopping experience you've had.",
 type: "textarea"
 },
 
 {
 id: "bestPoint",
-text: "What makes you a loyal customer? Describe your best purchase experience.",
+text: "Tell us about the best online shopping experience you've had.",
 type: "textarea"
 },
 
 {
 id: "complementPoint",
-text: "What is the bare minimum you expect from any online purchase?",
+text: "What are the minimum things every online store should provide?",
 type: "textarea"
 },
 
 {
 id: "referralVoice",
-text: "Describe the last time you recommended a product to someone. What did you say?",
+text: "What would make you recommend a product to your friends or family?",
 type: "textarea"
 }
 
@@ -286,37 +298,37 @@ type: "textarea"
 },
 
 {
-title: "6. Niche Vertical - Shopping Categories",
+title: "6. Shopping Categories",
 
 questions: [
 
 {
 id: "shoppingCategories",
-text: "Which categories do you shop online most?",
+text: "Which categories do you shop online most often?",
 multiple: true,
 options: [
-"Fashion",
-"Beauty",
-"Electronics",
+"Fashion & Clothing",
+"Beauty & Personal Care",
+"Electronics & Gadgets",
 "Gaming",
-"Fitness",
-"Books",
-"Home Decor",
-"Jewellery",
-"Groceries"
+"Fitness & Sports",
+"Books & Education",
+"Home & Kitchen",
+"Jewellery & Accessories",
+"Groceries & Daily Needs"
 ]
 },
 
 {
 id: "categorySpendCeiling",
-text: "How much do you typically spend per purchase in your main category?",
+text: "How much do you typically spend per purchase in your favourite category?",
 options: [
 "Under ₹300",
 "₹300 - ₹800",
-"₹800 - ₹2k",
-"₹2k - ₹5k",
-"₹5k - ₹15k",
-"Above ₹15k"
+"₹800 - ₹2,000",
+"₹2,000 - ₹5,000",
+"₹5,000 - ₹15,000",
+"Above ₹15,000"
 ]
 }
 
@@ -324,7 +336,7 @@ options: [
 },
 
 {
-title: "7. Post-Purchase Behavior",
+title: "7. Post-Purchase Behaviour",
 
 questions: [
 
