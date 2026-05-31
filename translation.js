@@ -33,9 +33,9 @@ const sectionTranslations = {
     "2. Checkout Experience": "2. चेकआउट अनुभव",
     "3. Product Discovery & Trust": "3. उत्पाद खोज और भरोसा",
     "4. Buying Behaviour & Decisions": "4. खरीदारी व्यवहार और निर्णय",
-    "5. Shopping Experiences": "5. खरीदारी अनुभव",
-    "6. Shopping Categories": "6. खरीदारी श्रेणियाँ",
-    "7. Post-Purchase Behaviour": "7. खरीद के बाद का व्यवहार"
+    "5. Shopping Categories": "5. खरीदारी श्रेणियाँ",
+    "6. Post-Purchase Behaviour": "6. खरीद के बाद का व्यवहार",
+    "7. Shopping Experiences": "7. खरीदारी अनुभव"
   }
 };
 
@@ -148,7 +148,7 @@ const optionTranslations = {
     // Brand Risk
     "I love trying new brands": "मुझे नई ब्रांड आज़माना पसंद है",
     "I try if reviews are good": "अच्छी समीक्षा होने पर कोशिश करता हूँ",
-    "I rarely try unknown brands": "अज्ञात ब्रांड कम आज़माता हूँ",
+    "I rarely try unknown brands": "अज्ञान ब्रांड कम आज़माता हूँ",
     "I avoid unknown brands completely": "अज्ञात ब्रांड से बचता हूँ",
 
     // Devices
