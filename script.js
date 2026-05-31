@@ -1,4 +1,4 @@
-const API_URL = "[https://syntrix-airdrop.onrender.com/api/claim-airdrop](https://syntrix-airdrop.onrender.com/api/claim-airdrop)";
+const API_URL = "https://syntrix-airdrop.onrender.com/api/claim-airdrop";
 
 const surveyContainer = document.getElementById("surveyContainer");
 const nextBtn = document.getElementById("nextBtn");
@@ -14,13 +14,13 @@ let currentSection = 0;
 const answers = {};
 let currentLanguage = "en";
 
-// ================= CRASH-PROOF TRANSLATION & DATA ENGINE =================
+// ================= TRANSLATION PARSING ENGINE =================
 
 function getSurveyData() {
   if (typeof surveySections !== "undefined") {
     return surveySections;
   }
-  console.error("CRITICAL: surveySections is not defined. Check if data.js is loaded correctly.");
+  console.error("CRITICAL: surveySections array is missing.");
   return [];
 }
 
@@ -46,8 +46,9 @@ function getOptionText(opt) {
 }
 
 function getUIText(key) {
-  // Hardcoded absolute fallbacks to prevent rendering freezes if translation.js fails
   const fallbacks = {
+    mainTitle: "Syntrix Consumer Analytics Hub",
+    mainSubtitle: "Complete all 7 consumer research modules to claim your 10 SYNX token rewards.",
     progress: "Progress",
     next: "Next",
     previous: "Previous",
@@ -65,6 +66,14 @@ function getUIText(key) {
   return fallbacks[key] || key;
 }
 
+function translateMainHeadings() {
+  const mainTitleEl = document.getElementById("mainTitle");
+  const mainSubtitleEl = document.getElementById("mainSubtitle");
+  
+  if (mainTitleEl) mainTitleEl.innerText = getUIText("mainTitle");
+  if (mainSubtitleEl) mainSubtitleEl.innerText = getUIText("mainSubtitle");
+}
+
 const languageSelect = document.getElementById("languageSelect");
 if (languageSelect) {
   languageSelect.addEventListener("change", (e) => {
@@ -76,10 +85,10 @@ if (languageSelect) {
 // ================= RENDER CONTROL LAYER =================
 function renderSection() {
   const surveyData = getSurveyData();
-  if (surveyData.length === 0) {
-    surveyContainer.innerHTML = `<p style="color:red; font-weight:bold;">Error: Survey data failed to load. Please check your data.js file.</p>`;
-    return;
-  }
+  if (surveyData.length === 0) return;
+
+  // Translate static HTML top text
+  translateMainHeadings();
 
   const section = surveyData[currentSection];
   const translatedSectionTitle = getSectionTitle(section);
@@ -157,7 +166,7 @@ function renderSection() {
   updateButtons();
 }
 
-// ================= BUTTONS & UI TRANSLATION INTERFACE =================
+// ================= BUTTONS & NAVIGATION UI MANAGEMENT =================
 function updateButtons() {
   const surveyData = getSurveyData();
   if (surveyData.length === 0) return;
@@ -170,10 +179,8 @@ function updateButtons() {
     submitBtn.innerText = getUIText("submit");
   }
 
-  // Prev Button visibility toggling
   prevBtn.style.display = currentSection === 0 ? "none" : "inline-block";
 
-  // Next Button / Form visibility toggling
   if (currentSection === surveyData.length - 1) {
     nextBtn.style.display = "none";
     submitSection.classList.remove("hidden");
@@ -183,7 +190,7 @@ function updateButtons() {
   }
 }
 
-// ================= OPTION EVENTS =================
+// ================= OPTION HANDLING SELECTION EVENTS =================
 function attachOptionEvents() {
   const options = document.querySelectorAll(".option");
   options.forEach(option => {
@@ -207,7 +214,6 @@ function attachOptionEvents() {
   });
 }
 
-// ================= TEXTAREA EVENTS =================
 function attachTextareaEvents() {
   const textareas = document.querySelectorAll("textarea");
   textareas.forEach(textarea => {
@@ -217,7 +223,7 @@ function attachTextareaEvents() {
   });
 }
 
-// ================= PROGRESS =================
+// ================= PROGRESS INDICATORS =================
 function updateProgress() {
   const surveyData = getSurveyData();
   if (surveyData.length === 0) return;
@@ -235,7 +241,6 @@ function updateProgress() {
   });
 }
 
-// ================= VALIDATION =================
 function validateCurrentSection() {
   const surveyData = getSurveyData();
   if (surveyData.length === 0) return false;
@@ -258,7 +263,7 @@ function validateCurrentSection() {
   return valid;
 }
 
-// ================= NAVIGATION TRIGGERS =================
+// ================= FLOW EVENT TRIGGERS =================
 nextBtn.addEventListener("click", () => {
   if (!validateCurrentSection()) {
     statusDiv.innerHTML = getUIText("validationRequired");
@@ -276,7 +281,6 @@ prevBtn.addEventListener("click", () => {
   renderSection();
 });
 
-// ================= FORM SUBMISSION =================
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -333,5 +337,5 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-// ================= START INITIALIZATION =================
+// INITIAL RUN
 renderSection();
