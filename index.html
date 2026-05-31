@@ -1,198 +1,101 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
   <meta charset="UTF-8">
-
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0"
-
->
-
-  <title>
-    Syntrix Consumer Analytics Hub
-  </title>
-
-  <link
-    rel="stylesheet"
-    href="style.css"
-  >
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Syntrix Consumer Analytics Hub</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-  <div class="app">
-
-```
-<!-- SIDEBAR -->
-
-<div class="sidebar">
-
-  <div class="logo">
-    SYNTRIX
+<div class="app">
+  <div class="sidebar">
+    <div class="logo">
+      SYNTRIX
+    </div>
+    <div class="steps">
+      <div class="step active">Financial</div>
+      <div class="step">Checkout</div>
+      <div class="step">Discovery</div>
+      <div class="step">Psychology</div>
+      <div class="step">Experience</div>
+      <div class="step">Categories</div>
+      <div class="step">Rewards</div>
+    </div>
   </div>
 
-  <div class="steps">
-
-    <div class="step active">
-      Financial
-    </div>
-
-    <div class="step">
-      Checkout
-    </div>
-
-    <div class="step">
-      Discovery
-    </div>
-
-    <div class="step">
-      Psychology
-    </div>
-
-    <div class="step">
-      Experience
-    </div>
-
-    <div class="step">
-      Categories
-    </div>
-
-    <div class="step">
-      Rewards
-    </div>
-
-  </div>
-
-</div>
-
-<!-- MAIN CONTENT -->
-
-<div class="content">
-
-  <!-- TOP -->
-
-  <div class="topbar">
-
-    <div>
-
-      <h1>
-        Syntrix Consumer Analytics Hub
-      </h1>
-
-      <p class="subtitle">
-
-        Complete all 7 consumer research modules
-        to claim your 10 SYNX token rewards.
-
-      </p>
-
-    </div>
-
-    <div class="progressBox">
-
-      <div class="progressText">
-        Progress 1/7
+  <div class="content">
+    
+    <div class="topbar">
+      <div>
+        <h1 id="mainTitle">
+          Syntrix Consumer Analytics Hub
+        </h1>
+        <p class="subtitle" id="mainSubtitle">
+          Complete all 7 consumer research modules to claim your 10 SYNX token rewards.
+        </p>
       </div>
 
-      <div class="progressBar">
-
-        <div class="progressFill"></div>
-
+      <div class="languageBox">
+        <select id="languageSelect">
+          <option value="en">English</option>
+          <option value="hi">हिन्दी</option>
+        </select>
       </div>
 
+      <div class="progressBox">
+        <div class="progressText">Progress 1/7</div>
+        <div class="progressBar">
+          <div class="progressFill" style="width: 14.28%;"></div>
+        </div>
+      </div>
     </div>
 
+    <form id="claimForm">
+      
+      <div id="surveyContainer"></div>
+
+      <div class="navButtons">
+        <button type="button" id="prevBtn" class="navBtn">
+          Previous
+        </button>
+        <button type="button" id="nextBtn" class="navBtn">
+          Next
+        </button>
+      </div>
+
+      <div id="submitSection" class="hidden">
+        <h2 class="submitTitle" id="submitTitle">
+          Rewards Routing Node Authentication
+        </h2>
+        
+        <input 
+          type="email" 
+          id="email" 
+          placeholder="User Communication Profile (Email Address)" 
+          required
+        >
+        
+        <input 
+          type="text" 
+          id="walletAddress" 
+          placeholder="EVM Recipient Destination Node (Wallet Address)" 
+          required
+        >
+        
+        <button type="submit" class="submitBtn" id="submitBtn">
+          Authorize Matrix & Claim 10 SYNX
+        </button>
+      </div>
+    </form>
+
+    <div id="status"></div>
   </div>
-
-  <!-- FORM -->
-
-  <form id="claimForm">
-
-    <!-- QUESTIONS -->
-
-    <div id="surveyContainer"></div>
-
-    <!-- NAVIGATION -->
-
-    <div class="navButtons">
-
-      <button
-        type="button"
-        id="prevBtn"
-        class="navBtn"
-      >
-        Back
-      </button>
-
-      <button
-        type="button"
-        id="nextBtn"
-        class="navBtn"
-      >
-        Next
-      </button>
-
-    </div>
-
-    <!-- FINAL SUBMIT -->
-
-    <div
-      id="submitSection"
-      class="hidden"
-    >
-
-      <h2 class="submitTitle">
-
-        Rewards Routing Node Authentication
-
-      </h2>
-
-      <input
-        type="email"
-        id="email"
-        placeholder="User Communication Profile (Email Address)"
-        required
-      >
-
-      <input
-        type="text"
-        id="walletAddress"
-        placeholder="EVM Recipient Destination Node (Wallet Address)"
-        required
-      >
-
-      <button
-        type="submit"
-        class="submitBtn"
-      >
-
-        Authorize Matrix & Claim 10 SYNX
-
-      </button>
-
-    </div>
-
-  </form>
-
-  <!-- STATUS -->
-
-  <div id="status"></div>
-
 </div>
-```
 
-  </div>
-
-  <!-- SCRIPTS -->
-
-  <script src="data.js"></script>
-
-  <script src="script.js"></script>
+<script src="survey.js"></script>
+<script src="translation.js"></script>
+<script src="script.js"></script>
 
 </body>
 </html>
