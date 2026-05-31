@@ -52,12 +52,11 @@ function getUIText(key) {
     progress: "Progress",
     next: "Next",
     previous: "Previous",
-    submit: "Submit",
+    submit: "Submit Survey Analytics Data",
     textareaPlaceholder: "Write your answer...",
     validationRequired: "❌ Please answer all questions before continuing.",
     fillRequired: "❌ Please fill all required fields.",
-    invalidWallet: "❌ Invalid wallet address.",
-    submitting: "⏳ Submitting survey..."
+    submitting: "⏳ Submitting survey data..."
   };
 
   if (typeof translations !== "undefined" && translations[currentLanguage] && translations[currentLanguage][key]) {
@@ -87,7 +86,6 @@ function renderSection() {
   const surveyData = getSurveyData();
   if (surveyData.length === 0) return;
 
-  // Translate static HTML top text
   translateMainHeadings();
 
   const section = surveyData[currentSection];
@@ -100,7 +98,6 @@ function renderSection() {
       ${section.questions.map(q => {
         const translatedQuestionText = getQuestionText(q);
 
-        // ================= TEXTAREA =================
         if (q.type === "textarea") {
           return `
             <div class="question">
@@ -113,7 +110,6 @@ function renderSection() {
           `;
         }
 
-        // ================= MULTI SELECT =================
         if (q.multiple) {
           const selectedValues = answers[q.id] || [];
           return `
@@ -137,7 +133,6 @@ function renderSection() {
           `;
         }
 
-        // ================= SINGLE SELECT =================
         return `
           <div class="question">
             <h3>${translatedQuestionText}</h3>
@@ -285,16 +280,9 @@ form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const email = document.getElementById("email").value;
-  const walletAddress = document.getElementById("walletAddress").value;
 
-  if (!email || !walletAddress) {
+  if (!email) {
     statusDiv.innerHTML = getUIText("fillRequired");
-    statusDiv.style.color = "#ff4d4d";
-    return;
-  }
-
-  if (!walletAddress.startsWith("0x") || walletAddress.length !== 42) {
-    statusDiv.innerHTML = getUIText("invalidWallet");
     statusDiv.style.color = "#ff4d4d";
     return;
   }
@@ -306,20 +294,16 @@ form.addEventListener("submit", async (e) => {
     const response = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, walletAddress, ...answers })
+      body: JSON.stringify({ email, ...answers })
     });
 
     const data = await response.json();
 
     if (data.success) {
       statusDiv.innerHTML = `
-        <div class="successBox">
-          <h2>✅ Claim Successful</h2>
-          <p>Your 10 SYNX reward has been sent successfully.</p>
-          <div class="txBox">
-            <strong>Transaction Hash:</strong><br><br>
-            <span>${data.transactionHash}</span>
-          </div>
+        <div class="successBox" style="background: rgba(87, 214, 194, 0.1); border: 1px solid #57d6c2; padding: 20px; border-radius: 12px; margin-top: 20px;">
+          <h2 style="color: #57d6c2; margin-top: 0;">✅ Survey Submitted Successfully</h2>
+          <p style="color: #ffffff; margin-bottom: 0;">Your profile details have been securely recorded. You can now visit the rewards dashboard anytime to claim your 10 SYNX tokens.</p>
         </div>
       `;
       form.reset();
