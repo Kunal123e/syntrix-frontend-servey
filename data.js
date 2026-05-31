@@ -234,32 +234,7 @@ const surveySections = [
     ]
   },
   {
-    title: "5. Shopping Experiences",
-    questions: [
-      {
-        id: "painPoint",
-        text: "Tell us about the worst online shopping experience you've had.",
-        type: "textarea"
-      },
-      {
-        id: "bestPoint",
-        text: "Tell us about the best online shopping experience you've had.",
-        type: "textarea"
-      },
-      {
-        id: "complementPoint",
-        text: "What are the minimum things every online store should provide?",
-        type: "textarea"
-      },
-      {
-        id: "referralVoice",
-        text: "What would make you recommend a product to your friends or family?",
-        type: "textarea"
-      }
-    ]
-  },
-  {
-    title: "6. Shopping Categories",
+    title: "5. Shopping Categories",
     questions: [
       {
         id: "shoppingCategories",
@@ -292,7 +267,7 @@ const surveySections = [
     ]
   },
   {
-    title: "7. Post-Purchase Behaviour",
+    title: "6. Post-Purchase Behaviour",
     questions: [
       {
         id: "postPurchaseAction",
@@ -316,6 +291,31 @@ const surveySections = [
           "Different from Photos",
           "Never Returned"
         ]
+      }
+    ]
+  },
+  {
+    title: "7. Shopping Experiences",
+    questions: [
+      {
+        id: "painPoint",
+        text: "Tell us about the worst online shopping experience you've had.",
+        type: "textarea"
+      },
+      {
+        id: "bestPoint",
+        text: "Tell us about the best online shopping experience you've had.",
+        type: "textarea"
+      },
+      {
+        id: "complementPoint",
+        text: "What are the minimum things every online store should provide?",
+        type: "textarea"
+      },
+      {
+        id: "referralVoice",
+        text: "What would make you recommend a product to your friends or family?",
+        type: "textarea"
       }
     ]
   }
