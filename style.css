@@ -63,7 +63,7 @@ body {
   color: white;
 }
 
-/* ================= CONTENT ================= */
+/* ================= CONTENT CORE ================= */
 .content {
   flex: 1;
   padding: 50px;
@@ -92,54 +92,43 @@ body {
   max-width: 700px;
 }
 
-/* ================= PRESTIGE LANGUAGE SELECTOR ================= */
-.languageBox {
+/* ================= SEGMENTED PILL LANGUAGE SELECTOR ================= */
+.languageGroupWrapper {
   display: flex;
-  align-items: center;
-  position: relative;
+  justify-content: flex-end;
 }
 
-/* Clean, premium custom dropdown architecture targeting JS id layout */
-#languageSelect {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  padding: 12px 36px 12px 18px;
+.languageGroup {
+  display: flex;
+  background: #f4efe8;
+  padding: 4px;
   border-radius: 12px;
+  border: 1px solid #ddd4c8;
+}
+
+.langBtn {
+  background: transparent;
+  border: none;
+  padding: 8px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #6b6258;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 8px;
+}
+
+.langBtn:hover {
+  color: #1f1f1f;
+}
+
+.langBtn.active {
   background: #1f1f1f;
   color: #ffffff;
-  border: 1px solid #1f1f1f;
-  outline: none;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  min-width: 135px;
-  transition: all .2s cubic-bezier(0.4, 0, 0.2, 1);
-  /* SVG Custom minimal down arrow styling */
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
-  background-size: 12px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-#languageSelect:hover {
-  background-color: #000000;
-  border-color: #000000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-#languageSelect:focus {
-  box-shadow: 0 0 0 3px rgba(31, 31, 31, 0.15);
-}
-
-#languageSelect option {
-  background: #ffffff;
-  color: #1f1f1f;
-  font-weight: 500;
-  padding: 10px;
-}
-
-/* ================= PROGRESS ================= */
+/* ================= PROGRESS BOX ================= */
 .progressBox {
   min-width: 280px;
 }
@@ -163,6 +152,126 @@ body {
   border-radius: 999px;
   transition: .3s;
 }
+
+/* ================= STAGE CARD ARCHITECTURE (GATE & DASHBOARD) ================= */
+.authCard, .rewardCard {
+  background: #fffdfb;
+  padding: 45px;
+  border-radius: 24px;
+  border: 1px solid #ece4da;
+  max-width: 680px;
+  margin: 20px auto;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.cardDescription {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #756c62;
+  margin-bottom: 25px;
+}
+
+.primaryActionBtn, .executeDistributionBtn {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 14px;
+  background: #1f1f1f;
+  color: white;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  margin-top: 18px;
+  transition: .2s;
+}
+
+.primaryActionBtn:hover, .executeDistributionBtn:hover {
+  background: #000000;
+}
+
+/* Reward Specific Sub-nodes */
+.badgeRow {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.submittedBadge {
+  background: #fff8e7;
+  color: #d97706;
+  border: 1px solid #fef3c7;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.rewardTitle {
+  font-size: 36px;
+  font-weight: 900;
+  letter-spacing: -1px;
+  color: #1f1f1f;
+  margin-bottom: 12px;
+}
+
+.rewardSubtitle {
+  color: #756c62;
+  font-size: 15px;
+  line-height: 1.7;
+  margin-bottom: 30px;
+}
+
+.metaMaskBtn {
+  width: 100%;
+  background: #ffffff;
+  border: 1.5px solid #ddd4c8;
+  padding: 16px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f1f1f;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: .2s;
+}
+
+.metaMaskBtn:hover {
+  background: #faf7f2;
+  border-color: #1f1f1f;
+}
+
+.manualNotice {
+  font-size: 13px;
+  color: #2563eb;
+  font-style: italic;
+  margin-top: 14px;
+}
+
+.dividerLine {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #999086;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin: 30px 0 20px 0;
+}
+
+.dividerLine::before, .dividerLine::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #ece4da;
+}
+
+.dividerLine:not(:empty)::before { margin-right: 1em; }
+.dividerLine:not(:empty)::after { margin-left: 1em; }
 
 /* ================= SECTION ================= */
 .sectionTitle {
@@ -258,11 +367,12 @@ textarea::placeholder {
 .navButtons {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 15px;
   margin-top: 35px;
 }
 
-button {
+.navBtn {
   padding: 15px 30px;
   border: none;
   border-radius: 14px;
@@ -273,15 +383,31 @@ button {
   transition: .2s;
 }
 
-button:hover {
+.navBtn:hover {
   background: black;
 }
 
-.submitBtn {
-  width: 100%;
-  margin-top: 20px;
-  padding: 18px;
+/* Premium Black Rounded Dynamic Claim Button Wrapper */
+.submitClaimBtn {
+  background: #000000;
+  color: #ffffff;
+  border: none;
+  padding: 15px 32px;
   font-size: 16px;
+  font-weight: 700;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  transition: all 0.2s ease;
+  margin-left: auto; /* Aligns to right edge when previous button is present */
+}
+
+.submitClaimBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
 }
 
 /* ================= SYSTEM MESSAGES ================= */
@@ -344,14 +470,28 @@ button:hover {
     width: 100%;
   }
 
-  .languageBox {
+  .languageGroupWrapper {
     width: 100%;
     justify-content: flex-start;
     margin-top: 5px;
   }
 
-  #languageSelect {
+  .languageGroup {
     width: 100%;
-    max-width: 200px;
+  }
+
+  .langBtn {
+    flex: 1;
+    text-align: center;
+    padding: 10px 4px;
+  }
+
+  .authCard, .rewardCard {
+    padding: 25px 20px;
+    margin: 10px 0;
+  }
+  
+  .rewardTitle {
+    font-size: 28px;
   }
 }
