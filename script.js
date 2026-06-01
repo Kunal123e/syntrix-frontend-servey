@@ -1,64 +1,58 @@
-const API_URL = "https://syntrix-airdrop.onrender.com/api/claim-airdrop";
+const BACKEND_URL = "https://syntrix-airdrop.onrender.com";
 
+const emailGateSection = document.getElementById("emailGateSection");
+const gateEmailInput = document.getElementById("gateEmail");
+const startSurveyBtn = document.getElementById("startSurveyBtn");
+
+const topProgressBox = document.getElementById("topProgressBox");
+const claimForm = document.getElementById("claimForm");
 const surveyContainer = document.getElementById("surveyContainer");
+
 const nextBtn = document.getElementById("nextBtn");
 const prevBtn = document.getElementById("prevBtn");
-const submitSection = document.getElementById("submitSection");
-const form = document.getElementById("claimForm");
+const submitClaimBtn = document.getElementById("submitClaimBtn");
+
+const rewardDashboardScreen = document.getElementById("rewardDashboardScreen");
+const dashboardWalletInput = document.getElementById("dashboardWalletInput");
+const executeClaimBtn = document.getElementById("executeClaimBtn");
+const connectWalletBtn = document.getElementById("connectWalletBtn");
+
 const statusDiv = document.getElementById("status");
 const progressFill = document.querySelector(".progressFill");
 const progressText = document.querySelector(".progressText");
-const steps = document.querySelectorAll(".step");
 
+let userEmailAddress = "";
 let currentSection = 0;
 const answers = {};
 let currentLanguage = "en";
 
-// ================= TRANSLATION PARSING ENGINE =================
+// ================= LANGUAGE SELECTION INTERFACE CONTROLS (Image 1) =================
+const langButtons = document.querySelectorAll(".langBtn");
+langButtons.forEach(btn => {
+  btn.addEventListener("click", (e) => {
+    langButtons.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentLanguage = btn.dataset.lang;
+    
+    // Rerender layout content matching translation engine profiles
+    if (claimForm.classList.contains("hidden") === false) {
+      renderSection();
+    } else {
+      translateMainHeadings();
+    }
+  });
+});
 
 function getSurveyData() {
-  if (typeof surveySections !== "undefined") {
-    return surveySections;
-  }
-  console.error("CRITICAL: surveySections array is missing.");
-  return [];
-}
-
-function getSectionTitle(section) {
-  if (currentLanguage === "hi" && typeof sectionTranslations !== "undefined" && sectionTranslations.hi && sectionTranslations.hi[section.title]) {
-    return sectionTranslations.hi[section.title];
-  }
-  return section.title || "";
-}
-
-function getQuestionText(q) {
-  if (currentLanguage === "hi" && typeof questionTranslations !== "undefined" && questionTranslations.hi && questionTranslations.hi[q.id]) {
-    return questionTranslations.hi[q.id];
-  }
-  return q.text || q.id;
-}
-
-function getOptionText(opt) {
-  if (currentLanguage === "hi" && typeof optionTranslations !== "undefined" && optionTranslations.hi && optionTranslations.hi[opt]) {
-    return optionTranslations.hi[opt];
-  }
-  return opt;
+  return typeof surveySections !== "undefined" ? surveySections : [];
 }
 
 function getUIText(key) {
   const fallbacks = {
-    mainTitle: "Syntrix Consumer Analytics Hub",
-    mainSubtitle: "Complete all 7 consumer research modules to claim your 10 SYNX token rewards.",
-    progress: "Progress",
-    next: "Next",
-    previous: "Previous",
-    submit: "Submit Survey Analytics Data",
-    textareaPlaceholder: "Write your answer...",
     validationRequired: "❌ Please answer all questions before continuing.",
-    fillRequired: "❌ Please fill all required fields.",
-    submitting: "⏳ Submitting survey data..."
+    submitting: "⏳ Storing survey data metrics across secure registers...",
+    claiming: "⚡ Dispensing 10 SYNX tokens to target network gateway..."
   };
-
   if (typeof translations !== "undefined" && translations[currentLanguage] && translations[currentLanguage][key]) {
     return translations[currentLanguage][key];
   }
@@ -66,88 +60,83 @@ function getUIText(key) {
 }
 
 function translateMainHeadings() {
-  const mainTitleEl = document.getElementById("mainTitle");
-  const mainSubtitleEl = document.getElementById("mainSubtitle");
+  if (typeof translations !== "undefined" && translations[currentLanguage]) {
+    const mainTitleEl = document.getElementById("mainTitle");
+    const mainSubtitleEl = document.getElementById("mainSubtitle");
+    if (mainTitleEl && translations[currentLanguage].mainTitle) mainTitleEl.innerText = translations[currentLanguage].mainTitle;
+    if (mainSubtitleEl && translations[currentLanguage].mainSubtitle) mainSubtitleEl.innerText = translations[currentLanguage].mainSubtitle;
+  }
+}
+
+// ================= STAGE 1: ENTRY ONBOARDING INITIALIZATION GATE =================
+startSurveyBtn.addEventListener("click", () => {
+  const emailVal = gateEmailInput.value.trim();
+  if (!emailVal || !emailVal.includes("@")) {
+    statusDiv.innerHTML = "❌ Please input a valid identification email profile address.";
+    statusDiv.style.color = "#ff4d4d";
+    return;
+  }
   
-  if (mainTitleEl) mainTitleEl.innerText = getUIText("mainTitle");
-  if (mainSubtitleEl) mainSubtitleEl.innerText = getUIText("mainSubtitle");
-}
+  statusDiv.innerHTML = "";
+  userEmailAddress = emailVal;
+  
+  // Transition views out of Onboarding into Step 1 of the survey questionnaire
+  emailGateSection.classList.add("hidden");
+  claimForm.classList.remove("hidden");
+  topProgressBox.classList.remove("hidden");
+  
+  renderSection();
+});
 
-const languageSelect = document.getElementById("languageSelect");
-if (languageSelect) {
-  languageSelect.addEventListener("change", (e) => {
-    currentLanguage = e.target.value;
-    renderSection();
-  });
-}
-
-// ================= RENDER CONTROL LAYER =================
+// ================= STAGE 2: SURVEY LAYOUT GENERATOR MATRIX =================
 function renderSection() {
   const surveyData = getSurveyData();
   if (surveyData.length === 0) return;
 
-  translateMainHeadings();
-
   const section = surveyData[currentSection];
-  const translatedSectionTitle = getSectionTitle(section);
+  
+  // Highlighting matching steps on sidebar tracker panels cleanly
+  document.querySelectorAll(".step").forEach((st, idx) => {
+    if (idx === currentSection + 1) st.classList.add("active");
+    else st.classList.remove("active");
+  });
 
   surveyContainer.innerHTML = `
     <div class="section">
-      <h2 class="sectionTitle">${translatedSectionTitle}</h2>
-
+      <h2 class="sectionTitle">${section.title}</h2>
       ${section.questions.map(q => {
-        const translatedQuestionText = getQuestionText(q);
-
         if (q.type === "textarea") {
           return `
             <div class="question">
-              <h3>${translatedQuestionText}</h3>
-              <textarea
-                data-id="${q.id}"
-                placeholder="${getUIText("textareaPlaceholder")}"
-              >${answers[q.id] || ""}</textarea>
+              <h3>${q.text || q.id}</h3>
+              <textarea data-id="${q.id}" placeholder="Write your answer...">${answers[q.id] || ""}</textarea>
             </div>
           `;
         }
-
         if (q.multiple) {
           const selectedValues = answers[q.id] || [];
           return `
             <div class="question">
-              <h3>${translatedQuestionText}</h3>
+              <h3>${q.text || q.id}</h3>
               <div class="options">
-                ${(q.options || []).map(opt => {
-                  return `
-                    <div
-                      class="option ${selectedValues.includes(opt) ? "selected" : ""}"
-                      data-question="${q.id}"
-                      data-value="${opt}"
-                      data-multiple="true"
-                    >
-                      ${getOptionText(opt)}
-                    </div>
-                  `;
-                }).join("")}
+                ${(q.options || []).map(opt => `
+                  <div class="option ${selectedValues.includes(opt) ? "selected" : ""}" data-question="${q.id}" data-value="${opt}" data-multiple="true">
+                    ${opt}
+                  </div>
+                `).join("")}
               </div>
             </div>
           `;
         }
-
         return `
           <div class="question">
-            <h3>${translatedQuestionText}</h3>
+            <h3>${q.text || q.id}</h3>
             <div class="options">
-              ${(q.options || []).map(opt => {
-                return `
-                  <div
-                    class="option ${answers[q.id] === opt ? "selected" : ""}"
-                    data-question="${q.id}"
-                    data-value="${opt}"
-                  >
-                    ${getOptionText(opt)}
-                  </div>
-                `;
-              }).join("")}
+              ${(q.options || []).map(opt => `
+                <div class="option ${answers[q.id] === opt ? "selected" : ""}" data-question="${q.id}" data-value="${opt}">
+                  ${opt}
+                </div>
+              `).join("")}
             </div>
           </div>
         `;
@@ -155,112 +144,73 @@ function renderSection() {
     </div>
   `;
 
-  updateProgress();
-  attachOptionEvents();
-  attachTextareaEvents();
-  updateButtons();
+  updateProgressIndicators();
+  attachInputEventListeners();
+  configureNavigationActionButtons();
 }
 
-// ================= BUTTONS & NAVIGATION UI MANAGEMENT =================
-function updateButtons() {
+function configureNavigationActionButtons() {
   const surveyData = getSurveyData();
-  if (surveyData.length === 0) return;
-
-  nextBtn.innerText = getUIText("next");
-  prevBtn.innerText = getUIText("previous");
   
-  const submitBtn = form.querySelector('button[type="submit"]');
-  if (submitBtn) {
-    submitBtn.innerText = getUIText("submit");
-  }
-
+  // Handle layout visibility variations
   prevBtn.style.display = currentSection === 0 ? "none" : "inline-block";
 
   if (currentSection === surveyData.length - 1) {
-    nextBtn.style.display = "none";
-    submitSection.classList.remove("hidden");
+    nextBtn.classList.add("hidden");
+    submitClaimBtn.classList.remove("hidden"); // Reveals "Submit Survey & Claim ✨" (Image 2)
   } else {
-    nextBtn.style.display = "inline-block";
-    submitSection.classList.add("hidden");
+    nextBtn.classList.remove("hidden");
+    submitClaimBtn.classList.add("hidden");
   }
 }
 
-// ================= OPTION HANDLING SELECTION EVENTS =================
-function attachOptionEvents() {
-  const options = document.querySelectorAll(".option");
-  options.forEach(option => {
-    option.addEventListener("click", () => {
-      const question = option.dataset.question;
-      const value = option.dataset.value;
-      const multiple = option.dataset.multiple;
-
-      if (multiple) {
-        if (!answers[question]) answers[question] = [];
-        if (answers[question].includes(value)) {
-          answers[question] = answers[question].filter(item => item !== value);
-        } else {
-          answers[question].push(value);
-        }
+function attachInputEventListeners() {
+  document.querySelectorAll(".option").forEach(opt => {
+    opt.addEventListener("click", () => {
+      const qId = opt.dataset.question;
+      const val = opt.dataset.value;
+      if (opt.dataset.multiple) {
+        if (!answers[qId]) answers[qId] = [];
+        if (answers[qId].includes(val)) answers[qId] = answers[qId].filter(i => i !== val);
+        else answers[qId].push(val);
       } else {
-        answers[question] = value;
+        answers[qId] = val;
       }
       renderSection();
     });
   });
-}
 
-function attachTextareaEvents() {
-  const textareas = document.querySelectorAll("textarea");
-  textareas.forEach(textarea => {
-    textarea.addEventListener("input", () => {
-      answers[textarea.dataset.id] = textarea.value;
-    });
+  document.querySelectorAll("textarea").forEach(tx => {
+    tx.addEventListener("input", () => { answers[tx.dataset.id] = tx.value; });
   });
 }
 
-// ================= PROGRESS INDICATORS =================
-function updateProgress() {
+function updateProgressIndicators() {
   const surveyData = getSurveyData();
-  if (surveyData.length === 0) return;
-
-  const percent = ((currentSection + 1) / surveyData.length) * 100;
-  progressFill.style.width = percent + "%";
-  progressText.innerText = `${getUIText("progress")} ${currentSection + 1}/${surveyData.length}`;
-
-  steps.forEach((step, index) => {
-    if (index <= currentSection) {
-      step.classList.add("active");
-    } else {
-      step.classList.remove("active");
-    }
-  });
+  const percentage = ((currentSection + 1) / surveyData.length) * 100;
+  progressFill.style.width = percentage + "%";
+  progressText.innerText = `Progress ${currentSection + 1}/${surveyData.length}`;
 }
 
-function validateCurrentSection() {
+function validateSectionInputs() {
   const surveyData = getSurveyData();
-  if (surveyData.length === 0) return false;
-
   const currentQuestions = surveyData[currentSection].questions;
-  let valid = true;
+  let isPass = true;
 
   currentQuestions.forEach(q => {
     if (q.type === "textarea") {
-      if (!answers[q.id] || answers[q.id].trim() === "") valid = false;
+      if (!answers[q.id] || answers[q.id].trim() === "") isPass = false;
+    } else if (q.multiple) {
+      if (!answers[q.id] || answers[q.id].length === 0) isPass = false;
     } else {
-      if (q.multiple) {
-        if (!answers[q.id] || answers[q.id].length === 0) valid = false;
-      } else {
-        if (!answers[q.id]) valid = false;
-      }
+      if (!answers[q.id]) isPass = false;
     }
   });
-
-  return valid;
+  return isPass;
 }
 
-// ================= FLOW EVENT TRIGGERS =================
 nextBtn.addEventListener("click", () => {
-  if (!validateCurrentSection()) {
+  if (!validateSectionInputs()) {
     statusDiv.innerHTML = getUIText("validationRequired");
     statusDiv.style.color = "#ff4d4d";
     return;
@@ -276,50 +226,100 @@ prevBtn.addEventListener("click", () => {
   renderSection();
 });
 
-form.addEventListener("submit", async (e) => {
+// ================= SUBMIT ENTIRE DATA BUNDLE OUT TO PHASE 1 METRICS ENDPOINT =================
+claimForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-
-  const email = document.getElementById("email").value;
-
-  if (!email) {
-    statusDiv.innerHTML = getUIText("fillRequired");
-    statusDiv.style.color = "#ff4d4d";
-    return;
-  }
 
   statusDiv.innerHTML = getUIText("submitting");
   statusDiv.style.color = "#57d6c2";
 
   try {
-    const response = await fetch(API_URL, {
+    const response = await fetch(`${BACKEND_URL}/api/claim-airdrop`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, ...answers })
+      body: JSON.stringify({ email: userEmailAddress, ...answers })
     });
 
-    const data = await response.json();
+    const output = await response.json();
 
-    if (data.success) {
-      statusDiv.innerHTML = `
-        <div class="successBox" style="background: rgba(87, 214, 194, 0.1); border: 1px solid #57d6c2; padding: 20px; border-radius: 12px; margin-top: 20px;">
-          <h2 style="color: #57d6c2; margin-top: 0;">✅ Survey Submitted Successfully</h2>
-          <p style="color: #ffffff; margin-bottom: 0;">Your profile details have been securely recorded. You can now visit the rewards dashboard anytime to claim your 10 SYNX tokens.</p>
-        </div>
-      `;
-      form.reset();
-      Object.keys(answers).forEach(key => delete answers[key]);
-      currentSection = 0;
-      renderSection();
+    if (output.success) {
+      statusDiv.innerHTML = "";
+      
+      // Advance user instantly into Stage 3 Post-Submission dashboard screen container
+      claimForm.classList.add("hidden");
+      topProgressBox.classList.add("hidden");
+      rewardDashboardScreen.classList.remove("hidden");
+      
+      document.querySelectorAll(".sidebar .step").forEach(s => s.classList.remove("active"));
+      const finalStepNode = document.getElementById("step-7");
+      if (finalStepNode) finalStepNode.classList.add("active");
     } else {
-      statusDiv.innerHTML = "❌ " + (data.error || "Something went wrong");
+      statusDiv.innerHTML = "❌ " + (output.error || "Survey submission integration failure.");
       statusDiv.style.color = "#ff4d4d";
     }
   } catch (err) {
-    console.error(err);
-    statusDiv.innerHTML = "❌ Server Error";
+    statusDiv.innerHTML = "❌ Communication channel with Render cluster down.";
     statusDiv.style.color = "#ff4d4d";
   }
 });
 
-// INITIAL RUN
-renderSection();
+// ================= STAGE 3: EXECUTE LIVE REWARD MINT/TRANSFER VIA DASHBOARD =================
+connectWalletBtn.addEventListener("click", async () => {
+  if (typeof window.ethereum !== "undefined") {
+    try {
+      const addresses = await window.ethereum.request({ method: "eth_requestAccounts" });
+      if (addresses.length > 0) {
+        dashboardWalletInput.value = addresses[0];
+        statusDiv.innerHTML = "🦊 MetaMask Wallet successfully integrated.";
+        statusDiv.style.color = "#57d6c2";
+      }
+    } catch (walletErr) {
+      statusDiv.innerHTML = "⚠️ Wallet hook authorization denied by user connection.";
+      statusDiv.style.color = "#ffb347";
+    }
+  } else {
+    statusDiv.innerHTML = "ℹ️ Browser wallet standard injection provider missing. Paste manually.";
+    statusDiv.style.color = "#ffb347";
+  }
+});
+
+executeClaimBtn.addEventListener("click", async () => {
+  const targetedWallet = dashboardWalletInput.value.trim();
+  
+  if (!targetedWallet || targetedWallet.length !== 42 || !targetedWallet.startsWith("0x")) {
+    statusDiv.innerHTML = "❌ Please specify a valid EVM public network cryptographic address.";
+    statusDiv.style.color = "#ff4d4d";
+    return;
+  }
+
+  statusDiv.innerHTML = getUIText("claiming");
+  statusDiv.style.color = "#57d6c2";
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/claim-reward`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: userEmailAddress, walletAddress: targetedWallet })
+    });
+
+    const claimResult = await res.json();
+
+    if (claimResult.success) {
+      statusDiv.innerHTML = `
+        <div class="successBox" style="background: rgba(87, 214, 194, 0.1); border: 1px solid #57d6c2; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left;">
+          <h3 style="color: #57d6c2; margin-top:0;">🚀 Token Distribution Complete!</h3>
+          <p style="color:#fff; margin-bottom:10px;">10 SYNX tokens have been pushed directly to your account address.</p>
+          <a href="https://polygonscan.com/tx/${claimResult.transactionHash}" target="_blank" style="color: #57d6c2; text-decoration: underline; font-family: monospace; font-size: 13px;">
+            Tx Hash: ${claimResult.transactionHash.substring(0, 20)}...
+          </a>
+        </div>
+      `;
+    } else {
+      statusDiv.innerHTML = "❌ " + (claimResult.error || "Reward asset generation rejected.");
+      statusDiv.style.color = "#ff4d4d";
+    }
+  } catch (err) {
+    statusDiv.innerHTML = "❌ Network processing failure executing claim asset parameters.";
+    statusDiv.style.color = "#ff4d4d";
+  }
+});
