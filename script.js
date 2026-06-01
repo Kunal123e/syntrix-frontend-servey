@@ -26,7 +26,7 @@ let currentSection = 0;
 const answers = {};
 let currentLanguage = "en";
 
-// ================= LANGUAGE SELECTION INTERFACE CONTROLS (Image 1) =================
+// ================= LANGUAGE SELECTION INTERFACE CONTROLS =================
 const langButtons = document.querySelectorAll(".langBtn");
 langButtons.forEach(btn => {
   btn.addEventListener("click", (e) => {
@@ -68,6 +68,28 @@ function translateMainHeadings() {
   }
 }
 
+// ================= TRANSLATION ENGINE COUPLING HELPERS =================
+function getSectionTitle(section) {
+  if (currentLanguage === "hi" && typeof sectionTranslations !== "undefined" && sectionTranslations.hi) {
+    return sectionTranslations.hi[section.title] || section.title;
+  }
+  return section.title || "";
+}
+
+function getQuestionText(q) {
+  if (currentLanguage === "hi" && typeof questionTranslations !== "undefined" && questionTranslations.hi) {
+    return questionTranslations.hi[q.id] || q.text || q.id;
+  }
+  return q.text || q.id;
+}
+
+function getOptionText(opt) {
+  if (currentLanguage === "hi" && typeof optionTranslations !== "undefined" && optionTranslations.hi) {
+    return optionTranslations.hi[opt] || opt;
+  }
+  return opt;
+}
+
 // ================= STAGE 1: ENTRY ONBOARDING INITIALIZATION GATE =================
 startSurveyBtn.addEventListener("click", () => {
   const emailVal = gateEmailInput.value.trim();
@@ -101,14 +123,18 @@ function renderSection() {
     else st.classList.remove("active");
   });
 
+  translateMainHeadings();
+
   surveyContainer.innerHTML = `
     <div class="section">
-      <h2 class="sectionTitle">${section.title}</h2>
+      <h2 class="sectionTitle">${getSectionTitle(section)}</h2>
       ${section.questions.map(q => {
+        const translatedQuestionText = getQuestionText(q);
+
         if (q.type === "textarea") {
           return `
             <div class="question">
-              <h3>${q.text || q.id}</h3>
+              <h3>${translatedQuestionText}</h3>
               <textarea data-id="${q.id}" placeholder="Write your answer...">${answers[q.id] || ""}</textarea>
             </div>
           `;
@@ -117,11 +143,11 @@ function renderSection() {
           const selectedValues = answers[q.id] || [];
           return `
             <div class="question">
-              <h3>${q.text || q.id}</h3>
+              <h3>${translatedQuestionText}</h3>
               <div class="options">
                 ${(q.options || []).map(opt => `
                   <div class="option ${selectedValues.includes(opt) ? "selected" : ""}" data-question="${q.id}" data-value="${opt}" data-multiple="true">
-                    ${opt}
+                    ${getOptionText(opt)}
                   </div>
                 `).join("")}
               </div>
@@ -130,11 +156,11 @@ function renderSection() {
         }
         return `
           <div class="question">
-            <h3>${q.text || q.id}</h3>
+            <h3>${translatedQuestionText}</h3>
             <div class="options">
               ${(q.options || []).map(opt => `
                 <div class="option ${answers[q.id] === opt ? "selected" : ""}" data-question="${q.id}" data-value="${opt}">
-                  ${opt}
+                  ${getOptionText(opt)}
                 </div>
               `).join("")}
             </div>
@@ -157,7 +183,7 @@ function configureNavigationActionButtons() {
 
   if (currentSection === surveyData.length - 1) {
     nextBtn.classList.add("hidden");
-    submitClaimBtn.classList.remove("hidden"); // Reveals "Submit Survey & Claim ✨" (Image 2)
+    submitClaimBtn.classList.remove("hidden"); // Reveals "Submit Survey & Claim ✨"
   } else {
     nextBtn.classList.remove("hidden");
     submitClaimBtn.classList.add("hidden");
