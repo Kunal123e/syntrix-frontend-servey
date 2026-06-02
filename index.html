@@ -127,6 +127,40 @@
   </div>
 </div>
 
+<div id="retrieveModal" class="modal-overlay hidden">
+  <div class="modal-card animate-fade-in">
+    <div class="modal-header">
+      <h2>🔍 Retrieve Pending Rewards</h2>
+      <button type="button" id="closeModalBtn" class="close-btn">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <p class="modal-subtitle">Enter your authorized communication profile to bypass the questionnaire matrix and open the Web3 settlement gateway.</p>
+      
+      <div class="extra-details-box">
+        <h4>📌 Dynamic Registry Details:</h4>
+        <ul>
+          <li>Verification searches real-time historical database blocks.</li>
+          <li>Ensure your MetaMask extension is configured to the Polygon Mainnet network.</li>
+          <li>Wallet balances are automatically evaluated by smart contract protocols.</li>
+        </ul>
+      </div>
+
+      <div class="input-wrapper">
+        <label for="modalEmailInput">Registered Email Address</label>
+        <input type="email" id="modalEmailInput" placeholder="name@example.com" autocomplete="off">
+      </div>
+      
+      <div id="modalStatus" class="modal-status"></div>
+    </div>
+    
+    <div class="modal-footer">
+      <button type="button" id="cancelModalBtn" class="btn-secondary">Cancel</button>
+      <button type="button" id="confirmRetrieveBtn" class="btn-primary">Search Ledger &rarr;</button>
+    </div>
+  </div>
+</div>
+
 <script src="data.js"></script>
 <script src="translation.js"></script>
 <script src="script.js"></script>
