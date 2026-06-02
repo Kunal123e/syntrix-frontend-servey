@@ -115,9 +115,16 @@ menuRestartBtn.addEventListener("click", () => {
   resetApplicationFlowState();
 });
 
-menuRecoverBtn.addEventListener("click", () => {
+menuRecoverBtn.addEventListener("click", async () => {
   resetApplicationFlowState();
-  gateEmailInput.focus();
+  
+  // Prompt user to provide input if running checking pipeline from scratch
+  const targetEmail = prompt("Enter your registered email address to check pending claim rewards:");
+  if (!targetEmail || !targetEmail.trim()) return;
+  
+  gateEmailInput.value = targetEmail.trim();
+  // Call the auto-recovery verification workflow programmatically
+  await runProfileLedgerVerification(targetEmail.trim());
 });
 
 function resetApplicationFlowState() {
@@ -125,8 +132,11 @@ function resetApplicationFlowState() {
   statusDiv.innerHTML = "";
   userEmailAddress = "";
   currentSection = 0;
+  
   // Clear local questionnaire answers keys mapping object
-  for (const prop in answers) { if (answers.hasOwnProperty(prop)) delete answers[prop]; }
+  for (const prop in answers) { 
+    if (Object.prototype.hasOwnProperty.call(answers, prop)) delete answers[prop]; 
+  }
   
   emailGateSection.classList.remove("hidden");
   claimForm.classList.add("hidden");
@@ -142,62 +152,85 @@ function resetApplicationFlowState() {
 // ================= STAGE 1: ENTRY ONBOARDING & AUTO-RECOVERY TRACKING GATE =================
 emailGateForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  
-  const emailVal = gateEmailInput.value.trim().toLowerCase();
-  if (!emailVal || !emailVal.includes("@")) {
+  const emailVal = gateEmailInput.value.trim();
+  await runProfileLedgerVerification(emailVal);
+});
+
+// Centralized Asynchronous Core Routing Logic for Profile Matching
+async function runProfileLedgerVerification(emailValue) {
+  const sanitizedEmail = emailValue.trim().toLowerCase();
+  if (!sanitizedEmail || !sanitizedEmail.includes("@")) {
     statusDiv.innerHTML = "❌ Please input a valid identification email profile address.";
     statusDiv.style.color = "#ff4d4d";
     return;
   }
   
-  userEmailAddress = emailVal;
+  userEmailAddress = sanitizedEmail;
   statusDiv.innerHTML = getUIText("checkingLedger");
   statusDiv.style.color = "#57d6c2";
   
   try {
-    // Intercept: Scan historical database records on server to check application lifecycle status
+    // Intercept: Scan database records on the backend cluster
     const response = await fetch(`${BACKEND_URL}/api/dashboard-auth?email=${encodeURIComponent(userEmailAddress)}`);
     const verification = await response.json();
     
-    // CONDITIONAL IF/ELSE AUTO-RECOVERY PIPELINE
+    console.log("Database response payload logs:", verification);
+
+    // DYNAMIC CONDITIONAL AUTO-RECOVERY PIPELINE
     if (verification.exists) {
       
-      if (verification.isClaimed === false || !verification.txHash) {
-        // CASE A: User completed the survey variables previously, but has NOT successfully triggered token settlement.
-        // Action: Bypass research blocks entirely, fast-track routing straight into Stage 3 Reward Module Screen
-        console.log("Auto-Recovery Match Found: Forwarding submission profile to reward distribution cluster.");
-        statusDiv.innerHTML = "✨ Unclaimed historical survey record isolated. Opening claim layer.";
+      // Check structural boolean variations from normalized database schemas
+      const hasClaimedTokens = verification.isClaimed === true || 
+                                verification.status === "claimed" || 
+                                (verification.txHash !== undefined && verification.txHash !== null && verification.txHash !== "");
+
+      if (!hasClaimedTokens) {
+        // CASE A: Profile has filled survey data but has not claimed their tokens yet
+        console.log("Auto-Recovery Route Action: Loading Web3 Claims Screen Layout View.");
+        statusDiv.innerHTML = "✨ Unclaimed registration record found. Redirecting to reward distribution section...";
         statusDiv.style.color = "#57d6c2";
         
+        // Clear layout section containers instantly
         emailGateSection.classList.add("hidden");
         claimForm.classList.add("hidden");
         topProgressBox.classList.add("hidden");
+        
+        // Clear status text context right before presenting reward node viewport
+        setTimeout(() => { statusDiv.innerHTML = ""; }, 1500);
+        
+        // Force slide into Web3 reward dashboard display card
         rewardDashboardScreen.classList.remove("hidden");
         
+        // Highlight ultimate index on left layout bar element
         document.querySelectorAll(".sidebar .step").forEach(s => s.classList.remove("active"));
         const finalStepNode = document.getElementById("step-7");
-        if (finalStepNode) finalStepNode.classList.add("active");
+        if (finalStepNode) {
+          finalStepNode.classList.add("active");
+        } else {
+          const fallbackStep = document.querySelector(".sidebar .steps .step:last-child");
+          if (fallbackStep) fallbackStep.classList.add("active");
+        }
         
       } else {
-        // CASE B: Target database identity reports transaction hash parameters already executed
-        statusDiv.innerHTML = "❌ This communication profile has already registered and fully claimed their SYNX tokens.";
+        // CASE B: Target communication signature records an active validation token hash transfer
+        statusDiv.innerHTML = "❌ This email profile has already registered and fully claimed their SYNX tokens.";
         statusDiv.style.color = "#ff4d4d";
       }
       
     } else {
-      // CASE C: Fresh unique consumer identity entry array parameters detected
-      // Action: Advance normally to step 1 matrix array survey rendering pipeline
+      // CASE C: Fresh custom consumer entry sequence
       statusDiv.innerHTML = "";
       emailGateSection.classList.add("hidden");
       claimForm.classList.remove("hidden");
       topProgressBox.classList.remove("hidden");
       
+      currentSection = 0;
       renderSection();
     }
     
   } catch (err) {
-    console.error("Ledger query tracking interrupted:", err);
-    // Graceful Fallback: Allow direct workflow continuation if the auth-dashboard node breaks
+    console.error("Ledger communication stack tracing error:", err);
+    // Graceful Fallback: Drop user safely into fresh survey matrix sequence if cluster times out
     statusDiv.innerHTML = "";
     emailGateSection.classList.add("hidden");
     claimForm.classList.remove("hidden");
@@ -205,7 +238,7 @@ emailGateForm.addEventListener("submit", async (e) => {
     
     renderSection();
   }
-});
+}
 
 // ================= STAGE 2: SURVEY LAYOUT GENERATOR MATRIX =================
 function renderSection() {
@@ -431,7 +464,7 @@ executeClaimBtn.addEventListener("click", async () => {
       statusDiv.innerHTML = `
         <div class="successBox" style="background: rgba(87, 214, 194, 0.1); border: 1px solid #57d6c2; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left;">
           <h3 style="color: #57d6c2; margin-top:0;">🚀 Token Distribution Complete!</h3>
-          <p style="color:#1f1f1f; margin-bottom:10px;">10 SYNX tokens have been pushed directly to your account address.</p>
+          <p style="color:#fff; margin-bottom:10px;">10 SYNX tokens have been pushed directly to your account address.</p>
           <a href="https://polygonscan.com/tx/${claimResult.transactionHash}" target="_blank" style="color: #57d6c2; text-decoration: underline; font-family: monospace; font-size: 13px;">
             Tx Hash: ${claimResult.transactionHash.substring(0, 20)}...
           </a>
