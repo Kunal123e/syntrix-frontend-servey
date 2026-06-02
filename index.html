@@ -33,11 +33,21 @@
         </p>
       </div>
 
-      <div class="languageGroupWrapper">
-        <div class="languageGroup">
-          <button type="button" class="langBtn" data-lang="hinglish">Hinglish</button>
-          <button type="button" class="langBtn" data-lang="hi">हिंदी</button>
-          <button type="button" class="langBtn active" data-lang="en">English</button>
+      <div class="header-controls-group">
+        <div class="languageGroupWrapper">
+          <div class="languageGroup">
+            <button type="button" class="langBtn" data-lang="hinglish">Hinglish</button>
+            <button type="button" class="langBtn" data-lang="hi">हिंदी</button>
+            <button type="button" class="langBtn active" data-lang="en">English</button>
+          </div>
+        </div>
+
+        <div class="options-menu-container">
+          <button type="button" id="menuToggleBtn" class="icon-menu-btn" aria-label="More Options">⋮</button>
+          <div id="optionsPopover" class="options-popover hidden">
+            <button type="button" id="menuRestartBtn">✨ New Survey Registration</button>
+            <button type="button" id="menuRecoverBtn">🔍 Retrieve Pending Claim</button>
+          </div>
         </div>
       </div>
 
@@ -52,15 +62,17 @@
     <div id="emailGateSection" class="authCard">
       <h2 class="sectionTitle">Enter Communication Profile</h2>
       <p class="cardDescription">Please provide your authorized email address to clear the registration gate and activate the research module matrix.</p>
-      <input 
-        type="email" 
-        id="gateEmail" 
-        placeholder="User Communication Profile (Email Address)" 
-        required
-      >
-      <button type="button" id="startSurveyBtn" class="primaryActionBtn">
-        Initialize Research Modules &rarr;
-      </button>
+      <form id="emailGateForm">
+        <input 
+          type="email" 
+          id="gateEmail" 
+          placeholder="User Communication Profile (Email Address)" 
+          required
+        >
+        <button type="submit" id="startSurveyBtn" class="primaryActionBtn">
+          Initialize Research Modules &rarr;
+        </button>
+      </form>
     </div>
 
     <form id="claimForm" class="hidden">
