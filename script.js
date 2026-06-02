@@ -68,24 +68,25 @@ function translateMainHeadings() {
   }
 }
 
-// ================= TRANSLATION ENGINE COUPLING HELPERS =================
+// ================= DYNAMIC TRANSLATION ENGINE INTERCEPTORS =================
 function getSectionTitle(section) {
-  if (currentLanguage === "hi" && typeof sectionTranslations !== "undefined" && sectionTranslations.hi) {
-    return sectionTranslations.hi[section.title] || section.title;
+  if (typeof sectionTranslations !== "undefined" && sectionTranslations[currentLanguage]) {
+    return sectionTranslations[currentLanguage][section.title] || section.title;
   }
   return section.title || "";
 }
 
 function getQuestionText(q) {
-  if (currentLanguage === "hi" && typeof questionTranslations !== "undefined" && questionTranslations.hi) {
-    return questionTranslations.hi[q.id] || q.text || q.id;
+  if (typeof questionTranslations !== "undefined" && questionTranslations[currentLanguage]) {
+    return questionTranslations[currentLanguage][q.id] || q.text || q.id;
   }
   return q.text || q.id;
 }
 
+// Intercepts and parses option values dynamically out of your dictionaries
 function getOptionText(opt) {
-  if (currentLanguage === "hi" && typeof optionTranslations !== "undefined" && optionTranslations.hi) {
-    return optionTranslations.hi[opt] || opt;
+  if (typeof optionTranslations !== "undefined" && optionTranslations[currentLanguage]) {
+    return optionTranslations[currentLanguage][opt] || opt;
   }
   return opt;
 }
