@@ -121,6 +121,32 @@
           Execute Token Distribution
         </button>
       </div>
+
+      <div class="referralContainer">
+        <div class="dividerLine"><span>🎁 SYNTRIX REFERRAL SYSTEM</span></div>
+        <h3 class="referralTitleText">Invite Colleagues & Earn More</h3>
+        <p class="referralDescription">
+          Share your referral code. When a friend signs up using your code, completes the survey modules, and qualifies, an official Web3 settlement invitation link will be delivered directly to their email inbox.
+        </p>
+
+        <div class="referralLinkBlock">
+          <input type="text" id="referralCodeDisplay" value="SYNX-REF-LOADING" readonly>
+          <button type="button" id="copyReferralBtn" class="copyBtn">Copy Link</button>
+        </div>
+
+        <form id="referralInviteForm" class="referralFormGroup">
+          <div class="inlineInputGroup">
+            <input 
+              type="email" 
+              id="inviteFriendEmail" 
+              placeholder="Enter friend's email address" 
+              required
+            >
+            <button type="submit" id="sendInviteBtn" class="inviteActionBtn">Send Invite Mail</button>
+          </div>
+        </form>
+        <div id="referralStatusMessage" class="referral-status"></div>
+      </div>
     </div>
 
     <div id="status"></div>
