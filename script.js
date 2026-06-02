@@ -12,6 +12,14 @@ const optionsPopover = document.getElementById("optionsPopover");
 const menuRestartBtn = document.getElementById("menuRestartBtn");
 const menuRecoverBtn = document.getElementById("menuRecoverBtn");
 
+// Custom Modal Overlay DOM Interface Elements
+const retrieveModal = document.getElementById("retrieveModal");
+const closeModalBtn = document.getElementById("closeModalBtn");
+const cancelModalBtn = document.getElementById("cancelModalBtn");
+const confirmRetrieveBtn = document.getElementById("confirmRetrieveBtn");
+const modalEmailInput = document.getElementById("modalEmailInput");
+const modalStatus = document.getElementById("modalStatus");
+
 const topProgressBox = document.getElementById("topProgressBox");
 const claimForm = document.getElementById("claimForm");
 const surveyContainer = document.getElementById("surveyContainer");
@@ -115,16 +123,27 @@ menuRestartBtn.addEventListener("click", () => {
   resetApplicationFlowState();
 });
 
-menuRecoverBtn.addEventListener("click", async () => {
-  resetApplicationFlowState();
-  
-  // Prompt user to provide input if running checking pipeline from scratch
-  const targetEmail = prompt("Enter your registered email address to check pending claim rewards:");
-  if (!targetEmail || !targetEmail.trim()) return;
-  
-  gateEmailInput.value = targetEmail.trim();
-  // Call the auto-recovery verification workflow programmatically
-  await runProfileLedgerVerification(targetEmail.trim());
+// Reveal custom modal overlay when clicking "Retrieve Pending Claim"
+menuRecoverBtn.addEventListener("click", () => {
+  optionsPopover.classList.add("hidden");
+  modalEmailInput.value = "";
+  modalStatus.innerHTML = "";
+  retrieveModal.classList.remove("hidden");
+  setTimeout(() => { modalEmailInput.focus(); }, 100);
+});
+
+// Modal dismiss event listeners
+const dismissModal = () => { retrieveModal.classList.add("hidden"); };
+closeModalBtn.addEventListener("click", dismissModal);
+cancelModalBtn.addEventListener("click", dismissModal);
+retrieveModal.addEventListener("click", (e) => {
+  if (e.target === retrieveModal) dismissModal();
+});
+
+// Custom Modal Submit Trigger Execution Handler
+confirmRetrieveBtn.addEventListener("click", async () => {
+  const targetEmail = modalEmailInput.value.trim();
+  await runProfileLedgerVerification(targetEmail, true);
 });
 
 function resetApplicationFlowState() {
@@ -143,31 +162,43 @@ function resetApplicationFlowState() {
   topProgressBox.classList.add("hidden");
   rewardDashboardScreen.classList.add("hidden");
   
-  document.querySelectorAll(".sidebar .step").forEach((st, idx) => {
+  document.querySelectorAll(".step").forEach((st, idx) => {
     if (idx === 0) st.classList.add("active");
     else st.classList.remove("active");
   });
 }
 
 // ================= STAGE 1: ENTRY ONBOARDING & AUTO-RECOVERY TRACKING GATE =================
-emailGateForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const emailVal = gateEmailInput.value.trim();
-  await runProfileLedgerVerification(emailVal);
-});
+if (emailGateForm) {
+  emailGateForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const emailVal = gateEmailInput.value.trim();
+    await runProfileLedgerVerification(emailVal, false);
+  });
+} else {
+  // Fallback anchor hooks if your layout is bound to standard click listeners on buttons instead of form structures
+  startSurveyBtn.addEventListener("click", async () => {
+    const emailVal = gateEmailInput.value.trim();
+    await runProfileLedgerVerification(emailVal, false);
+  });
+}
 
 // Centralized Asynchronous Core Routing Logic for Profile Matching
-async function runProfileLedgerVerification(emailValue) {
+async function runProfileLedgerVerification(emailValue, isFromModal = false) {
   const sanitizedEmail = emailValue.trim().toLowerCase();
+  
+  // Choose correct feedback container based on where the action was taken
+  const currentStatusOutput = isFromModal ? modalStatus : statusDiv;
+  
   if (!sanitizedEmail || !sanitizedEmail.includes("@")) {
-    statusDiv.innerHTML = "❌ Please input a valid identification email profile address.";
-    statusDiv.style.color = "#ff4d4d";
+    currentStatusOutput.innerHTML = "❌ Please input a valid identification email profile address.";
+    currentStatusOutput.style.color = "#ff4d4d";
     return;
   }
   
   userEmailAddress = sanitizedEmail;
-  statusDiv.innerHTML = getUIText("checkingLedger");
-  statusDiv.style.color = "#57d6c2";
+  currentStatusOutput.innerHTML = getUIText("checkingLedger");
+  currentStatusOutput.style.color = "#57d6c2";
   
   try {
     // Intercept: Scan database records on the backend cluster
@@ -178,65 +209,74 @@ async function runProfileLedgerVerification(emailValue) {
 
     // DYNAMIC CONDITIONAL AUTO-RECOVERY PIPELINE
     if (verification.exists) {
-      
       // Check structural boolean variations from normalized database schemas
       const hasClaimedTokens = verification.isClaimed === true || 
-                                verification.status === "claimed" || 
+                                verification.status === "success" || 
                                 (verification.txHash !== undefined && verification.txHash !== null && verification.txHash !== "");
 
       if (!hasClaimedTokens) {
         // CASE A: Profile has filled survey data but has not claimed their tokens yet
-        console.log("Auto-Recovery Route Action: Loading Web3 Claims Screen Layout View.");
-        statusDiv.innerHTML = "✨ Unclaimed registration record found. Redirecting to reward distribution section...";
-        statusDiv.style.color = "#57d6c2";
+        currentStatusOutput.innerHTML = "✨ Record isolated! Loading Web3 dashboard gateway...";
+        currentStatusOutput.style.color = "#57d6c2";
         
-        // Clear layout section containers instantly
-        emailGateSection.classList.add("hidden");
-        claimForm.classList.add("hidden");
-        topProgressBox.classList.add("hidden");
-        
-        // Clear status text context right before presenting reward node viewport
-        setTimeout(() => { statusDiv.innerHTML = ""; }, 1500);
-        
-        // Force slide into Web3 reward dashboard display card
-        rewardDashboardScreen.classList.remove("hidden");
-        
-        // Highlight ultimate index on left layout bar element
-        document.querySelectorAll(".sidebar .step").forEach(s => s.classList.remove("active"));
-        const finalStepNode = document.getElementById("step-7");
-        if (finalStepNode) {
-          finalStepNode.classList.add("active");
-        } else {
-          const fallbackStep = document.querySelector(".sidebar .steps .step:last-child");
-          if (fallbackStep) fallbackStep.classList.add("active");
-        }
+        setTimeout(() => {
+          // Clear layout section containers instantly
+          emailGateSection.classList.add("hidden");
+          claimForm.classList.add("hidden");
+          topProgressBox.classList.add("hidden");
+          if (isFromModal) retrieveModal.classList.add("hidden");
+          
+          statusDiv.innerHTML = "";
+          
+          // Force slide into Web3 reward dashboard display card
+          rewardDashboardScreen.classList.remove("hidden");
+          
+          // Highlight ultimate index on left layout bar element
+          document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
+          const finalStepNode = document.getElementById("step-7");
+          if (finalStepNode) {
+            finalStepNode.classList.add("active");
+          } else {
+            const fallbackStep = document.querySelector(".sidebar .steps .step:last-child") || document.querySelector(".step:last-child");
+            if (fallbackStep) fallbackStep.classList.add("active");
+          }
+        }, 1000);
         
       } else {
         // CASE B: Target communication signature records an active validation token hash transfer
-        statusDiv.innerHTML = "❌ This email profile has already registered and fully claimed their SYNX tokens.";
-        statusDiv.style.color = "#ff4d4d";
+        currentStatusOutput.innerHTML = "❌ This email profile has already fully claimed their SYNX tokens.";
+        currentStatusOutput.style.color = "#ff4d4d";
       }
       
     } else {
       // CASE C: Fresh custom consumer entry sequence
-      statusDiv.innerHTML = "";
-      emailGateSection.classList.add("hidden");
-      claimForm.classList.remove("hidden");
-      topProgressBox.classList.remove("hidden");
-      
-      currentSection = 0;
-      renderSection();
+      if (isFromModal) {
+        currentStatusOutput.innerHTML = "❌ No prior survey history found for this email address.";
+        currentStatusOutput.style.color = "#ff4d4d";
+      } else {
+        currentStatusOutput.innerHTML = "";
+        emailGateSection.classList.add("hidden");
+        claimForm.classList.remove("hidden");
+        topProgressBox.classList.remove("hidden");
+        
+        currentSection = 0;
+        renderSection();
+      }
     }
     
   } catch (err) {
     console.error("Ledger communication stack tracing error:", err);
-    // Graceful Fallback: Drop user safely into fresh survey matrix sequence if cluster times out
-    statusDiv.innerHTML = "";
-    emailGateSection.classList.add("hidden");
-    claimForm.classList.remove("hidden");
-    topProgressBox.classList.remove("hidden");
-    
-    renderSection();
+    // Graceful Fallback if cluster times out
+    if (!isFromModal) {
+      currentStatusOutput.innerHTML = "";
+      emailGateSection.classList.add("hidden");
+      claimForm.classList.remove("hidden");
+      topProgressBox.classList.remove("hidden");
+      renderSection();
+    } else {
+      currentStatusOutput.innerHTML = "❌ Communication channel with registry server timed out.";
+      currentStatusOutput.style.color = "#ff4d4d";
+    }
   }
 }
 
@@ -248,7 +288,7 @@ function renderSection() {
   const section = surveyData[currentSection];
   
   // Highlighting matching steps on sidebar tracker panels cleanly
-  document.querySelectorAll(".sidebar .step").forEach((st, idx) => {
+  document.querySelectorAll(".step").forEach((st, idx) => {
     if (idx === currentSection + 1) st.classList.add("active");
     else st.classList.remove("active");
   });
@@ -406,7 +446,7 @@ claimForm.addEventListener("submit", async (e) => {
       topProgressBox.classList.add("hidden");
       rewardDashboardScreen.classList.remove("hidden");
       
-      document.querySelectorAll(".sidebar .step").forEach(s => s.classList.remove("active"));
+      document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
       const finalStepNode = document.getElementById("step-7");
       if (finalStepNode) finalStepNode.classList.add("active");
     } else {
