@@ -59,16 +59,34 @@
       </div>
     </div>
 
+    <!-- EMAIL GATE SECTION (PHASE 4: SURVEY INTEGRATION) -->
     <div id="emailGateSection" class="authCard">
       <h2 class="sectionTitle">Enter Communication Profile</h2>
       <p class="cardDescription">Please provide your authorized email address to clear the registration gate and activate the research module matrix.</p>
       <form id="emailGateForm">
-        <input 
-          type="email" 
-          id="gateEmail" 
-          placeholder="User Communication Profile (Email Address)" 
-          required
-        >
+        <div class="form-group" style="margin-bottom: 20px;">
+          <input 
+            type="email" 
+            id="gateEmail" 
+            placeholder="User Communication Profile (Email Address)" 
+            required
+            style="width: 100%;"
+          >
+        </div>
+
+        <!-- Phase 4: Referral Code optional input field -->
+        <div class="form-group" style="margin-bottom: 20px; text-align: left;">
+          <label for="referredByCode" style="font-size: 13px; font-weight: bold; color: var(--text-secondary); display: block; margin-bottom: 8px; letter-spacing: 0.5px;">
+            Referral Code (Optional)
+          </label>
+          <input 
+            type="text" 
+            id="referredByCode" 
+            placeholder="Enter Referral Code (e.g. SYN-AB1234)"
+            style="width: 100%; border-color: rgba(99, 102, 241, 0.2);"
+          >
+        </div>
+
         <button type="submit" id="startSurveyBtn" class="primaryActionBtn">
           Initialize Research Modules &rarr;
         </button>
@@ -91,6 +109,7 @@
       </div>
     </form>
 
+    <!-- REWARD DASHBOARD SCREEN (PHASE 7) -->
     <div id="rewardDashboardScreen" class="hidden rewardCard">
       <div class="badgeRow">
         <span class="submittedBadge">✨ SURVEY SUBMITTED!</span>
@@ -122,30 +141,123 @@
         </button>
       </div>
 
+      <!-- Phase 7: Referral Dashboard Replacement -->
       <div class="referralContainer">
-        <div class="dividerLine"><span>🎁 SYNTRIX REFERRAL SYSTEM</span></div>
-        <h3 class="referralTitleText">Invite Colleagues & Earn More</h3>
+        <div class="dividerLine"><span>🎁 SYNTRIX REFERRAL DASHBOARD</span></div>
+        <h3 class="referralTitleText">Your Referrals & Earnings</h3>
         <p class="referralDescription">
-          Share your referral code. When a friend signs up using your code, completes the survey modules, and qualifies, an official Web3 settlement invitation link will be delivered directly to their email inbox.
+          Invite friends using your unique referral code. For each colleague who registers and completes the modules, you earn an additional 10 SYN tokens!
         </p>
 
+        <!-- Referral Stats Panel (Phase 7) -->
+        <div class="referralStatsGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; margin: 25px 0;">
+          <div class="statBox" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 15px; text-align: center;">
+            <div style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 5px; letter-spacing: 0.5px;">Total Referrals</div>
+            <div id="statTotalReferrals" style="font-size: 24px; font-weight: 800; color: #ffffff;">0</div>
+          </div>
+          <div class="statBox" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 15px; text-align: center;">
+            <div style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 5px; letter-spacing: 0.5px;">Pending Rewards</div>
+            <div id="statPendingRewards" style="font-size: 24px; font-weight: 800; color: #6366f1;">0 SYN</div>
+          </div>
+          <div class="statBox" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 15px; text-align: center;">
+            <div style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 5px; letter-spacing: 0.5px;">Claimed Rewards</div>
+            <div id="statClaimedRewards" style="font-size: 24px; font-weight: 800; color: #10b981;">0 SYN</div>
+          </div>
+          <div class="statBox" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 15px; text-align: center;">
+            <div style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 5px; letter-spacing: 0.5px;">Total Earned</div>
+            <div id="statTotalEarned" style="font-size: 24px; font-weight: 800; color: #a855f7;">0 SYN</div>
+          </div>
+        </div>
+
         <div class="referralLinkBlock">
-          <input type="text" id="referralCodeDisplay" value="SYNX-REF-LOADING" readonly>
+          <input type="text" id="referralCodeDisplay" value="https://domain.com/?ref=SYN-AB1234" readonly>
           <button type="button" id="copyReferralBtn" class="copyBtn">Copy Link</button>
         </div>
 
-        <form id="referralInviteForm" class="referralFormGroup">
+        <!-- Optional Direct Invitation Sender -->
+        <form id="referralInviteForm" class="referralFormGroup" style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.05);">
+          <label style="font-size: 13px; font-weight: bold; color: var(--text-secondary); display: block; margin-bottom: 10px; text-align: left;">
+            ✉️ Email Direct Reference Link
+          </label>
           <div class="inlineInputGroup">
             <input 
               type="email" 
               id="inviteFriendEmail" 
-              placeholder="Enter friend's email address" 
+              placeholder="friend@domain.com" 
               required
             >
-            <button type="submit" id="sendInviteBtn" class="inviteActionBtn">Send Invite Mail</button>
+            <button type="submit" id="sendInviteBtn" class="inviteActionBtn">Send Invite</button>
           </div>
         </form>
         <div id="referralStatusMessage" class="referral-status"></div>
+      </div>
+    </div>
+
+    <!-- REWARD CLAIM SYSTEM (PHASE 9 - INTEGRATED IN SPA) -->
+    <div id="claimScreenSection" class="hidden rewardCard" style="text-align: center; padding: 40px;">
+      <div style="font-size: 40px; margin-bottom: 20px; animation: spin 2s linear infinite; display: inline-block;" id="claimLoadingGear">⚙️</div>
+      <div style="font-size: 40px; margin-bottom: 15px;" id="claimStaticIcon" class="hidden">🎁</div>
+      
+      <h2 class="rewardTitle" id="claimScreenTitle">Resolving Claim authorization...</h2>
+      <p class="rewardSubtitle" id="claimInfoSubtitle">
+        Retrieving credentials block registry. Please wait.
+      </p>
+
+      <!-- ERROR STATE -->
+      <div id="claimErrorBox" class="hidden">
+        <div style="font-size: 50px; color: #ef4444; margin-bottom: 20px;">⚠️</div>
+        <button type="button" onclick="window.location.href='/'" class="primaryActionBtn" style="max-width: 250px; margin: 0 auto;">
+          Return to Survey Hub
+        </button>
+      </div>
+
+      <!-- Reward Info details block -->
+      <div id="claimRewardDetails" class="hidden" style="background-color: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.15); padding: 20px; border-radius: 16px; margin: 25px auto; text-align: left; max-width: 450px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px;">
+          <span style="color: var(--text-secondary);">Recipient Email:</span>
+          <strong id="claimInfoEmail" style="color: var(--text-primary);">loading...</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px;">
+          <span style="color: var(--text-secondary);">Reward Category:</span>
+          <strong id="claimInfoType" style="color: var(--text-primary); text-transform: uppercase;">loading...</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 14px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 10px; margin-top: 10px;">
+          <span style="color: var(--text-secondary); font-weight: 700;">Claimable Value:</span>
+          <strong id="claimInfoAmount" style="color: #6366f1; font-size: 16px;">10 SYN</strong>
+        </div>
+      </div>
+
+      <!-- Active claim actions -->
+      <div id="claimActionPanel" class="hidden">
+        <button type="button" id="claimConnectWalletBtn" class="metaMaskBtn" style="margin-bottom: 15px; width: 100%; max-width: 450px;">
+          <span>💼 🦊 Connect MetaMask Wallet</span>
+        </button>
+
+        <div id="claimWalletConnectedBlock" class="hidden" style="max-width: 450px; margin: 0 auto 20px;">
+          <div style="background-color: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 14px; font-family: monospace; font-size: 13px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+            <span id="claimWalletAddressDisplay" style="color: var(--text-secondary); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 80%;">0x...</span>
+            <span style="color: #10b981; font-weight: bold; font-size: 11px;">CONNECTED</span>
+          </div>
+          <button type="button" id="submitClaimRewardBtn" class="executeDistributionBtn" style="width: 100%;">
+            ✍️ Sign Message & Claim Tokens
+          </button>
+        </div>
+      </div>
+
+      <!-- Success state -->
+      <div id="claimSuccessPanel" class="hidden">
+        <div style="width: 80px; height: 80px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background-color: rgba(16, 185, 129, 0.1); border: 2px solid #10b981; color: #10b981; font-size: 40px;">✓</div>
+        <h2>Tokens Transferred Successfully!</h2>
+        <p style="color: var(--text-secondary); margin-top: 10px; font-size: 14px; margin-bottom: 25px;">
+          Your 10 SYNTRIX tokens have been successfully transferred on-chain via the Polygon network.
+        </p>
+        <div style="text-align: left; background-color: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 20px; max-width: 450px; margin: 0 auto 30px;">
+          <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 5px;">POLYGON TRANSACTION HASH:</div>
+          <a id="claimTxHashLink" target="_blank" href="#" style="color: #6366f1; text-decoration: none; font-family: monospace; font-size: 13px; word-break: break-all;">0x...</a>
+        </div>
+        <button type="button" onclick="window.location.href='/'" class="primaryActionBtn" style="max-width: 250px; margin: 0 auto;">
+          Go to Survey Hub
+        </button>
       </div>
     </div>
 
