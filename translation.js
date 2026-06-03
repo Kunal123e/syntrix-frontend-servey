@@ -10,7 +10,33 @@ const translations = {
     validationRequired: "❌ Please answer all questions before continuing.",
     fillRequired: "❌ Please fill all required fields.",
     invalidWallet: "❌ Invalid wallet address.",
-    submitting: "⏳ Submitting survey..."
+    submitting: "⏳ Submitting survey...",
+    
+    // Additional UI Portal elements
+    emailSectionTitle: "Enter Communication Profile",
+    btnStart: "Initialize Research Modules →",
+    claimTitle: "Claim Your 10 SYNX Reward",
+    metaMaskLabel: "💼 🦊 Connect MetaMask Wallet",
+    manualLabel: "OR ENTER YOUR EVM NETWORK PUBLIC ADDRESS",
+    btnExecute: "Execute Token Distribution",
+    referralTitle: "🎁 SYNTRIX REFERRAL DASHBOARD",
+    referralSub: "Invite friends using your unique referral code. For each colleague who registers and completes the modules, you earn an additional 10 SYN tokens!",
+    btnCopy: "Copy Link",
+    inviteLabel: "✉️ Email Direct Reference Link",
+    btnInvite: "Send Invite",
+    checkingLedger: "🔍 Authenticating communication profile ledger status...",
+    claiming: "⚡ Dispensing 10 SYNX tokens to target network gateway...",
+
+    // Retrieval Modal
+    modalTitle: "🔍 Retrieve Pending Rewards",
+    modalSub: "Enter your authorized communication profile to bypass the questionnaire matrix and open the Web3 settlement gateway.",
+    modalDetailsTitle: "📌 Dynamic Registry Details:",
+    modalDetails1: "Verification searches real-time historical database blocks.",
+    modalDetails2: "Ensure your MetaMask extension is configured to the Polygon Mainnet network.",
+    modalDetails3: "Wallet balances are automatically evaluated by smart contract protocols.",
+    modalInputLabel: "Registered Email Address",
+    btnCancel: "Cancel",
+    btnSearch: "Search Ledger →"
   },
   hi: {
     mainTitle: "सिंट्रिक्स कंज्यूमर एनालिटिक्स हब",
@@ -23,7 +49,33 @@ const translations = {
     validationRequired: "❌ आगे बढ़ने से पहले सभी प्रश्नों के उत्तर दें।",
     fillRequired: "❌ कृपया सभी आवश्यक जानकारी भरें।",
     invalidWallet: "❌ अमान्य वॉलेट पता।",
-    submitting: "⏳ सर्वे जमा किया जा रहा है..."
+    submitting: "⏳ सर्वे जमा किया जा रहा है...",
+
+    // Additional UI Portal elements
+    emailSectionTitle: "संचार प्रोफ़ाइल दर्ज करें",
+    btnStart: "अनुसंधान मॉड्यूल प्रारंभ करें →",
+    claimTitle: "अपने 10 SYNX पुरस्कार का दावा करें",
+    metaMaskLabel: "💼 🦊 मेटामास्क वॉलेट कनेक्ट करें",
+    manualLabel: "या अपना EVM नेटवर्क सार्वजनिक पता दर्ज करें",
+    btnExecute: "टोकन वितरण निष्पादित करें",
+    referralTitle: "🎁 सिंट्रिक्स रेफरल डैशबोर्ड",
+    referralSub: "अपने अद्वितीय रेफरल कोड का उपयोग करके दोस्तों को आमंत्रित करें। पंजीकरण करने वाले प्रत्येक मित्र के लिए 10 SYN अतिरिक्त अर्जित करें!",
+    btnCopy: "लिंक कॉपी करें",
+    inviteLabel: "✉️ ईमेल सीधा आमंत्रण लिंक",
+    btnInvite: "आमंत्रण भेजें",
+    checkingLedger: "🔍 संचार प्रोफ़ाइल लेज़र स्थिति प्रमाणित की जा रही है...",
+    claiming: "⚡ लक्षित नेटवर्क गेटवे पर 10 SYNX टोकन वितरित किए जा रहे हैं...",
+
+    // Retrieval Modal
+    modalTitle: "🔍 लंबित पुरस्कार प्राप्त करें",
+    modalSub: "प्रश्नावली मैट्रिक्स को बायपास करने और Web3 निपटान गेटवे खोलने के लिए अपने अधिकृत संचार प्रोफ़ाइल दर्ज करें।",
+    modalDetailsTitle: "📌 गतिशील रजिस्ट्री विवरण:",
+    modalDetails1: "सत्यापन वास्तविक समय के ऐतिहासिक डेटाबेस ब्लॉकों की खोज करता है।",
+    modalDetails2: "सुनिश्चित करें कि आपका मेटामास्क एक्सटेंशन पॉलीगॉन मेननेट नेटवर्क पर कॉन्फ़िगर किया गया है।",
+    modalDetails3: "वॉलेट बैलेंस का मूल्यांकन स्मार्ट कॉन्ट्रैक्ट प्रोटोकॉल द्वारा स्वचालित रूप से किया जाता है।",
+    modalInputLabel: "पंजीकृत ईमेल पता",
+    btnCancel: "रद्द करें",
+    btnSearch: "लेज़र खोजें →"
   },
   hinglish: {
     mainTitle: "Syntrix Consumer Analytics Hub",
@@ -36,7 +88,33 @@ const translations = {
     validationRequired: "❌ Aage badhne se pehle kripya sabhi sawalon ke jawab dein.",
     fillRequired: "❌ Kripya sabhi zaroori details ko bharein.",
     invalidWallet: "❌ Invalid wallet address.",
-    submitting: "⏳ Survey submit ho raha hai..."
+    submitting: "⏳ Survey submit ho raha hai...",
+
+    // Additional UI Portal elements
+    emailSectionTitle: "Communication Profile Enter Karein",
+    btnStart: "Research Modules Initialize Karein →",
+    claimTitle: "Apna 10 SYNX Reward Claim Karein",
+    metaMaskLabel: "💼 🦊 MetaMask Wallet Connect Karein",
+    manualLabel: "YA APNA EVM NETWORK PUBLIC ADDRESS ENTER KAREIN",
+    btnExecute: "Execute Token Distribution",
+    referralTitle: "🎁 SYNTRIX REFERRAL DASHBOARD",
+    referralSub: "Apne unique referral code se friends ko invite karein. Har registration aur module completion par extra 10 SYN kamaein!",
+    btnCopy: "Copy Link",
+    inviteLabel: "✉️ Email Direct Reference Link",
+    btnInvite: "Send Invite",
+    checkingLedger: "🔍 Communication profile ledger status ko authenticate kiya ja raha hai...",
+    claiming: "⚡ 10 SYNX tokens ko target network gateway par dispense kiya ja raha hai...",
+
+    // Retrieval Modal
+    modalTitle: "🔍 Pending Rewards Retrieve Karein",
+    modalSub: "Questionnaire matrix ko bypass karne aur Web3 settlement gateway ko open karne ke liye apna authorized communication profile enter karein.",
+    modalDetailsTitle: "📌 Dynamic Registry Details:",
+    modalDetails1: "Verification real-time historical database blocks ko search karta hai.",
+    modalDetails2: "Ensure karein ki aapka MetaMask extension Polygon Mainnet network par configured hai.",
+    modalDetails3: "Wallet balances ko smart contract protocols dwara automatically evaluate kiya jata hai.",
+    modalInputLabel: "Registered Email Address",
+    btnCancel: "Cancel",
+    btnSearch: "Ledger Search Karein →"
   }
 };
 
@@ -124,6 +202,10 @@ const questionTranslations = {
 
 const optionTranslations = {
   hi: {
+    // Media Options
+    "Instagram": "इंस्टाग्राम",
+    "YouTube": "यूट्यूब",
+
     // Lifestyle Spending options
     "Under ₹500": "₹500 से कम",
     "₹500 - ₹2,000": "₹500 - ₹2,000",
@@ -132,7 +214,7 @@ const optionTranslations = {
     "Above ₹15,000": "₹15,000 से अधिक",
     
     // Location options
-    "🏙️ Metro City (Mumbai, Delhi, Bengaluru, Chennai)": "🏙️ मेट्रो शहर (मुंबई, दिल्ली, दिल्ली, बेंगलुरु, चेन्नई)",
+    "🏙️ Metro City (Mumbai, Delhi, Bengaluru, Chennai)": "🏙️ मेट्रो शहर (मुंबई, दिल्ली, बेंगलुरु, चेन्नई)",
     "🌆 Large City (Ahmedabad, Surat, Jaipur, Vadodara)": "🌆 बड़ा शहर (अहमदाबाद, सूरत, जयपुर, वडोदरा)",
     "🏘️ Small City / District City (Rajkot, Udaipur, Bhavnagar, Kota)": "🏘️ छोटा शहर / जिला शहर (राजकोट, उदयपुर, भावनगर, कोटा)",
     "🌿 Town / Village (Kalol, Gangapur and similar areas)": "🌿 कस्बा / गाँव (कलोल, गंगापुर और समान क्षेत्र)",
@@ -255,9 +337,12 @@ const optionTranslations = {
     "Under ₹300": "₹300 से कम",
     "₹300 - ₹800": "₹300 - ₹800",
     "₹800 - ₹2,000": "₹800 - ₹2,000",
+    "₹2,000 - ₹5,000": "₹2,000 - ₹5,000",
+    "₹5,000 - ₹15,000": "₹5,000 - ₹15,000",
+    "Above ₹15,000": "₹15,000 से अधिक",
 
     // Actions
-    "Share on Social Media": "सोशल मीडिया पर साझा करें",
+    "Share on Social Media": "सोशल media पर साझा करें",
     "Recommend to Friends": "दोस्तों को सुझाव दें",
     "Leave a Review": "समीक्षा लिखें",
     "Buy Again": "फिर से खरीदें",
@@ -272,6 +357,10 @@ const optionTranslations = {
     "Never Returned": "कभी वापस नहीं किया"
   },
   hinglish: {
+    // Media Options
+    "Instagram": "Instagram",
+    "YouTube": "YouTube",
+
     // Lifestyle Spending options
     "Under ₹500": "₹500 se kam",
     "₹500 - ₹2,000": "₹500 - ₹2,000",
@@ -403,6 +492,9 @@ const optionTranslations = {
     "Under ₹300": "₹300 se kam",
     "₹300 - ₹800": "₹300 - ₹800",
     "₹800 - ₹2,000": "₹800 - ₹2,000",
+    "₹2,000 - ₹5,000": "₹2,000 - ₹5,000",
+    "₹5,000 - ₹15,000": "₹5,000 - ₹15,000",
+    "Above ₹15,000": "Aise category spend parameters 15,000 se zyada",
 
     // Actions
     "Share on Social Media": "Social Media par share karna",
@@ -420,3 +512,5 @@ const optionTranslations = {
     "Never Returned": "Kabhi return nahi kiya"
   }
 };
+
+const TRANSLATIONS = translations;
