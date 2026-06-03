@@ -124,11 +124,12 @@ langButtons.forEach(btn => {
     btn.classList.add("active");
     currentLanguage = btn.dataset.lang;
     
+    // Translate all static page elements
+    translatePage();
+    
     // Rerender layout content matching translation engine profiles
     if (claimForm.classList.contains("hidden") === false) {
       renderSection();
-    } else {
-      translateMainHeadings();
     }
   });
 });
@@ -150,13 +151,86 @@ function getUIText(key) {
   return fallbacks[key] || key;
 }
 
-function translateMainHeadings() {
-  if (typeof translations !== "undefined" && translations[currentLanguage]) {
-    const mainTitleEl = document.getElementById("mainTitle");
-    const mainSubtitleEl = document.getElementById("mainSubtitle");
-    if (mainTitleEl && translations[currentLanguage].mainTitle) mainTitleEl.innerText = translations[currentLanguage].mainTitle;
-    if (mainSubtitleEl && translations[currentLanguage].mainSubtitle) mainSubtitleEl.innerText = translations[currentLanguage].mainSubtitle;
-  }
+function translatePage() {
+  if (typeof translations === "undefined" || !translations[currentLanguage]) return;
+  const dict = translations[currentLanguage];
+
+  // Main Titles
+  const mainTitleEl = document.getElementById("mainTitle");
+  const mainSubtitleEl = document.getElementById("mainSubtitle");
+  if (mainTitleEl && (dict.mainTitle || dict.title)) mainTitleEl.innerText = dict.mainTitle || dict.title;
+  if (mainSubtitleEl && (dict.mainSubtitle || dict.surveySubtitle)) mainSubtitleEl.innerText = dict.mainSubtitle || dict.surveySubtitle;
+
+  // Onboarding Gate
+  const emailSectionTitleEl = document.querySelector("#emailGateSection .sectionTitle");
+  if (emailSectionTitleEl && dict.emailSectionTitle) emailSectionTitleEl.innerText = dict.emailSectionTitle;
+  
+  const startSurveyBtnEl = document.getElementById("startSurveyBtn");
+  if (startSurveyBtnEl && dict.btnStart) startSurveyBtnEl.innerHTML = dict.btnStart;
+
+  // Navigation buttons
+  const prevBtnEl = document.getElementById("prevBtn");
+  const nextBtnEl = document.getElementById("nextBtn");
+  const submitClaimBtnEl = document.getElementById("submitClaimBtn");
+  if (prevBtnEl && (dict.previous || dict.btnPrev)) prevBtnEl.innerHTML = `&lt; ${dict.previous || dict.btnPrev}`;
+  if (nextBtnEl && (dict.next || dict.btnNext)) nextBtnEl.innerHTML = `${dict.next || dict.btnNext} &gt;`;
+  if (submitClaimBtnEl && (dict.submit || dict.btnSubmit)) submitClaimBtnEl.innerHTML = dict.submit || dict.btnSubmit;
+
+  // Dashboard
+  const rewardTitleEl = document.querySelector("#rewardDashboardScreen .rewardTitle");
+  if (rewardTitleEl && dict.claimTitle) rewardTitleEl.innerText = dict.claimTitle;
+  
+  const connectWalletBtnEl = document.querySelector("#connectWalletBtn span");
+  if (connectWalletBtnEl && dict.metaMaskLabel) connectWalletBtnEl.innerText = dict.metaMaskLabel;
+  
+  const manualLabelEl = document.querySelector(".manualWalletWrapper .dividerLine span");
+  if (manualLabelEl && dict.manualLabel) manualLabelEl.innerText = dict.manualLabel;
+  
+  const executeClaimBtnEl = document.getElementById("executeClaimBtn");
+  if (executeClaimBtnEl && dict.btnExecute) executeClaimBtnEl.innerText = dict.btnExecute;
+  
+  const referralTitleEl = document.querySelector(".referralContainer .dividerLine span");
+  if (referralTitleEl && dict.referralTitle) referralTitleEl.innerText = dict.referralTitle;
+  
+  const referralDescriptionEl = document.querySelector(".referralContainer .referralDescription");
+  if (referralDescriptionEl && dict.referralSub) referralDescriptionEl.innerText = dict.referralSub;
+  
+  const copyReferralBtnEl = document.getElementById("copyReferralBtn");
+  if (copyReferralBtnEl && dict.btnCopy) copyReferralBtnEl.innerText = dict.btnCopy;
+  
+  const inviteLabelEl = document.querySelector("#referralInviteForm label");
+  if (inviteLabelEl && dict.inviteLabel) inviteLabelEl.innerText = dict.inviteLabel;
+  
+  const sendInviteBtnEl = document.getElementById("sendInviteBtn");
+  if (sendInviteBtnEl && dict.btnInvite) sendInviteBtnEl.innerText = dict.btnInvite;
+
+  // Modal
+  const modalTitleEl = document.querySelector("#retrieveModal .modal-header h2");
+  if (modalTitleEl && dict.modalTitle) modalTitleEl.innerText = dict.modalTitle;
+  
+  const modalSubEl = document.querySelector("#retrieveModal .modal-subtitle");
+  if (modalSubEl && dict.modalSub) modalSubEl.innerText = dict.modalSub;
+  
+  const modalDetailsTitleEl = document.querySelector("#retrieveModal .extra-details-box h4");
+  if (modalDetailsTitleEl && dict.modalDetailsTitle) modalDetailsTitleEl.innerText = dict.modalDetailsTitle;
+  
+  const modalDetails1El = document.querySelector("#retrieveModal .extra-details-box li:nth-child(1)");
+  if (modalDetails1El && dict.modalDetails1) modalDetails1El.innerText = dict.modalDetails1;
+  
+  const modalDetails2El = document.querySelector("#retrieveModal .extra-details-box li:nth-child(2)");
+  if (modalDetails2El && dict.modalDetails2) modalDetails2El.innerText = dict.modalDetails2;
+  
+  const modalDetails3El = document.querySelector("#retrieveModal .extra-details-box li:nth-child(3)");
+  if (modalDetails3El && dict.modalDetails3) modalDetails3El.innerText = dict.modalDetails3;
+  
+  const modalInputLabelEl = document.querySelector("#retrieveModal .input-wrapper label");
+  if (modalInputLabelEl && dict.modalInputLabel) modalInputLabelEl.innerText = dict.modalInputLabel;
+  
+  const cancelModalBtnEl = document.getElementById("cancelModalBtn");
+  if (cancelModalBtnEl && dict.btnCancel) cancelModalBtnEl.innerText = dict.btnCancel;
+  
+  const confirmRetrieveBtnEl = document.getElementById("confirmRetrieveBtn");
+  if (confirmRetrieveBtnEl && dict.btnSearch) confirmRetrieveBtnEl.innerText = dict.btnSearch;
 }
 
 // ================= DYNAMIC TRANSLATION ENGINE INTERCEPTORS =================
@@ -245,7 +319,7 @@ function resetApplicationFlowState() {
   });
 }
 
-// ================= STAGE 1: ENTRY ONBOARDING & AUTO-RECOVERY TRACKING GATE =================
+// ================= STAGE 1: ENTRY ONBOARDING & AUTO-RECOVERY GATE =================
 if (emailGateForm) {
   emailGateForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -253,7 +327,7 @@ if (emailGateForm) {
     await runProfileLedgerVerification(emailVal, false);
   });
 } else {
-  // Fallback anchor hooks if your layout is bound to standard click listeners on buttons instead of form structures
+  // Fallback anchor hooks if layout matches standard click triggers
   startSurveyBtn.addEventListener("click", async () => {
     const emailVal = gateEmailInput.value.trim();
     await runProfileLedgerVerification(emailVal, false);
@@ -300,7 +374,7 @@ async function runProfileLedgerVerification(emailValue, isFromModal = false) {
         localStorage.setItem("syntrix_user_email", userEmailAddress);
         
         setTimeout(async () => {
-          // Clear layout section containers instantly
+          // Clear layout containers
           emailGateSection.classList.add("hidden");
           claimForm.classList.add("hidden");
           topProgressBox.classList.add("hidden");
@@ -376,7 +450,7 @@ function renderSection() {
     else st.classList.remove("active");
   });
 
-  translateMainHeadings();
+  translatePage();
 
   surveyContainer.innerHTML = `
     <div class="section">
@@ -388,7 +462,7 @@ function renderSection() {
           return `
             <div class="question">
               <h3>${translatedQuestionText}</h3>
-              <textarea data-id="${q.id}" placeholder="Write your answer...">${answers[q.id] || ""}</textarea>
+              <textarea data-id="${q.id}" placeholder="${getUIText('textareaPlaceholder')}">${answers[q.id] || ""}</textarea>
             </div>
           `;
         }
@@ -468,7 +542,7 @@ function updateProgressIndicators() {
   const surveyData = getSurveyData();
   const percentage = ((currentSection + 1) / surveyData.length) * 100;
   progressFill.style.width = percentage + "%";
-  progressText.innerText = `Progress ${currentSection + 1}/${surveyData.length}`;
+  progressText.innerText = `${getUIText('progress')} ${currentSection + 1}/${surveyData.length}`;
 }
 
 function validateSectionInputs() {
@@ -505,7 +579,7 @@ prevBtn.addEventListener("click", () => {
   renderSection();
 });
 
-// ================= SUBMIT ENTIRE DATA BUNDLE OUT TO PHASE 1 METRICS ENDPOINT =================
+// ================= SUBMIT SURVEY TO CLUSTER =================
 claimForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -520,7 +594,7 @@ claimForm.addEventListener("submit", async (e) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ 
         email: userEmailAddress, 
-        referredByCode: refCodeVal, // Send optional referral code on submission (Phase 4)
+        referredByCode: refCodeVal, // Optional referral code parameter (Phase 4)
         ...answers 
       })
     });
@@ -554,7 +628,7 @@ claimForm.addEventListener("submit", async (e) => {
   }
 });
 
-// ================= STAGE 3: EXECUTE LIVE REWARD MINT/TRANSFER VIA DASHBOARD =================
+// ================= STAGE 3: EXECUTE LIVE REWARD VIA DASHBOARD =================
 connectWalletBtn.addEventListener("click", async () => {
   if (typeof window.ethereum !== "undefined") {
     try {
@@ -599,8 +673,8 @@ executeClaimBtn.addEventListener("click", async () => {
       statusDiv.innerHTML = `
         <div class="successBox" style="background: rgba(87, 214, 194, 0.1); border: 1px solid #57d6c2; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left;">
           <h3 style="color: #57d6c2; margin-top:0;">🚀 Token Distribution Complete!</h3>
-          <p style="color:#fff; margin-bottom:10px;">10 SYNX tokens have been pushed directly to your account address.</p>
-          <a href="https://polygonscan.com/tx/${claimResult.transactionHash}" target="_blank" style="color: #57d6c2; text-decoration: underline; font-family: monospace; font-size: 13px;">
+          <p style="color:#000; margin-bottom:10px;">10 SYNX tokens have been pushed directly to your account address.</p>
+          <a href="https://polygonscan.com/tx/${claimResult.transactionHash}" target="_blank" style="color: #1f1f1f; text-decoration: underline; font-family: monospace; font-size: 13px;">
             Tx Hash: ${claimResult.transactionHash.substring(0, 20)}...
           </a>
         </div>
@@ -695,7 +769,7 @@ if (referralInviteForm) {
   });
 }
 
-// ================= REWARD CLAIMING SPA ROUTE WORKFLOW (PHASE 9 & 11) =================
+// ================= REWARD CLAIMING SPA ROUTE WORKFLOW =================
 function initializeClaimSection(token) {
   let claimWallet = "";
 
