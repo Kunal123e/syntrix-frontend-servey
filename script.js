@@ -233,6 +233,7 @@ function translatePage() {
   if (confirmRetrieveBtnEl && dict.btnSearch) confirmRetrieveBtnEl.innerText = dict.btnSearch;
 }
 
+
 // ================= DYNAMIC TRANSLATION ENGINE INTERCEPTORS =================
 function getSectionTitle(section) {
   if (typeof sectionTranslations !== "undefined" && sectionTranslations[currentLanguage]) {
@@ -319,7 +320,7 @@ function resetApplicationFlowState() {
   });
 }
 
-// ================= STAGE 1: ENTRY ONBOARDING & AUTO-RECOVERY GATE =================
+// ================= STAGE 1: ENTRY ONBOARDING & AUTO-RECOVERY TRACKING GATE =================
 if (emailGateForm) {
   emailGateForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -327,7 +328,7 @@ if (emailGateForm) {
     await runProfileLedgerVerification(emailVal, false);
   });
 } else {
-  // Fallback anchor hooks if layout matches standard click triggers
+  // Fallback anchor hooks if your layout is bound to standard click listeners on buttons instead of form structures
   startSurveyBtn.addEventListener("click", async () => {
     const emailVal = gateEmailInput.value.trim();
     await runProfileLedgerVerification(emailVal, false);
@@ -374,7 +375,7 @@ async function runProfileLedgerVerification(emailValue, isFromModal = false) {
         localStorage.setItem("syntrix_user_email", userEmailAddress);
         
         setTimeout(async () => {
-          // Clear layout containers
+          // Clear layout section containers instantly
           emailGateSection.classList.add("hidden");
           claimForm.classList.add("hidden");
           topProgressBox.classList.add("hidden");
@@ -406,11 +407,47 @@ async function runProfileLedgerVerification(emailValue, isFromModal = false) {
       }
       
     } else {
-      // CASE C: Fresh custom consumer entry sequence
-      if (isFromModal) {
-        currentStatusOutput.innerHTML = "❌ No prior survey history found for this email address.";
-        currentStatusOutput.style.color = "#ff4d4d";
-      } else {
+      // CASE C: Fresh custom consumer entry sequence / not found
+      currentStatusOutput.innerHTML = "❌ Pending claim record not found.";
+      currentStatusOutput.style.color = "#ff4d4d";
+
+      if (!isFromModal) {
+        // Create an explicit button to start a new survey so returning users aren't redirected on typos/errors
+        const startBtn = document.createElement("button");
+        startBtn.type = "button";
+        startBtn.className = "primaryActionBtn";
+        startBtn.style.marginTop = "15px";
+        startBtn.style.width = "100%";
+        startBtn.style.maxWidth = "320px";
+        startBtn.innerText = "Start New Survey";
+        startBtn.addEventListener("click", () => {
+          currentStatusOutput.innerHTML = "";
+          emailGateSection.classList.add("hidden");
+          claimForm.classList.remove("hidden");
+          topProgressBox.classList.remove("hidden");
+          
+          currentSection = 0;
+          renderSection();
+        });
+        currentStatusOutput.appendChild(document.createElement("br"));
+        currentStatusOutput.appendChild(startBtn);
+      }
+    }
+    
+  } catch (err) {
+    console.error("Ledger communication stack tracing error:", err);
+    currentStatusOutput.innerHTML = "❌ Pending claim record not found.";
+    currentStatusOutput.style.color = "#ff4d4d";
+    
+    if (!isFromModal) {
+      const startBtn = document.createElement("button");
+      startBtn.type = "button";
+      startBtn.className = "primaryActionBtn";
+      startBtn.style.marginTop = "15px";
+      startBtn.style.width = "100%";
+      startBtn.style.maxWidth = "320px";
+      startBtn.innerText = "Start New Survey";
+      startBtn.addEventListener("click", () => {
         currentStatusOutput.innerHTML = "";
         emailGateSection.classList.add("hidden");
         claimForm.classList.remove("hidden");
@@ -418,21 +455,9 @@ async function runProfileLedgerVerification(emailValue, isFromModal = false) {
         
         currentSection = 0;
         renderSection();
-      }
-    }
-    
-  } catch (err) {
-    console.error("Ledger communication stack tracing error:", err);
-    // Graceful Fallback if cluster times out
-    if (!isFromModal) {
-      currentStatusOutput.innerHTML = "";
-      emailGateSection.classList.add("hidden");
-      claimForm.classList.remove("hidden");
-      topProgressBox.classList.remove("hidden");
-      renderSection();
-    } else {
-      currentStatusOutput.innerHTML = "❌ Communication channel with registry server timed out.";
-      currentStatusOutput.style.color = "#ff4d4d";
+      });
+      currentStatusOutput.appendChild(document.createElement("br"));
+      currentStatusOutput.appendChild(startBtn);
     }
   }
 }
@@ -538,6 +563,7 @@ function attachInputEventListeners() {
   });
 }
 
+// ================= STAGE 3: EXECUTE LIVE REWARD MINT/TRANSFER VIA DASHBOARD =================
 function updateProgressIndicators() {
   const surveyData = getSurveyData();
   const percentage = ((currentSection + 1) / surveyData.length) * 100;
@@ -579,7 +605,7 @@ prevBtn.addEventListener("click", () => {
   renderSection();
 });
 
-// ================= SUBMIT SURVEY TO CLUSTER =================
+// ================= SUBMIT ENTIRE DATA BUNDLE OUT TO PHASE 1 METRICS ENDPOINT =================
 claimForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -594,7 +620,7 @@ claimForm.addEventListener("submit", async (e) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ 
         email: userEmailAddress, 
-        referredByCode: refCodeVal, // Optional referral code parameter (Phase 4)
+        referredByCode: refCodeVal, // Send optional referral code on submission (Phase 4)
         ...answers 
       })
     });
@@ -628,7 +654,7 @@ claimForm.addEventListener("submit", async (e) => {
   }
 });
 
-// ================= STAGE 3: EXECUTE LIVE REWARD VIA DASHBOARD =================
+// ================= STAGE 3: EXECUTE LIVE REWARD MINT/TRANSFER VIA DASHBOARD =================
 connectWalletBtn.addEventListener("click", async () => {
   if (typeof window.ethereum !== "undefined") {
     try {
@@ -673,8 +699,8 @@ executeClaimBtn.addEventListener("click", async () => {
       statusDiv.innerHTML = `
         <div class="successBox" style="background: rgba(87, 214, 194, 0.1); border: 1px solid #57d6c2; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left;">
           <h3 style="color: #57d6c2; margin-top:0;">🚀 Token Distribution Complete!</h3>
-          <p style="color:#000; margin-bottom:10px;">10 SYNX tokens have been pushed directly to your account address.</p>
-          <a href="https://polygonscan.com/tx/${claimResult.transactionHash}" target="_blank" style="color: #1f1f1f; text-decoration: underline; font-family: monospace; font-size: 13px;">
+          <p style="color:#fff; margin-bottom:10px;">10 SYNX tokens have been pushed directly to your account address.</p>
+          <a href="https://polygonscan.com/tx/${claimResult.transactionHash}" target="_blank" style="color: #57d6c2; text-decoration: underline; font-family: monospace; font-size: 13px;">
             Tx Hash: ${claimResult.transactionHash.substring(0, 20)}...
           </a>
         </div>
@@ -769,7 +795,7 @@ if (referralInviteForm) {
   });
 }
 
-// ================= REWARD CLAIMING SPA ROUTE WORKFLOW =================
+// ================= REWARD CLAIMING SPA ROUTE WORKFLOW (PHASE 9 & 11) =================
 function initializeClaimSection(token) {
   let claimWallet = "";
 
