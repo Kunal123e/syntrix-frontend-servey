@@ -1,4 +1,9 @@
 {
-  "version": 2,
-  "cleanUrls": true
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/claim",
+      "destination": "/index.html"
+    }
+  ]
 }
