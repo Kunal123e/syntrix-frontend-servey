@@ -429,6 +429,28 @@ body {
   font-weight: 600;
 }
 
+/* Phase 7 Referral Dashboard Grid Styles */
+.referralStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 15px;
+  margin: 25px 0;
+}
+
+.statBox {
+  background: #faf7f2;
+  border: 1px solid #ece4da;
+  border-radius: 14px;
+  padding: 20px 15px;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.statBox:hover {
+  border-color: #1f1f1f;
+  transform: translateY(-1px);
+}
+
 /* ================= CUSTOM RETRIEVE MODAL INTERFACE ================= */
 .modal-overlay {
   position: fixed;
@@ -766,6 +788,36 @@ textarea::placeholder {
   display: none !important;
 }
 
+/* Integrated Reward Claims Section (Phase 9 & 11 SPA) */
+#claimRewardDetails {
+  background: #faf7f2;
+  border: 1px solid #ece4da;
+  padding: 24px;
+  border-radius: 16px;
+  margin: 25px auto;
+  text-align: left;
+  max-width: 460px;
+}
+
+#claimWalletConnectedBlock {
+  max-width: 460px;
+  margin: 0 auto 20px;
+}
+
+#claimSuccessPanel {
+  padding: 20px 0;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+#claimLoadingGear {
+  animation: spin 2s linear infinite;
+  display: inline-block;
+}
+
 /* ================= RESPONSIVE DESIGN INTERFACE ================= */
 @media(max-width: 900px) {
   body {
@@ -854,4 +906,5 @@ textarea::placeholder {
     padding: 15px;
     width: 100%;
   }
+}
 }
