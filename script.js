@@ -2,6 +2,11 @@ const BACKEND_URL = window.location.origin.includes("localhost") || window.locat
   ? "http://localhost:5000"
   : "https://syntrix-airdrop.onrender.com";
 
+// Constants for Strict Validations
+const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+const WALLET_REGEX = /^0x[a-fA-F0-9]{40}$/;
+const DEFAULT_TIMEOUT_MS = 10000; // 10 seconds network abort rule
+
 // Helper to normalize user input or URL referral codes to SYN-XXXXXX format
 function normalizeReferralCode(code) {
   if (!code) return "";
@@ -15,11 +20,27 @@ function normalizeReferralCode(code) {
       clean = "SYN-" + clean;
     }
   }
-  
-  if (clean.length > 10) {
-    clean = clean.substring(0, 10);
-  }
+  // FIXED: Removed structural string truncation metrics causing corruption of long unique hashes
   return clean;
+}
+
+// Global Custom Timeout Fetch Wrapper Engine (Replaces raw hanging fetch)
+async function fetchWithTimeout(resource, options = {}) {
+  const { timeout = DEFAULT_TIMEOUT_MS } = options;
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  
+  try {
+    const response = await fetch(resource, {
+      ...options,
+      signal: controller.signal
+    });
+    clearTimeout(id);
+    return response;
+  } catch (error) {
+    clearTimeout(id);
+    throw error;
+  }
 }
 
 // Onboarding and Navigation DOM Hook Nodes
@@ -27,7 +48,7 @@ const emailGateSection = document.getElementById("emailGateSection");
 const emailGateForm = document.getElementById("emailGateForm");
 const gateEmailInput = document.getElementById("gateEmail");
 const startSurveyBtn = document.getElementById("startSurveyBtn");
-const referredByCodeInput = document.getElementById("referredByCode"); // Phase 4
+const referredByCodeInput = document.getElementById("referredByCode"); 
 
 // 3-Dots Navigation Floating Menu Controls
 const menuToggleBtn = document.getElementById("menuToggleBtn");
@@ -95,38 +116,30 @@ document.addEventListener("DOMContentLoaded", async () => {
   const claimToken = urlParams.get("token");
   const refParam = urlParams.get("ref");
   
-  // Phase 3: URL Parameter Reading & localStorage persistence
   if (refParam) {
     localStorage.setItem("referralCode", normalizeReferralCode(refParam));
-    // Strip query parameters for clean URL aesthetic
     window.history.replaceState({}, document.title, window.location.pathname);
   }
   
-  // Fill referredByCode input if code exists in localStorage
   const savedRefCode = localStorage.getItem("referralCode");
   if (savedRefCode && referredByCodeInput) {
     referredByCodeInput.value = savedRefCode;
   }
   
-  // Router check: If accessing claim route (by URL path '/claim' or having '?token=...' parameter)
   const isClaimPath = window.location.pathname.includes("/claim") || claimToken;
   
   if (isClaimPath && claimToken) {
-    // Hide standard views, show claim section
-    emailGateSection.classList.add("hidden");
-    claimForm.classList.add("hidden");
-    rewardDashboardScreen.classList.add("hidden");
-    claimScreenSection.classList.remove("hidden");
+    if (emailGateSection) emailGateSection.classList.add("hidden");
+    if (claimForm) claimForm.classList.add("hidden");
+    if (rewardDashboardScreen) rewardDashboardScreen.classList.add("hidden");
+    if (claimScreenSection) claimScreenSection.classList.remove("hidden");
     
-    // De-activate sidebar step tracking
     document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
     
     initializeClaimSection(claimToken);
   } else {
-    // Normal onboarding flow
-    claimScreenSection.classList.add("hidden");
+    if (claimScreenSection) claimScreenSection.classList.add("hidden");
     
-    // Session Recovery
     const savedEmail = localStorage.getItem("syntrix_user_email");
     if (savedEmail) {
       userEmailAddress = savedEmail;
@@ -143,11 +156,9 @@ langButtons.forEach(btn => {
     btn.classList.add("active");
     currentLanguage = btn.dataset.lang;
     
-    // Translate all static page elements
     translatePage();
     
-    // Rerender layout content matching translation engine profiles
-    if (claimForm.classList.contains("hidden") === false) {
+    if (claimForm && !claimForm.classList.contains("hidden")) {
       renderSection();
     }
   });
@@ -161,7 +172,7 @@ function getUIText(key) {
   const fallbacks = {
     validationRequired: "❌ Please answer all questions before continuing.",
     submitting: "⏳ Storing survey data metrics across secure registers...",
-    claiming: "⚡ Dispensing 10 SYNX tokens to target network gateway...",
+    claiming: "⚡ Dispensing tokens to target network gateway...",
     checkingLedger: "🔍 Authenticating communication profile ledger status..."
   };
   if (typeof translations !== "undefined" && translations[currentLanguage] && translations[currentLanguage][key]) {
@@ -174,20 +185,17 @@ function translatePage() {
   if (typeof translations === "undefined" || !translations[currentLanguage]) return;
   const dict = translations[currentLanguage];
 
-  // Main Titles
   const mainTitleEl = document.getElementById("mainTitle");
   const mainSubtitleEl = document.getElementById("mainSubtitle");
   if (mainTitleEl && (dict.mainTitle || dict.title)) mainTitleEl.innerText = dict.mainTitle || dict.title;
   if (mainSubtitleEl && (dict.mainSubtitle || dict.surveySubtitle)) mainSubtitleEl.innerText = dict.mainSubtitle || dict.surveySubtitle;
 
-  // Onboarding Gate
   const emailSectionTitleEl = document.querySelector("#emailGateSection .sectionTitle");
   if (emailSectionTitleEl && dict.emailSectionTitle) emailSectionTitleEl.innerText = dict.emailSectionTitle;
   
   const startSurveyBtnEl = document.getElementById("startSurveyBtn");
   if (startSurveyBtnEl && dict.btnStart) startSurveyBtnEl.innerHTML = dict.btnStart;
 
-  // Navigation buttons
   const prevBtnEl = document.getElementById("prevBtn");
   const nextBtnEl = document.getElementById("nextBtn");
   const submitClaimBtnEl = document.getElementById("submitClaimBtn");
@@ -195,7 +203,6 @@ function translatePage() {
   if (nextBtnEl && (dict.next || dict.btnNext)) nextBtnEl.innerHTML = `${dict.next || dict.btnNext} &gt;`;
   if (submitClaimBtnEl && (dict.submit || dict.btnSubmit)) submitClaimBtnEl.innerHTML = dict.submit || dict.btnSubmit;
 
-  // Dashboard
   const rewardTitleEl = document.querySelector("#rewardDashboardScreen .rewardTitle");
   if (rewardTitleEl && dict.claimTitle) rewardTitleEl.innerText = dict.claimTitle;
   
@@ -217,7 +224,6 @@ function translatePage() {
   const copyReferralBtnEl = document.getElementById("copyReferralBtn");
   if (copyReferralBtnEl && dict.btnCopy) copyReferralBtnEl.innerText = dict.btnCopy;
 
-  // Modal
   const modalTitleEl = document.querySelector("#retrieveModal .modal-header h2");
   if (modalTitleEl && dict.modalTitle) modalTitleEl.innerText = dict.modalTitle;
   
@@ -246,8 +252,6 @@ function translatePage() {
   if (confirmRetrieveBtnEl && dict.btnSearch) confirmRetrieveBtnEl.innerText = dict.btnSearch;
 }
 
-
-// ================= DYNAMIC TRANSLATION ENGINE INTERCEPTORS =================
 function getSectionTitle(section) {
   if (typeof sectionTranslations !== "undefined" && sectionTranslations[currentLanguage]) {
     return sectionTranslations[currentLanguage][section.title] || section.title;
@@ -262,7 +266,6 @@ function getQuestionText(q) {
   return q.text || q.id;
 }
 
-// Intercepts and parses option values dynamically out of your dictionaries
 function getOptionText(opt) {
   if (typeof optionTranslations !== "undefined" && optionTranslations[currentLanguage]) {
     return optionTranslations[currentLanguage][opt] || opt;
@@ -271,61 +274,69 @@ function getOptionText(opt) {
 }
 
 // ================= 3-DOTS OPTIONS NAVIGATION CONTROLLER =================
-menuToggleBtn.addEventListener("click", (e) => {
-  e.stopPropagation();
-  optionsPopover.classList.toggle("hidden");
-});
+// CRITICAL FIX: Wrapped interface selectors inside runtime null protection guards
+if (menuToggleBtn && optionsPopover) {
+  menuToggleBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    optionsPopover.classList.toggle("hidden");
+  });
+}
 
-// Structural Dismissal: Close overlay popover if clicking anywhere else inside viewport
 document.addEventListener("click", () => {
-  optionsPopover.classList.add("hidden");
+  if (optionsPopover) optionsPopover.classList.add("hidden");
 });
 
-menuRestartBtn.addEventListener("click", () => {
-  resetApplicationFlowState();
-});
+if (menuRestartBtn) {
+  menuRestartBtn.addEventListener("click", () => {
+    resetApplicationFlowState();
+  });
+}
 
-// Reveal custom modal overlay when clicking "Retrieve Pending Claim"
-menuRecoverBtn.addEventListener("click", () => {
-  optionsPopover.classList.add("hidden");
-  modalEmailInput.value = "";
-  modalStatus.innerHTML = "";
-  retrieveModal.classList.remove("hidden");
-  setTimeout(() => { modalEmailInput.focus(); }, 100);
-});
+if (menuRecoverBtn && optionsPopover && retrieveModal && modalEmailInput && modalStatus) {
+  menuRecoverBtn.addEventListener("click", () => {
+    optionsPopover.classList.add("hidden");
+    modalEmailInput.value = "";
+    modalStatus.innerHTML = "";
+    retrieveModal.classList.remove("hidden");
+    setTimeout(() => { modalEmailInput.focus(); }, 100);
+  });
+}
 
-// Modal dismiss event listeners
-const dismissModal = () => { retrieveModal.classList.add("hidden"); };
-closeModalBtn.addEventListener("click", dismissModal);
-cancelModalBtn.addEventListener("click", dismissModal);
-retrieveModal.addEventListener("click", (e) => {
-  if (e.target === retrieveModal) dismissModal();
-});
+const dismissModal = () => { if (retrieveModal) retrieveModal.classList.add("hidden"); };
+if (closeModalBtn) closeModalBtn.addEventListener("click", dismissModal);
+if (cancelModalBtn) cancelModalBtn.addEventListener("click", dismissModal);
+if (retrieveModal) {
+  retrieveModal.addEventListener("click", (e) => {
+    if (e.target === retrieveModal) dismissModal();
+  });
+}
 
-// Custom Modal Submit Trigger Execution Handler
-confirmRetrieveBtn.addEventListener("click", async () => {
-  const targetEmail = modalEmailInput.value.trim();
-  await runProfileLedgerVerification(targetEmail, true);
-});
+if (confirmRetrieveBtn) {
+  confirmRetrieveBtn.addEventListener("click", async () => {
+    if (modalEmailInput) {
+      const targetEmail = modalEmailInput.value.trim();
+      await runProfileLedgerVerification(targetEmail, true);
+    }
+  });
+}
 
 function resetApplicationFlowState() {
   if (emailGateForm) emailGateForm.reset();
-  localStorage.removeItem("syntrix_user_email"); // Clear saved session
+  localStorage.removeItem("syntrix_user_email");
   localStorage.removeItem("referralCode");
-  statusDiv.innerHTML = "";
+  if (statusDiv) statusDiv.innerHTML = "";
   userEmailAddress = "";
   currentSection = 0;
   
-  // Clear local questionnaire answers keys mapping object
   for (const prop in answers) { 
     if (Object.prototype.hasOwnProperty.call(answers, prop)) delete answers[prop]; 
   }
   
-  emailGateSection.classList.remove("hidden");
-  claimForm.classList.add("hidden");
-  topProgressBox.classList.add("hidden");
-  rewardDashboardScreen.classList.add("hidden");
-  claimScreenSection.classList.add("hidden");
+  if (emailGateSection) emailGateSection.classList.remove("hidden");
+  if (claimForm) claimForm.classList.add("hidden");
+  if (topProgressBox) topProgressBox.classList.add("hidden");
+  if (rewardDashboardScreen) rewardDashboardScreen.classList.add("hidden");
+  if (claimScreenSection) claimScreenSection.classList.add("hidden");
   
   document.querySelectorAll(".step").forEach((st, idx) => {
     if (idx === 0) st.classList.add("active");
@@ -337,78 +348,74 @@ function resetApplicationFlowState() {
 if (emailGateForm) {
   emailGateForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const emailVal = gateEmailInput.value.trim();
-    await runProfileLedgerVerification(emailVal, false);
+    if (gateEmailInput) {
+      const emailVal = gateEmailInput.value.trim();
+      await runProfileLedgerVerification(emailVal, false);
+    }
   });
-} else {
-  // Fallback anchor hooks if your layout is bound to standard click listeners on buttons instead of form structures
+} else if (startSurveyBtn) {
   startSurveyBtn.addEventListener("click", async () => {
-    const emailVal = gateEmailInput.value.trim();
-    await runProfileLedgerVerification(emailVal, false);
+    if (gateEmailInput) {
+      const emailVal = gateEmailInput.value.trim();
+      await runProfileLedgerVerification(emailVal, false);
+    }
   });
 }
 
-// Centralized Asynchronous Core Routing Logic for Profile Matching
 async function runProfileLedgerVerification(emailValue, isFromModal = false) {
   const sanitizedEmail = emailValue.trim().toLowerCase();
-  
-  // Choose correct feedback container based on where the action was taken
   const currentStatusOutput = isFromModal ? modalStatus : statusDiv;
   
-  if (!sanitizedEmail || !sanitizedEmail.includes("@")) {
-    currentStatusOutput.innerHTML = "❌ Please input a valid identification email profile address.";
-    currentStatusOutput.style.color = "#ff4d4d";
+  // CRITICAL FIX: Enhanced matching with strict backend-aligned Email RegEx
+  if (!sanitizedEmail || !EMAIL_REGEX.test(sanitizedEmail)) {
+    if (currentStatusOutput) {
+      currentStatusOutput.innerHTML = "❌ Please input a valid identification email profile address.";
+      currentStatusOutput.style.color = "#ff4d4d";
+    }
     return;
   }
   
   userEmailAddress = sanitizedEmail;
-  currentStatusOutput.innerHTML = getUIText("checkingLedger");
-  currentStatusOutput.style.color = "#57d6c2";
+  if (currentStatusOutput) {
+    currentStatusOutput.innerHTML = getUIText("checkingLedger");
+    currentStatusOutput.style.color = "#57d6c2";
+  }
   
   try {
     const rawRefCode = referredByCodeInput ? referredByCodeInput.value.trim() : "";
     const refCodeVal = normalizeReferralCode(rawRefCode);
     
-    // Scan database records on the backend cluster
-    const response = await fetch(`${BACKEND_URL}/api/dashboard-auth?email=${encodeURIComponent(userEmailAddress)}&ref=${encodeURIComponent(refCodeVal)}`);
+    // SAFE NETWORK LAYER: Uses custom network execution abort limits
+    const response = await fetchWithTimeout(`${BACKEND_URL}/api/dashboard-auth?email=${encodeURIComponent(userEmailAddress)}&ref=${encodeURIComponent(refCodeVal)}`);
     const verification = await response.json();
     
-    console.log("Database response payload logs:", verification);
-
     if (!response.ok) {
-      // If validation fails (e.g. invalid referral code, self-referral, etc. - 400 Bad Request)
-      currentStatusOutput.innerHTML = "❌ " + (verification.error || "Verification failed.");
-      currentStatusOutput.style.color = "#ff4d4d";
+      if (currentStatusOutput) {
+        currentStatusOutput.innerHTML = "❌ " + (verification.error || "Verification failed.");
+        currentStatusOutput.style.color = "#ff4d4d";
+      }
       return;
     }
 
-    // DYNAMIC CONDITIONAL AUTO-RECOVERY PIPELINE
-    if (verification.exists) {
-      // Check structural boolean variations from normalized database schemas
-      const hasClaimedTokens = verification.isClaimed === true || 
-                                verification.status === "success" || 
-                                (verification.txHash !== undefined && verification.txHash !== null && verification.txHash !== "");
+    if (verification.status === "FLOW_A" || verification.status === "FLOW_B") {
+      const hasClaimedTokens = (verification.status === "FLOW_B");
 
       if (!hasClaimedTokens) {
-        // CASE A: Profile has filled survey data but has not claimed their tokens yet
-        currentStatusOutput.innerHTML = "✨ Record isolated! Loading Web3 dashboard gateway...";
-        currentStatusOutput.style.color = "#57d6c2";
+        if (currentStatusOutput) {
+          currentStatusOutput.innerHTML = "✨ Record isolated! Loading Web3 dashboard gateway...";
+          currentStatusOutput.style.color = "#57d6c2";
+        }
         
         localStorage.setItem("syntrix_user_email", userEmailAddress);
         
         setTimeout(async () => {
-          // Clear layout section containers instantly
-          emailGateSection.classList.add("hidden");
-          claimForm.classList.add("hidden");
-          topProgressBox.classList.add("hidden");
-          if (isFromModal) retrieveModal.classList.add("hidden");
+          if (emailGateSection) emailGateSection.classList.add("hidden");
+          if (claimForm) claimForm.classList.add("hidden");
+          if (topProgressBox) topProgressBox.classList.add("hidden");
+          if (isFromModal && retrieveModal) retrieveModal.classList.add("hidden");
+          if (statusDiv) statusDiv.innerHTML = "";
+          if (rewardDashboardScreen) rewardDashboardScreen.classList.remove("hidden");
           
-          statusDiv.innerHTML = "";
-          
-          // Force slide into Web3 reward dashboard display card
-          rewardDashboardScreen.classList.remove("hidden");
-          
-          // Highlight ultimate index on left layout bar element
           document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
           const finalStepNode = document.getElementById("step-7");
           if (finalStepNode) {
@@ -418,27 +425,27 @@ async function runProfileLedgerVerification(emailValue, isFromModal = false) {
             if (fallbackStep) fallbackStep.classList.add("active");
           }
           
-          // Load referral stats dashboard (Phase 7)
           await loadReferralDashboard(userEmailAddress);
         }, 1000);
         
       } else {
-        // CASE B: Target communication signature records an active validation token hash transfer
-        currentStatusOutput.innerHTML = "❌ This email profile has already fully claimed their SYNX tokens.";
-        currentStatusOutput.style.color = "#ff4d4d";
+        if (currentStatusOutput) {
+          currentStatusOutput.innerHTML = "❌ This email profile has already fully claimed their SYNX tokens.";
+          currentStatusOutput.style.color = "#ff4d4d";
+        }
       }
       
     } else {
-      // CASE C: Fresh custom consumer entry sequence (New User)
       if (isFromModal) {
-        currentStatusOutput.innerHTML = "❌ Pending claim record not found.";
-        currentStatusOutput.style.color = "#ff4d4d";
+        if (currentStatusOutput) {
+          currentStatusOutput.innerHTML = "❌ Pending claim record not found.";
+          currentStatusOutput.style.color = "#ff4d4d";
+        }
       } else {
-        // Proceed automatically to survey onboarding without errors
-        currentStatusOutput.innerHTML = "";
-        emailGateSection.classList.add("hidden");
-        claimForm.classList.remove("hidden");
-        topProgressBox.classList.remove("hidden");
+        if (statusDiv) statusDiv.innerHTML = "";
+        if (emailGateSection) emailGateSection.classList.add("hidden");
+        if (claimForm) claimForm.classList.remove("hidden");
+        if (topProgressBox) topProgressBox.classList.remove("hidden");
         
         currentSection = 0;
         renderSection();
@@ -447,19 +454,20 @@ async function runProfileLedgerVerification(emailValue, isFromModal = false) {
     
   } catch (err) {
     console.error("Ledger communication stack tracing error:", err);
-    currentStatusOutput.innerHTML = "❌ Connection failed. Please try again later.";
-    currentStatusOutput.style.color = "#ff4d4d";
+    if (currentStatusOutput) {
+      currentStatusOutput.innerHTML = "❌ Connection timeout or cluster failure. Please try again.";
+      currentStatusOutput.style.color = "#ff4d4d";
+    }
   }
 }
 
 // ================= STAGE 2: SURVEY LAYOUT GENERATOR MATRIX =================
 function renderSection() {
   const surveyData = getSurveyData();
-  if (surveyData.length === 0) return;
+  if (surveyData.length === 0 || !surveyContainer) return;
 
   const section = surveyData[currentSection];
   
-  // Highlighting matching steps on sidebar tracker panels cleanly
   document.querySelectorAll(".step").forEach((st, idx) => {
     if (idx === currentSection + 1) st.classList.add("active");
     else st.classList.remove("active");
@@ -520,21 +528,20 @@ function renderSection() {
 function configureNavigationActionButtons() {
   const surveyData = getSurveyData();
   
-  // Handle layout visibility variations
-  prevBtn.style.display = currentSection === 0 ? "none" : "inline-block";
+  if (prevBtn) prevBtn.style.display = currentSection === 0 ? "none" : "inline-block";
 
   if (currentSection === surveyData.length - 1) {
-    nextBtn.classList.add("hidden");
-    submitClaimBtn.classList.remove("hidden"); // Reveals "Submit Survey & Claim ✨"
+    if (nextBtn) nextBtn.classList.add("hidden");
+    if (submitClaimBtn) submitClaimBtn.classList.remove("hidden");
   } else {
-    nextBtn.classList.remove("hidden");
-    submitClaimBtn.classList.add("hidden");
+    if (nextBtn) nextBtn.classList.remove("hidden");
+    if (submitClaimBtn) submitClaimBtn.classList.add("hidden");
   }
 }
 
 function attachInputEventListeners() {
   document.querySelectorAll(".option").forEach(opt => {
-    opt.addEventListener("click", () => {
+    opt.onclick = () => { // FIXED: Replaced addEventListener with clean execution closures
       const qId = opt.dataset.question;
       const val = opt.dataset.value;
       if (opt.dataset.multiple) {
@@ -545,19 +552,19 @@ function attachInputEventListeners() {
         answers[qId] = val;
       }
       renderSection();
-    });
+    };
   });
 
   document.querySelectorAll("textarea").forEach(tx => {
-    tx.addEventListener("input", () => { answers[tx.dataset.id] = tx.value; });
+    tx.oninput = () => { answers[tx.dataset.id] = tx.value; };
   });
 }
 
 function updateProgressIndicators() {
   const surveyData = getSurveyData();
   const percentage = ((currentSection + 1) / surveyData.length) * 100;
-  progressFill.style.width = percentage + "%";
-  progressText.innerText = `${getUIText('progress')} ${currentSection + 1}/${surveyData.length}`;
+  if (progressFill) progressFill.style.width = percentage + "%";
+  if (progressText) progressText.innerText = `${getUIText('progress')} ${currentSection + 1}/${surveyData.length}`;
 }
 
 function validateSectionInputs() {
@@ -577,148 +584,201 @@ function validateSectionInputs() {
   return isPass;
 }
 
-nextBtn.addEventListener("click", () => {
-  if (!validateSectionInputs()) {
-    statusDiv.innerHTML = getUIText("validationRequired");
-    statusDiv.style.color = "#ff4d4d";
-    return;
-  }
-  statusDiv.innerHTML = "";
-  currentSection++;
-  renderSection();
-});
+if (nextBtn) {
+  nextBtn.onclick = () => {
+    if (!validateSectionInputs()) {
+      if (statusDiv) {
+        statusDiv.innerHTML = getUIText("validationRequired");
+        statusDiv.style.color = "#ff4d4d";
+      }
+      return;
+    }
+    if (statusDiv) statusDiv.innerHTML = "";
+    currentSection++;
+    renderSection();
+  };
+}
 
-prevBtn.addEventListener("click", () => {
-  statusDiv.innerHTML = "";
-  currentSection--;
-  renderSection();
-});
+if (prevBtn) {
+  prevBtn.onclick = () => {
+    if (statusDiv) statusDiv.innerHTML = "";
+    currentSection--;
+    renderSection();
+  };
+}
 
 // ================= SUBMIT ENTIRE DATA BUNDLE OUT TO PHASE 1 METRICS ENDPOINT =================
-claimForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
+if (claimForm) {
+  claimForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-  statusDiv.innerHTML = getUIText("submitting");
-  statusDiv.style.color = "#57d6c2";
-  
-  const rawRefCode = referredByCodeInput ? referredByCodeInput.value.trim() : "";
-  const refCodeVal = normalizeReferralCode(rawRefCode);
+    // UI DOUBLE-SUBMIT LOCK
+    if (submitClaimBtn) submitClaimBtn.disabled = true;
 
-  try {
-    const response = await fetch(`${BACKEND_URL}/api/claim-airdrop`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        email: userEmailAddress, 
-        referredByCode: refCodeVal, // Send optional referral code on submission (Phase 4)
-        ...answers 
-      })
-    });
-
-    const output = await response.json();
-
-    if (output.success) {
-      statusDiv.innerHTML = "";
-      
-      localStorage.setItem("syntrix_user_email", userEmailAddress);
-      localStorage.removeItem("referralCode"); // Clear saved code once completed
-      
-      // Advance user instantly into Stage 3 Post-Submission dashboard screen container
-      claimForm.classList.add("hidden");
-      topProgressBox.classList.add("hidden");
-      rewardDashboardScreen.classList.remove("hidden");
-      
-      document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
-      const finalStepNode = document.getElementById("step-7");
-      if (finalStepNode) finalStepNode.classList.add("active");
-      
-      // Load stats dashboard
-      await loadReferralDashboard(userEmailAddress);
-    } else {
-      statusDiv.innerHTML = "❌ " + (output.error || "Survey submission integration failure.");
-      statusDiv.style.color = "#ff4d4d";
+    if (statusDiv) {
+      statusDiv.innerHTML = getUIText("submitting");
+      statusDiv.style.color = "#57d6c2";
     }
-  } catch (err) {
-    statusDiv.innerHTML = "❌ Communication channel with Render cluster down.";
-    statusDiv.style.color = "#ff4d4d";
-  }
-});
+    
+    const rawRefCode = referredByCodeInput ? referredByCodeInput.value.trim() : "";
+    const refCodeVal = normalizeReferralCode(rawRefCode);
+
+    try {
+      const response = await fetchWithTimeout(`${BACKEND_URL}/api/claim-airdrop`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          email: userEmailAddress, 
+          referredByCode: refCodeVal, 
+          answers: answers 
+        })
+      });
+
+      const output = await response.json();
+
+      if (output.success) {
+        if (statusDiv) statusDiv.innerHTML = "";
+        
+        localStorage.setItem("syntrix_user_email", userEmailAddress);
+        localStorage.removeItem("referralCode");
+        
+        if (claimForm) claimForm.classList.add("hidden");
+        if (topProgressBox) topProgressBox.classList.add("hidden");
+        if (rewardDashboardScreen) rewardDashboardScreen.classList.remove("hidden");
+        
+        document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
+        const finalStepNode = document.getElementById("step-7");
+        if (finalStepNode) finalStepNode.classList.add("active");
+        
+        // Save the sequence authorization token for future claims
+        if (output.claimSequenceToken) {
+          localStorage.setItem("syntrix_claim_token", output.claimSequenceToken);
+        }
+        
+        await loadReferralDashboard(userEmailAddress);
+      } else {
+        if (statusDiv) {
+          statusDiv.innerHTML = "❌ " + (output.error || "Survey submission integration failure.");
+          statusDiv.style.color = "#ff4d4d";
+        }
+        if (submitClaimBtn) submitClaimBtn.disabled = false;
+      }
+    } catch (err) {
+      if (statusDiv) {
+        statusDiv.innerHTML = "❌ Communication channel with server timed out.";
+        statusDiv.style.color = "#ff4d4d";
+      }
+      if (submitClaimBtn) submitClaimBtn.disabled = false;
+    }
+  });
+}
 
 // ================= STAGE 3: EXECUTE LIVE REWARD MINT/TRANSFER VIA DASHBOARD =================
-connectWalletBtn.addEventListener("click", async () => {
-  if (typeof window.ethereum !== "undefined") {
-    try {
-      const addresses = await window.ethereum.request({ method: "eth_requestAccounts" });
-      if (addresses.length > 0) {
-        dashboardWalletInput.value = addresses[0];
-        statusDiv.innerHTML = "🦊 MetaMask Wallet successfully integrated.";
-        statusDiv.style.color = "#57d6c2";
+if (connectWalletBtn) {
+  connectWalletBtn.onclick = async () => {
+    if (typeof window.ethereum !== "undefined") {
+      try {
+        const addresses = await window.ethereum.request({ method: "eth_requestAccounts" });
+        if (addresses.length > 0 && dashboardWalletInput) {
+          dashboardWalletInput.value = addresses[0];
+          if (statusDiv) {
+            statusDiv.innerHTML = "🦊 MetaMask Wallet successfully integrated.";
+            statusDiv.style.color = "#57d6c2";
+          }
+        }
+      } catch (walletErr) {
+        if (statusDiv) {
+          statusDiv.innerHTML = "⚠️ Wallet hook authorization denied by user connection.";
+          statusDiv.style.color = "#ffb347";
+        }
       }
-    } catch (walletErr) {
-      statusDiv.innerHTML = "⚠️ Wallet hook authorization denied by user connection.";
-      statusDiv.style.color = "#ffb347";
-    }
-  } else {
-    statusDiv.innerHTML = "ℹ️ Browser wallet standard injection provider missing. Paste manually.";
-    statusDiv.style.color = "#ffb347";
-  }
-});
-
-executeClaimBtn.addEventListener("click", async () => {
-  const targetedWallet = dashboardWalletInput.value.trim();
-  
-  if (!targetedWallet || targetedWallet.length !== 42 || !targetedWallet.startsWith("0x")) {
-    statusDiv.innerHTML = "❌ Please specify a valid EVM public network cryptographic address.";
-    statusDiv.style.color = "#ff4d4d";
-    return;
-  }
-
-  statusDiv.innerHTML = getUIText("claiming");
-  statusDiv.style.color = "#57d6c2";
-
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/claim-reward`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: userEmailAddress, walletAddress: targetedWallet })
-    });
-
-    const claimResult = await res.json();
-
-    if (claimResult.success) {
-      statusDiv.innerHTML = `
-        <div class="successBox" style="background: rgba(87, 214, 194, 0.1); border: 1px solid #57d6c2; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left;">
-          <h3 style="color: #57d6c2; margin-top:0;">🚀 Token Distribution Complete!</h3>
-          <p style="color:#fff; margin-bottom:10px;">10 SYNX tokens have been pushed directly to your account address.</p>
-          <a href="https://polygonscan.com/tx/${claimResult.transactionHash}" target="_blank" style="color: #57d6c2; text-decoration: underline; font-family: monospace; font-size: 13px;">
-            Tx Hash: ${claimResult.transactionHash.substring(0, 20)}...
-          </a>
-        </div>
-      `;
-      // Update statistics
-      await loadReferralDashboard(userEmailAddress);
     } else {
-      statusDiv.innerHTML = "❌ " + (claimResult.error || "Reward asset generation rejected.");
-      statusDiv.style.color = "#ff4d4d";
+      if (statusDiv) {
+        statusDiv.innerHTML = "ℹ️ Browser wallet standard injection provider missing. Paste manually.";
+        statusDiv.style.color = "#ffb347";
+      }
     }
-  } catch (err) {
-    statusDiv.innerHTML = "❌ Network processing failure executing claim asset parameters.";
-    statusDiv.style.color = "#ff4d4d";
-  }
-});
+  };
+}
+
+if (executeClaimBtn) {
+  executeClaimBtn.onclick = async () => {
+    if (!dashboardWalletInput) return;
+    const targetedWallet = dashboardWalletInput.value.trim();
+    
+    // CRITICAL FIX: Upgraded wallet validation matching strict checksum regex
+    if (!targetedWallet || !WALLET_REGEX.test(targetedWallet)) {
+      if (statusDiv) {
+        statusDiv.innerHTML = "❌ Please specify a valid EVM public network cryptographic address (0x...).";
+        statusDiv.style.color = "#ff4d4d";
+      }
+      return;
+    }
+
+    // UI BUTTON DE-ACTIVATION LOCK
+    executeClaimBtn.disabled = true;
+
+    if (statusDiv) {
+      statusDiv.innerHTML = getUIText("claiming");
+      statusDiv.style.color = "#57d6c2";
+    }
+
+    try {
+      const activeClaimToken = localStorage.getItem("syntrix_claim_token") || "";
+      
+      // Zero-Trust Execution: Routes directly to cryptographic signature claim structure
+      const res = await fetchWithTimeout(`${BACKEND_URL}/api/rewards/claim`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          token: activeClaimToken, 
+          walletAddress: targetedWallet 
+        })
+      });
+
+      const claimResult = await res.json();
+
+      if (claimResult.success) {
+        if (statusDiv) {
+          statusDiv.innerHTML = `
+            <div class="successBox" style="background: rgba(87, 214, 194, 0.1); border: 1px solid #57d6c2; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left;">
+              <h3 style="color: #57d6c2; margin-top:0;">🚀 Token Distribution Complete!</h3>
+              <p style="color:#fff; margin-bottom:10px;">Your allocations have been successfully pushed on-chain.</p>
+              <a href="https://polygonscan.com/tx/${claimResult.transactionHash}" target="_blank" style="color: #57d6c2; text-decoration: underline; font-family: monospace; font-size: 13px;">
+                Tx Hash: ${claimResult.transactionHash.substring(0, 20)}...
+              </a>
+            </div>
+          `;
+        }
+        await loadReferralDashboard(userEmailAddress);
+      } else {
+        if (statusDiv) {
+          statusDiv.innerHTML = "❌ " + (claimResult.error || "Reward asset generation rejected.");
+          statusDiv.style.color = "#ff4d4d";
+        }
+        executeClaimBtn.disabled = false;
+      }
+    } catch (err) {
+      if (statusDiv) {
+        statusDiv.innerHTML = "❌ Network processing timeout executing claim parameters.";
+        statusDiv.style.color = "#ff4d4d";
+      }
+      executeClaimBtn.disabled = false;
+    }
+  };
+}
 
 // ================= REFERRAL DASHBOARD STATS RETRIEVAL (PHASE 7) =================
 async function loadReferralDashboard(email) {
   try {
-    const res = await fetch(`${BACKEND_URL}/api/referral/dashboard?email=${encodeURIComponent(email)}`);
+    const res = await fetchWithTimeout(`${BACKEND_URL}/api/referral/dashboard?email=${encodeURIComponent(email)}`);
     const data = await res.json();
-    if (res.ok && data.success) {
+    if (res.ok && data.totalReferrals !== undefined) {
       if (statTotalReferrals) statTotalReferrals.textContent = data.totalReferrals;
       if (statPendingRewards) statPendingRewards.textContent = `${data.pendingRewards} SYN`;
       if (statClaimedRewards) statClaimedRewards.textContent = `${data.claimedRewards} SYN`;
       if (statTotalEarned) statTotalEarned.textContent = `${data.totalEarned} SYN`;
       
-      // Standardize referral links structure
       const currentUrl = window.location.origin;
       if (referralCodeDisplay) {
         referralCodeDisplay.value = `${currentUrl}/?ref=${data.referralCode}`;
@@ -731,24 +791,29 @@ async function loadReferralDashboard(email) {
 
 // Copy Referral Link click trigger
 if (copyReferralBtn) {
-  copyReferralBtn.addEventListener("click", () => {
+  copyReferralBtn.onclick = () => {
     if (referralCodeDisplay) {
       referralCodeDisplay.select();
-      document.execCommand("copy");
-      copyReferralBtn.textContent = "Copied!";
-      setTimeout(() => {
-        copyReferralBtn.textContent = "Copy Link";
-      }, 2000);
+      // CRITICAL FIX: Replaced old deprecated document.execCommand with safe clipboard promise API
+      navigator.clipboard.writeText(referralCodeDisplay.value)
+        .then(() => {
+          copyReferralBtn.textContent = "Copied!";
+          setTimeout(() => {
+            copyReferralBtn.textContent = "Copy Link";
+          }, 2000);
+        })
+        .catch(err => {
+          console.error("Clipboard system failure:", err);
+        });
     }
-  });
+  };
 }
 
 // ================= REWARD CLAIMING SPA ROUTE WORKFLOW (PHASE 9 & 11) =================
 function initializeClaimSection(token) {
   let claimWallet = "";
 
-  // Fetch token specs on load
-  fetch(`${BACKEND_URL}/api/rewards/claim-info?token=${encodeURIComponent(token)}`)
+  fetchWithTimeout(`${BACKEND_URL}/api/rewards/claim-info?token=${encodeURIComponent(token)}`)
     .then(async res => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Verification parameter token check invalid.");
@@ -757,103 +822,122 @@ function initializeClaimSection(token) {
         throw new Error(`This reward allocation is already marked as ${data.status.toUpperCase()}.`);
       }
       
-      document.getElementById("claimInfoEmail").textContent = data.email;
-      document.getElementById("claimInfoType").textContent = data.rewardType;
-      document.getElementById("claimInfoAmount").textContent = `${data.amount} SYN`;
+      const infoEmail = document.getElementById("claimInfoEmail");
+      const infoType = document.getElementById("claimInfoType");
+      const infoAmount = document.getElementById("claimInfoAmount");
       
-      claimLoadingGear.classList.add("hidden");
-      claimStaticIcon.classList.remove("hidden");
-      claimScreenTitle.textContent = "Claim Your Earned Reward";
-      claimInfoSubtitle.textContent = "Verify details and connect MetaMask to execute claim.";
+      if (infoEmail) infoEmail.textContent = data.email;
+      if (infoType) infoType.textContent = data.rewardType;
+      if (infoAmount) infoAmount.textContent = `${data.amount} SYN`;
       
-      claimRewardDetails.classList.remove("hidden");
-      claimActionPanel.classList.remove("hidden");
+      if (claimLoadingGear) claimLoadingGear.classList.add("hidden");
+      if (claimStaticIcon) claimStaticIcon.classList.remove("hidden");
+      if (claimScreenTitle) claimScreenTitle.textContent = "Claim Your Earned Reward";
+      if (claimInfoSubtitle) claimInfoSubtitle.textContent = "Verify details and connect MetaMask to execute claim.";
+      
+      if (claimRewardDetails) claimRewardDetails.classList.remove("hidden");
+      if (claimActionPanel) claimActionPanel.classList.remove("hidden");
     })
     .catch(err => {
-      claimLoadingGear.classList.add("hidden");
-      claimErrorBox.classList.remove("hidden");
-      claimScreenTitle.textContent = "Claim Attempt Blocked";
-      claimInfoSubtitle.textContent = err.message;
-      claimInfoSubtitle.style.color = "#ff4d4d";
+      if (claimLoadingGear) claimLoadingGear.classList.add("hidden");
+      if (claimErrorBox) claimErrorBox.classList.remove("hidden");
+      if (claimScreenTitle) claimScreenTitle.textContent = "Claim Attempt Blocked";
+      if (claimInfoSubtitle) {
+        claimInfoSubtitle.textContent = err.message;
+        claimInfoSubtitle.style.color = "#ff4d4d";
+      }
     });
 
   // MetaMask Pairing
-  claimConnectWalletBtn.addEventListener("click", async () => {
-    if (typeof window.ethereum === "undefined") {
-      statusDiv.innerHTML = "❌ MetaMask wallet browser extension not detected.";
-      statusDiv.style.color = "#ff4d4d";
-      return;
-    }
-    
-    try {
-      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-      claimWallet = accounts[0];
-      
-      claimWalletAddressDisplay.textContent = claimWallet;
-      claimConnectWalletBtn.classList.add("hidden");
-      claimWalletConnectedBlock.classList.remove("hidden");
-      statusDiv.innerHTML = "";
-    } catch (err) {
-      statusDiv.innerHTML = "❌ MetaMask connection rejected.";
-      statusDiv.style.color = "#ff4d4d";
-    }
-  });
-
-  // Signature verification & transfer trigger execution (Phase 9 & 11)
-  submitClaimRewardBtn.addEventListener("click", async () => {
-    if (!claimWallet) return;
-    
-    statusDiv.innerHTML = "";
-    submitClaimRewardBtn.disabled = true;
-    submitClaimRewardBtn.textContent = "Sign Message in MetaMask...";
-    
-    try {
-      // Build Verification Message
-      const message = `Claiming SYNTRIX Reward\nToken: ${token}\nWallet: ${claimWallet}`;
-      
-      // Request signature from user MetaMask provider
-      const signature = await window.ethereum.request({
-        method: "personal_sign",
-        params: [message, claimWallet]
-      });
-      
-      submitClaimRewardBtn.textContent = "Executing On-Chain Settlement...";
-      
-      const response = await fetch(`${BACKEND_URL}/api/rewards/claim`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          token: token,
-          walletAddress: claimWallet,
-          signature: signature
-        })
-      });
-      
-      const result = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(result.error || "Claim transaction rejected.");
+  if (claimConnectWalletBtn) {
+    claimConnectWalletBtn.onclick = async () => {
+      if (typeof window.ethereum === "undefined") {
+        if (statusDiv) {
+          statusDiv.innerHTML = "❌ MetaMask wallet browser extension not detected.";
+          statusDiv.style.color = "#ff4d4d";
+        }
+        return;
       }
       
-      // Open Success Screen
-      claimRewardDetails.classList.add("hidden");
-      claimActionPanel.classList.add("hidden");
-      claimSuccessPanel.classList.remove("hidden");
-      
-      claimScreenTitle.textContent = "Settlement Finalized!";
-      claimInfoSubtitle.textContent = "Your SYN tokens have been transferred successfully.";
-      
-      claimTxHashLink.textContent = result.transactionHash;
-      claimTxHashLink.href = `https://polygonscan.com/tx/${result.transactionHash}`;
-      
-      statusDiv.innerHTML = "✅ Reward successfully transferred! Your wallet balance has been updated.";
-      statusDiv.style.color = "#57d6c2";
+      try {
+        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+        claimWallet = accounts[0];
+        
+        if (claimWalletAddressDisplay) claimWalletAddressDisplay.textContent = claimWallet;
+        if (claimConnectWalletBtn) claimConnectWalletBtn.classList.add("hidden");
+        if (claimWalletConnectedBlock) claimWalletConnectedBlock.classList.remove("hidden");
+        if (statusDiv) statusDiv.innerHTML = "";
+      } catch (err) {
+        if (statusDiv) {
+          statusDiv.innerHTML = "❌ MetaMask connection rejected.";
+          statusDiv.style.color = "#ff4d4d";
+        }
+      }
+    };
+  }
 
-    } catch (err) {
-      statusDiv.innerHTML = "❌ " + err.message;
-      statusDiv.style.color = "#ff4d4d";
-      submitClaimRewardBtn.disabled = false;
-      submitClaimRewardBtn.textContent = "✍️ Sign Message & Claim Tokens";
-    }
-  });
+  // Signature verification & transfer trigger execution (Phase 9 & 11)
+  if (submitClaimRewardBtn) {
+    submitClaimRewardBtn.onclick = async () => {
+      if (!claimWallet) return;
+      
+      if (statusDiv) statusDiv.innerHTML = "";
+      submitClaimRewardBtn.disabled = true;
+      submitClaimRewardBtn.textContent = "Sign Message in MetaMask...";
+      
+      try {
+        // FIXED ZERO-TRUST COMPLIANCE: Constructed message payload matches exact backend reconstruction logic
+        const cleanWallet = claimWallet.toLowerCase();
+        const message = `Syntrix Airdrop Claim Validation\nToken Reference: ${token}\nAccount: ${cleanWallet}`;
+        
+        const signature = await window.ethereum.request({
+          method: "personal_sign",
+          params: [message, claimWallet]
+        });
+        
+        submitClaimRewardBtn.textContent = "Executing On-Chain Settlement...";
+        
+        const response = await fetchWithTimeout(`${BACKEND_URL}/api/rewards/claim`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            token: token,
+            walletAddress: claimWallet,
+            signature: signature
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(result.error || "Claim transaction rejected.");
+        }
+        
+        if (claimRewardDetails) claimRewardDetails.classList.add("hidden");
+        if (claimActionPanel) claimActionPanel.classList.add("hidden");
+        if (claimSuccessPanel) claimSuccessPanel.classList.remove("hidden");
+        
+        if (claimScreenTitle) claimScreenTitle.textContent = "Settlement Finalized!";
+        if (claimInfoSubtitle) claimInfoSubtitle.textContent = "Your SYN tokens have been transferred successfully.";
+        
+        if (claimTxHashLink) {
+          claimTxHashLink.textContent = result.transactionHash;
+          claimTxHashLink.href = `https://polygonscan.com/tx/${result.transactionHash}`;
+        }
+        
+        if (statusDiv) {
+          statusDiv.innerHTML = "✅ Reward successfully transferred! Your wallet balance has been updated.";
+          statusDiv.style.color = "#57d6c2";
+        }
+
+      } catch (err) {
+        if (statusDiv) {
+          statusDiv.innerHTML = "❌ " + err.message;
+          statusDiv.style.color = "#ff4d4d";
+        }
+        submitClaimRewardBtn.disabled = false;
+        submitClaimRewardBtn.textContent = "✍️ Sign Message & Claim Tokens";
+      }
+    };
+  }
 }
