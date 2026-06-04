@@ -734,54 +734,6 @@ async function loadReferralDashboard(email) {
       if (referralCodeDisplay) {
         referralCodeDisplay.value = `${currentUrl}/?ref=${data.referralCode}`;
       }
-
-      // Render Pending Claims directly in UI if any exist
-      const pendingClaimsListWrapper = document.getElementById("pendingClaimsListWrapper");
-      const pendingClaimsContainer = document.getElementById("pendingClaimsContainer");
-      
-      if (pendingClaimsListWrapper && pendingClaimsContainer) {
-        pendingClaimsContainer.innerHTML = "";
-        
-        if (data.pendingRewardsList && data.pendingRewardsList.length > 0) {
-          pendingClaimsListWrapper.classList.remove("hidden");
-          
-          data.pendingRewardsList.forEach(item => {
-            const rewardCard = document.createElement("div");
-            rewardCard.style.background = "rgba(255, 255, 255, 0.02)";
-            rewardCard.style.border = "1px solid rgba(255, 255, 255, 0.06)";
-            rewardCard.style.borderRadius = "12px";
-            rewardCard.style.padding = "12px 18px";
-            rewardCard.style.display = "flex";
-            rewardCard.style.justifyContent = "space-between";
-            rewardCard.style.alignItems = "center";
-            rewardCard.style.marginBottom = "8px";
-            
-            rewardCard.innerHTML = `
-              <div>
-                <div style="font-weight: bold; font-size: 14px; color: #ffffff;">${item.reward_type === 'referral' ? 'Referral Reward' : 'Bonus Allotment'}</div>
-                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 3px;">Value: ${item.amount} SYN</div>
-              </div>
-              <button type="button" class="primaryActionBtn" style="padding: 6px 14px; font-size: 12px; max-width: 110px;" data-token="${item.claim_token}">
-                Claim Now
-              </button>
-            `;
-            
-            // Add click event for claim button
-            const claimBtn = rewardCard.querySelector("button");
-            claimBtn.addEventListener("click", () => {
-              // Hide dashboard screen, show claim screen section
-              rewardDashboardScreen.classList.add("hidden");
-              claimScreenSection.classList.remove("hidden");
-              document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
-              initializeClaimSection(item.claim_token);
-            });
-            
-            pendingClaimsContainer.appendChild(rewardCard);
-          });
-        } else {
-          pendingClaimsListWrapper.classList.add("hidden");
-        }
-      }
     }
   } catch (err) {
     console.error("Dashboard loading error:", err);
