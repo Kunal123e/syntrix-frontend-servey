@@ -759,14 +759,23 @@ if (referralInviteForm) {
   referralInviteForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const friendEmail = inviteFriendEmail.value.trim().toLowerCase();
+    const link = referralCodeDisplay.value;
     
+    // STEP 1 – VERIFY FRONTEND REQUEST Console Logs
+    console.log(`Sending invite to: ${friendEmail}`);
+    console.log(`API Endpoint called: ${BACKEND_URL}/api/send-invite`);
+    console.log("Request payload:", {
+      referrerEmail: userEmailAddress,
+      friendEmail: friendEmail,
+      referralLink: link
+    });
+
     if (referralStatusMessage) {
       referralStatusMessage.textContent = "Sending invitation email...";
       referralStatusMessage.className = "referral-status";
     }
     
     try {
-      const link = referralCodeDisplay.value;
       const res = await fetch(`${BACKEND_URL}/api/send-invite`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -792,6 +801,7 @@ if (referralInviteForm) {
         referralStatusMessage.textContent = err.message;
         referralStatusMessage.className = "referral-status error";
       }
+      console.error("Invite send error:", err);
     }
   });
 }
