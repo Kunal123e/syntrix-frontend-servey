@@ -59,9 +59,6 @@ const statClaimedRewards = document.getElementById("statClaimedRewards");
 const statTotalEarned = document.getElementById("statTotalEarned");
 const referralCodeDisplay = document.getElementById("referralCodeDisplay");
 const copyReferralBtn = document.getElementById("copyReferralBtn");
-const referralInviteForm = document.getElementById("referralInviteForm");
-const inviteFriendEmail = document.getElementById("inviteFriendEmail");
-const referralStatusMessage = document.getElementById("referralStatusMessage");
 
 const statusDiv = document.getElementById("status");
 const progressFill = document.querySelector(".progressFill");
@@ -199,12 +196,6 @@ function translatePage() {
   
   const copyReferralBtnEl = document.getElementById("copyReferralBtn");
   if (copyReferralBtnEl && dict.btnCopy) copyReferralBtnEl.innerText = dict.btnCopy;
-  
-  const inviteLabelEl = document.querySelector("#referralInviteForm label");
-  if (inviteLabelEl && dict.inviteLabel) inviteLabelEl.innerText = dict.inviteLabel;
-  
-  const sendInviteBtnEl = document.getElementById("sendInviteBtn");
-  if (sendInviteBtnEl && dict.btnInvite) sendInviteBtnEl.innerText = dict.btnInvite;
 
   // Modal
   const modalTitleEl = document.querySelector("#retrieveModal .modal-header h2");
@@ -750,58 +741,6 @@ if (copyReferralBtn) {
       setTimeout(() => {
         copyReferralBtn.textContent = "Copy Link";
       }, 2000);
-    }
-  });
-}
-
-// Direct Invitation Form submission
-if (referralInviteForm) {
-  referralInviteForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const friendEmail = inviteFriendEmail.value.trim().toLowerCase();
-    const link = referralCodeDisplay.value;
-    
-    // STEP 1 – VERIFY FRONTEND REQUEST Console Logs
-    console.log(`Sending invite to: ${friendEmail}`);
-    console.log(`API Endpoint called: ${BACKEND_URL}/api/send-invite`);
-    console.log("Request payload:", {
-      referrerEmail: userEmailAddress,
-      friendEmail: friendEmail,
-      referralLink: link
-    });
-
-    if (referralStatusMessage) {
-      referralStatusMessage.textContent = "Sending invitation email...";
-      referralStatusMessage.className = "referral-status";
-    }
-    
-    try {
-      const res = await fetch(`${BACKEND_URL}/api/send-invite`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          referrerEmail: userEmailAddress,
-          friendEmail: friendEmail,
-          referralLink: link
-        })
-      });
-      const data = await res.json();
-      
-      if (res.ok && data.success) {
-        if (referralStatusMessage) {
-          referralStatusMessage.textContent = `Invitation email successfully dispatched to ${friendEmail}!`;
-          referralStatusMessage.className = "referral-status success";
-        }
-        inviteFriendEmail.value = "";
-      } else {
-        throw new Error(data.error || "Failed to dispatch email.");
-      }
-    } catch (err) {
-      if (referralStatusMessage) {
-        referralStatusMessage.textContent = err.message;
-        referralStatusMessage.className = "referral-status error";
-      }
-      console.error("Invite send error:", err);
     }
   });
 }
