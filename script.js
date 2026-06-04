@@ -2,6 +2,26 @@ const BACKEND_URL = window.location.origin.includes("localhost") || window.locat
   ? "http://localhost:5000"
   : "https://syntrix-airdrop.onrender.com";
 
+// Helper to normalize user input or URL referral codes to SYN-XXXXXX format
+function normalizeReferralCode(code) {
+  if (!code) return "";
+  let clean = code.trim().toUpperCase();
+  clean = clean.replace(/\s+/g, "");
+  
+  if (!clean.startsWith("SYN-")) {
+    if (clean.startsWith("SYN")) {
+      clean = "SYN-" + clean.substring(3);
+    } else {
+      clean = "SYN-" + clean;
+    }
+  }
+  
+  if (clean.length > 10) {
+    clean = clean.substring(0, 10);
+  }
+  return clean;
+}
+
 // Onboarding and Navigation DOM Hook Nodes
 const emailGateSection = document.getElementById("emailGateSection");
 const emailGateForm = document.getElementById("emailGateForm");
@@ -77,7 +97,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   
   // Phase 3: URL Parameter Reading & localStorage persistence
   if (refParam) {
-    localStorage.setItem("referralCode", refParam.trim().toUpperCase());
+    localStorage.setItem("referralCode", normalizeReferralCode(refParam));
     // Strip query parameters for clean URL aesthetic
     window.history.replaceState({}, document.title, window.location.pathname);
   }
@@ -346,12 +366,21 @@ async function runProfileLedgerVerification(emailValue, isFromModal = false) {
   currentStatusOutput.style.color = "#57d6c2";
   
   try {
-    const refCodeVal = referredByCodeInput ? referredByCodeInput.value.trim() : "";
-    // Intercept: Scan database records on the backend cluster
+    const rawRefCode = referredByCodeInput ? referredByCodeInput.value.trim() : "";
+    const refCodeVal = normalizeReferralCode(rawRefCode);
+    
+    // Scan database records on the backend cluster
     const response = await fetch(`${BACKEND_URL}/api/dashboard-auth?email=${encodeURIComponent(userEmailAddress)}&ref=${encodeURIComponent(refCodeVal)}`);
     const verification = await response.json();
     
     console.log("Database response payload logs:", verification);
+
+    if (!response.ok) {
+      // If validation fails (e.g. invalid referral code, self-referral, etc. - 400 Bad Request)
+      currentStatusOutput.innerHTML = "❌ " + (verification.error || "Verification failed.");
+      currentStatusOutput.style.color = "#ff4d4d";
+      return;
+    }
 
     // DYNAMIC CONDITIONAL AUTO-RECOVERY PIPELINE
     if (verification.exists) {
@@ -400,47 +429,12 @@ async function runProfileLedgerVerification(emailValue, isFromModal = false) {
       }
       
     } else {
-      // CASE C: Fresh custom consumer entry sequence / not found
-      currentStatusOutput.innerHTML = "❌ Pending claim record not found.";
-      currentStatusOutput.style.color = "#ff4d4d";
-
-      if (!isFromModal) {
-        // Create an explicit button to start a new survey so returning users aren't redirected on typos/errors
-        const startBtn = document.createElement("button");
-        startBtn.type = "button";
-        startBtn.className = "primaryActionBtn";
-        startBtn.style.marginTop = "15px";
-        startBtn.style.width = "100%";
-        startBtn.style.maxWidth = "320px";
-        startBtn.innerText = "Start New Survey";
-        startBtn.addEventListener("click", () => {
-          currentStatusOutput.innerHTML = "";
-          emailGateSection.classList.add("hidden");
-          claimForm.classList.remove("hidden");
-          topProgressBox.classList.remove("hidden");
-          
-          currentSection = 0;
-          renderSection();
-        });
-        currentStatusOutput.appendChild(document.createElement("br"));
-        currentStatusOutput.appendChild(startBtn);
-      }
-    }
-    
-  } catch (err) {
-    console.error("Ledger communication stack tracing error:", err);
-    currentStatusOutput.innerHTML = "❌ Pending claim record not found.";
-    currentStatusOutput.style.color = "#ff4d4d";
-    
-    if (!isFromModal) {
-      const startBtn = document.createElement("button");
-      startBtn.type = "button";
-      startBtn.className = "primaryActionBtn";
-      startBtn.style.marginTop = "15px";
-      startBtn.style.width = "100%";
-      startBtn.style.maxWidth = "320px";
-      startBtn.innerText = "Start New Survey";
-      startBtn.addEventListener("click", () => {
+      // CASE C: Fresh custom consumer entry sequence (New User)
+      if (isFromModal) {
+        currentStatusOutput.innerHTML = "❌ Pending claim record not found.";
+        currentStatusOutput.style.color = "#ff4d4d";
+      } else {
+        // Proceed automatically to survey onboarding without errors
         currentStatusOutput.innerHTML = "";
         emailGateSection.classList.add("hidden");
         claimForm.classList.remove("hidden");
@@ -448,10 +442,13 @@ async function runProfileLedgerVerification(emailValue, isFromModal = false) {
         
         currentSection = 0;
         renderSection();
-      });
-      currentStatusOutput.appendChild(document.createElement("br"));
-      currentStatusOutput.appendChild(startBtn);
+      }
     }
+    
+  } catch (err) {
+    console.error("Ledger communication stack tracing error:", err);
+    currentStatusOutput.innerHTML = "❌ Connection failed. Please try again later.";
+    currentStatusOutput.style.color = "#ff4d4d";
   }
 }
 
@@ -604,7 +601,8 @@ claimForm.addEventListener("submit", async (e) => {
   statusDiv.innerHTML = getUIText("submitting");
   statusDiv.style.color = "#57d6c2";
   
-  const refCodeVal = referredByCodeInput ? referredByCodeInput.value.trim() : "";
+  const rawRefCode = referredByCodeInput ? referredByCodeInput.value.trim() : "";
+  const refCodeVal = normalizeReferralCode(rawRefCode);
 
   try {
     const response = await fetch(`${BACKEND_URL}/api/claim-airdrop`, {
