@@ -886,9 +886,8 @@ function initializeClaimSection(token) {
       submitClaimRewardBtn.textContent = "Sign Message in MetaMask...";
       
       try {
-        // FIXED ZERO-TRUST COMPLIANCE: Constructed message payload matches exact backend reconstruction logic
-        const cleanWallet = claimWallet.toLowerCase();
-        const message = `Syntrix Airdrop Claim Validation\nToken Reference: ${token}\nAccount: ${cleanWallet}`;
+        // FIXED CRYPTOGRAPHIC SIGNATURE MATCH: Must perfectly match the backend verification string
+        const message = `Claiming SYNTRIX Reward\nToken: ${token}\nWallet: ${claimWallet}`;
         
         const signature = await window.ethereum.request({
           method: "personal_sign",
