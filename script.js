@@ -20,11 +20,10 @@ function normalizeReferralCode(code) {
       clean = "SYN-" + clean;
     }
   }
-  // FIXED: Removed structural string truncation metrics causing corruption of long unique hashes
   return clean;
 }
 
-// Global Custom Timeout Fetch Wrapper Engine (Replaces raw hanging fetch)
+// Global Custom Timeout Fetch Wrapper Engine
 async function fetchWithTimeout(resource, options = {}) {
   const { timeout = DEFAULT_TIMEOUT_MS } = options;
   const controller = new AbortController();
@@ -77,7 +76,7 @@ const dashboardWalletInput = document.getElementById("dashboardWalletInput");
 const executeClaimBtn = document.getElementById("executeClaimBtn");
 const connectWalletBtn = document.getElementById("connectWalletBtn");
 
-// Integrated Reward Claims Section (Phase 9 SPA)
+// Integrated Reward Claims Section
 const claimScreenSection = document.getElementById("claimScreenSection");
 const claimLoadingGear = document.getElementById("claimLoadingGear");
 const claimStaticIcon = document.getElementById("claimStaticIcon");
@@ -93,7 +92,7 @@ const submitClaimRewardBtn = document.getElementById("submitClaimRewardBtn");
 const claimTxHashLink = document.getElementById("claimTxHashLink");
 const claimSuccessPanel = document.getElementById("claimSuccessPanel");
 
-// Statistics DOM nodes (Phase 7)
+// Statistics DOM nodes
 const statTotalReferrals = document.getElementById("statTotalReferrals");
 const statPendingRewards = document.getElementById("statPendingRewards");
 const statClaimedRewards = document.getElementById("statClaimedRewards");
@@ -274,7 +273,6 @@ function getOptionText(opt) {
 }
 
 // ================= 3-DOTS OPTIONS NAVIGATION CONTROLLER =================
-// CRITICAL FIX: Wrapped interface selectors inside runtime null protection guards
 if (menuToggleBtn && optionsPopover) {
   menuToggleBtn.addEventListener("click", (e) => {
     e.stopPropagation();
@@ -366,7 +364,6 @@ async function runProfileLedgerVerification(emailValue, isFromModal = false) {
   const sanitizedEmail = emailValue.trim().toLowerCase();
   const currentStatusOutput = isFromModal ? modalStatus : statusDiv;
   
-  // CRITICAL FIX: Enhanced matching with strict backend-aligned Email RegEx
   if (!sanitizedEmail || !EMAIL_REGEX.test(sanitizedEmail)) {
     if (currentStatusOutput) {
       currentStatusOutput.innerHTML = "❌ Please input a valid identification email profile address.";
@@ -385,7 +382,6 @@ async function runProfileLedgerVerification(emailValue, isFromModal = false) {
     const rawRefCode = referredByCodeInput ? referredByCodeInput.value.trim() : "";
     const refCodeVal = normalizeReferralCode(rawRefCode);
     
-    // SAFE NETWORK LAYER: Uses custom network execution abort limits
     const response = await fetchWithTimeout(`${BACKEND_URL}/api/dashboard-auth?email=${encodeURIComponent(userEmailAddress)}&ref=${encodeURIComponent(refCodeVal)}`);
     const verification = await response.json();
     
@@ -541,7 +537,7 @@ function configureNavigationActionButtons() {
 
 function attachInputEventListeners() {
   document.querySelectorAll(".option").forEach(opt => {
-    opt.onclick = () => { // FIXED: Replaced addEventListener with clean execution closures
+    opt.onclick = () => { 
       const qId = opt.dataset.question;
       const val = opt.dataset.value;
       if (opt.dataset.multiple) {
