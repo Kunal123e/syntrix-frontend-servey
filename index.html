@@ -153,7 +153,7 @@
         <div class="referralStatsGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; margin: 25px 0;">
           <div class="statBox" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 15px; text-align: center;">
             <div style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 5px; letter-spacing: 0.5px;">Total Referrals</div>
-            <div id="statTotalReferrals" style="font-size: 24px; font-weight: 800; color: #1f1f1f;">0</div>
+            <div id="statTotalReferrals" style="font-size: 24px; font-weight: 800; color: #ffffff;">0</div>
           </div>
           <div class="statBox" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 15px; text-align: center;">
             <div style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 5px; letter-spacing: 0.5px;">Pending Rewards</div>
@@ -167,6 +167,12 @@
             <div style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 5px; letter-spacing: 0.5px;">Total Earned</div>
             <div id="statTotalEarned" style="font-size: 24px; font-weight: 800; color: #a855f7;">0 SYN</div>
           </div>
+        </div>
+
+        <!-- Pending Claims List -->
+        <div id="pendingClaimsListWrapper" class="hidden" style="margin-bottom: 25px; text-align: left;">
+          <h4 style="font-size: 13px; font-weight: bold; color: var(--text-secondary); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Claimable Pending Rewards</h4>
+          <div id="pendingClaimsContainer" style="display: flex; flex-direction: column; gap: 10px;"></div>
         </div>
 
         <div class="referralLinkBlock">
@@ -195,7 +201,7 @@
 
     <!-- REWARD CLAIM SYSTEM (PHASE 9 - INTEGRATED IN SPA) -->
     <div id="claimScreenSection" class="hidden rewardCard" style="text-align: center; padding: 40px;">
-      <div style="font-size: 40px; margin-bottom: 20px; display: inline-block;" id="claimLoadingGear">⚙️</div>
+      <div style="font-size: 40px; margin-bottom: 20px; animation: spin 2s linear infinite; display: inline-block;" id="claimLoadingGear">⚙️</div>
       <div style="font-size: 40px; margin-bottom: 15px;" id="claimStaticIcon" class="hidden">🎁</div>
       
       <h2 class="rewardTitle" id="claimScreenTitle">Resolving Claim authorization...</h2>
@@ -212,18 +218,18 @@
       </div>
 
       <!-- Reward Info details block -->
-      <div id="claimRewardDetails" class="hidden">
+      <div id="claimRewardDetails" class="hidden" style="background-color: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.15); padding: 20px; border-radius: 16px; margin: 25px auto; text-align: left; max-width: 450px;">
         <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px;">
-          <span style="color: #6b6258;">Recipient Email:</span>
-          <strong id="claimInfoEmail" style="color: #1f1f1f;">loading...</strong>
+          <span style="color: var(--text-secondary);">Recipient Email:</span>
+          <strong id="claimInfoEmail" style="color: var(--text-primary);">loading...</strong>
         </div>
         <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px;">
-          <span style="color: #6b6258;">Reward Category:</span>
-          <strong id="claimInfoType" style="color: #1f1f1f; text-transform: uppercase;">loading...</strong>
+          <span style="color: var(--text-secondary);">Reward Category:</span>
+          <strong id="claimInfoType" style="color: var(--text-primary); text-transform: uppercase;">loading...</strong>
         </div>
-        <div style="display: flex; justify-content: space-between; font-size: 14px; border-top: 1px solid #ece4da; padding-top: 10px; margin-top: 10px;">
-          <span style="color: #6b6258; font-weight: 700;">Claimable Value:</span>
-          <strong id="claimInfoAmount" style="color: #1f1f1f; font-size: 16px;">10 SYN</strong>
+        <div style="display: flex; justify-content: space-between; font-size: 14px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 10px; margin-top: 10px;">
+          <span style="color: var(--text-secondary); font-weight: 700;">Claimable Value:</span>
+          <strong id="claimInfoAmount" style="color: #6366f1; font-size: 16px;">10 SYN</strong>
         </div>
       </div>
 
@@ -234,8 +240,8 @@
         </button>
 
         <div id="claimWalletConnectedBlock" class="hidden" style="max-width: 450px; margin: 0 auto 20px;">
-          <div style="background-color: rgba(0, 0, 0, 0.02); border: 1px solid #ece4da; border-radius: 12px; padding: 14px; font-family: monospace; font-size: 13px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
-            <span id="claimWalletAddressDisplay" style="color: #6b6258; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 80%;">0x...</span>
+          <div style="background-color: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 14px; font-family: monospace; font-size: 13px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+            <span id="claimWalletAddressDisplay" style="color: var(--text-secondary); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 80%;">0x...</span>
             <span style="color: #10b981; font-weight: bold; font-size: 11px;">CONNECTED</span>
           </div>
           <button type="button" id="submitClaimRewardBtn" class="executeDistributionBtn" style="width: 100%;">
@@ -248,12 +254,12 @@
       <div id="claimSuccessPanel" class="hidden">
         <div style="width: 80px; height: 80px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background-color: rgba(16, 185, 129, 0.1); border: 2px solid #10b981; color: #10b981; font-size: 40px;">✓</div>
         <h2>Tokens Transferred Successfully!</h2>
-        <p style="color: #6b6258; margin-top: 10px; font-size: 14px; margin-bottom: 25px;">
+        <p style="color: var(--text-secondary); margin-top: 10px; font-size: 14px; margin-bottom: 25px;">
           Your 10 SYNTRIX tokens have been successfully transferred on-chain via the Polygon network.
         </p>
-        <div style="text-align: left; background-color: rgba(0, 0, 0, 0.02); border: 1px solid #ece4da; border-radius: 16px; padding: 20px; max-width: 450px; margin: 0 auto 30px;">
-          <div style="font-size: 11px; color: #6b6258; margin-bottom: 5px;">POLYGON TRANSACTION HASH:</div>
-          <a id="claimTxHashLink" target="_blank" href="#" style="color: #2563eb; text-decoration: none; font-family: monospace; font-size: 13px; word-break: break-all;">0x...</a>
+        <div style="text-align: left; background-color: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 20px; max-width: 450px; margin: 0 auto 30px;">
+          <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 5px;">POLYGON TRANSACTION HASH:</div>
+          <a id="claimTxHashLink" target="_blank" href="#" style="color: #6366f1; text-decoration: none; font-family: monospace; font-size: 13px; word-break: break-all;">0x...</a>
         </div>
         <button type="button" onclick="window.location.href='/'" class="primaryActionBtn" style="max-width: 250px; margin: 0 auto;">
           Go to Survey Hub
