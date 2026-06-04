@@ -1,4 +1,6 @@
-const BACKEND_URL = "https://syntrix-airdrop.onrender.com";
+const BACKEND_URL = window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1")
+  ? "http://localhost:5000"
+  : "https://syntrix-airdrop.onrender.com";
 
 // Onboarding and Navigation DOM Hook Nodes
 const emailGateSection = document.getElementById("emailGateSection");
@@ -563,7 +565,6 @@ function attachInputEventListeners() {
   });
 }
 
-// ================= STAGE 3: EXECUTE LIVE REWARD MINT/TRANSFER VIA DASHBOARD =================
 function updateProgressIndicators() {
   const surveyData = getSurveyData();
   const percentage = ((currentSection + 1) / surveyData.length) * 100;
