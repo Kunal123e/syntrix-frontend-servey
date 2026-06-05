@@ -325,6 +325,12 @@ function resetApplicationFlowState() {
   if (statusDiv) statusDiv.innerHTML = "";
   userEmailAddress = "";
   currentSection = 0;
+  isOtpSent = false;
+  
+  const otpSection = document.getElementById("otpSection");
+  if (otpSection) otpSection.classList.add("hidden");
+  if (startSurveyBtn) startSurveyBtn.innerHTML = "Initialize Research Modules &rarr;";
+  if (gateEmailInput) gateEmailInput.readOnly = false;
   
   for (const prop in answers) { 
     if (Object.prototype.hasOwnProperty.call(answers, prop)) delete answers[prop]; 
@@ -342,20 +348,102 @@ function resetApplicationFlowState() {
   });
 }
 
-// ================= STAGE 1: ENTRY ONBOARDING & AUTO-RECOVERY TRACKING GATE =================
+// ================= STAGE 1: ENTRY ONBOARDING & AUTO-RECOVERY TRACKING GATE (WITH OTP) =================
+let isOtpSent = false;
+
 if (emailGateForm) {
   emailGateForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    if (gateEmailInput) {
-      const emailVal = gateEmailInput.value.trim();
-      await runProfileLedgerVerification(emailVal, false);
+    if (!gateEmailInput) return;
+    
+    const emailVal = gateEmailInput.value.trim().toLowerCase();
+    
+    if (!emailVal || !EMAIL_REGEX.test(emailVal)) {
+      if (statusDiv) {
+        statusDiv.innerHTML = "❌ Please input a valid email address.";
+        statusDiv.style.color = "#ff4d4d";
+      }
+      return;
     }
-  });
-} else if (startSurveyBtn) {
-  startSurveyBtn.addEventListener("click", async () => {
-    if (gateEmailInput) {
-      const emailVal = gateEmailInput.value.trim();
-      await runProfileLedgerVerification(emailVal, false);
+
+    // STATE 1: SEND THE OTP CODE
+    if (!isOtpSent) {
+      if (statusDiv) {
+        statusDiv.innerHTML = "⏳ Sending verification code...";
+        statusDiv.style.color = "#57d6c2";
+      }
+      
+      try {
+        const response = await fetchWithTimeout(`${BACKEND_URL}/api/send-otp`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: emailVal })
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+          isOtpSent = true;
+          const otpSection = document.getElementById("otpSection");
+          if (otpSection) otpSection.classList.remove("hidden");
+          if (startSurveyBtn) startSurveyBtn.innerHTML = "Verify & Enter &rarr;";
+          gateEmailInput.readOnly = true; 
+          if (statusDiv) statusDiv.innerHTML = "";
+        } else {
+          if (statusDiv) {
+            statusDiv.innerHTML = "❌ " + (result.error || "Failed to send code.");
+            statusDiv.style.color = "#ff4d4d";
+          }
+        }
+      } catch (err) {
+        if (statusDiv) {
+          statusDiv.innerHTML = "❌ Network error. Could not send code.";
+          statusDiv.style.color = "#ff4d4d";
+        }
+      }
+      return;
+    }
+
+    // STATE 2: VERIFY THE OTP & ACCESS LEDGER SWITCHBOARD
+    if (isOtpSent) {
+      const gateOtpEl = document.getElementById("gateOtp");
+      const otpInput = gateOtpEl ? gateOtpEl.value.trim() : "";
+      
+      if (!otpInput || otpInput.length !== 6) {
+        if (statusDiv) {
+          statusDiv.innerHTML = "❌ Please enter the 6-digit code.";
+          statusDiv.style.color = "#ff4d4d";
+        }
+        return;
+      }
+
+      if (statusDiv) {
+        statusDiv.innerHTML = "🔍 Verifying code...";
+        statusDiv.style.color = "#57d6c2";
+      }
+
+      try {
+        const otpRes = await fetchWithTimeout(`${BACKEND_URL}/api/verify-otp`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: emailVal, otp: otpInput })
+        });
+        
+        const otpResult = await otpRes.json();
+        
+        if (otpResult.success) {
+          await runProfileLedgerVerification(emailVal, false);
+        } else {
+          if (statusDiv) {
+            statusDiv.innerHTML = "❌ " + (otpResult.error || "Invalid code.");
+            statusDiv.style.color = "#ff4d4d";
+          }
+        }
+      } catch (err) {
+        if (statusDiv) {
+          statusDiv.innerHTML = "❌ Verification failed due to network error.";
+          statusDiv.style.color = "#ff4d4d";
+        }
+      }
     }
   });
 }
@@ -722,7 +810,7 @@ if (executeClaimBtn) {
     try {
       const activeClaimToken = localStorage.getItem("syntrix_claim_token") || "";
       
-      // Zero-Trust Execution: Routes directly to cryptographic signature claim structure
+      // Zero-Zero Routing Core Payload
       const res = await fetchWithTimeout(`${BACKEND_URL}/api/rewards/claim`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -790,7 +878,6 @@ if (copyReferralBtn) {
   copyReferralBtn.onclick = () => {
     if (referralCodeDisplay) {
       referralCodeDisplay.select();
-      // CRITICAL FIX: Replaced old deprecated document.execCommand with safe clipboard promise API
       navigator.clipboard.writeText(referralCodeDisplay.value)
         .then(() => {
           copyReferralBtn.textContent = "Copied!";
@@ -882,12 +969,16 @@ function initializeClaimSection(token) {
       submitClaimRewardBtn.textContent = "Sign Message in MetaMask...";
       
       try {
-        // FIXED CRYPTOGRAPHIC SIGNATURE MATCH: Must perfectly match the backend verification string
         const message = `Claiming SYNTRIX Reward\nToken: ${token}\nWallet: ${claimWallet}`;
+        
+        // Convert to hex-string array to keep MetaMask runtime validation sound
+        const hexMessage = "0x" + Array.from(new TextEncoder().encode(message))
+          .map(b => b.toString(16).padStart(2, '0'))
+          .join('');
         
         const signature = await window.ethereum.request({
           method: "personal_sign",
-          params: [message, claimWallet]
+          params: [hexMessage, claimWallet]
         });
         
         submitClaimRewardBtn.textContent = "Executing On-Chain Settlement...";
