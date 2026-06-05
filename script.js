@@ -5,7 +5,7 @@ const BACKEND_URL = window.location.origin.includes("localhost") || window.locat
 // Constants for Strict Validations
 const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 const WALLET_REGEX = /^0x[a-fA-F0-9]{40}$/;
-const DEFAULT_TIMEOUT_MS = 10000; // 10 seconds network abort rule
+const DEFAULT_TIMEOUT_MS = 60000; // Increased to 60 seconds to allow Render.com to wake from sleep
 
 // Helper to normalize user input or URL referral codes to SYN-XXXXXX format
 function normalizeReferralCode(code) {
@@ -329,7 +329,7 @@ function resetApplicationFlowState() {
   
   const otpSection = document.getElementById("otpSection");
   if (otpSection) otpSection.classList.add("hidden");
-  if (startSurveyBtn) startSurveyBtn.innerHTML = "Initialize Research Modules &rarr;";
+  if (startSurveyBtn) startSurveyBtn.innerHTML = "Send Verification Code &rarr;";
   if (gateEmailInput) gateEmailInput.readOnly = false;
   
   for (const prop in answers) { 
