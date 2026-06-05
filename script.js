@@ -5,7 +5,7 @@ const BACKEND_URL = window.location.origin.includes("localhost") || window.locat
 // Constants for Strict Validations
 const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 const WALLET_REGEX = /^0x[a-fA-F0-9]{40}$/;
-const DEFAULT_TIMEOUT_MS = 60000; // Increased to 60 seconds to allow Render.com to wake from sleep
+const DEFAULT_TIMEOUT_MS = 60000; // 60 seconds to allow Render.com to wake from sleep
 
 // Helper to normalize user input or URL referral codes to SYN-XXXXXX format
 function normalizeReferralCode(code) {
@@ -108,6 +108,8 @@ let userEmailAddress = "";
 let currentSection = 0;
 const answers = {};
 let currentLanguage = "en";
+let isOtpSent = false;
+let userConnectedWalletAddress = "";
 
 // ================= ROUTING SWITCHBOARD & SESSION ON-LOAD =================
 document.addEventListener("DOMContentLoaded", async () => {
@@ -145,6 +147,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       await runProfileLedgerVerification(savedEmail, false);
     }
   }
+
+  // Bind operational button actions
+  if (nextBtn) nextBtn.addEventListener("click", handleNextSection);
+  if (prevBtn) prevBtn.addEventListener("click", handlePrevSection);
+  if (claimForm) claimForm.addEventListener("submit", handleSurveySubmission);
+  if (connectWalletBtn) connectWalletBtn.addEventListener("click", () => connectWallet(false));
+  if (claimConnectWalletBtn) claimConnectWalletBtn.addEventListener("click", () => connectWallet(true));
+  if (executeClaimBtn) executeClaimBtn.addEventListener("click", handleManualClaimExecution);
+  if (submitClaimRewardBtn) submitClaimRewardBtn.addEventListener("click", handleSignatureTokenRelease);
+  if (copyReferralBtn) copyReferralBtn.addEventListener("click", handleReferralLinkCopy);
 });
 
 // ================= LANGUAGE SELECTION INTERFACE CONTROLS =================
@@ -349,8 +361,6 @@ function resetApplicationFlowState() {
 }
 
 // ================= STAGE 1: ENTRY ONBOARDING & AUTO-RECOVERY TRACKING GATE (WITH OTP) =================
-let isOtpSent = false;
-
 if (emailGateForm) {
   emailGateForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -400,221 +410,168 @@ if (emailGateForm) {
           statusDiv.style.color = "#ff4d4d";
         }
       }
+      return; 
+    }
+
+    // STATE 2: VERIFY THE OTP CODE
+    const gateOtpInput = document.getElementById("gateOtp");
+    const otpVal = gateOtpInput ? gateOtpInput.value.trim() : "";
+
+    if (!otpVal || otpVal.length !== 6) {
+      if (statusDiv) {
+        statusDiv.innerHTML = "❌ Please enter the 6-digit verification code.";
+        statusDiv.style.color = "#ff4d4d";
+      }
       return;
     }
 
-    // STATE 2: VERIFY THE OTP & ACCESS LEDGER SWITCHBOARD
-    if (isOtpSent) {
-      const gateOtpEl = document.getElementById("gateOtp");
-      const otpInput = gateOtpEl ? gateOtpEl.value.trim() : "";
-      
-      if (!otpInput || otpInput.length !== 6) {
+    if (statusDiv) {
+      statusDiv.innerHTML = "⏳ Verifying code...";
+      statusDiv.style.color = "#57d6c2";
+    }
+
+    try {
+      const response = await fetchWithTimeout(`${BACKEND_URL}/api/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: emailVal, otp: otpVal })
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        if (statusDiv) statusDiv.innerHTML = "✅ Verification successful!";
+        
+        userEmailAddress = emailVal;
+        localStorage.setItem("syntrix_user_email", emailVal);
+        
+        if (referredByCodeInput && referredByCodeInput.value.trim() !== "") {
+          localStorage.setItem("referralCode", normalizeReferralCode(referredByCodeInput.value));
+        }
+
+        await runProfileLedgerVerification(emailVal, false);
+      } else {
         if (statusDiv) {
-          statusDiv.innerHTML = "❌ Please enter the 6-digit code.";
+          statusDiv.innerHTML = "❌ " + (result.error || "Invalid or expired code.");
           statusDiv.style.color = "#ff4d4d";
         }
-        return;
       }
-
+    } catch (err) {
       if (statusDiv) {
-        statusDiv.innerHTML = "🔍 Verifying code...";
-        statusDiv.style.color = "#57d6c2";
-      }
-
-      try {
-        const otpRes = await fetchWithTimeout(`${BACKEND_URL}/api/verify-otp`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: emailVal, otp: otpInput })
-        });
-        
-        const otpResult = await otpRes.json();
-        
-        if (otpResult.success) {
-          await runProfileLedgerVerification(emailVal, false);
-        } else {
-          if (statusDiv) {
-            statusDiv.innerHTML = "❌ " + (otpResult.error || "Invalid code.");
-            statusDiv.style.color = "#ff4d4d";
-          }
-        }
-      } catch (err) {
-        if (statusDiv) {
-          statusDiv.innerHTML = "❌ Verification failed due to network error.";
-          statusDiv.style.color = "#ff4d4d";
-        }
+        statusDiv.innerHTML = "❌ Network error. Could not verify code.";
+        statusDiv.style.color = "#ff4d4d";
       }
     }
   });
 }
 
-async function runProfileLedgerVerification(emailValue, isFromModal = false) {
-  const sanitizedEmail = emailValue.trim().toLowerCase();
-  const currentStatusOutput = isFromModal ? modalStatus : statusDiv;
-  
-  if (!sanitizedEmail || !EMAIL_REGEX.test(sanitizedEmail)) {
-    if (currentStatusOutput) {
-      currentStatusOutput.innerHTML = "❌ Please input a valid identification email profile address.";
-      currentStatusOutput.style.color = "#ff4d4d";
-    }
-    return;
-  }
-  
-  userEmailAddress = sanitizedEmail;
-  if (currentStatusOutput) {
-    currentStatusOutput.innerHTML = getUIText("checkingLedger");
-    currentStatusOutput.style.color = "#57d6c2";
-  }
-  
+// ================= STAGE 2: PROFILE LEDGER LOOKUP & STATE MANAGEMENT =================
+async function runProfileLedgerVerification(email, isFromModal = false) {
+  const outputTarget = isFromModal ? modalStatus : statusDiv;
+  if (!outputTarget) return;
+
+  outputTarget.innerHTML = `⏳ ${getUIText("checkingLedger")}`;
+  outputTarget.style.color = "#57d6c2";
+
   try {
-    const rawRefCode = referredByCodeInput ? referredByCodeInput.value.trim() : "";
-    const refCodeVal = normalizeReferralCode(rawRefCode);
-    
-    const response = await fetchWithTimeout(`${BACKEND_URL}/api/dashboard-auth?email=${encodeURIComponent(userEmailAddress)}&ref=${encodeURIComponent(refCodeVal)}`);
-    const verification = await response.json();
-    
-    if (!response.ok) {
-      if (currentStatusOutput) {
-        currentStatusOutput.innerHTML = "❌ " + (verification.error || "Verification failed.");
-        currentStatusOutput.style.color = "#ff4d4d";
-      }
-      return;
-    }
+    const response = await fetchWithTimeout(`${BACKEND_URL}/api/user-status?email=${encodeURIComponent(email)}`);
+    const statusResult = await response.json();
 
-    if (verification.status === "FLOW_A" || verification.status === "FLOW_B") {
-      const hasClaimedTokens = (verification.status === "FLOW_B");
+    if (isFromModal) dismissModal();
 
-      if (!hasClaimedTokens) {
-        if (currentStatusOutput) {
-          currentStatusOutput.innerHTML = "✨ Record isolated! Loading Web3 dashboard gateway...";
-          currentStatusOutput.style.color = "#57d6c2";
-        }
-        
-        localStorage.setItem("syntrix_user_email", userEmailAddress);
-        
-        setTimeout(async () => {
-          if (emailGateSection) emailGateSection.classList.add("hidden");
-          if (claimForm) claimForm.classList.add("hidden");
-          if (topProgressBox) topProgressBox.classList.add("hidden");
-          if (isFromModal && retrieveModal) retrieveModal.classList.add("hidden");
-          if (statusDiv) statusDiv.innerHTML = "";
-          if (rewardDashboardScreen) rewardDashboardScreen.classList.remove("hidden");
-          
-          document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
-          const finalStepNode = document.getElementById("step-7");
-          if (finalStepNode) {
-            finalStepNode.classList.add("active");
-          } else {
-            const fallbackStep = document.querySelector(".sidebar .steps .step:last-child") || document.querySelector(".step:last-child");
-            if (fallbackStep) fallbackStep.classList.add("active");
-          }
-          
-          await loadReferralDashboard(userEmailAddress);
-        }, 1000);
-        
-      } else {
-        if (currentStatusOutput) {
-          currentStatusOutput.innerHTML = "❌ This email profile has already fully claimed their SYNX tokens.";
-          currentStatusOutput.style.color = "#ff4d4d";
-        }
-      }
+    if (statusResult.success) {
+      userEmailAddress = email;
+      localStorage.setItem("syntrix_user_email", email);
       
-    } else {
-      if (isFromModal) {
-        if (currentStatusOutput) {
-          currentStatusOutput.innerHTML = "❌ Pending claim record not found.";
-          currentStatusOutput.style.color = "#ff4d4d";
-        }
+      // Update stats dashboard fields
+      if (statTotalReferrals) statTotalReferrals.innerText = statusResult.referralsCount || "0";
+      if (statPendingRewards) statPendingRewards.innerText = `${statusResult.pendingRewards || 0} SYN`;
+      if (statClaimedRewards) statClaimedRewards.innerText = `${statusResult.claimedRewards || 0} SYN`;
+      if (statTotalEarned) statTotalEarned.innerText = `${(statusResult.pendingRewards || 0) + (statusResult.claimedRewards || 0)} SYN`;
+      if (referralCodeDisplay) referralCodeDisplay.value = `${window.location.origin}/?ref=${statusResult.referralCode || ""}`;
+
+      if (statusResult.status === "claimed" || statusResult.status === "completed") {
+        // Transition straight to user dashboard view
+        if (emailGateSection) emailGateSection.classList.add("hidden");
+        if (claimForm) claimForm.classList.add("hidden");
+        if (topProgressBox) topProgressBox.classList.add("hidden");
+        if (rewardDashboardScreen) rewardDashboardScreen.classList.remove("hidden");
+        outputTarget.innerHTML = "";
       } else {
-        if (statusDiv) statusDiv.innerHTML = "";
+        // Start filling survey questionnaire matrices
         if (emailGateSection) emailGateSection.classList.add("hidden");
         if (claimForm) claimForm.classList.remove("hidden");
         if (topProgressBox) topProgressBox.classList.remove("hidden");
-        
         currentSection = 0;
         renderSection();
+        outputTarget.innerHTML = "";
+      }
+    } else {
+      if (!isFromModal) {
+        // New User Entry Point initialization
+        if (emailGateSection) emailGateSection.classList.add("hidden");
+        if (claimForm) claimForm.classList.remove("hidden");
+        if (topProgressBox) topProgressBox.classList.remove("hidden");
+        currentSection = 0;
+        renderSection();
+        outputTarget.innerHTML = "";
+      } else {
+        outputTarget.innerHTML = "❌ Profile ledger entry not found.";
+        outputTarget.style.color = "#ff4d4d";
       }
     }
-    
   } catch (err) {
-    console.error("Ledger communication stack tracing error:", err);
-    if (currentStatusOutput) {
-      currentStatusOutput.innerHTML = "❌ Connection timeout or cluster failure. Please try again.";
-      currentStatusOutput.style.color = "#ff4d4d";
-    }
+    outputTarget.innerHTML = "❌ Communication framework offline.";
+    outputTarget.style.color = "#ff4d4d";
   }
 }
 
-// ================= STAGE 2: SURVEY LAYOUT GENERATOR MATRIX =================
+// ================= STAGE 3: MULTI-STEP RESEARCH DATA MATRIX RENDERING =================
 function renderSection() {
-  const surveyData = getSurveyData();
-  if (surveyData.length === 0 || !surveyContainer) return;
+  const sections = getSurveyData();
+  if (!sections || sections.length === 0 || !surveyContainer) return;
 
-  const section = surveyData[currentSection];
+  const currentData = sections[currentSection];
   
-  document.querySelectorAll(".step").forEach((st, idx) => {
+  // Highlight progressive sidebar markers
+  document.querySelectorAll(".sidebar .step").forEach((st, idx) => {
     if (idx === currentSection + 1) st.classList.add("active");
     else st.classList.remove("active");
   });
 
-  translatePage();
+  // Calculate percentage bar metrics
+  const progressPercent = ((currentSection + 1) / sections.length) * 100;
+  if (progressFill) progressFill.style.width = `${progressPercent}%`;
+  if (progressText) progressText.innerText = `Progress ${currentSection + 1}/${sections.length}`;
 
-  surveyContainer.innerHTML = `
-    <div class="section">
-      <h2 class="sectionTitle">${getSectionTitle(section)}</h2>
-      ${section.questions.map(q => {
-        const translatedQuestionText = getQuestionText(q);
+  let htmlStr = `<div class="survey-section-card animate-fade-in">
+    <h2 class="surveySectionTitle">${getSectionTitle(currentData)}</h2>`;
 
-        if (q.type === "textarea") {
-          return `
-            <div class="question">
-              <h3>${translatedQuestionText}</h3>
-              <textarea data-id="${q.id}" placeholder="${getUIText('textareaPlaceholder')}">${answers[q.id] || ""}</textarea>
-            </div>
-          `;
-        }
-        if (q.multiple) {
-          const selectedValues = answers[q.id] || [];
-          return `
-            <div class="question">
-              <h3>${translatedQuestionText}</h3>
-              <div class="options">
-                ${(q.options || []).map(opt => `
-                  <div class="option ${selectedValues.includes(opt) ? "selected" : ""}" data-question="${q.id}" data-value="${opt}" data-multiple="true">
-                    ${getOptionText(opt)}
-                  </div>
-                `).join("")}
-              </div>
-            </div>
-          `;
-        }
-        return `
-          <div class="question">
-            <h3>${translatedQuestionText}</h3>
-            <div class="options">
-              ${(q.options || []).map(opt => `
-                <div class="option ${answers[q.id] === opt ? "selected" : ""}" data-question="${q.id}" data-value="${opt}">
-                  ${getOptionText(opt)}
-                </div>
-              `).join("")}
-            </div>
-          </div>
-        `;
-      }).join("")}
-    </div>
-  `;
+  currentData.questions.forEach((q) => {
+    const savedAnswer = answers[q.id] || "";
+    htmlStr += `<div class="question-block" style="margin-top:25px; text-align:left;">
+      <p class="questionText" style="font-weight:600; margin-bottom:12px; color:var(--text-primary);">${getQuestionText(q)}</p>
+      <div class="options-layout" style="display:grid; gap:10px;">`;
 
-  updateProgressIndicators();
-  attachInputEventListeners();
-  configureNavigationActionButtons();
-}
+    q.options.forEach((opt) => {
+      const isChecked = savedAnswer === opt ? "checked" : "";
+      const isSelectedClass = savedAnswer === opt ? "selected-option-label" : "";
+      htmlStr += `
+        <label class="option-container ${isSelectedClass}" style="display:flex; align-items:center; padding:12px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.06); border-radius:8px; cursor:pointer;">
+          <input type="radio" name="${q.id}" value="${opt}" ${isChecked} style="margin-right:12px; accent-color:#6366f1;" onchange="recordSelection('${q.id}', this.value)">
+          <span class="optionText">${getOptionText(opt)}</span>
+        </label>`;
+    });
 
-function configureNavigationActionButtons() {
-  const surveyData = getSurveyData();
+    htmlStr += `</div></div>`;
+  });
+
+  htmlStr += `</div>`;
+  surveyContainer.innerHTML = htmlStr;
+
+  // Handle pagination dynamic displays
+  if (prevBtn) prevBtn.style.visibility = currentSection === 0 ? "hidden" : "visible";
   
-  if (prevBtn) prevBtn.style.display = currentSection === 0 ? "none" : "inline-block";
-
-  if (currentSection === surveyData.length - 1) {
+  if (currentSection === sections.length - 1) {
     if (nextBtn) nextBtn.classList.add("hidden");
     if (submitClaimBtn) submitClaimBtn.classList.remove("hidden");
   } else {
@@ -623,407 +580,260 @@ function configureNavigationActionButtons() {
   }
 }
 
-function attachInputEventListeners() {
-  document.querySelectorAll(".option").forEach(opt => {
-    opt.onclick = () => { 
-      const qId = opt.dataset.question;
-      const val = opt.dataset.value;
-      if (opt.dataset.multiple) {
-        if (!answers[qId]) answers[qId] = [];
-        if (answers[qId].includes(val)) answers[qId] = answers[qId].filter(i => i !== val);
-        else answers[qId].push(val);
-      } else {
-        answers[qId] = val;
-      }
-      renderSection();
-    };
-  });
+window.recordSelection = function(questionId, selectedValue) {
+  answers[questionId] = selectedValue;
+  // Visually repaint selections for faster UI response times
+  renderSection();
+};
 
-  document.querySelectorAll("textarea").forEach(tx => {
-    tx.oninput = () => { answers[tx.dataset.id] = tx.value; };
-  });
+function validateCurrentSectionAnswers() {
+  const sections = getSurveyData();
+  const currentData = sections[currentSection];
+  for (let q of currentData.questions) {
+    if (!answers[q.id]) return false;
+  }
+  return true;
 }
 
-function updateProgressIndicators() {
-  const surveyData = getSurveyData();
-  const percentage = ((currentSection + 1) / surveyData.length) * 100;
-  if (progressFill) progressFill.style.width = percentage + "%";
-  if (progressText) progressText.innerText = `${getUIText('progress')} ${currentSection + 1}/${surveyData.length}`;
+function handleNextSection() {
+  if (!validateCurrentSectionAnswers()) {
+    alert(getUIText("validationRequired"));
+    return;
+  }
+  currentSection++;
+  renderSection();
 }
 
-function validateSectionInputs() {
-  const surveyData = getSurveyData();
-  const currentQuestions = surveyData[currentSection].questions;
-  let isPass = true;
-
-  currentQuestions.forEach(q => {
-    if (q.type === "textarea") {
-      if (!answers[q.id] || answers[q.id].trim() === "") isPass = false;
-    } else if (q.multiple) {
-      if (!answers[q.id] || answers[q.id].length === 0) isPass = false;
-    } else {
-      if (!answers[q.id]) isPass = false;
-    }
-  });
-  return isPass;
-}
-
-if (nextBtn) {
-  nextBtn.onclick = () => {
-    if (!validateSectionInputs()) {
-      if (statusDiv) {
-        statusDiv.innerHTML = getUIText("validationRequired");
-        statusDiv.style.color = "#ff4d4d";
-      }
-      return;
-    }
-    if (statusDiv) statusDiv.innerHTML = "";
-    currentSection++;
-    renderSection();
-  };
-}
-
-if (prevBtn) {
-  prevBtn.onclick = () => {
-    if (statusDiv) statusDiv.innerHTML = "";
+function handlePrevSection() {
+  if (currentSection > 0) {
     currentSection--;
     renderSection();
-  };
+  }
 }
 
-// ================= SUBMIT ENTIRE DATA BUNDLE OUT TO PHASE 1 METRICS ENDPOINT =================
-if (claimForm) {
-  claimForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+// ================= STAGE 4: DATA AGGREGATION & SUBMISSION SUBMIT =================
+async function handleSurveySubmission(e) {
+  e.preventDefault();
+  if (!validateCurrentSectionAnswers()) {
+    alert(getUIText("validationRequired"));
+    return;
+  }
 
-    // UI DOUBLE-SUBMIT LOCK
-    if (submitClaimBtn) submitClaimBtn.disabled = true;
+  if (statusDiv) {
+    statusDiv.innerHTML = `⏳ ${getUIText("submitting")}`;
+    statusDiv.style.color = "#57d6c2";
+  }
 
-    if (statusDiv) {
-      statusDiv.innerHTML = getUIText("submitting");
-      statusDiv.style.color = "#57d6c2";
-    }
-    
-    const rawRefCode = referredByCodeInput ? referredByCodeInput.value.trim() : "";
-    const refCodeVal = normalizeReferralCode(rawRefCode);
+  const referralCodeUsed = localStorage.getItem("referralCode") || "";
 
-    try {
-      const response = await fetchWithTimeout(`${BACKEND_URL}/api/claim-airdrop`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          email: userEmailAddress, 
-          referredByCode: refCodeVal, 
-          answers: answers 
-        })
-      });
+  try {
+    const response = await fetchWithTimeout(`${BACKEND_URL}/api/submit-survey`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: userEmailAddress,
+        answers: answers,
+        referredBy: referralCodeUsed
+      })
+    });
 
-      const output = await response.json();
-
-      if (output.success) {
-        if (statusDiv) statusDiv.innerHTML = "";
-        
-        localStorage.setItem("syntrix_user_email", userEmailAddress);
-        localStorage.removeItem("referralCode");
-        
-        if (claimForm) claimForm.classList.add("hidden");
-        if (topProgressBox) topProgressBox.classList.add("hidden");
-        if (rewardDashboardScreen) rewardDashboardScreen.classList.remove("hidden");
-        
-        document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
-        const finalStepNode = document.getElementById("step-7");
-        if (finalStepNode) finalStepNode.classList.add("active");
-        
-        // Save the sequence authorization token for future claims
-        if (output.claimSequenceToken) {
-          localStorage.setItem("syntrix_claim_token", output.claimSequenceToken);
-        }
-        
-        await loadReferralDashboard(userEmailAddress);
-      } else {
-        if (statusDiv) {
-          statusDiv.innerHTML = "❌ " + (output.error || "Survey submission integration failure.");
-          statusDiv.style.color = "#ff4d4d";
-        }
-        if (submitClaimBtn) submitClaimBtn.disabled = false;
-      }
-    } catch (err) {
-      if (statusDiv) {
-        statusDiv.innerHTML = "❌ Communication channel with server timed out.";
-        statusDiv.style.color = "#ff4d4d";
-      }
-      if (submitClaimBtn) submitClaimBtn.disabled = false;
-    }
-  });
-}
-
-// ================= STAGE 3: EXECUTE LIVE REWARD MINT/TRANSFER VIA DASHBOARD =================
-if (connectWalletBtn) {
-  connectWalletBtn.onclick = async () => {
-    if (typeof window.ethereum !== "undefined") {
-      try {
-        const addresses = await window.ethereum.request({ method: "eth_requestAccounts" });
-        if (addresses.length > 0 && dashboardWalletInput) {
-          dashboardWalletInput.value = addresses[0];
-          if (statusDiv) {
-            statusDiv.innerHTML = "🦊 MetaMask Wallet successfully integrated.";
-            statusDiv.style.color = "#57d6c2";
-          }
-        }
-      } catch (walletErr) {
-        if (statusDiv) {
-          statusDiv.innerHTML = "⚠️ Wallet hook authorization denied by user connection.";
-          statusDiv.style.color = "#ffb347";
-        }
-      }
+    const result = await response.json();
+    if (result.success) {
+      if (statusDiv) statusDiv.innerHTML = "";
+      await runProfileLedgerVerification(userEmailAddress, false);
     } else {
       if (statusDiv) {
-        statusDiv.innerHTML = "ℹ️ Browser wallet standard injection provider missing. Paste manually.";
-        statusDiv.style.color = "#ffb347";
-      }
-    }
-  };
-}
-
-if (executeClaimBtn) {
-  executeClaimBtn.onclick = async () => {
-    if (!dashboardWalletInput) return;
-    const targetedWallet = dashboardWalletInput.value.trim();
-    
-    // CRITICAL FIX: Upgraded wallet validation matching strict checksum regex
-    if (!targetedWallet || !WALLET_REGEX.test(targetedWallet)) {
-      if (statusDiv) {
-        statusDiv.innerHTML = "❌ Please specify a valid EVM public network cryptographic address (0x...).";
+        statusDiv.innerHTML = `❌ ${result.error || "Submission rejected by registry backend."}`;
         statusDiv.style.color = "#ff4d4d";
-      }
-      return;
-    }
-
-    // UI BUTTON DE-ACTIVATION LOCK
-    executeClaimBtn.disabled = true;
-
-    if (statusDiv) {
-      statusDiv.innerHTML = getUIText("claiming");
-      statusDiv.style.color = "#57d6c2";
-    }
-
-    try {
-      const activeClaimToken = localStorage.getItem("syntrix_claim_token") || "";
-      
-      // Zero-Zero Routing Core Payload
-      const res = await fetchWithTimeout(`${BACKEND_URL}/api/rewards/claim`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          token: activeClaimToken, 
-          walletAddress: targetedWallet 
-        })
-      });
-
-      const claimResult = await res.json();
-
-      if (claimResult.success) {
-        if (statusDiv) {
-          statusDiv.innerHTML = `
-            <div class="successBox" style="background: rgba(87, 214, 194, 0.1); border: 1px solid #57d6c2; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left;">
-              <h3 style="color: #57d6c2; margin-top:0;">🚀 Token Distribution Complete!</h3>
-              <p style="color:#fff; margin-bottom:10px;">Your allocations have been successfully pushed on-chain.</p>
-              <a href="https://polygonscan.com/tx/${claimResult.transactionHash}" target="_blank" style="color: #57d6c2; text-decoration: underline; font-family: monospace; font-size: 13px;">
-                Tx Hash: ${claimResult.transactionHash.substring(0, 20)}...
-              </a>
-            </div>
-          `;
-        }
-        await loadReferralDashboard(userEmailAddress);
-      } else {
-        if (statusDiv) {
-          statusDiv.innerHTML = "❌ " + (claimResult.error || "Reward asset generation rejected.");
-          statusDiv.style.color = "#ff4d4d";
-        }
-        executeClaimBtn.disabled = false;
-      }
-    } catch (err) {
-      if (statusDiv) {
-        statusDiv.innerHTML = "❌ Network processing timeout executing claim parameters.";
-        statusDiv.style.color = "#ff4d4d";
-      }
-      executeClaimBtn.disabled = false;
-    }
-  };
-}
-
-// ================= REFERRAL DASHBOARD STATS RETRIEVAL (PHASE 7) =================
-async function loadReferralDashboard(email) {
-  try {
-    const res = await fetchWithTimeout(`${BACKEND_URL}/api/referral/dashboard?email=${encodeURIComponent(email)}`);
-    const data = await res.json();
-    if (res.ok && data.totalReferrals !== undefined) {
-      if (statTotalReferrals) statTotalReferrals.textContent = data.totalReferrals;
-      if (statPendingRewards) statPendingRewards.textContent = `${data.pendingRewards} SYN`;
-      if (statClaimedRewards) statClaimedRewards.textContent = `${data.claimedRewards} SYN`;
-      if (statTotalEarned) statTotalEarned.textContent = `${data.totalEarned} SYN`;
-      
-      const currentUrl = window.location.origin;
-      if (referralCodeDisplay) {
-        referralCodeDisplay.value = `${currentUrl}/?ref=${data.referralCode}`;
       }
     }
   } catch (err) {
-    console.error("Dashboard loading error:", err);
+    if (statusDiv) {
+      statusDiv.innerHTML = "❌ Network transaction failed.";
+      statusDiv.style.color = "#ff4d4d";
+    }
   }
 }
 
-// Copy Referral Link click trigger
-if (copyReferralBtn) {
-  copyReferralBtn.onclick = () => {
-    if (referralCodeDisplay) {
-      referralCodeDisplay.select();
-      navigator.clipboard.writeText(referralCodeDisplay.value)
-        .then(() => {
-          copyReferralBtn.textContent = "Copied!";
-          setTimeout(() => {
-            copyReferralBtn.textContent = "Copy Link";
-          }, 2000);
-        })
-        .catch(err => {
-          console.error("Clipboard system failure:", err);
-        });
+// ================= STAGE 5: WEB3 METAMASK INJECTION INTERFACE =================
+async function connectWallet(isDirectClaimFlow = false) {
+  if (typeof window.ethereum === "undefined") {
+    alert("MetaMask extension not found. Please install MetaMask or use manual address submission inputs.");
+    return;
+  }
+
+  try {
+    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+    if (accounts.length === 0) return;
+    
+    userConnectedWalletAddress = accounts[0];
+    
+    if (isDirectClaimFlow) {
+      if (claimConnectWalletBtn) claimConnectWalletBtn.classList.add("hidden");
+      if (claimWalletConnectedBlock) claimWalletConnectedBlock.classList.remove("hidden");
+      if (claimWalletAddressDisplay) claimWalletAddressDisplay.innerText = userConnectedWalletAddress;
+    } else {
+      if (dashboardWalletInput) {
+        dashboardWalletInput.value = userConnectedWalletAddress;
+      }
     }
-  };
+  } catch (err) {
+    console.error("MetaMask connection error", err);
+  }
 }
 
-// ================= REWARD CLAIMING SPA ROUTE WORKFLOW (PHASE 9 & 11) =================
-function initializeClaimSection(token) {
-  let claimWallet = "";
+// Dashboard Claim Manual Execution Entry Point
+async function handleManualClaimExecution() {
+  if (!dashboardWalletInput) return;
+  const targetWallet = dashboardWalletInput.value.trim();
 
-  fetchWithTimeout(`${BACKEND_URL}/api/rewards/claim-info?token=${encodeURIComponent(token)}`)
-    .then(async res => {
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Verification parameter token check invalid.");
-      
-      if (data.status !== "pending") {
-        throw new Error(`This reward allocation is already marked as ${data.status.toUpperCase()}.`);
-      }
-      
-      const infoEmail = document.getElementById("claimInfoEmail");
-      const infoType = document.getElementById("claimInfoType");
-      const infoAmount = document.getElementById("claimInfoAmount");
-      
-      if (infoEmail) infoEmail.textContent = data.email;
-      if (infoType) infoType.textContent = data.rewardType;
-      if (infoAmount) infoAmount.textContent = `${data.amount} SYN`;
-      
-      if (claimLoadingGear) claimLoadingGear.classList.add("hidden");
-      if (claimStaticIcon) claimStaticIcon.classList.remove("hidden");
-      if (claimScreenTitle) claimScreenTitle.textContent = "Claim Your Earned Reward";
-      if (claimInfoSubtitle) claimInfoSubtitle.textContent = "Verify details and connect MetaMask to execute claim.";
-      
-      if (claimRewardDetails) claimRewardDetails.classList.remove("hidden");
-      if (claimActionPanel) claimActionPanel.classList.remove("hidden");
-    })
-    .catch(err => {
-      if (claimLoadingGear) claimLoadingGear.classList.add("hidden");
-      if (claimErrorBox) claimErrorBox.classList.remove("hidden");
-      if (claimScreenTitle) claimScreenTitle.textContent = "Claim Attempt Blocked";
-      if (claimInfoSubtitle) {
-        claimInfoSubtitle.textContent = err.message;
-        claimInfoSubtitle.style.color = "#ff4d4d";
-      }
+  if (!WALLET_REGEX.test(targetWallet)) {
+    alert("❌ Invalid EVM public address block hash framework detected.");
+    return;
+  }
+
+  if (statusDiv) {
+    statusDiv.innerHTML = `⚡ ${getUIText("claiming")}`;
+    statusDiv.style.color = "#a855f7";
+  }
+
+  try {
+    const response = await fetchWithTimeout(`${BACKEND_URL}/api/claim-reward`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: userEmailAddress,
+        walletAddress: targetWallet
+      })
     });
 
-  // MetaMask Pairing
-  if (claimConnectWalletBtn) {
-    claimConnectWalletBtn.onclick = async () => {
-      if (typeof window.ethereum === "undefined") {
-        if (statusDiv) {
-          statusDiv.innerHTML = "❌ MetaMask wallet browser extension not detected.";
-          statusDiv.style.color = "#ff4d4d";
-        }
-        return;
+    const result = await response.json();
+    if (result.success) {
+      if (statusDiv) statusDiv.innerHTML = "✨ Claims submitted successfully!";
+      await runProfileLedgerVerification(userEmailAddress, false);
+    } else {
+      if (statusDiv) {
+        statusDiv.innerHTML = `❌ ${result.error || "Claim system execution failed."}`;
+        statusDiv.style.color = "#ff4d4d";
       }
+    }
+  } catch (err) {
+    if (statusDiv) {
+      statusDiv.innerHTML = "❌ Token execution communication gateway failure.";
+      statusDiv.style.color = "#ff4d4d";
+    }
+  }
+}
+
+// ================= STAGE 6: EXPLICIT ON-CHAIN CLAIM ROUTES =================
+async function initializeClaimSection(token) {
+  try {
+    const response = await fetchWithTimeout(`${BACKEND_URL}/api/claim-details?token=${encodeURIComponent(token)}`);
+    const details = await response.json();
+
+    if (claimLoadingGear) claimLoadingGear.classList.add("hidden");
+
+    if (details.success) {
+      if (claimStaticIcon) claimStaticIcon.classList.remove("hidden");
+      if (claimScreenTitle) claimScreenTitle.innerText = "Claim Authorized Successfully";
+      if (claimInfoSubtitle) claimInfoSubtitle.innerText = "Please authenticate ledger registry requirements below via message validation structures.";
+      if (claimRewardDetails) claimRewardDetails.classList.remove("hidden");
+      if (claimActionPanel) claimActionPanel.classList.remove("hidden");
+
+      if (document.getElementById("claimInfoEmail")) document.getElementById("claimInfoEmail").innerText = details.email;
+      if (document.getElementById("claimInfoType")) document.getElementById("claimInfoType").innerText = details.type || "Airdrop Claim";
+      if (document.getElementById("claimInfoAmount")) document.getElementById("claimInfoAmount").innerText = `${details.amount || 10} SYN`;
       
-      try {
-        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-        claimWallet = accounts[0];
-        
-        if (claimWalletAddressDisplay) claimWalletAddressDisplay.textContent = claimWallet;
-        if (claimConnectWalletBtn) claimConnectWalletBtn.classList.add("hidden");
-        if (claimWalletConnectedBlock) claimWalletConnectedBlock.classList.remove("hidden");
-        if (statusDiv) statusDiv.innerHTML = "";
-      } catch (err) {
-        if (statusDiv) {
-          statusDiv.innerHTML = "❌ MetaMask connection rejected.";
-          statusDiv.style.color = "#ff4d4d";
-        }
-      }
-    };
+      // Cache details to memory contexts
+      claimScreenSection.dataset.email = details.email;
+      claimScreenSection.dataset.token = token;
+    } else {
+      showClaimScreenError("Link Expired or Invalid", details.error || "The credential target block signature profile matches an invalid registration framework.");
+    }
+  } catch (err) {
+    if (claimLoadingGear) claimLoadingGear.classList.add("hidden");
+    showClaimScreenError("Network Error", "Failed to retrieve registration records from target node arrays.");
+  }
+}
+
+function showClaimScreenError(title, subtitle) {
+  if (claimStaticIcon) claimStaticIcon.classList.add("hidden");
+  if (claimScreenTitle) claimScreenTitle.innerText = title;
+  if (claimInfoSubtitle) claimInfoSubtitle.innerText = subtitle;
+  if (claimErrorBox) claimErrorBox.classList.remove("hidden");
+  if (claimRewardDetails) claimRewardDetails.classList.add("hidden");
+  if (claimActionPanel) claimActionPanel.classList.add("hidden");
+}
+
+async function handleSignatureTokenRelease() {
+  const email = claimScreenSection.dataset.email;
+  const token = claimScreenSection.dataset.token;
+
+  if (!userConnectedWalletAddress) {
+    alert("Please re-establish MetaMask structural configurations.");
+    return;
   }
 
-  // Signature verification & transfer trigger execution (Phase 9 & 11)
-  if (submitClaimRewardBtn) {
-    submitClaimRewardBtn.onclick = async () => {
-      if (!claimWallet) return;
-      
-      if (statusDiv) statusDiv.innerHTML = "";
-      submitClaimRewardBtn.disabled = true;
-      submitClaimRewardBtn.textContent = "Sign Message in MetaMask...";
-      
-      try {
-        const message = `Claiming SYNTRIX Reward\nToken: ${token}\nWallet: ${claimWallet}`;
-        
-        // Convert to hex-string array to keep MetaMask runtime validation sound
-        const hexMessage = "0x" + Array.from(new TextEncoder().encode(message))
-          .map(b => b.toString(16).padStart(2, '0'))
-          .join('');
-        
-        const signature = await window.ethereum.request({
-          method: "personal_sign",
-          params: [hexMessage, claimWallet]
-        });
-        
-        submitClaimRewardBtn.textContent = "Executing On-Chain Settlement...";
-        
-        const response = await fetchWithTimeout(`${BACKEND_URL}/api/rewards/claim`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            token: token,
-            walletAddress: claimWallet,
-            signature: signature
-          })
-        });
-        
-        const result = await response.json();
-        
-        if (!response.ok) {
-          throw new Error(result.error || "Claim transaction rejected.");
-        }
-        
-        if (claimRewardDetails) claimRewardDetails.classList.add("hidden");
-        if (claimActionPanel) claimActionPanel.classList.add("hidden");
-        if (claimSuccessPanel) claimSuccessPanel.classList.remove("hidden");
-        
-        if (claimScreenTitle) claimScreenTitle.textContent = "Settlement Finalized!";
-        if (claimInfoSubtitle) claimInfoSubtitle.textContent = "Your SYN tokens have been transferred successfully.";
-        
-        if (claimTxHashLink) {
-          claimTxHashLink.textContent = result.transactionHash;
-          claimTxHashLink.href = `https://polygonscan.com/tx/${result.transactionHash}`;
-        }
-        
-        if (statusDiv) {
-          statusDiv.innerHTML = "✅ Reward successfully transferred! Your wallet balance has been updated.";
-          statusDiv.style.color = "#57d6c2";
-        }
+  try {
+    const message = `Authenticating Token Core distribution protocols on email registry node: ${email}`;
+    const signature = await window.ethereum.request({
+      method: "personal_sign",
+      params: [message, userConnectedWalletAddress]
+    });
 
-      } catch (err) {
-        if (statusDiv) {
-          statusDiv.innerHTML = "❌ " + err.message;
-          statusDiv.style.color = "#ff4d4d";
-        }
-        submitClaimRewardBtn.disabled = false;
-        submitClaimRewardBtn.textContent = "✍️ Sign Message & Claim Tokens";
+    if (claimActionPanel) claimActionPanel.classList.add("hidden");
+    if (claimRewardDetails) claimRewardDetails.classList.add("hidden");
+    
+    if (claimScreenTitle) claimScreenTitle.innerText = "Executing contract deployment...";
+    if (claimInfoSubtitle) claimInfoSubtitle.innerText = "Broadcasting transaction telemetry metrics to smart contract nodes...";
+    if (claimLoadingGear) claimLoadingGear.classList.remove("hidden");
+
+    const response = await fetchWithTimeout(`${BACKEND_URL}/api/execute-claim`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        token: token,
+        signature: signature,
+        walletAddress: userConnectedWalletAddress
+      })
+    });
+
+    const txResult = await response.json();
+    if (claimLoadingGear) claimLoadingGear.classList.add("hidden");
+
+    if (txResult.success) {
+      if (claimStaticIcon) claimStaticIcon.classList.add("hidden");
+      if (claimScreenTitle) claimScreenTitle.classList.add("hidden");
+      if (claimInfoSubtitle) claimInfoSubtitle.classList.add("hidden");
+      
+      if (claimSuccessPanel) claimSuccessPanel.classList.remove("hidden");
+      if (claimTxHashLink) {
+        claimTxHashLink.innerText = txResult.txHash;
+        claimTxHashLink.href = `https://polygonscan.com/tx/${txResult.txHash}`;
       }
-    };
+    } else {
+      showClaimScreenError("Transaction Revoked", txResult.error || "The processing smart contract rejected token asset distributions.");
+    }
+  } catch (err) {
+    if (claimLoadingGear) claimLoadingGear.classList.add("hidden");
+    alert("Cryptographic signature process rejected or timed out.");
+  }
+}
+
+// ================= UTILITIES & DASHBOARD EXTRA FEATURES =================
+function handleReferralLinkCopy() {
+  if (!referralCodeDisplay) return;
+  referralCodeDisplay.select();
+  referralCodeDisplay.setSelectionRange(0, 99999);
+  
+  try {
+    navigator.clipboard.writeText(referralCodeDisplay.value);
+    if (copyReferralBtn) {
+      const originalText = copyReferralBtn.innerText;
+      copyReferralBtn.innerText = "Copied! ✓";
+      setTimeout(() => { copyReferralBtn.innerText = originalText; }, 2000);
+    }
+  } catch (err) {
+    alert("Failed to access system clipboard registers.");
   }
 }
