@@ -489,16 +489,14 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
       if (statTotalEarned) statTotalEarned.innerText = `${(statusResult.pendingRewards || 0) + (statusResult.claimedRewards || 0)} SYN`;
       if (referralCodeDisplay) referralCodeDisplay.value = `${window.location.origin}/?ref=${statusResult.referralCode || ""}`;
 
-      // **FIX 1 APPLIED**: Immediately jump to Dashboard if the user exists in Supabase
+      // Immediately jump to Dashboard if the user exists in Supabase
       if (statusResult.exists === true) {
-        // Transition straight to user dashboard view
         if (emailGateSection) emailGateSection.classList.add("hidden");
         if (claimForm) claimForm.classList.add("hidden");
         if (topProgressBox) topProgressBox.classList.add("hidden");
         if (rewardDashboardScreen) rewardDashboardScreen.classList.remove("hidden");
         outputTarget.innerHTML = "";
       } else {
-        // Start filling survey questionnaire matrices
         if (emailGateSection) emailGateSection.classList.add("hidden");
         if (claimForm) claimForm.classList.remove("hidden");
         if (topProgressBox) topProgressBox.classList.remove("hidden");
@@ -508,7 +506,6 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
       }
     } else {
       if (!isFromModal) {
-        // New User Entry Point initialization
         if (emailGateSection) emailGateSection.classList.add("hidden");
         if (claimForm) claimForm.classList.remove("hidden");
         if (topProgressBox) topProgressBox.classList.remove("hidden");
@@ -547,21 +544,22 @@ function renderSection() {
   let htmlStr = `<div class="survey-section-card animate-fade-in">
     <h2 class="surveySectionTitle">${getSectionTitle(currentData)}</h2>`;
 
+  // **FIX APPLIED**: Swapped to the premium pill-button UI
   currentData.questions.forEach((q) => {
     const savedAnswer = answers[q.id] || "";
-    htmlStr += `<div class="question-block" style="margin-top:25px; text-align:left;">
-      <p class="questionText" style="font-weight:600; margin-bottom:12px; color:var(--text-primary);">${getQuestionText(q)}</p>
-      <div class="options-layout" style="display:grid; gap:10px;">`;
+    
+    htmlStr += `<div class="question-block" style="margin-top:30px; text-align:left;">
+      <p class="questionText" style="font-weight:700; margin-bottom:16px; font-size:17px; color:#1f1f1f;">${getQuestionText(q)}</p>
+      <div class="options">`; 
 
     q.options.forEach((opt) => {
       const isChecked = savedAnswer === opt ? "checked" : "";
-      const isSelectedClass = savedAnswer === opt ? "selected-option-label" : "";
+      const isSelectedClass = savedAnswer === opt ? "selected" : ""; 
       
-      // **FIX 2 APPLIED**: Structural lockdown on radio buttons and label alignment
       htmlStr += `
-        <label class="option-container ${isSelectedClass}" style="display:flex; align-items:center; justify-content:flex-start; padding:12px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.06); border-radius:8px; cursor:pointer; text-align:left;">
-          <input type="radio" name="${q.id}" value="${opt}" ${isChecked} style="width: 20px !important; height: 20px !important; flex-shrink: 0; margin: 0 15px 0 0 !important; accent-color:#6366f1; cursor:pointer;" onchange="recordSelection('${q.id}', this.value)">
-          <span class="optionText" style="flex-grow: 1; text-align: left; line-height: 1.4;">${getOptionText(opt)}</span>
+        <label class="option ${isSelectedClass}" style="display:inline-block; user-select:none;">
+          <input type="radio" name="${q.id}" value="${opt}" ${isChecked} style="display:none;" onchange="recordSelection('${q.id}', this.value)">
+          <span class="optionText">${getOptionText(opt)}</span>
         </label>`;
     });
 
