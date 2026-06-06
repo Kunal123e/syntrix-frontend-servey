@@ -489,7 +489,8 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
       if (statTotalEarned) statTotalEarned.innerText = `${(statusResult.pendingRewards || 0) + (statusResult.claimedRewards || 0)} SYN`;
       if (referralCodeDisplay) referralCodeDisplay.value = `${window.location.origin}/?ref=${statusResult.referralCode || ""}`;
 
-      if (statusResult.status === "claimed" || statusResult.status === "completed") {
+      // **FIX 1 APPLIED**: Immediately jump to Dashboard if the user exists in Supabase
+      if (statusResult.exists === true) {
         // Transition straight to user dashboard view
         if (emailGateSection) emailGateSection.classList.add("hidden");
         if (claimForm) claimForm.classList.add("hidden");
@@ -555,10 +556,12 @@ function renderSection() {
     q.options.forEach((opt) => {
       const isChecked = savedAnswer === opt ? "checked" : "";
       const isSelectedClass = savedAnswer === opt ? "selected-option-label" : "";
+      
+      // **FIX 2 APPLIED**: Structural lockdown on radio buttons and label alignment
       htmlStr += `
-        <label class="option-container ${isSelectedClass}" style="display:flex; align-items:center; padding:12px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.06); border-radius:8px; cursor:pointer;">
-          <input type="radio" name="${q.id}" value="${opt}" ${isChecked} style="margin-right:12px; accent-color:#6366f1;" onchange="recordSelection('${q.id}', this.value)">
-          <span class="optionText">${getOptionText(opt)}</span>
+        <label class="option-container ${isSelectedClass}" style="display:flex; align-items:center; justify-content:flex-start; padding:12px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.06); border-radius:8px; cursor:pointer; text-align:left;">
+          <input type="radio" name="${q.id}" value="${opt}" ${isChecked} style="width: 20px !important; height: 20px !important; flex-shrink: 0; margin: 0 15px 0 0 !important; accent-color:#6366f1; cursor:pointer;" onchange="recordSelection('${q.id}', this.value)">
+          <span class="optionText" style="flex-grow: 1; text-align: left; line-height: 1.4;">${getOptionText(opt)}</span>
         </label>`;
     });
 
