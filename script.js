@@ -544,7 +544,7 @@ function renderSection() {
   let htmlStr = `<div class="survey-section-card animate-fade-in">
     <h2 class="surveySectionTitle">${getSectionTitle(currentData)}</h2>`;
 
-  // **FIX APPLIED**: Swapped to the premium pill-button UI
+  // Swapped to the premium pill-button UI
   currentData.questions.forEach((q) => {
     const savedAnswer = answers[q.id] || "";
     
@@ -641,7 +641,7 @@ async function handleSurveySubmission(e) {
     const result = await response.json();
     if (result.success) {
       if (statusDiv) statusDiv.innerHTML = "";
-      await runProfileLedgerVerification(userEmailAddress, false);
+      await runProfileLedVerification(userEmailAddress, false);
     } else {
       if (statusDiv) {
         statusDiv.innerHTML = `❌ ${result.error || "Submission rejected by registry backend."}`;
@@ -710,7 +710,8 @@ async function handleManualClaimExecution() {
 
     const result = await response.json();
     if (result.success) {
-      if (statusDiv) statusDiv.innerHTML = "✨ Claims submitted successfully!";
+      // **UI ENHANCEMENT FOR PAYOUT QUEUE**: Fast notification return
+      if (statusDiv) statusDiv.innerHTML = "✨ Request successfully queued! Processing payout variables...";
       await runProfileLedgerVerification(userEmailAddress, false);
     } else {
       if (statusDiv) {
@@ -785,8 +786,8 @@ async function handleSignatureTokenRelease() {
     if (claimActionPanel) claimActionPanel.classList.add("hidden");
     if (claimRewardDetails) claimRewardDetails.classList.add("hidden");
     
-    if (claimScreenTitle) claimScreenTitle.innerText = "Executing contract deployment...";
-    if (claimInfoSubtitle) claimInfoSubtitle.innerText = "Broadcasting transaction telemetry metrics to smart contract nodes...";
+    if (claimScreenTitle) claimScreenTitle.innerText = "Processing Verification Pipeline...";
+    if (claimInfoSubtitle) claimInfoSubtitle.innerText = "Appending distribution requests directly to transaction loop blocks...";
     if (claimLoadingGear) claimLoadingGear.classList.remove("hidden");
 
     const response = await fetchWithTimeout(`${BACKEND_URL}/api/execute-claim`, {
@@ -802,16 +803,13 @@ async function handleSignatureTokenRelease() {
     const txResult = await response.json();
     if (claimLoadingGear) claimLoadingGear.classList.add("hidden");
 
+    // **UI UPDATE TO MATCH ASYNC BACKGROUND PAYOUT QUEUE**
     if (txResult.success) {
       if (claimStaticIcon) claimStaticIcon.classList.add("hidden");
-      if (claimScreenTitle) claimScreenTitle.classList.add("hidden");
-      if (claimInfoSubtitle) claimInfoSubtitle.classList.add("hidden");
+      if (claimScreenTitle) claimScreenTitle.innerText = "Claim Received Successfully!";
+      if (claimInfoSubtitle) claimInfoSubtitle.innerHTML = "✨ Your distribution is currently being written into our block processing layers.<br>Your tokens will automatically land in your wallet in a few moments!";
       
-      if (claimSuccessPanel) claimSuccessPanel.classList.remove("hidden");
-      if (claimTxHashLink) {
-        claimTxHashLink.innerText = txResult.txHash;
-        claimTxHashLink.href = `https://polygonscan.com/tx/${txResult.txHash}`;
-      }
+      if (claimSuccessPanel) claimSuccessPanel.classList.add("hidden"); // Kept hidden while queued
     } else {
       showClaimScreenError("Transaction Revoked", txResult.error || "The processing smart contract rejected token asset distributions.");
     }
