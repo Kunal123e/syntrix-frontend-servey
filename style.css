@@ -907,4 +907,8 @@ textarea::placeholder {
     width: 100%;
   }
 }
+
+/* ================= CUSTOM RADIO BUTTON OVERRIDE ================= */
+input[type="radio"] {
+  accent-color: #1f1f1f !important;
 }
