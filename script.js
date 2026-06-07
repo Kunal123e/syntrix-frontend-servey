@@ -133,6 +133,7 @@ function getQuestionText(q) {
   return q.text || q.id;
 }
 
+// ================= CORE INTERFACE LOGIC FLOW MATRIX =================
 function getOptionText(opt) {
   if (typeof optionTranslations !== "undefined" && optionTranslations[currentLanguage]) {
     return optionTranslations[currentLanguage][opt] || opt;
@@ -150,7 +151,6 @@ function validateCurrentSectionAnswers() {
   return true;
 }
 
-// ================= CORE INTERFACE LOGIC FLOW MATRIX =================
 function renderSection() {
   const sections = getSurveyData();
   if (!sections || sections.length === 0 || !surveyContainer) return;
@@ -246,11 +246,12 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
       if (statTotalEarned) statTotalEarned.innerText = `${(statusResult.pendingRewards || 0) + (statusResult.claimedRewards || 0)} SYN`;
       if (referralCodeDisplay) referralCodeDisplay.value = `${window.location.origin}/?ref=${statusResult.referralCode || ""}`;
 
+      // THE DASHBOARD CONTROLLER ROUTER FEATURE LAYER
       if (statusResult.exists === true) {
         if (emailGateSection) emailGateSection.classList.add("hidden");
         if (claimForm) claimForm.classList.add("hidden");
         if (topProgressBox) topProgressBox.classList.add("hidden");
-        if (rewardDashboardScreen) rewardDashboardScreen.classList.remove("hidden");
+        if (rewardDashboardScreen) rewardDashboardScreen.classList.remove("hidden"); // Mounts dashboard screen cleanly
         outputTarget.innerHTML = "";
       } else {
         if (emailGateSection) emailGateSection.classList.add("hidden");
@@ -552,6 +553,36 @@ function handleReferralLinkCopy() {
 // ================= UTILITIES & POPOVER MODAL CONTROLS =================
 const dismissModal = () => { if (retrieveModal) retrieveModal.classList.add("hidden"); };
 
+function resetApplicationFlowState() {
+  if (emailGateForm) emailGateForm.reset();
+  localStorage.removeItem("syntrix_user_email");
+  localStorage.removeItem("referralCode");
+  if (statusDiv) statusDiv.innerHTML = "";
+  userEmailAddress = "";
+  currentSection = 0;
+  isOtpSent = false;
+  
+  const otpSection = document.getElementById("otpSection");
+  if (otpSection) otpSection.classList.add("hidden");
+  if (startSurveyBtn) startSurveyBtn.innerHTML = "Send Verification Code &rarr;";
+  if (gateEmailInput) gateEmailInput.readOnly = false;
+  
+  for (const prop in answers) { 
+    if (Object.prototype.hasOwnProperty.call(answers, prop)) delete answers[prop]; 
+  }
+  
+  if (emailGateSection) emailGateSection.classList.remove("hidden");
+  if (claimForm) claimForm.classList.add("hidden");
+  if (topProgressBox) topProgressBox.classList.add("hidden");
+  if (rewardDashboardScreen) rewardDashboardScreen.classList.add("hidden");
+  if (claimScreenSection) claimScreenSection.classList.add("hidden");
+  
+  document.querySelectorAll(".step").forEach((st, idx) => {
+    if (idx === 0) st.classList.add("active");
+    else st.classList.remove("active");
+  });
+}
+
 function translatePage() {
   if (typeof translations === "undefined" || !translations[currentLanguage]) return;
   const dict = translations[currentLanguage];
@@ -622,5 +653,110 @@ function translatePage() {
   const confirmRetrieveBtnEl = document.getElementById("confirmRetrieveBtn");
   if (confirmRetrieveBtnEl && dict.btnSearch) confirmRetrieveBtnEl.innerText = dict.btnSearch;
 }
-// ================= ROUTING SWITCHBOARD & SESSION ON-LOAD SWITCHES BACKEND =================
-// (DOM Switchboards completely clean and realigned)
+
+// ================= LIFE CYCLE REGISTRATION RUNNERS & EVENT ROUTERS =================
+document.addEventListener("DOMContentLoaded", async () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const claimToken = urlParams.get("token");
+  const refParam = urlParams.get("ref");
+  
+  if (refParam) {
+    localStorage.setItem("referralCode", normalizeReferralCode(refParam));
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+  
+  const savedRefCode = localStorage.getItem("referralCode");
+  if (savedRefCode && referredByCodeInput) {
+    referredByCodeInput.value = savedRefCode;
+  }
+  
+  const isClaimPath = window.location.pathname.includes("/claim") || claimToken;
+  
+  if (isClaimPath && claimToken) {
+    if (emailGateSection) emailGateSection.classList.add("hidden");
+    if (claimForm) claimForm.classList.add("hidden");
+    if (rewardDashboardScreen) rewardDashboardScreen.classList.add("hidden");
+    if (claimScreenSection) claimScreenSection.classList.remove("hidden");
+    
+    document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
+    initializeClaimSection(claimToken);
+  } else {
+    if (claimScreenSection) claimScreenSection.classList.add("hidden");
+    
+    const savedEmail = localStorage.getItem("syntrix_user_email");
+    if (savedEmail) {
+      userEmailAddress = savedEmail;
+      await runProfileLedgerVerification(savedEmail, false);
+    }
+  }
+
+  // Bind operational button actions safely inside structural initialization scope
+  if (nextBtn) nextBtn.addEventListener("click", handleNextSection);
+  if (prevBtn) prevBtn.addEventListener("click", handlePrevSection);
+  if (claimForm) claimForm.addEventListener("submit", handleSurveySubmission);
+  if (connectWalletBtn) connectWalletBtn.addEventListener("click", () => connectWallet(false));
+  if (claimConnectWalletBtn) claimConnectWalletBtn.addEventListener("click", () => connectWallet(true));
+  if (executeClaimBtn) executeClaimBtn.addEventListener("click", handleManualClaimExecution);
+  if (submitClaimRewardBtn) submitClaimRewardBtn.addEventListener("click", handleSignatureTokenRelease);
+  if (copyReferralBtn) copyReferralBtn.addEventListener("click", handleReferralLinkCopy);
+
+  // Bind custom dropdown options handlers
+  if (menuToggleBtn && optionsPopover) {
+    menuToggleBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      optionsPopover.classList.toggle("hidden");
+    });
+  }
+
+  document.addEventListener("click", () => {
+    if (optionsPopover) optionsPopover.classList.add("hidden");
+  });
+
+  if (menuRestartBtn) {
+    menuRestartBtn.addEventListener("click", () => {
+      resetApplicationFlowState();
+    });
+  }
+
+  if (menuRecoverBtn && optionsPopover && retrieveModal && modalEmailInput && modalStatus) {
+    menuRecoverBtn.addEventListener("click", () => {
+      optionsPopover.classList.add("hidden");
+      modalEmailInput.value = "";
+      modalStatus.innerHTML = "";
+      retrieveModal.classList.remove("hidden");
+      setTimeout(() => { modalEmailInput.focus(); }, 100);
+    });
+  }
+
+  if (closeModalBtn) closeModalBtn.addEventListener("click", dismissModal);
+  if (cancelModalBtn) cancelModalBtn.addEventListener("click", dismissModal);
+  if (retrieveModal) {
+    retrieveModal.addEventListener("click", (e) => {
+      if (e.target === retrieveModal) dismissModal();
+    });
+  }
+
+  if (confirmRetrieveBtn) {
+    confirmRetrieveBtn.addEventListener("click", async () => {
+      if (modalEmailInput) {
+        const targetEmail = modalEmailInput.value.trim();
+        await runProfileLedgerVerification(targetEmail, true);
+      }
+    });
+  }
+
+  // Bind Language Controls interface arrays
+  const langButtons = document.querySelectorAll(".langBtn");
+  langButtons.forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      langButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentLanguage = btn.dataset.lang;
+      
+      translatePage();
+      if (claimForm && !claimForm.classList.contains("hidden")) {
+        renderSection();
+      }
+    });
+  });
+});
