@@ -5,9 +5,8 @@ const BACKEND_URL = window.location.origin.includes("localhost") || window.locat
 
 const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 const WALLET_REGEX = /^0x[a-fA-F0-9]{40}$/;
-const DEFAULT_TIMEOUT_MS = 60000; // 60 seconds to allow Render.com to wake from sleep
+const DEFAULT_TIMEOUT_MS = 60000;
 
-// Global Application Memory State Triggers
 let userEmailAddress = "";
 let currentSection = 0;
 const answers = {};
@@ -133,7 +132,6 @@ function getQuestionText(q) {
   return q.text || q.id;
 }
 
-// ================= CORE INTERFACE LOGIC FLOW MATRIX =================
 function getOptionText(opt) {
   if (typeof optionTranslations !== "undefined" && optionTranslations[currentLanguage]) {
     return optionTranslations[currentLanguage][opt] || opt;
@@ -327,7 +325,6 @@ async function connectWallet(isDirectClaimFlow = false) {
   const creatorModal = document.getElementById("walletCreatorModal");
   const closeBtn = document.getElementById("closeWalletCreatorBtn");
   const googleAuthBtn = document.getElementById("authGoogleWalletBtn");
-  const appleAuthBtn = document.getElementById("authAppleWalletBtn");
 
   if (typeof window.ethereum === "undefined") {
     console.log("[SYN-WEB3] Core extension missing. Launching MetaMask Embedded integration overlay.");
@@ -337,22 +334,20 @@ async function connectWallet(isDirectClaimFlow = false) {
       closeBtn.onclick = () => creatorModal.classList.add("hidden");
     }
 
-    const handleSocialWalletGeneration = async (providerType) => {
-      // Force verification metrics directly against global window layer flags
+    const handleSocialWalletGeneration = async () => {
+      // Direct visible alert popup so you know exactly why it is waiting!
       if (!window.isWeb3AuthReady || !window.metamaskEmbeddedInstance) {
-        if (statusDiv) {
-          statusDiv.innerHTML = `⏳ Spawning secure tunnel channels with MetaMask key nodes... Try clicking again in 2 seconds!`;
-          statusDiv.style.color = "#ffb020";
-        }
+        alert("⏳ Syntrix Web3 Core is currently downloading connection protocols. Please wait 2 seconds and try again.");
         return;
       }
 
       if (statusDiv) {
-        statusDiv.innerHTML = `⏳ Spawning safe cryptographic key shares via MetaMask security matrix...`;
+        statusDiv.innerHTML = `⏳ Initializing secure Web3Auth portal via MetaMask parameters...`;
         statusDiv.style.color = "#a855f7";
       }
       
       try {
+        // Calling connect() here natively pops up the robust Web3Auth interface modal!
         const provider = await window.metamaskEmbeddedInstance.connect();
         const ethersProvider = new window.ethers.BrowserProvider(provider);
         const signer = await ethersProvider.getSigner();
@@ -363,7 +358,7 @@ async function connectWallet(isDirectClaimFlow = false) {
         if (isDirectClaimFlow) {
           if (claimConnectWalletBtn) claimConnectWalletBtn.classList.add("hidden");
           if (claimWalletConnectedBlock) claimWalletConnectedBlock.classList.remove("hidden");
-          if (claimWalletAddressDisplay) claimWalletAddressDisplay.innerText = userConnectedWalletAddress + " (MetaMask Account)";
+          if (claimWalletAddressDisplay) claimWalletAddressDisplay.innerText = userConnectedWalletAddress + " (Web3Auth)";
         } else {
           if (dashboardWalletInput) {
             dashboardWalletInput.value = userConnectedWalletAddress;
@@ -372,20 +367,19 @@ async function connectWallet(isDirectClaimFlow = false) {
 
         creatorModal.classList.add("hidden");
         if (statusDiv) {
-          statusDiv.innerHTML = `✅ Authentic MetaMask wallet generated and linked via ${providerType}!`;
+          statusDiv.innerHTML = `✅ Authentic Web3 wallet generated and linked successfully!`;
           statusDiv.style.color = "#57d6c2";
         }
       } catch (authErr) {
-        console.error("MetaMask verification abort:", authErr);
+        console.error("Web3Auth verification abort:", authErr);
         if (statusDiv) {
-          statusDiv.innerHTML = `❌ Connection cancelled or denied by authentication provider.`;
+          statusDiv.innerHTML = `❌ Connection cancelled or denied.`;
           statusDiv.style.color = "#ff4d4d";
         }
       }
     };
 
-    if (googleAuthBtn) googleAuthBtn.onclick = () => handleSocialWalletGeneration("Google");
-    if (appleAuthBtn) appleAuthBtn.onclick = () => handleSocialWalletGeneration("Apple");
+    if (googleAuthBtn) googleAuthBtn.onclick = () => handleSocialWalletGeneration();
     return;
   }
 
