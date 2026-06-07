@@ -7,17 +7,21 @@
   <link rel="stylesheet" href="style.css">
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
-  
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@9/dist/modal.umd.min.js"></script>
-
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/openlogin-adapter@9/dist/openloginAdapter.umd.min.js"></script>
 
   <script>
     // Initialize Global Web3Auth Configuration Engine
     let metamaskEmbeddedInstance = null;
 
-    document.addEventListener("DOMContentLoaded", async () => {
+    // Wait completely for all CDNs above to mount onto the window scope before executing setup
+    window.addEventListener("load", async () => {
       try {
+        if (!window.ModalSdk || !window.OpenloginAdapterSdk) {
+          console.error("❌ Critical Web3Auth SDK dependencies failed to load via CDN.");
+          return;
+        }
+
         // Create the authentic non-custodial wallet infrastructure instance
         metamaskEmbeddedInstance = new window.ModalSdk.Web3Auth({
           clientId: "BLTKOOeFj7P8fVIGNIwqX3lhHeA948YDtXgKO_ClNELkI06hZ17XKvfpiAWA0AujfpBMAs75-LivYTtCeRWg2Lo", 
@@ -29,7 +33,7 @@
           }
         });
 
-        // MANDATORY ALLOCATION: Attach the Openlogin Adapter to manage Google/Apple authentication frameworks
+        // Attach Openlogin Adapter to safely manage Google/Apple authentication pathways
         const openloginAdapter = new window.OpenloginAdapterSdk.OpenloginAdapter({
           adapterSettings: {
             uxMode: "popup",
@@ -47,7 +51,7 @@
 
         // Warm up and initialize communication pathways with the key generation nodes
         await metamaskEmbeddedInstance.initModal();
-        console.log("⚙️ MetaMask Embedded Wallet engine initialized cleanly with custom sub-adapters.");
+        console.log("⚙️ MetaMask Embedded Wallet engine initialized cleanly with custom adapters.");
       } catch (err) {
         console.error("MetaMask SDK Engine boot failure:", err.message);
       }
