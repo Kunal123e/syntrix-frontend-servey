@@ -8,57 +8,45 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@9/dist/modal.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@web3auth/openlogin-adapter@9/dist/openloginAdapter.umd.min.js"></script>
 
   <script>
-    // Set up safe window memory allocations right at top-level compilation
     window.metamaskEmbeddedInstance = null;
     window.isWeb3AuthReady = false;
 
-    // Use a unified checking interval ticker matrix to prevent async race timing crashes
-    async function bootSyntrixWeb3Engine() {
+    // A robust, unbreakable initialization loop
+    const initSyntrixWeb3 = async () => {
       try {
-        // Safe check: If CDNs aren't mounted yet, wait 300ms and check again automatically
-        if (!window.ModalSdk || !window.OpenloginAdapterSdk) {
-          setTimeout(bootSyntrixWeb3Engine, 3000);
+        // If the CDN hasn't exposed the window object yet, wait 500ms and try again automatically
+        if (!window.web3auth) {
+          console.log("⏳ Downloading Web3Auth engine protocols...");
+          setTimeout(initSyntrixWeb3, 500);
           return;
         }
 
-        window.metamaskEmbeddedInstance = new window.ModalSdk.Web3Auth({
+        // Initialize the core Web3Auth Modal Engine
+        const web3auth = new window.web3auth.Web3Auth({
           clientId: "BLTKOOeFj7P8fVIGNIwqX3lhHeA948YDtXgKO_ClNELkI06hZ17XKvfpiAWA0AujfpBMAs75-LivYTtCeRWg2Lo", 
           web3AuthNetwork: "sapphire_devnet", 
           chainConfig: {
             chainNamespace: "eip155",
-            chainId: "0x89", 
+            chainId: "0x89", // Polygon Mainnet
             rpcTarget: "https://polygon-rpc.com" 
           }
         });
 
-        const openloginAdapter = new window.OpenloginAdapterSdk.OpenloginAdapter({
-          adapterSettings: {
-            uxMode: "popup",
-            loginConfig: {
-              google: {
-                verifier: "google",
-                typeOfLogin: "google",
-                clientId: "BLTKOOeFj7P8fVIGNIwqX3lhHeA948YDtXgKO_ClNELkI06hZ17XKvfpiAWA0AujfpBMAs75-LivYTtCeRWg2Lo"
-              }
-            }
-          }
-        });
+        await web3auth.initModal();
         
-        window.metamaskEmbeddedInstance.configureAdapter(openloginAdapter);
-        await window.metamaskEmbeddedInstance.initModal();
-        
+        // Expose to global scope for script.js
+        window.metamaskEmbeddedInstance = web3auth;
         window.isWeb3AuthReady = true;
-        console.log("✨ [SYN-WEB3] Core network engines successfully compiled and ready!");
+        console.log("✅ Web3Auth Engine is live and fully armed!");
       } catch (err) {
-        console.error("❌ MetaMask Embedded SDK Engine boot failure:", err.message);
+        console.error("❌ Web3Auth Boot Error:", err);
       }
-    }
+    };
 
-    // Fire initialization safely on window lifecycle finish
-    window.addEventListener("load", bootSyntrixWeb3Engine);
+    // Trigger the boot sequence the moment the file loads
+    initSyntrixWeb3();
   </script>
 </head>
 <body>
@@ -346,11 +334,7 @@
     <p style="font-size:14px; color:#6b6258; line-height:1.5; margin-bottom:24px;">Create a real, secure Web3 wallet address instantly using your existing accounts. No seed phrases or extensions required.</p>
     
     <button id="authGoogleWalletBtn" style="width:100%; padding:14px; background:#f4efe8; border:1px solid #ddd4c8; border-radius:12px; font-size:15px; font-weight:700; color:#1f1f1f; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:12px; transition:0.2s;">
-      Continue with Google
-    </button>
-    
-    <button id="authAppleWalletBtn" style="width:100%; padding:14px; background:#f4efe8; border:1px solid #ddd4c8; border-radius:12px; font-size:15px; font-weight:700; color:#1f1f1f; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:24px; transition:0.2s;">
-      Continue with Apple ID
+      Continue with Web3Auth
     </button>
 
     <button id="closeWalletCreatorBtn" style="background:transparent; border:none; color:#999086; font-size:13px; font-weight:600; cursor:pointer; text-decoration:underline;">
