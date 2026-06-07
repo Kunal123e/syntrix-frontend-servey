@@ -7,7 +7,10 @@
   <link rel="stylesheet" href="style.css">
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+  
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@9/dist/modal.umd.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@web3auth/openlogin-adapter@9/dist/openloginAdapter.umd.min.js"></script>
 
   <script>
     // Initialize Global Web3Auth Configuration Engine
@@ -26,9 +29,25 @@
           }
         });
 
+        // MANDATORY ALLOCATION: Attach the Openlogin Adapter to manage Google/Apple authentication frameworks
+        const openloginAdapter = new window.OpenloginAdapterSdk.OpenloginAdapter({
+          adapterSettings: {
+            uxMode: "popup",
+            loginConfig: {
+              google: {
+                verifier: "google",
+                typeOfLogin: "google",
+                clientId: "BLTKOOeFj7P8fVIGNIwqX3lhHeA948YDtXgKO_ClNELkI06hZ17XKvfpiAWA0AujfpBMAs75-LivYTtCeRWg2Lo"
+              }
+            }
+          }
+        });
+        
+        metamaskEmbeddedInstance.configureAdapter(openloginAdapter);
+
         // Warm up and initialize communication pathways with the key generation nodes
         await metamaskEmbeddedInstance.initModal();
-        console.log("⚙️ MetaMask Embedded Wallet engine initialized cleanly.");
+        console.log("⚙️ MetaMask Embedded Wallet engine initialized cleanly with custom sub-adapters.");
       } catch (err) {
         console.error("MetaMask SDK Engine boot failure:", err.message);
       }
