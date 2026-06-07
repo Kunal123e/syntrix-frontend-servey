@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (isClaimPath && claimToken) {
     if (emailGateSection) emailGateSection.classList.add("hidden");
     if (claimForm) claimForm.classList.add("hidden");
-    if (rewardDashboardScreen) rewardDashboardScreen.classList.add("hidden");
+    if (rewardDashboardScreen) rewardDashboardScreen.classList.remove("hidden");
     if (claimScreenSection) claimScreenSection.classList.remove("hidden");
     
     document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
@@ -605,89 +605,80 @@ function handleNextSection() {
   renderSection();
 }
 
-function handlePrevSection() {
-  if (currentSection > 0) {
-    currentSection--;
-    renderSection();
-  }
-}
+// ================= STAGE 5: WEB3 CONNECTIVITY & EMBEDDED WALLET CREATOR MODAL INTERFACE =================
+async function connectWallet(isDirectClaimFlow = false) {
+  const creatorModal = document.getElementById("walletCreatorModal");
+  const closeBtn = document.getElementById("closeWalletCreatorBtn");
+  const googleAuthBtn = document.getElementById("authGoogleWalletBtn");
+  const appleAuthBtn = document.getElementById("authAppleWalletBtn");
 
-// ================= STAGE 4: DATA AGGREGATION & SUBMISSION SUBMIT =================
-async function handleSurveySubmission(e) {
-  e.preventDefault();
-  if (!validateCurrentSectionAnswers()) {
-    alert(getUIText("validationRequired"));
+  // IF METAMASK BROWSER EXTENSION IS MISSING: Launch Embedded Wallet Creation Popup
+  if (typeof window.ethereum === "undefined") {
+    console.log("[SYN-WEB3] Core extension missing. Launching MetaMask Embedded integration overlay.");
+    
+    if (creatorModal) creatorModal.classList.remove("hidden");
+
+    if (closeBtn) {
+      closeBtn.onclick = () => creatorModal.classList.add("hidden");
+    }
+
+    // AUTHENTIC SOCIAL WALLET GEN LOGIC LAYER (CONNECTED TO METAMASK RAILS)
+    const handleSocialWalletGeneration = async (providerType) => {
+      if (!window.metamaskEmbeddedInstance) {
+        alert("Wallet initialization engine is currently warming up. Please try again in 2 seconds.");
+        return;
+      }
+
+      if (statusDiv) {
+        statusDiv.innerHTML = `⏳ Spawning safe cryptographic key shares via MetaMask security matrix...`;
+        statusDiv.style.color = "#a855f7";
+      }
+      
+      try {
+        // Trigger the MetaMask OAuth modal popup automatically based on social selection
+        const provider = await window.metamaskEmbeddedInstance.connect();
+        
+        // Wrap the returned provider into an Ethers interface to extract their brand new public key address
+        const ethersProvider = new window.ethers.BrowserProvider(provider);
+        const signer = await ethersProvider.getSigner();
+        const realWeb3Address = await signer.getAddress();
+        
+        // Cache the authentic, verified blockchain address string into memory global context
+        userConnectedWalletAddress = realWeb3Address.toLowerCase();
+
+        // Dynamically route data across layout elements
+        if (isDirectClaimFlow) {
+          if (claimConnectWalletBtn) claimConnectWalletBtn.classList.add("hidden");
+          if (claimWalletConnectedBlock) claimWalletConnectedBlock.classList.remove("hidden");
+          if (claimWalletAddressDisplay) claimWalletAddressDisplay.innerText = userConnectedWalletAddress + " (MetaMask Account)";
+        } else {
+          if (dashboardWalletInput) {
+            dashboardWalletInput.value = userConnectedWalletAddress;
+          }
+        }
+
+        creatorModal.classList.add("hidden");
+        if (statusDiv) {
+          statusDiv.innerHTML = `✅ Authentic MetaMask wallet generated and linked via ${providerType}!`;
+          statusDiv.style.color = "#57d6c2";
+        }
+
+      } catch (authErr) {
+        console.error("MetaMask verification abort:", authErr);
+        if (statusDiv) {
+          statusDiv.innerHTML = `❌ Connection cancelled or denied by authentication provider.`;
+          statusDiv.style.color = "#ff4d4d";
+        }
+      }
+    };
+
+    if (googleAuthBtn) googleAuthBtn.onclick = () => handleSocialWalletGeneration("Google");
+    if (appleAuthBtn) appleAuthBtn.onclick = () => handleSocialWalletGeneration("Apple");
+    
     return;
   }
 
-  if (statusDiv) {
-    statusDiv.innerHTML = `⏳ ${getUIText("submitting")}`;
-    statusDiv.style.color = "#57d6c2";
-  }
-
-  const referralCodeUsed = localStorage.getItem("referralCode") || "";
-
-  try {
-    const response = await fetchWithTimeout(`${BACKEND_URL}/api/submit-survey`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: userEmailAddress,
-        answers: answers,
-        referredBy: referralCodeUsed
-      })
-    });
-
-    const result = await response.json();
-    if (result.success) {
-      if (statusDiv) statusDiv.innerHTML = "";
-      await runProfileLedgerVerification(userEmailAddress, false);
-    } else {
-      if (statusDiv) {
-        statusDiv.innerHTML = `❌ ${result.error || "Submission rejected by registry backend."}`;
-        statusDiv.style.color = "#ff4d4d";
-      }
-    }
-  } catch (err) {
-    if (statusDiv) {
-      statusDiv.innerHTML = "❌ Network transaction failed.";
-      statusDiv.style.color = "#ff4d4d";
-    }
-  }
-}
-
-// ================= STAGE 5: WEB3 METAMASK INJECTION INTERFACE (WITH SMART TEST DATA FALLBACK) =================
-async function connectWallet(isDirectClaimFlow = false) {
-  // Check if MetaMask is physically installed in the current browser frame
-  if (typeof window.ethereum === "undefined") {
-    console.warn("⚠️ MetaMask extension not detected. Injecting high-fidelity mock fallback telemetry address parameters for testing.");
-    
-    // Generate a mathematically perfect, randomized fake Ethereum public wallet address block hash
-    const fakeHexChars = "0123456789abcdef";
-    let generatedFakeAddress = "0x";
-    for (let i = 0; i < 40; i++) {
-      generatedFakeAddress += fakeHexChars[Math.floor(Math.random() * 16)];
-    }
-    
-    // Store the generated fake wallet address to memory context globals
-    userConnectedWalletAddress = generatedFakeAddress;
-    
-    // Route variables dynamically straight into your screen elements
-    if (isDirectClaimFlow) {
-      if (claimConnectWalletBtn) claimConnectWalletBtn.classList.add("hidden");
-      if (claimWalletConnectedBlock) claimWalletConnectedBlock.classList.remove("hidden");
-      if (claimWalletAddressDisplay) claimWalletAddressDisplay.innerText = userConnectedWalletAddress + " (TEST MODE)";
-    } else {
-      if (dashboardWalletInput) {
-        dashboardWalletInput.value = userConnectedWalletAddress;
-        // Flash an alert notice so you know the fake wallet injected successfully
-        alert(`✨ Staging Engine Activated!\nInjected Fake Wallet Hash for testing:\n${userConnectedWalletAddress}`);
-      }
-    }
-    return; // Exit execution path gracefully
-  }
-
-  // Real Web3 Production Connect Pipeline (Runs smoothly if MetaMask is present!)
+  // Real Web3 Production Provider Gateway Flow (Fires natively if extension is active!)
   try {
     const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
     if (accounts.length === 0) return;
@@ -704,7 +695,7 @@ async function connectWallet(isDirectClaimFlow = false) {
       }
     }
   } catch (err) {
-    console.error("MetaMask execution connection error encountered:", err);
+    console.error("MetaMask browser extension handshake failure:", err.message);
   }
 }
 
@@ -872,5 +863,12 @@ function handleReferralLinkCopy() {
     }
   } catch (err) {
     alert("Failed to access system clipboard registers.");
+  }
+}
+
+function handlePrevSection() {
+  if (currentSection > 0) {
+    currentSection--;
+    renderSection();
   }
 }
