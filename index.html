@@ -6,24 +6,25 @@
   <title>Syntrix Consumer Analytics Hub</title>
   <link rel="stylesheet" href="style.css">
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@9/dist/modal.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@web3auth/openlogin-adapter@9/dist/openloginAdapter.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@9/dist/modal.umd.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@web3auth/openlogin-adapter@9/dist/openloginAdapter.umd.min.js" defer></script>
 
   <script>
-    // Initialize Global Web3Auth Configuration Engine
-    let metamaskEmbeddedInstance = null;
+    // Exposed globally so script.js can tap it instantaneously
+    window.metamaskEmbeddedInstance = null;
+    window.isWeb3AuthReady = false;
 
-    // Wait completely for all CDNs above to mount onto the window scope before executing setup
+    // Use window 'load' event instead of DOMContentLoaded to guarantee all CDN scripts are completely parsed and active
     window.addEventListener("load", async () => {
       try {
         if (!window.ModalSdk || !window.OpenloginAdapterSdk) {
-          console.error("❌ Critical Web3Auth SDK dependencies failed to load via CDN.");
+          console.error("❌ Critical Web3Auth SDK dependencies failed to map into window memory layout from CDN.");
           return;
         }
 
         // Create the authentic non-custodial wallet infrastructure instance
-        metamaskEmbeddedInstance = new window.ModalSdk.Web3Auth({
+        window.metamaskEmbeddedInstance = new window.ModalSdk.Web3Auth({
           clientId: "BLTKOOeFj7P8fVIGNIwqX3lhHeA948YDtXgKO_ClNELkI06hZ17XKvfpiAWA0AujfpBMAs75-LivYTtCeRWg2Lo", 
           web3AuthNetwork: "sapphire_devnet", // Running on free devnet tracking rails for staging/localhost
           chainConfig: {
@@ -33,7 +34,7 @@
           }
         });
 
-        // Attach Openlogin Adapter to safely manage Google/Apple authentication pathways
+        // Attach Openlogin Adapter to safely manage Google/Apple authentication frameworks
         const openloginAdapter = new window.OpenloginAdapterSdk.OpenloginAdapter({
           adapterSettings: {
             uxMode: "popup",
@@ -47,11 +48,14 @@
           }
         });
         
-        metamaskEmbeddedInstance.configureAdapter(openloginAdapter);
+        window.metamaskEmbeddedInstance.configureAdapter(openloginAdapter);
 
         // Warm up and initialize communication pathways with the key generation nodes
-        await metamaskEmbeddedInstance.initModal();
-        console.log("⚙️ MetaMask Embedded Wallet engine initialized cleanly with custom adapters.");
+        await window.metamaskEmbeddedInstance.initModal();
+        
+        // Flip global validation status flag to active state safely
+        window.isWeb3AuthReady = true;
+        console.log("⚙️ MetaMask Embedded Wallet engine initialized cleanly and flagged ready.");
       } catch (err) {
         console.error("MetaMask SDK Engine boot failure:", err.message);
       }
