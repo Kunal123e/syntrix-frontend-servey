@@ -133,6 +133,7 @@ function getQuestionText(q) {
   return q.text || q.id;
 }
 
+// ================= CORE INTERFACE LOGIC FLOW MATRIX =================
 function getOptionText(opt) {
   if (typeof optionTranslations !== "undefined" && optionTranslations[currentLanguage]) {
     return optionTranslations[currentLanguage][opt] || opt;
@@ -337,10 +338,10 @@ async function connectWallet(isDirectClaimFlow = false) {
     }
 
     const handleSocialWalletGeneration = async (providerType) => {
-      // ADAPTIVE TIMING RETRY ENGINE: If Web3 instance isn't active yet, flash update and wait gracefully
+      // Force verification metrics directly against global window layer flags
       if (!window.isWeb3AuthReady || !window.metamaskEmbeddedInstance) {
         if (statusDiv) {
-          statusDiv.innerHTML = `⏳ Syntrix core is finalizing secure tunnels with MetaMask nodes... Try clicking again in 2 seconds!`;
+          statusDiv.innerHTML = `⏳ Spawning secure tunnel channels with MetaMask key nodes... Try clicking again in 2 seconds!`;
           statusDiv.style.color = "#ffb020";
         }
         return;
