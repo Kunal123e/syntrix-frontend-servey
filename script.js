@@ -641,7 +641,7 @@ async function handleSurveySubmission(e) {
     const result = await response.json();
     if (result.success) {
       if (statusDiv) statusDiv.innerHTML = "";
-      await runProfileLedVerification(userEmailAddress, false);
+      await runProfileLedgerVerification(userEmailAddress, false);
     } else {
       if (statusDiv) {
         statusDiv.innerHTML = `❌ ${result.error || "Submission rejected by registry backend."}`;
@@ -656,13 +656,38 @@ async function handleSurveySubmission(e) {
   }
 }
 
-// ================= STAGE 5: WEB3 METAMASK INJECTION INTERFACE =================
+// ================= STAGE 5: WEB3 METAMASK INJECTION INTERFACE (WITH SMART TEST DATA FALLBACK) =================
 async function connectWallet(isDirectClaimFlow = false) {
+  // Check if MetaMask is physically installed in the current browser frame
   if (typeof window.ethereum === "undefined") {
-    alert("MetaMask extension not found. Please install MetaMask or use manual address submission inputs.");
-    return;
+    console.warn("⚠️ MetaMask extension not detected. Injecting high-fidelity mock fallback telemetry address parameters for testing.");
+    
+    // Generate a mathematically perfect, randomized fake Ethereum public wallet address block hash
+    const fakeHexChars = "0123456789abcdef";
+    let generatedFakeAddress = "0x";
+    for (let i = 0; i < 40; i++) {
+      generatedFakeAddress += fakeHexChars[Math.floor(Math.random() * 16)];
+    }
+    
+    // Store the generated fake wallet address to memory context globals
+    userConnectedWalletAddress = generatedFakeAddress;
+    
+    // Route variables dynamically straight into your screen elements
+    if (isDirectClaimFlow) {
+      if (claimConnectWalletBtn) claimConnectWalletBtn.classList.add("hidden");
+      if (claimWalletConnectedBlock) claimWalletConnectedBlock.classList.remove("hidden");
+      if (claimWalletAddressDisplay) claimWalletAddressDisplay.innerText = userConnectedWalletAddress + " (TEST MODE)";
+    } else {
+      if (dashboardWalletInput) {
+        dashboardWalletInput.value = userConnectedWalletAddress;
+        // Flash an alert notice so you know the fake wallet injected successfully
+        alert(`✨ Staging Engine Activated!\nInjected Fake Wallet Hash for testing:\n${userConnectedWalletAddress}`);
+      }
+    }
+    return; // Exit execution path gracefully
   }
 
+  // Real Web3 Production Connect Pipeline (Runs smoothly if MetaMask is present!)
   try {
     const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
     if (accounts.length === 0) return;
@@ -679,7 +704,7 @@ async function connectWallet(isDirectClaimFlow = false) {
       }
     }
   } catch (err) {
-    console.error("MetaMask connection error", err);
+    console.error("MetaMask execution connection error encountered:", err);
   }
 }
 
@@ -688,17 +713,20 @@ async function handleManualClaimExecution() {
   if (!dashboardWalletInput) return;
   const targetWallet = dashboardWalletInput.value.trim();
 
+  // 1. Strict Validation Check against your EVM Regex template
   if (!WALLET_REGEX.test(targetWallet)) {
-    alert("❌ Invalid EVM public address block hash framework detected.");
+    alert("❌ Invalid EVM public address framework detected. Address must start with 0x followed by 40 hex characters.");
     return;
   }
 
+  // 2. Set UI loading indicator states across processing blocks
   if (statusDiv) {
-    statusDiv.innerHTML = `⚡ ${getUIText("claiming")}`;
+    statusDiv.innerHTML = `⚡ Ingesting reward request to transactional queue registers...`;
     statusDiv.style.color = "#a855f7";
   }
 
   try {
+    // 3. Dispatch the payload context directly to your dedicated backend route
     const response = await fetchWithTimeout(`${BACKEND_URL}/api/claim-reward`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -709,10 +737,22 @@ async function handleManualClaimExecution() {
     });
 
     const result = await response.json();
+    
     if (result.success) {
-      // **UI ENHANCEMENT FOR PAYOUT QUEUE**: Fast notification return
-      if (statusDiv) statusDiv.innerHTML = "✨ Request successfully queued! Processing payout variables...";
-      await runProfileLedgerVerification(userEmailAddress, false);
+      // 4. Update UI to match the background processing engine status
+      if (statusDiv) {
+        statusDiv.innerHTML = "✨ Request successfully queued! Your payout is being compiled into our next block cycle.";
+        statusDiv.style.color = "#57d6c2";
+      }
+      
+      // Clear the dashboard layout fields to prevent double triggers
+      if (dashboardWalletInput) dashboardWalletInput.value = "";
+      
+      // Refresh the ledger state tracking matrices dynamically after 3 seconds
+      setTimeout(async () => {
+        await runProfileLedgerVerification(userEmailAddress, false);
+      }, 3000);
+
     } else {
       if (statusDiv) {
         statusDiv.innerHTML = `❌ ${result.error || "Claim system execution failed."}`;
@@ -807,9 +847,7 @@ async function handleSignatureTokenRelease() {
     if (txResult.success) {
       if (claimStaticIcon) claimStaticIcon.classList.add("hidden");
       if (claimScreenTitle) claimScreenTitle.innerText = "Claim Received Successfully!";
-      if (claimInfoSubtitle) claimInfoSubtitle.innerHTML = "✨ Your distribution is currently being written into our block processing layers.<br>Your tokens will automatically land in your wallet in a few moments!";
-      
-      if (claimSuccessPanel) claimSuccessPanel.classList.add("hidden"); // Kept hidden while queued
+      if (claimInfoSubtitle) claimInfoSubtitle.innerHTML = "✨ Your distribution is currently being written into our block processing layers.<br>Your tokens will automatically land in your wallet in a moments time!";
     } else {
       showClaimScreenError("Transaction Revoked", txResult.error || "The processing smart contract rejected token asset distributions.");
     }
