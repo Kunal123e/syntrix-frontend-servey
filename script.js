@@ -102,7 +102,6 @@ async function fetchWithTimeout(resource, options = {}) {
   }
 }
 
-// ================= CORE INTERFACE LOGIC FLOW MATRIX =================
 function getSurveyData() {
   return typeof surveySections !== "undefined" ? surveySections : [];
 }
@@ -246,12 +245,11 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
       if (statTotalEarned) statTotalEarned.innerText = `${(statusResult.pendingRewards || 0) + (statusResult.claimedRewards || 0)} SYN`;
       if (referralCodeDisplay) referralCodeDisplay.value = `${window.location.origin}/?ref=${statusResult.referralCode || ""}`;
 
-      // THE DASHBOARD CONTROLLER ROUTER FEATURE LAYER
       if (statusResult.exists === true) {
         if (emailGateSection) emailGateSection.classList.add("hidden");
         if (claimForm) claimForm.classList.add("hidden");
         if (topProgressBox) topProgressBox.classList.add("hidden");
-        if (rewardDashboardScreen) rewardDashboardScreen.classList.remove("hidden"); // Mounts dashboard screen cleanly
+        if (rewardDashboardScreen) rewardDashboardScreen.classList.remove("hidden");
         outputTarget.innerHTML = "";
       } else {
         if (emailGateSection) emailGateSection.classList.add("hidden");
@@ -339,10 +337,10 @@ async function connectWallet(isDirectClaimFlow = false) {
     }
 
     const handleSocialWalletGeneration = async (providerType) => {
-      // Monitor readiness states directly from the updated index.html flag variables
+      // ADAPTIVE TIMING RETRY ENGINE: If Web3 instance isn't active yet, flash update and wait gracefully
       if (!window.isWeb3AuthReady || !window.metamaskEmbeddedInstance) {
         if (statusDiv) {
-          statusDiv.innerHTML = `⏳ Spawning secure tunnel channels with key nodes... Try again in 1 second!`;
+          statusDiv.innerHTML = `⏳ Syntrix core is finalizing secure tunnels with MetaMask nodes... Try clicking again in 2 seconds!`;
           statusDiv.style.color = "#ffb020";
         }
         return;
@@ -694,7 +692,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // Bind operational button actions safely inside structural initialization scope
   if (nextBtn) nextBtn.addEventListener("click", handleNextSection);
   if (prevBtn) prevBtn.addEventListener("click", handlePrevSection);
   if (claimForm) claimForm.addEventListener("submit", handleSurveySubmission);
@@ -704,7 +701,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (submitClaimRewardBtn) submitClaimRewardBtn.addEventListener("click", handleSignatureTokenRelease);
   if (copyReferralBtn) copyReferralBtn.addEventListener("click", handleReferralLinkCopy);
 
-  // Bind custom dropdown options handlers
   if (menuToggleBtn && optionsPopover) {
     menuToggleBtn.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -749,7 +745,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // Bind Language Controls interface arrays
   const langButtons = document.querySelectorAll(".langBtn");
   langButtons.forEach(btn => {
     btn.addEventListener("click", (e) => {
