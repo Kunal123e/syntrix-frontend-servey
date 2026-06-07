@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (isClaimPath && claimToken) {
     if (emailGateSection) emailGateSection.classList.add("hidden");
     if (claimForm) claimForm.classList.add("hidden");
-    if (rewardDashboardScreen) rewardDashboardScreen.classList.remove("hidden");
+    if (rewardDashboardScreen) rewardDashboardScreen.classList.add("hidden");
     if (claimScreenSection) claimScreenSection.classList.remove("hidden");
     
     document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
