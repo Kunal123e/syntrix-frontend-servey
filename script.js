@@ -102,6 +102,7 @@ async function fetchWithTimeout(resource, options = {}) {
   }
 }
 
+// ================= CORE INTERFACE LOGIC FLOW MATRIX =================
 function getSurveyData() {
   return typeof surveySections !== "undefined" ? surveySections : [];
 }
@@ -133,7 +134,6 @@ function getQuestionText(q) {
   return q.text || q.id;
 }
 
-// ================= CORE INTERFACE LOGIC FLOW MATRIX =================
 function getOptionText(opt) {
   if (typeof optionTranslations !== "undefined" && optionTranslations[currentLanguage]) {
     return optionTranslations[currentLanguage][opt] || opt;
@@ -339,8 +339,12 @@ async function connectWallet(isDirectClaimFlow = false) {
     }
 
     const handleSocialWalletGeneration = async (providerType) => {
-      if (!window.metamaskEmbeddedInstance) {
-        alert("Wallet initialization engine is currently warming up. Please try again in 2 seconds.");
+      // Monitor readiness states directly from the updated index.html flag variables
+      if (!window.isWeb3AuthReady || !window.metamaskEmbeddedInstance) {
+        if (statusDiv) {
+          statusDiv.innerHTML = `⏳ Spawning secure tunnel channels with key nodes... Try again in 1 second!`;
+          statusDiv.style.color = "#ffb020";
+        }
         return;
       }
 
