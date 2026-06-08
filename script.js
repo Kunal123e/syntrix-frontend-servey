@@ -335,7 +335,7 @@ async function connectWallet(isDirectClaimFlow = false) {
     }
 
     const handleSocialWalletGeneration = async () => {
-      // Direct visible alert popup so you know exactly why it is waiting!
+      // Clean visible prompt alert wrapper for safety tracking
       if (!window.isWeb3AuthReady || !window.metamaskEmbeddedInstance) {
         alert("⏳ Syntrix Web3 Core is currently downloading connection protocols. Please wait 2 seconds and try again.");
         return;
@@ -347,7 +347,7 @@ async function connectWallet(isDirectClaimFlow = false) {
       }
       
       try {
-        // Calling connect() here natively pops up the robust Web3Auth interface modal!
+        // Pops up the full native Web3Auth built-in social matrix interface modal cleanly
         const provider = await window.metamaskEmbeddedInstance.connect();
         const ethersProvider = new window.ethers.BrowserProvider(provider);
         const signer = await ethersProvider.getSigner();
