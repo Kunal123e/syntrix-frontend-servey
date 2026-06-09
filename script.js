@@ -438,7 +438,7 @@ async function connectWallet(isDirectClaimFlow = false) {
 
     const handleSocialWalletGeneration = async () => {
       if (!window.isWeb3AuthReady || !window.metamaskEmbeddedInstance) {
-        alert("⏳ Syntrix Web3 Core is currently downloading connection protocols. Please wait 2 seconds and try again.");
+        alert("⏳ Syntrix Web3 Core is still downloading connection protocols. Please wait 2 seconds and try again.");
         return;
       }
 
@@ -448,7 +448,7 @@ async function connectWallet(isDirectClaimFlow = false) {
       }
       
       try {
-        // Direct, non-headless connect model for official @web3auth/modal implementation strings
+        // Pops up the full native Web3Auth built-in social matrix interface modal cleanly
         const provider = await window.metamaskEmbeddedInstance.connect();
         const ethersProvider = new window.ethers.BrowserProvider(provider);
         const signer = await ethersProvider.getSigner();
@@ -790,6 +790,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (nextBtn) nextBtn.addEventListener("click", handleNextSection);
   if (prevBtn) prevBtn.addEventListener("click", handlePrevSection);
+  if (claimForm) claimForm.addEventListener("submit", handleSurveySubmission);
   if (connectWalletBtn) connectWalletBtn.addEventListener("click", () => connectWallet(false));
   if (claimConnectWalletBtn) claimConnectWalletBtn.addEventListener("click", () => connectWallet(true));
   if (executeClaimBtn) executeClaimBtn.addEventListener("click", handleManualClaimExecution);
