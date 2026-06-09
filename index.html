@@ -16,14 +16,18 @@
     // DIRECT, LOOP-FREE INITIALIZATION: Waits for browser to finish loading first
     window.addEventListener("load", async () => {
       try {
-        const Web3AuthSDK = window.ModalSdk || window.Web3Auth || window.web3auth;
+        // Updated robust scanner to grab the proper Web3Auth class from v9 CDN
+        const Web3AuthSDK = window.web3authModal || window.ModalSdk || window.Web3Auth || window.web3auth;
         
-        if (!Web3AuthSDK || !Web3AuthSDK.Web3Auth) {
+        if (!Web3AuthSDK || (!Web3AuthSDK.Web3Auth && typeof Web3AuthSDK !== 'function')) {
           console.error("❌ Web3Auth library did not load from CDN.");
           return;
         }
 
-        const web3auth = new Web3AuthSDK.Web3Auth({
+        // Target the constructor function directly whether nested or top-level
+        const Web3AuthClass = Web3AuthSDK.Web3Auth || Web3AuthSDK;
+
+        const web3auth = new Web3AuthClass({
           clientId: "BLTKOOeFj7P8fVIGNIwqX3lhHeA948YDtXgKO_ClNELkI06hZ17XKvfpiAWA0AujfpBMAs75-LivYTtCeRWg2Lo", 
           web3AuthNetwork: "sapphire_devnet", 
           chainConfig: {
