@@ -8,8 +8,7 @@
 
   <!-- ================= WEB3 REGISTRY LIBRARIES CDN CORE DEPENDENCIES ================= -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
-  <!-- Swapped to the explicit, automated self-mounting single bundle distribution -->
-  <script src="https://cdn.jsdelivr.net/npm/@web3auth/single-factor-auth@9/dist/singleFactorAuth.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@9/dist/modal.umd.min.js"></script>
 
   <script>
     window.metamaskEmbeddedInstance = null;
@@ -17,27 +16,26 @@
 
     const initSyntrixWeb3 = async () => {
       try {
-        // Direct object extraction from the unified single-factor UMD package
-        const SFAInstance = window.SingleFactorAuth;
+        // Target the precise global namespace exposed by this CDN version
+        const targetSDK = window.ModalSdk || (window.web3auth ? window.web3auth.ModalSdk : null);
 
-        if (!SFAInstance) {
-          console.log("⏳ Mounting decentralized library layer into window...");
+        if (!targetSDK) {
+          console.log("⏳ Syncing Web3Auth library context...");
           setTimeout(initSyntrixWeb3, 300);
           return;
         }
 
-        // Bootstrapping engine properties instantly
-        const web3auth = new SFAInstance.Web3AuthSFASDK({
-          clientId: "BLTKOOeFj7P8fVIGNIwqX3lhHeA948YDtXgKO_ClNELkI06hZ17XKvfpiAWA0AujfpBMAs75-LivYTtCeRWg2Lo",
-          web3AuthNetwork: "sapphire_devnet",
+        const web3auth = new targetSDK.Web3Auth({
+          clientId: "BLTKOOeFj7P8fVIGNIwqX3lhHeA948YDtXgKO_ClNELkI06hZ17XKvfpiAWA0AujfpBMAs75-LivYTtCeRWg2Lo", 
+          web3AuthNetwork: "sapphire_devnet", 
           chainConfig: {
             chainNamespace: "eip155",
-            chainId: "0x89", // Polygon Mainnet
-            rpcTarget: "https://polygon-rpc.com"
+            chainId: "0x89", 
+            rpcTarget: "https://polygon-rpc.com" 
           }
         });
 
-        await web3auth.init();
+        await web3auth.initModal();
         
         window.metamaskEmbeddedInstance = web3auth;
         window.isWeb3AuthReady = true;
