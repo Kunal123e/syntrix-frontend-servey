@@ -101,7 +101,7 @@ async function fetchWithTimeout(resource, options = {}) {
   }
 }
 
-// ================= STAGE 1: FULL OTP ROUTING LAYER =================
+// ================= STAGE 1: EMAIL VERIFICATION GATE =================
 if (emailGateForm) {
   emailGateForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -117,7 +117,6 @@ if (emailGateForm) {
       return;
     }
 
-    // STATE 1: SEND THE OTP CODE
     if (!isOtpSent) {
       if (statusDiv) {
         statusDiv.innerHTML = "⏳ Sending verification code...";
@@ -154,7 +153,6 @@ if (emailGateForm) {
       return; 
     }
 
-    // STATE 2: VERIFY THE OTP CODE
     const gateOtpInput = document.getElementById("gateOtp");
     const otpVal = gateOtpInput ? gateOtpInput.value.trim() : "";
 
@@ -324,7 +322,7 @@ function handlePrevSection() {
   }
 }
 
-// ================= STAGE 2: BACKEND LEDGER HANDLERS =================
+// ================= STAGE 2: PROFILE LEDGER BACKEND HANDLERS =================
 async function runProfileLedgerVerification(email, isFromModal = false) {
   const outputTarget = isFromModal ? modalStatus : statusDiv;
   if (!outputTarget) return;
@@ -450,6 +448,7 @@ async function connectWallet(isDirectClaimFlow = false) {
       }
       
       try {
+        // Direct, non-headless connect model for official @web3auth/modal implementation strings
         const provider = await window.metamaskEmbeddedInstance.connect();
         const ethersProvider = new window.ethers.BrowserProvider(provider);
         const signer = await ethersProvider.getSigner();
@@ -791,7 +790,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (nextBtn) nextBtn.addEventListener("click", handleNextSection);
   if (prevBtn) prevBtn.addEventListener("click", handlePrevSection);
-  if (claimForm) claimForm.addEventListener("submit", handleSurveySubmission);
   if (connectWalletBtn) connectWalletBtn.addEventListener("click", () => connectWallet(false));
   if (claimConnectWalletBtn) claimConnectWalletBtn.addEventListener("click", () => connectWallet(true));
   if (executeClaimBtn) executeClaimBtn.addEventListener("click", handleManualClaimExecution);
