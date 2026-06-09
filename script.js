@@ -101,7 +101,7 @@ async function fetchWithTimeout(resource, options = {}) {
   }
 }
 
-// ================= STAGE 1: FORM GATE AND OTP ROUTER =================
+// ================= STAGE 1: FULL OTP ROUTING LAYER =================
 if (emailGateForm) {
   emailGateForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -117,6 +117,7 @@ if (emailGateForm) {
       return;
     }
 
+    // STATE 1: SEND THE OTP CODE
     if (!isOtpSent) {
       if (statusDiv) {
         statusDiv.innerHTML = "⏳ Sending verification code...";
@@ -153,6 +154,7 @@ if (emailGateForm) {
       return; 
     }
 
+    // STATE 2: VERIFY THE OTP CODE
     const gateOtpInput = document.getElementById("gateOtp");
     const otpVal = gateOtpInput ? gateOtpInput.value.trim() : "";
 
@@ -322,7 +324,7 @@ function handlePrevSection() {
   }
 }
 
-// ================= STAGE 2: PROFILE LEDGER BACKEND HANDLERS =================
+// ================= STAGE 2: BACKEND LEDGER HANDLERS =================
 async function runProfileLedgerVerification(email, isFromModal = false) {
   const outputTarget = isFromModal ? modalStatus : statusDiv;
   if (!outputTarget) return;
@@ -422,7 +424,7 @@ async function handleSurveySubmission(e) {
   }
 }
 
-// ================= STAGE 5: WEB3 EMPLOYMENT CONNECTION LOGIC =================
+// ================= STAGE 5: WEB3 EMBEDDED OAUTH WALLET HANDLING =================
 async function connectWallet(isDirectClaimFlow = false) {
   const creatorModal = document.getElementById("walletCreatorModal");
   const closeBtn = document.getElementById("closeWalletCreatorBtn");
@@ -437,25 +439,18 @@ async function connectWallet(isDirectClaimFlow = false) {
     }
 
     const handleSocialWalletGeneration = async () => {
-      // Clean, unblocked boolean flag evaluation structure
       if (!window.isWeb3AuthReady || !window.metamaskEmbeddedInstance) {
-        alert("⏳ Syntrix Web3 Core is currently syncing network settings. Please try again in 2 seconds.");
+        alert("⏳ Syntrix Web3 Core is currently downloading connection protocols. Please wait 2 seconds and try again.");
         return;
       }
 
       if (statusDiv) {
-        statusDiv.innerHTML = `⏳ Spawning secure portal keys via Web3Auth parameters...`;
+        statusDiv.innerHTML = `⏳ Initializing secure Web3Auth portal via MetaMask parameters...`;
         statusDiv.style.color = "#a855f7";
       }
       
       try {
-        // Connect directly via the ready SFA instance object matrix
-        const provider = await window.metamaskEmbeddedInstance.connect({
-          verifier: "google",
-          verifierId: userEmailAddress || localStorage.getItem("syntrix_user_email") || "user@domain.com",
-          idToken: "unsecured_dev_session_token" // Satisfies SFA requirements on Devnet
-        });
-        
+        const provider = await window.metamaskEmbeddedInstance.connect();
         const ethersProvider = new window.ethers.BrowserProvider(provider);
         const signer = await ethersProvider.getSigner();
         const realWeb3Address = await signer.getAddress();
