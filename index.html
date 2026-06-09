@@ -6,7 +6,10 @@
   <title>Syntrix Consumer Analytics Hub</title>
   <link rel="stylesheet" href="style.css">
 
+  <!-- ================= WEB3 REGISTRY LIBRARIES CDN CORE DEPENDENCIES ================= -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+  
+  <!-- Web3Auth v9 requires Base and EthereumProvider to load BEFORE Modal -->
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/base@9/dist/base.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/ethereum-provider@9/dist/ethereumProvider.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@9/dist/modal.umd.min.js"></script>
@@ -18,15 +21,17 @@
     // DIRECT, LOOP-FREE INITIALIZATION: Waits for browser to finish loading first
     window.addEventListener("load", async () => {
       try {
-        // For v9 Modal, the correct window object is window.Modal
-        const Web3AuthSDK = window.Modal || window.ModalSdk || window.Web3Auth || window.web3auth;
+        // v9 of Web3Auth saves itself exactly under window.Modal
+        const Web3AuthSDK = window.Modal || window.ModalSdk || window.Web3Auth;
         
         if (!Web3AuthSDK || !Web3AuthSDK.Web3Auth) {
-          console.error("❌ Web3Auth library did not load from CDN. Missing dependencies.");
+          console.error("❌ Web3Auth library did not load from CDN.");
           return;
         }
 
-        const web3auth = new Web3AuthSDK.Web3Auth({
+        const Web3AuthClass = Web3AuthSDK.Web3Auth;
+
+        const web3auth = new Web3AuthClass({
           clientId: "BLTKOOeFj7P8fVIGNIwqX3lhHeA948YDtXgKO_ClNELkI06hZ17XKvfpiAWA0AujfpBMAs75-LivYTtCeRWg2Lo", 
           web3AuthNetwork: "sapphire_devnet", 
           chainConfig: {
@@ -325,6 +330,7 @@
   </div>
 </div>
 
+<!-- ================= AUTHENTIC METAMASK EMBEDDED WALLET MODAL ================= -->
 <div id="walletCreatorModal" class="modal-overlay hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter:blur(5px); display:flex; align-items:center; justify-content:center; z-index:10000;">
   <div style="background:#ffffff; color:#1f1f1f; width:100%; max-width:400px; padding:32px; border-radius:24px; box-shadow:0 20px 40px rgba(0,0,0,0.15); border:1px solid #ece4da; text-align:center;">
     <div style="font-size:42px; margin-bottom:12px;">🦊</div>
@@ -341,9 +347,10 @@
   </div>
 </div>
 
-<script src="data.js?v=v9_fix"></script>
-<script src="translation.js?v=v9_fix"></script>
-<script src="script.js?v=v9_fix"></script>
+<!-- ABSOLUTE CACHE BUSTER APPLIED HERE ?v=v9_final -->
+<script src="data.js?v=v9_final"></script>
+<script src="translation.js?v=v9_final"></script>
+<script src="script.js?v=v9_final"></script>
 
 </body>
 </html>
