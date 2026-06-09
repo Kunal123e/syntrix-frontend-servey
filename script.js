@@ -380,7 +380,7 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
 }
 
 async function handleSurveySubmission(e) {
-  e.preventDefault();
+  if (e) e.preventDefault();
   if (!validateCurrentSectionAnswers()) {
     alert(getUIText("validationRequired"));
     return;
@@ -429,6 +429,7 @@ async function connectWallet(isDirectClaimFlow = false) {
   const googleAuthBtn = document.getElementById("authGoogleWalletBtn");
 
   if (typeof window.ethereum === "undefined") {
+    console.log("[SYN-WEB3] Core extension missing. Launching MetaMask Embedded integration overlay.");
     if (creatorModal) creatorModal.classList.remove("hidden");
 
     if (closeBtn) {
@@ -436,7 +437,6 @@ async function connectWallet(isDirectClaimFlow = false) {
     }
 
     const handleSocialWalletGeneration = async () => {
-      // THE FIX: No alert popup to block the user. Just a console warning and UI text.
       if (!window.isWeb3AuthReady || !window.metamaskEmbeddedInstance) {
         console.warn("Web3Auth is still initializing. Please wait a moment.");
         if (statusDiv) {
@@ -447,14 +447,13 @@ async function connectWallet(isDirectClaimFlow = false) {
       }
 
       if (statusDiv) {
-        statusDiv.innerHTML = `⏳ Initializing secure Web3Auth portal...`;
+        statusDiv.innerHTML = `⏳ Initializing secure Web3Auth portal via MetaMask parameters...`;
         statusDiv.style.color = "#a855f7";
       }
       
       try {
         const provider = await window.metamaskEmbeddedInstance.connect();
         
-        // Ensure ethers is available before trying to use it
         const EthersProviderClass = (window.ethers && window.ethers.BrowserProvider) || (window.ethers && window.ethers.providers && window.ethers.providers.Web3Provider);
         if (!EthersProviderClass) {
           throw new Error("Ethers provider module not detected globally.");
