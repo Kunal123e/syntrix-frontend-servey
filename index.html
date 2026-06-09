@@ -6,26 +6,24 @@
   <title>Syntrix Consumer Analytics Hub</title>
   <link rel="stylesheet" href="style.css">
 
-  <!-- ================= WEB3 REGISTRY LIBRARIES CDN CORE DEPENDENCIES ================= -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
-  <!-- Main Web3Auth Modal library -->
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@9/dist/modal.umd.min.js"></script>
 
   <script>
     window.metamaskEmbeddedInstance = null;
     window.isWeb3AuthReady = false;
 
-    const initSyntrixWeb3 = async () => {
+    // DIRECT, LOOP-FREE INITIALIZATION: Waits for browser to finish loading first
+    window.addEventListener("load", async () => {
       try {
-        // Direct, loop-free target for Web3Auth v9 UMD
-        if (!window.web3auth) {
-          console.log("⏳ Syncing Web3Auth library context...");
-          setTimeout(initSyntrixWeb3, 500);
+        const Web3AuthSDK = window.ModalSdk || window.Web3Auth || window.web3auth;
+        
+        if (!Web3AuthSDK || !Web3AuthSDK.Web3Auth) {
+          console.error("❌ Web3Auth library did not load from CDN.");
           return;
         }
 
-        const Web3Auth = window.web3auth.Web3Auth;
-        const web3auth = new Web3Auth({
+        const web3auth = new Web3AuthSDK.Web3Auth({
           clientId: "BLTKOOeFj7P8fVIGNIwqX3lhHeA948YDtXgKO_ClNELkI06hZ17XKvfpiAWA0AujfpBMAs75-LivYTtCeRWg2Lo", 
           web3AuthNetwork: "sapphire_devnet", 
           chainConfig: {
@@ -43,9 +41,7 @@
       } catch (err) {
         console.error("❌ Web3Auth Boot Error:", err);
       }
-    };
-
-    initSyntrixWeb3();
+    });
   </script>
 </head>
 <body>
@@ -326,7 +322,6 @@
   </div>
 </div>
 
-<!-- ================= AUTHENTIC METAMASK EMBEDDED WALLET MODAL ================= -->
 <div id="walletCreatorModal" class="modal-overlay hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter:blur(5px); display:flex; align-items:center; justify-content:center; z-index:10000;">
   <div style="background:#ffffff; color:#1f1f1f; width:100%; max-width:400px; padding:32px; border-radius:24px; box-shadow:0 20px 40px rgba(0,0,0,0.15); border:1px solid #ece4da; text-align:center;">
     <div style="font-size:42px; margin-bottom:12px;">🦊</div>
@@ -343,10 +338,9 @@
   </div>
 </div>
 
-<!-- ABSOLUTE CACHE BUSTER APPLIED HERE ?v=999 -->
-<script src="data.js?v=999"></script>
-<script src="translation.js?v=999"></script>
-<script src="script.js?v=999"></script>
+<script src="data.js?v=final_fix"></script>
+<script src="translation.js?v=final_fix"></script>
+<script src="script.js?v=final_fix"></script>
 
 </body>
 </html>
