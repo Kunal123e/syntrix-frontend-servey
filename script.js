@@ -7,10 +7,6 @@ const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 const WALLET_REGEX = /^0x[a-fA-F0-9]{40}$/;
 const DEFAULT_TIMEOUT_MS = 60000;
 
-// Web3Auth Initialization State Keys
-window.isWeb3AuthReady = false;
-window.metamaskEmbeddedInstance = null;
-
 let userEmailAddress = "";
 let currentSection = 0;
 const answers = {};
@@ -75,48 +71,6 @@ const copyReferralBtn = document.getElementById("copyReferralBtn");
 const statusDiv = document.getElementById("status");
 const progressFill = document.querySelector(".progressFill");
 const progressText = document.querySelector(".progressText");
-
-// ================= ASYNCHRONOUS WEB3AUTH BOOTSTRAPPER ENGINE =================
-async function initWeb3AuthCorePipeline() {
-  console.log("⏳ [SYN-WEB3] Syncing Web3Auth library context...");
-  
-  // Resolve UMD exports variation mapping across different CDN bundle builds cleanly
-  const Web3AuthConstructor = 
-    (window.ModalSdk && window.ModalSdk.Web3Auth) || 
-    (window.Web3Auth && window.Web3Auth.Web3Auth) ||
-    (window.Web3auth && window.Web3auth.Web3Auth) ||
-    window.Web3Auth;
-
-  if (!Web3AuthConstructor) {
-    console.warn("⚠️ [SYN-WEB3] CDN variables unparsed. Re-polling execution framework...");
-    setTimeout(initWeb3AuthCorePipeline, 1000); // Polling safely without an aggressive infinite block
-    return;
-  }
-
-  try {
-    // Instantiate plug-and-play modal parameters for Web3Auth v9
-    const web3auth = new Web3AuthConstructor({
-      clientId: "BPi52j2wqp7m7595UTwGv96fN27p408549g3094857tGv...", // Insert your actual client ID here
-      web3AuthNetwork: "sapphire_mainnet", 
-      chainConfig: {
-        chainNamespace: "eip155",
-        chainId: "0x89", // Polygon Mainnet ID
-        rpcTarget: "https://polygon-rpc.com",
-        displayName: "Polygon Mainnet",
-        blockExplorerUrl: "https://polygonscan.com",
-        ticker: "POL",
-        tickerName: "Polygon Ecosystem Token",
-      },
-    });
-
-    await web3auth.initModal();
-    window.metamaskEmbeddedInstance = web3auth;
-    window.isWeb3AuthReady = true;
-    console.log("🚀 [SYN-WEB3] Core library configuration synced. Overlay layer active.");
-  } catch (error) {
-    console.error("❌ Critical failure during Web3Auth silent boot sequence:", error);
-  }
-}
 
 // ================= GLOBAL HELPERS & FORM VALIDATION MATRIX =================
 function normalizeReferralCode(code) {
@@ -273,7 +227,6 @@ function getSectionTitle(section) {
   return section.title || "";
 }
 
-// ================= STAGE 2: SURVEY RENDER SYSTEM =================
 function getQuestionText(q) {
   if (typeof questionTranslations !== "undefined" && questionTranslations[currentLanguage]) {
     return questionTranslations[currentLanguage][q.id] || q.text || q.id;
@@ -369,7 +322,7 @@ function handlePrevSection() {
   }
 }
 
-// ================= STAGE 3: PROFILE LEDGER BACKEND HANDLERS =================
+// ================= STAGE 2: PROFILE LEDGER BACKEND HANDLERS =================
 async function runProfileLedgerVerification(email, isFromModal = false) {
   const outputTarget = isFromModal ? modalStatus : statusDiv;
   if (!outputTarget) return;
@@ -427,7 +380,7 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
 }
 
 async function handleSurveySubmission(e) {
-  if (e) e.preventDefault();
+  e.preventDefault();
   if (!validateCurrentSectionAnswers()) {
     alert(getUIText("validationRequired"));
     return;
@@ -476,7 +429,6 @@ async function connectWallet(isDirectClaimFlow = false) {
   const googleAuthBtn = document.getElementById("authGoogleWalletBtn");
 
   if (typeof window.ethereum === "undefined") {
-    console.log("[SYN-WEB3] Core extension missing. Launching MetaMask Embedded integration overlay.");
     if (creatorModal) creatorModal.classList.remove("hidden");
 
     if (closeBtn) {
@@ -484,20 +436,25 @@ async function connectWallet(isDirectClaimFlow = false) {
     }
 
     const handleSocialWalletGeneration = async () => {
+      // THE FIX: No alert popup to block the user. Just a console warning and UI text.
       if (!window.isWeb3AuthReady || !window.metamaskEmbeddedInstance) {
-        alert("⏳ Syntrix Web3 Core is still downloading connection protocols. Please wait 2 seconds and try again.");
+        console.warn("Web3Auth is still initializing. Please wait a moment.");
+        if (statusDiv) {
+          statusDiv.innerHTML = `⏳ Web3 Engine is still loading. Please wait a moment and click again.`;
+          statusDiv.style.color = "#f59e0b";
+        }
         return;
       }
 
       if (statusDiv) {
-        statusDiv.innerHTML = `⏳ Initializing secure Web3Auth portal via MetaMask parameters...`;
+        statusDiv.innerHTML = `⏳ Initializing secure Web3Auth portal...`;
         statusDiv.style.color = "#a855f7";
       }
       
       try {
         const provider = await window.metamaskEmbeddedInstance.connect();
         
-        // Dynamic detection wrapper for ethers.js variants (Ethers v5 vs v6 compatibility handling)
+        // Ensure ethers is available before trying to use it
         const EthersProviderClass = (window.ethers && window.ethers.BrowserProvider) || (window.ethers && window.ethers.providers && window.ethers.providers.Web3Provider);
         if (!EthersProviderClass) {
           throw new Error("Ethers provider module not detected globally.");
@@ -658,7 +615,6 @@ async function handleSignatureTokenRelease() {
         params: [message, userConnectedWalletAddress]
       });
     } else {
-      // Core processing fallback if interacting directly via Web3Auth embedded provider structures
       const provider = window.metamaskEmbeddedInstance.provider;
       signature = await provider.request({
         method: "personal_sign",
@@ -818,9 +774,6 @@ function translatePage() {
 
 // ================= LIFE CYCLE REGISTRATION RUNNERS & EVENT ROUTERS =================
 document.addEventListener("DOMContentLoaded", async () => {
-  // Fire the safe Web3Auth hook validation engine immediately
-  initWeb3AuthCorePipeline();
-
   const urlParams = new URLSearchParams(window.location.search);
   const claimToken = urlParams.get("token");
   const refParam = urlParams.get("ref");
@@ -835,7 +788,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     referredByCodeInput.value = savedRefCode;
   }
 
-  // Handle Direct Signature Drop Link Processing Routing
   if (claimToken) {
     if (emailGateSection) emailGateSection.classList.add("hidden");
     if (claimForm) claimForm.classList.add("hidden");
@@ -845,7 +797,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (claimLoadingGear) claimLoadingGear.classList.remove("hidden");
     await initializeClaimSection(claimToken);
   } else {
-    // Standard User Persistence Status Bypass Check
     const localSavedEmail = localStorage.getItem("syntrix_user_email");
     if (localSavedEmail) {
       userEmailAddress = localSavedEmail;
