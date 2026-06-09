@@ -6,26 +6,27 @@
   <title>Syntrix Consumer Analytics Hub</title>
   <link rel="stylesheet" href="style.css">
 
-  <!-- ================= WEB3 REGISTRY LIBRARIES CDN CORE DEPENDENCIES ================= -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
-  <!-- Main Web3Auth Modal library - handles Google/Apple automatically -->
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@9/dist/modal.umd.min.js"></script>
 
   <script>
     window.metamaskEmbeddedInstance = null;
     window.isWeb3AuthReady = false;
 
-    // Unbreakable initialization loop checking for library availability
+    // Unbreakable initialization loop checking for correct global SDK namespaces
     const initSyntrixWeb3 = async () => {
       try {
-        if (!window.web3auth) {
+        // Resolve variable mappings from UMD bundle scope wrappers cleanly
+        const Web3AuthSDK = window.ModalSdk || window.Web3Auth;
+
+        if (!Web3AuthSDK) {
           console.log("⏳ Downloading Web3Auth engine protocols...");
           setTimeout(initSyntrixWeb3, 500);
           return;
         }
 
-        // Initialize the core Web3Auth Modal Engine
-        const web3auth = new window.web3auth.Web3Auth({
+        // Initialize the core Web3Auth Modal Engine from the verified SDK object
+        const web3auth = new Web3AuthSDK.Web3Auth({
           clientId: "BLTKOOeFj7P8fVIGNIwqX3lhHeA948YDtXgKO_ClNELkI06hZ17XKvfpiAWA0AujfpBMAs75-LivYTtCeRWg2Lo", 
           web3AuthNetwork: "sapphire_devnet", 
           chainConfig: {
@@ -328,7 +329,6 @@
   </div>
 </div>
 
-<!-- ================= AUTHENTIC METAMASK EMBEDDED WALLET MODAL ================= -->
 <div id="walletCreatorModal" class="modal-overlay hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter:blur(5px); display:flex; align-items:center; justify-content:center; z-index:10000;">
   <div style="background:#ffffff; color:#1f1f1f; width:100%; max-width:400px; padding:32px; border-radius:24px; box-shadow:0 20px 40px rgba(0,0,0,0.15); border:1px solid #ece4da; text-align:center;">
     <div style="font-size:42px; margin-bottom:12px;">🦊</div>
