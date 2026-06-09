@@ -101,6 +101,110 @@ async function fetchWithTimeout(resource, options = {}) {
   }
 }
 
+// ================= STAGE 1: FULL OTP ROUTING LAYER =================
+if (emailGateForm) {
+  emailGateForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!gateEmailInput) return;
+    
+    const emailVal = gateEmailInput.value.trim().toLowerCase();
+    
+    if (!emailVal || !EMAIL_REGEX.test(emailVal)) {
+      if (statusDiv) {
+        statusDiv.innerHTML = "❌ Please input a valid email address.";
+        statusDiv.style.color = "#ff4d4d";
+      }
+      return;
+    }
+
+    // STATE 1: SEND THE OTP CODE
+    if (!isOtpSent) {
+      if (statusDiv) {
+        statusDiv.innerHTML = "⏳ Sending verification code...";
+        statusDiv.style.color = "#57d6c2";
+      }
+      
+      try {
+        const response = await fetchWithTimeout(`${BACKEND_URL}/api/send-otp`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: emailVal })
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+          isOtpSent = true;
+          const otpSection = document.getElementById("otpSection");
+          if (otpSection) otpSection.classList.remove("hidden");
+          if (startSurveyBtn) startSurveyBtn.innerHTML = "Verify & Enter &rarr;";
+          gateEmailInput.readOnly = true; 
+          if (statusDiv) statusDiv.innerHTML = "";
+        } else {
+          if (statusDiv) {
+            statusDiv.innerHTML = "❌ " + (result.error || "Failed to send code.");
+            statusDiv.style.color = "#ff4d4d";
+          }
+        }
+      } catch (err) {
+        if (statusDiv) {
+          statusDiv.innerHTML = "❌ Network error. Could not send code.";
+          statusDiv.style.color = "#ff4d4d";
+        }
+      }
+      return; 
+    }
+
+    // STATE 2: VERIFY THE OTP CODE
+    const gateOtpInput = document.getElementById("gateOtp");
+    const otpVal = gateOtpInput ? gateOtpInput.value.trim() : "";
+
+    if (!otpVal || otpVal.length !== 6) {
+      if (statusDiv) {
+        statusDiv.innerHTML = "❌ Please enter the 6-digit verification code.";
+        statusDiv.style.color = "#ff4d4d";
+      }
+      return;
+    }
+
+    if (statusDiv) {
+      statusDiv.innerHTML = "⏳ Verifying code...";
+      statusDiv.style.color = "#57d6c2";
+    }
+
+    try {
+      const response = await fetchWithTimeout(`${BACKEND_URL}/api/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: emailVal, otp: otpVal })
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        if (statusDiv) statusDiv.innerHTML = "✅ Verification successful!";
+        
+        userEmailAddress = emailVal;
+        localStorage.setItem("syntrix_user_email", emailVal);
+        
+        if (referredByCodeInput && referredByCodeInput.value.trim() !== "") {
+          localStorage.setItem("referralCode", normalizeReferralCode(referredByCodeInput.value));
+        }
+
+        await runProfileLedgerVerification(emailVal, false);
+      } else {
+        if (statusDiv) {
+          statusDiv.innerHTML = "❌ " + (result.error || "Invalid or expired code.");
+          statusDiv.style.color = "#ff4d4d";
+        }
+      }
+    } catch (err) {
+      if (statusDiv) {
+        statusDiv.innerHTML = "❌ Network error. Could not verify code.";
+        statusDiv.style.color = "#ff4d4d";
+      }
+    }
+  });
+}
+
 function getSurveyData() {
   return typeof surveySections !== "undefined" ? surveySections : [];
 }
@@ -220,7 +324,7 @@ function handlePrevSection() {
   }
 }
 
-// ================= STAGE BACKEND ENDPOINT COMMUNICATION INTERFACES =================
+// ================= STAGE 2: BACKEND LEDGER HANDLERS =================
 async function runProfileLedgerVerification(email, isFromModal = false) {
   const outputTarget = isFromModal ? modalStatus : statusDiv;
   if (!outputTarget) return;
@@ -335,7 +439,6 @@ async function connectWallet(isDirectClaimFlow = false) {
     }
 
     const handleSocialWalletGeneration = async () => {
-      // Monitor readiness states directly from global window memory references
       if (!window.isWeb3AuthReady || !window.metamaskEmbeddedInstance) {
         alert("⏳ Syntrix Web3 Core is currently downloading connection protocols. Please wait 2 seconds and try again.");
         return;
@@ -347,7 +450,6 @@ async function connectWallet(isDirectClaimFlow = false) {
       }
       
       try {
-        // Connect natively to the active Web3Auth modal layout instance
         const provider = await window.metamaskEmbeddedInstance.connect();
         const ethersProvider = new window.ethers.BrowserProvider(provider);
         const signer = await ethersProvider.getSigner();
