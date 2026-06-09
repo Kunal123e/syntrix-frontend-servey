@@ -7,6 +7,10 @@ const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 const WALLET_REGEX = /^0x[a-fA-F0-9]{40}$/;
 const DEFAULT_TIMEOUT_MS = 60000;
 
+// Web3Auth Initialization State Keys
+window.isWeb3AuthReady = false;
+window.metamaskEmbeddedInstance = null;
+
 let userEmailAddress = "";
 let currentSection = 0;
 const answers = {};
@@ -71,6 +75,48 @@ const copyReferralBtn = document.getElementById("copyReferralBtn");
 const statusDiv = document.getElementById("status");
 const progressFill = document.querySelector(".progressFill");
 const progressText = document.querySelector(".progressText");
+
+// ================= ASYNCHRONOUS WEB3AUTH BOOTSTRAPPER ENGINE =================
+async function initWeb3AuthCorePipeline() {
+  console.log("⏳ [SYN-WEB3] Syncing Web3Auth library context...");
+  
+  // Resolve UMD exports variation mapping across different CDN bundle builds cleanly
+  const Web3AuthConstructor = 
+    (window.ModalSdk && window.ModalSdk.Web3Auth) || 
+    (window.Web3Auth && window.Web3Auth.Web3Auth) ||
+    (window.Web3auth && window.Web3auth.Web3Auth) ||
+    window.Web3Auth;
+
+  if (!Web3AuthConstructor) {
+    console.warn("⚠️ [SYN-WEB3] CDN variables unparsed. Re-polling execution framework...");
+    setTimeout(initWeb3AuthCorePipeline, 1000); // Polling safely without an aggressive infinite block
+    return;
+  }
+
+  try {
+    // Instantiate plug-and-play modal parameters for Web3Auth v9
+    const web3auth = new Web3AuthConstructor({
+      clientId: "BPi52j2wqp7m7595UTwGv96fN27p408549g3094857tGv...", // Insert your actual client ID here
+      web3AuthNetwork: "sapphire_mainnet", 
+      chainConfig: {
+        chainNamespace: "eip155",
+        chainId: "0x89", // Polygon Mainnet ID
+        rpcTarget: "https://polygon-rpc.com",
+        displayName: "Polygon Mainnet",
+        blockExplorerUrl: "https://polygonscan.com",
+        ticker: "POL",
+        tickerName: "Polygon Ecosystem Token",
+      },
+    });
+
+    await web3auth.initModal();
+    window.metamaskEmbeddedInstance = web3auth;
+    window.isWeb3AuthReady = true;
+    console.log("🚀 [SYN-WEB3] Core library configuration synced. Overlay layer active.");
+  } catch (error) {
+    console.error("❌ Critical failure during Web3Auth silent boot sequence:", error);
+  }
+}
 
 // ================= GLOBAL HELPERS & FORM VALIDATION MATRIX =================
 function normalizeReferralCode(code) {
@@ -227,6 +273,7 @@ function getSectionTitle(section) {
   return section.title || "";
 }
 
+// ================= STAGE 2: SURVEY RENDER SYSTEM =================
 function getQuestionText(q) {
   if (typeof questionTranslations !== "undefined" && questionTranslations[currentLanguage]) {
     return questionTranslations[currentLanguage][q.id] || q.text || q.id;
@@ -322,7 +369,7 @@ function handlePrevSection() {
   }
 }
 
-// ================= STAGE 2: PROFILE LEDGER BACKEND HANDLERS =================
+// ================= STAGE 3: PROFILE LEDGER BACKEND HANDLERS =================
 async function runProfileLedgerVerification(email, isFromModal = false) {
   const outputTarget = isFromModal ? modalStatus : statusDiv;
   if (!outputTarget) return;
@@ -380,7 +427,7 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
 }
 
 async function handleSurveySubmission(e) {
-  e.preventDefault();
+  if (e) e.preventDefault();
   if (!validateCurrentSectionAnswers()) {
     alert(getUIText("validationRequired"));
     return;
@@ -448,9 +495,15 @@ async function connectWallet(isDirectClaimFlow = false) {
       }
       
       try {
-        // Pops up the full native Web3Auth built-in social matrix interface modal cleanly
         const provider = await window.metamaskEmbeddedInstance.connect();
-        const ethersProvider = new window.ethers.BrowserProvider(provider);
+        
+        // Dynamic detection wrapper for ethers.js variants (Ethers v5 vs v6 compatibility handling)
+        const EthersProviderClass = (window.ethers && window.ethers.BrowserProvider) || (window.ethers && window.ethers.providers && window.ethers.providers.Web3Provider);
+        if (!EthersProviderClass) {
+          throw new Error("Ethers provider module not detected globally.");
+        }
+        
+        const ethersProvider = new EthersProviderClass(provider);
         const signer = await ethersProvider.getSigner();
         const realWeb3Address = await signer.getAddress();
         
@@ -466,7 +519,7 @@ async function connectWallet(isDirectClaimFlow = false) {
           }
         }
 
-        creatorModal.classList.add("hidden");
+        if (creatorModal) creatorModal.classList.add("hidden");
         if (statusDiv) {
           statusDiv.innerHTML = `✅ Authentic Web3 wallet generated and linked successfully!`;
           statusDiv.style.color = "#57d6c2";
@@ -488,7 +541,7 @@ async function connectWallet(isDirectClaimFlow = false) {
     const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
     if (accounts.length === 0) return;
     
-    userConnectedWalletAddress = accounts[0];
+    userConnectedWalletAddress = accounts[0].toLowerCase();
     
     if (isDirectClaimFlow) {
       if (claimConnectWalletBtn) claimConnectWalletBtn.classList.add("hidden");
@@ -597,10 +650,21 @@ async function handleSignatureTokenRelease() {
 
   try {
     const message = `Authenticating Token Core distribution protocols on email registry node: ${email}`;
-    const signature = await window.ethereum.request({
-      method: "personal_sign",
-      params: [message, userConnectedWalletAddress]
-    });
+    
+    let signature;
+    if (window.ethereum && typeof window.ethereum.request === "function") {
+      signature = await window.ethereum.request({
+        method: "personal_sign",
+        params: [message, userConnectedWalletAddress]
+      });
+    } else {
+      // Core processing fallback if interacting directly via Web3Auth embedded provider structures
+      const provider = window.metamaskEmbeddedInstance.provider;
+      signature = await provider.request({
+        method: "personal_sign",
+        params: [message, userConnectedWalletAddress]
+      });
+    }
 
     if (claimActionPanel) claimActionPanel.classList.add("hidden");
     if (claimRewardDetails) claimRewardDetails.classList.add("hidden");
@@ -754,6 +818,9 @@ function translatePage() {
 
 // ================= LIFE CYCLE REGISTRATION RUNNERS & EVENT ROUTERS =================
 document.addEventListener("DOMContentLoaded", async () => {
+  // Fire the safe Web3Auth hook validation engine immediately
+  initWeb3AuthCorePipeline();
+
   const urlParams = new URLSearchParams(window.location.search);
   const claimToken = urlParams.get("token");
   const refParam = urlParams.get("ref");
@@ -767,91 +834,76 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (savedRefCode && referredByCodeInput) {
     referredByCodeInput.value = savedRefCode;
   }
-  
-  const isClaimPath = window.location.pathname.includes("/claim") || claimToken;
-  
-  if (isClaimPath && claimToken) {
+
+  // Handle Direct Signature Drop Link Processing Routing
+  if (claimToken) {
     if (emailGateSection) emailGateSection.classList.add("hidden");
     if (claimForm) claimForm.classList.add("hidden");
+    if (topProgressBox) topProgressBox.classList.add("hidden");
     if (rewardDashboardScreen) rewardDashboardScreen.classList.add("hidden");
     if (claimScreenSection) claimScreenSection.classList.remove("hidden");
-    
-    document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
-    initializeClaimSection(claimToken);
+    if (claimLoadingGear) claimLoadingGear.classList.remove("hidden");
+    await initializeClaimSection(claimToken);
   } else {
-    if (claimScreenSection) claimScreenSection.classList.add("hidden");
-    
-    const savedEmail = localStorage.getItem("syntrix_user_email");
-    if (savedEmail) {
-      userEmailAddress = savedEmail;
-      await runProfileLedgerVerification(savedEmail, false);
+    // Standard User Persistence Status Bypass Check
+    const localSavedEmail = localStorage.getItem("syntrix_user_email");
+    if (localSavedEmail) {
+      userEmailAddress = localSavedEmail;
+      await runProfileLedgerVerification(userEmailAddress, false);
     }
   }
 
-  if (nextBtn) nextBtn.addEventListener("click", handleNextSection);
-  if (prevBtn) prevBtn.addEventListener("click", handlePrevSection);
-  if (claimForm) claimForm.addEventListener("submit", handleSurveySubmission);
-  if (connectWalletBtn) connectWalletBtn.addEventListener("click", () => connectWallet(false));
-  if (claimConnectWalletBtn) claimConnectWalletBtn.addEventListener("click", () => connectWallet(true));
-  if (executeClaimBtn) executeClaimBtn.addEventListener("click", handleManualClaimExecution);
-  if (submitClaimRewardBtn) submitClaimRewardBtn.addEventListener("click", handleSignatureTokenRelease);
-  if (copyReferralBtn) copyReferralBtn.addEventListener("click", handleReferralLinkCopy);
+  // --- ATTACH EVENT LISTENERS TO INTERACTION HANDLERS ---
+  if (nextBtn) nextBtn.onclick = () => handleNextSection();
+  if (prevBtn) prevBtn.onclick = () => handlePrevSection();
+  if (submitClaimBtn) submitClaimBtn.onclick = (e) => handleSurveySubmission(e);
+  if (executeClaimBtn) executeClaimBtn.onclick = () => handleManualClaimExecution();
+  
+  // Connect Wallets
+  if (connectWalletBtn) connectWalletBtn.onclick = () => connectWallet(false);
+  if (claimConnectWalletBtn) claimConnectWalletBtn.onclick = () => connectWallet(true);
+  if (submitClaimRewardBtn) submitClaimRewardBtn.onclick = () => handleSignatureTokenRelease();
+  if (copyReferralBtn) copyReferralBtn.onclick = () => handleReferralLinkCopy();
 
+  // Popover Nav Menu Interactivity Matrix
   if (menuToggleBtn && optionsPopover) {
-    menuToggleBtn.addEventListener("click", (e) => {
+    menuToggleBtn.onclick = (e) => {
       e.stopPropagation();
       optionsPopover.classList.toggle("hidden");
-    });
+    };
+    document.addEventListener("click", () => optionsPopover.classList.add("hidden"));
   }
-
-  document.addEventListener("click", () => {
-    if (optionsPopover) optionsPopover.classList.add("hidden");
-  });
 
   if (menuRestartBtn) {
-    menuRestartBtn.addEventListener("click", () => {
-      resetApplicationFlowState();
-    });
+    menuRestartBtn.onclick = () => {
+      if (confirm("Are you sure you want to clear your current progress session?")) {
+        resetApplicationFlowState();
+      }
+    };
   }
 
-  if (menuRecoverBtn && optionsPopover && retrieveModal && modalEmailInput && modalStatus) {
-    menuRecoverBtn.addEventListener("click", () => {
-      optionsPopover.classList.add("hidden");
-      modalEmailInput.value = "";
-      modalStatus.innerHTML = "";
+  if (menuRecoverBtn && retrieveModal) {
+    menuRecoverBtn.onclick = () => {
       retrieveModal.classList.remove("hidden");
-      setTimeout(() => { modalEmailInput.focus(); }, 100);
-    });
+      if (modalEmailInput) modalEmailInput.value = "";
+      if (modalStatus) modalStatus.innerHTML = "";
+    };
   }
 
-  if (closeModalBtn) closeModalBtn.addEventListener("click", dismissModal);
-  if (cancelModalBtn) cancelModalBtn.addEventListener("click", dismissModal);
-  if (retrieveModal) {
-    retrieveModal.addEventListener("click", (e) => {
-      if (e.target === retrieveModal) dismissModal();
-    });
-  }
-
+  if (closeModalBtn) closeModalBtn.onclick = () => dismissModal();
+  if (cancelModalBtn) cancelModalBtn.onclick = () => dismissModal();
+  
   if (confirmRetrieveBtn) {
-    confirmRetrieveBtn.addEventListener("click", async () => {
-      if (modalEmailInput) {
-        const targetEmail = modalEmailInput.value.trim();
-        await runProfileLedgerVerification(targetEmail, true);
+    confirmRetrieveBtn.onclick = async () => {
+      const searchEmail = modalEmailInput ? modalEmailInput.value.trim().toLowerCase() : "";
+      if (!searchEmail || !EMAIL_REGEX.test(searchEmail)) {
+        if (modalStatus) {
+          modalStatus.innerHTML = "❌ Please provide a valid email structure.";
+          modalStatus.style.color = "#ff4d4d";
+        }
+        return;
       }
-    });
+      await runProfileLedgerVerification(searchEmail, true);
+    };
   }
-
-  const langButtons = document.querySelectorAll(".langBtn");
-  langButtons.forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      langButtons.forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      currentLanguage = btn.dataset.lang;
-      
-      translatePage();
-      if (claimForm && !claimForm.classList.contains("hidden")) {
-        renderSection();
-      }
-    });
-  });
 });
