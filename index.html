@@ -6,15 +6,18 @@
   <title>Syntrix Consumer Analytics Hub</title>
   <link rel="stylesheet" href="style.css">
 
+  <!-- ================= WEB3 REGISTRY LIBRARIES CDN CORE DEPENDENCIES ================= -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
   
+  <!-- Web3Auth v9 requires Base and EthereumProvider to load BEFORE Modal -->
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/base@9/dist/base.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/ethereum-provider@9/dist/ethereumProvider.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@9/dist/modal.umd.min.js"></script>
 
+  <!-- Custom Animations for Gamification UI -->
   <style>
     @keyframes slideDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes floatBox { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } }
+    @keyframes floatBox { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
     @keyframes pulseGlow { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.7); } 70% { box-shadow: 0 0 0 20px rgba(16,185,129,0); } 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } }
   </style>
 
@@ -22,10 +25,9 @@
     window.metamaskEmbeddedInstance = null;
     window.isWeb3AuthReady = false;
 
-    // DIRECT, LOOP-FREE INITIALIZATION: Waits for browser to finish loading first
+    // DIRECT, LOOP-FREE INITIALIZATION
     window.addEventListener("load", async () => {
       try {
-        // v9 of Web3Auth saves itself exactly under window.Modal
         const Web3AuthSDK = window.Modal || window.ModalSdk || window.Web3Auth;
         
         if (!Web3AuthSDK || !Web3AuthSDK.Web3Auth) {
@@ -58,6 +60,7 @@
 </head>
 <body>
 
+<!-- POST-SUBMISSION FULL SCREEN REWARD ANIMATION -->
 <div id="rewardAnimationOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.95); z-index: 99999; flex-direction: column; align-items: center; justify-content: center; color: white; backdrop-filter: blur(10px);">
   <div style="font-size: 100px; animation: floatBox 2s ease-in-out infinite;">🎁</div>
   <h2 style="font-size: 42px; font-weight: 900; margin-top: 20px; text-align: center; background: linear-gradient(to right, #10b981, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Survey Completed!</h2>
@@ -115,11 +118,9 @@
       </div>
     </div>
 
-    <div id="excitementBanner" style="display: none; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 16px 24px; border-radius: 12px; margin-bottom: 25px; align-items: center; gap: 15px; box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3); animation: slideDown 0.5s ease-out;">
-      <div style="font-size: 28px; animation: pulseGlow 2s infinite; border-radius: 50%;">🔥</div>
-      <div id="excitementText" style="font-size: 16px; font-weight: 600; line-height: 1.4;">
-        Great job! You've secured <strong style="font-size: 20px; font-weight: 900;">8 SYNX</strong> so far! Complete the next module to claim 8 more!
-      </div>
+    <!-- PREMIUM DARK METALLIC GAMIFICATION BANNER -->
+    <div id="excitementBanner" style="display: none; background: linear-gradient(145deg, #23272f 0%, #111418 100%); border: 1px solid #3f444d; box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 12px 24px -6px rgba(0,0,0,0.6); border-radius: 12px; padding: 16px 24px; margin-bottom: 25px; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; width: 100%; box-sizing: border-box;">
+      <!-- Content populated by JS -->
     </div>
 
     <div id="emailGateSection" class="authCard">
@@ -347,6 +348,7 @@
   </div>
 </div>
 
+<!-- ================= AUTHENTIC METAMASK EMBEDDED WALLET MODAL ================= -->
 <div id="walletCreatorModal" class="modal-overlay hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter:blur(5px); display:flex; align-items:center; justify-content:center; z-index:10000;">
   <div style="background:#ffffff; color:#1f1f1f; width:100%; max-width:400px; padding:32px; border-radius:24px; box-shadow:0 20px 40px rgba(0,0,0,0.15); border:1px solid #ece4da; text-align:center;">
     <div style="font-size:42px; margin-bottom:12px;">🦊</div>
@@ -363,9 +365,9 @@
   </div>
 </div>
 
-<script src="data.js?v=gamified"></script>
-<script src="translation.js?v=gamified"></script>
-<script src="script.js?v=gamified"></script>
+<script src="data.js?v=premium_ui"></script>
+<script src="translation.js?v=premium_ui"></script>
+<script src="script.js?v=premium_ui"></script>
 
 </body>
 </html>
