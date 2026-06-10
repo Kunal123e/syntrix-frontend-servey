@@ -307,7 +307,6 @@ window.recordSelection = function(questionId, selectedValue) {
   renderSection();
 };
 
-// GAMIFICATION RENDERER
 function updateExcitementBanner(sectionIndex) {
   const banner = document.getElementById("excitementBanner");
   if (!banner) return;
@@ -321,39 +320,94 @@ function updateExcitementBanner(sectionIndex) {
   const totalTokens = 56;
 
   banner.style.display = "flex";
-  // Reset animation to trigger again on click
   banner.style.animation = 'none';
   banner.offsetHeight;
   banner.style.animation = 'slideDown 0.5s ease-out';
 
-  if (sectionIndex < 7) {
-      banner.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 16px;">
-            <div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div>
-            <div>
-                <div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! You've secured <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> so far!</div>
-                <div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Complete the next module to claim <strong style="color: #fbbf24;">8 more!</strong></div>
+  if (currentLanguage === "hi") {
+      if (sectionIndex < 7) {
+          banner.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div>
+                <div>
+                    <div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">शानदार! आपने अब तक <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> सुरक्षित कर लिए हैं!</div>
+                    <div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">अगला मॉड्यूल पूरा करें और <strong style="color: #fbbf24;">8 और पाएं!</strong></div>
+                </div>
             </div>
-        </div>
-        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
-            <div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div>
-            <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div>
-        </div>
-      `;
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+                <div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div>
+                <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">जारी रखें & दावा करें &gt;</div>
+            </div>`;
+      } else {
+          banner.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div>
+                <div>
+                    <div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">अविश्वसनीय! आपने सभी <span style="color: #10b981; font-weight: 900; font-size: 18px;">56 SYNX</span> सुरक्षित कर लिए हैं!</div>
+                    <div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">दावा करने के लिए नीचे सबमिट पर क्लिक करें!</div>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+                <div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 56 / 56 ]</div>
+                <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">दावा करने के लिए तैयार</div>
+            </div>`;
+      }
+  } else if (currentLanguage === "hinglish") {
+      if (sectionIndex < 7) {
+          banner.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div>
+                <div>
+                    <div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! Aapne ab tak <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> secure kar liye hain!</div>
+                    <div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Next module complete karein aur <strong style="color: #fbbf24;">8 more payein!</strong></div>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+                <div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div>
+                <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div>
+            </div>`;
+      } else {
+          banner.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div>
+                <div>
+                    <div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! Aapne sabhi <span style="color: #10b981; font-weight: 900; font-size: 18px;">56 SYNX</span> secure kar liye hain!</div>
+                    <div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Neeche Submit button par click karke claim karein!</div>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+                <div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 56 / 56 ]</div>
+                <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div>
+            </div>`;
+      }
   } else {
-      banner.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 16px;">
-            <div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div>
-            <div>
-                <div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! You've secured all <span style="color: #10b981; font-weight: 900; font-size: 18px;">56 SYNX</span>!</div>
-                <div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Hit Submit below to transfer them to your wallet!</div>
+      if (sectionIndex < 7) {
+          banner.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div>
+                <div>
+                    <div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! You've secured <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> so far!</div>
+                    <div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Complete the next module to claim <strong style="color: #fbbf24;">8 more!</strong></div>
+                </div>
             </div>
-        </div>
-        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
-            <div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 56 / 56 ]</div>
-            <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div>
-        </div>
-      `;
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+                <div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div>
+                <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div>
+            </div>`;
+      } else {
+          banner.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div>
+                <div>
+                    <div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! You've secured all <span style="color: #10b981; font-weight: 900; font-size: 18px;">56 SYNX</span>!</div>
+                    <div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Hit Submit below to transfer them to your wallet!</div>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+                <div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 56 / 56 ]</div>
+                <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div>
+            </div>`;
+      }
   }
 }
 
@@ -439,12 +493,10 @@ async function handleSurveySubmission(e) {
     return;
   }
 
-  // Hide the survey UI so it looks clean
   document.getElementById("claimForm").classList.add("hidden");
   const excitementBanner = document.getElementById("excitementBanner");
   if(excitementBanner) excitementBanner.style.display = "none";
 
-  // SHOW FULL SCREEN ANIMATION
   const animOverlay = document.getElementById("rewardAnimationOverlay");
   if (animOverlay) animOverlay.style.display = "flex";
 
@@ -463,7 +515,6 @@ async function handleSurveySubmission(e) {
 
     const result = await response.json();
     
-    // Wait for the animation to play out nicely for the user (3.5 seconds)
     setTimeout(async () => {
       if (animOverlay) animOverlay.style.display = "none";
       
@@ -471,7 +522,7 @@ async function handleSurveySubmission(e) {
         if (statusDiv) statusDiv.innerHTML = "";
         await runProfileLedgerVerification(userEmailAddress, false);
       } else {
-        document.getElementById("claimForm").classList.remove("hidden"); // Re-show if failed
+        document.getElementById("claimForm").classList.remove("hidden"); 
         if (statusDiv) {
           statusDiv.innerHTML = `❌ ${result.error || "Submission rejected by registry backend."}`;
           statusDiv.style.color = "#ff4d4d";
@@ -767,9 +818,15 @@ function resetApplicationFlowState() {
   });
 }
 
+// FIXED: Now safely uses .innerHTML to handle styles and bold highlighting correctly across translation changes
 function translatePage() {
   if (typeof translations === "undefined" || !translations[currentLanguage]) return;
   const dict = translations[currentLanguage];
+
+  const mainTitleEl = document.getElementById("mainTitle");
+  const mainSubtitleEl = document.getElementById("mainSubtitle");
+  if (mainTitleEl && dict.mainTitle) mainTitleEl.innerHTML = dict.mainTitle;
+  if (mainSubtitleEl && dict.mainSubtitle) mainSubtitleEl.innerHTML = dict.mainSubtitle;
 
   const emailSectionTitleEl = document.querySelector("#emailGateSection .sectionTitle");
   if (emailSectionTitleEl && dict.emailSectionTitle) emailSectionTitleEl.innerText = dict.emailSectionTitle;
@@ -780,9 +837,12 @@ function translatePage() {
   const prevBtnEl = document.getElementById("prevBtn");
   const nextBtnEl = document.getElementById("nextBtn");
   const submitClaimBtnEl = document.getElementById("submitClaimBtn");
-  if (prevBtnEl && (dict.previous || dict.btnPrev)) prevBtnEl.innerHTML = `&lt; ${dict.previous || dict.btnPrev}`;
-  if (nextBtnEl && (dict.next || dict.btnNext)) nextBtnEl.innerHTML = `${dict.next || dict.btnNext} &gt;`;
-  if (submitClaimBtnEl && (dict.submit || dict.btnSubmit)) submitClaimBtnEl.innerHTML = dict.submit || dict.btnSubmit;
+  if (prevBtnEl && dict.previous) prevBtnEl.innerHTML = `&lt; ${dict.previous}`;
+  if (nextBtnEl && dict.next) nextBtnEl.innerHTML = `${dict.next} &gt;`;
+  if (submitClaimBtnEl && dict.submit) submitClaimBtnEl.innerHTML = dict.submit;
+
+  const rewardTitleEl = document.querySelector("#rewardDashboardScreen .rewardTitle");
+  if (rewardTitleEl && dict.claimTitle) rewardTitleEl.innerHTML = dict.claimTitle;
 
   const connectWalletBtnEl = document.querySelector("#connectWalletBtn span");
   if (connectWalletBtnEl && dict.metaMaskLabel) connectWalletBtnEl.innerText = dict.metaMaskLabel;
@@ -795,6 +855,9 @@ function translatePage() {
   
   const referralTitleEl = document.querySelector(".referralContainer .dividerLine span");
   if (referralTitleEl && dict.referralTitle) referralTitleEl.innerText = dict.referralTitle;
+
+  const referralDescriptionEl = document.querySelector(".referralContainer .referralDescription");
+  if (referralDescriptionEl && dict.referralSub) referralDescriptionEl.innerHTML = dict.referralSub;
   
   const copyReferralBtnEl = document.getElementById("copyReferralBtn");
   if (copyReferralBtnEl && dict.btnCopy) copyReferralBtnEl.innerText = dict.btnCopy;
@@ -912,4 +975,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       await runProfileLedgerVerification(searchEmail, true);
     };
   }
+
+  const langButtons = document.querySelectorAll(".langBtn");
+  langButtons.forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      langButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentLanguage = btn.dataset.lang;
+      
+      translatePage();
+      updateExcitementBanner(currentSection); // Instantly updates active banner texts on switch
+      if (claimForm && !claimForm.classList.contains("hidden")) {
+        renderSection();
+      }
+    });
+  });
 });
