@@ -1,7 +1,7 @@
 const translations = {
   en: {
     mainTitle: "Syntrix Consumer Analytics Hub",
-    mainSubtitle: "Complete all 7 consumer research modules to claim your 56 SYNX token rewards.",
+    mainSubtitle: "Complete all 7 consumer research modules to claim your <span style='font-weight: 800; color: #111827; background: #e0e7ff; padding: 2px 8px; border-radius: 6px;'>56 SYNX</span> token rewards.",
     progress: "Progress",
     next: "Next",
     previous: "Previous",
@@ -40,7 +40,7 @@ const translations = {
   },
   hi: {
     mainTitle: "सिंट्रिक्स कंज्यूमर एनालिटिक्स हब",
-    mainSubtitle: "56 SYNX टोकन रिवॉर्ड पाने के लिए सभी 7 कंज्यूमर रिसर्च मॉड्यूल पूरे करें।",
+    mainSubtitle: "सभी 7 कंज्यूमर रिसर्च मॉड्यूल पूरे करें और <span style='font-weight: 800; color: #111827; background: #e0e7ff; padding: 2px 8px; border-radius: 6px;'>56 SYNX</span> टोकन रिवॉर्ड पाएं।",
     progress: "प्रगति",
     next: "अगला",
     previous: "पिछला",
@@ -79,7 +79,7 @@ const translations = {
   },
   hinglish: {
     mainTitle: "Syntrix Consumer Analytics Hub",
-    mainSubtitle: "56 SYNX token rewards claim karne ke liye sabhi 7 consumer research modules ko complete karein.",
+    mainSubtitle: "Sabhi 7 consumer research modules ko complete karein aur <span style='font-weight: 800; color: #111827; background: #e0e7ff; padding: 2px 8px; border-radius: 6px;'>56 SYNX</span> token rewards claim karein.",
     progress: "Progress",
     next: "Aage",
     previous: "Peeche",
@@ -162,7 +162,7 @@ const questionTranslations = {
     peakShoppingTime: "आप सबसे ज्यादा ऑनलाइन खरीदारी कब करते हैं?",
     painPoint: "अपने सबसे खराब ऑनलाइन खरीदारी अनुभव के बारे में बताइए।",
     bestPoint: "अपने सबसे अच्छे ऑनलाइन खरीदारी अनुभव के बारे में बताइए।",
-    complementPoint: "हर ऑनलाइन स्टोर को कौन सी न्यूनतम सुविधाएँ देनी चाहिए?",
+    complementPoint: "हर ऑनलाइन store को कौन सी न्यूनतम सुविधाएँ देनी चाहिए?",
     referralVoice: "आप किसी उत्पाद की सिफारिश अपने दोस्तों या परिवार को कब करेंगे?",
     shoppingCategories: "आप सबसे अधिक किन श्रेणियों में ऑनलाइन खरीदारी करते हैं?",
     categorySpendCeiling: "अपनी पसंदीदा श्रेणी में प्रति खरीद आप कितना खर्च करते हैं?",
@@ -202,111 +202,80 @@ const questionTranslations = {
 
 const optionTranslations = {
   hi: {
-    // Media Options
     "Instagram": "इंस्टाग्राम",
     "YouTube": "यूट्यूब",
-
-    // Lifestyle Spending options
     "Under ₹500": "₹500 से कम",
     "₹500 - ₹2,000": "₹500 - ₹2,000",
     "₹2,000 - ₹5,000": "₹2,000 - ₹5,000",
     "₹5,000 - ₹15,000": "₹5,000 - ₹15,000",
     "Above ₹15,000": "₹15,000 से अधिक",
-    
-    // Location options
     "🏙️ Metro City (Mumbai, Delhi, Bengaluru, Chennai)": "🏙️ मेट्रो शहर (मुंबई, दिल्ली, बेंगलुरु, चेन्नई)",
     "🌆 Large City (Ahmedabad, Surat, Jaipur, Vadodara)": "🌆 बड़ा शहर (अहमदाबाद, सूरत, जयपुर, वडोदरा)",
-    "🏘️ Small City / District City (Rajkot, Udaipur, Bhavnagar, Kota)": "🏘️ छोटा शहर / जिला शहर (राजकोट, उदयपुर, भावनगर, कोटा)",
-    "🌿 Town / Village (Kalol, Gangapur and similar areas)": "🌿 कस्बा / गाँव (कलोल, गंगापुर और समान क्षेत्र)",
-    
-    // User Persona options
+    "🏘️ Small City / District City (Rajkot, Udaipur, Bhavnagar, Kota)": "🏘️ छोटा शहर / जिला शहर (राजकोट, उदयपुर)",
+    "🌿 Town / Village (Kalol, Gangapur and similar areas)": "🌿 कस्बा / गाँव",
     "Student": "विद्यार्थी",
-    "Salaried Employee": "वेतनभोगी कर्मचारी",
-    "Business Owner": "व्यवसाय मालिक",
+    "Salaried Employee": "कर्मचारी",
+    "Business Owner": "व्यापार मालिक",
     "Freelancer": "फ्रीलांसर",
     "Content Creator": "कंटेंट क्रिएटर",
     "Trader / Investor": "ट्रेडर / निवेशक",
-    
-    // Luxury Allocation options
     "Under 5%": "5% से कम",
     "5% - 15%": "5% - 15%",
     "15% - 30%": "15% - 30%",
     "30% - 50%": "30% - 50%",
     "Above 50%": "50% से अधिक",
-
-    // Purchase Blockers options
     "Shipping Cost": "डिलीवरी शुल्क",
     "Too Expensive": "बहुत महंगा",
     "Low Trust": "कम भरोसा",
-    "Poor Reviews": "खराब समीक्षाएँ",
+    "Poor Reviews": "خराब समीक्षाएँ",
     "Slow Delivery": "धीमी डिलीवरी",
     "Payment Failure": "भुगतान विफल",
-
-    // Shipping tolerance options
     "Free Only": "केवल मुफ्त",
     "Under ₹50": "₹50 से कम",
     "Under ₹100": "₹100 से कम",
     "Under ₹300": "₹300 से कम",
-    "Any if Product is Worth It": "यदि उत्पाद इसके लायक है तो कुछ भी",
-
-    // Payment options
+    "Any if Product is Worth It": "यदि उत्पाद इसके लायक है",
     "UPI": "यूपीआई",
     "Cash on Delivery (COD)": "कैश ऑन डिलीवरी",
     "Debit / Credit Card": "डेबिट / क्रेडिट कार्ड",
     "Net Banking": "नेट बैंकिंग",
-    "Buy Now Pay Later / EMI": "अभी खरीदें बाद में भुगतान करें / ईएमआई",
+    "Buy Now Pay Later / EMI": "अभी खरीदें बाद में भुगतान करें",
     "Crypto": "क्रिप्टो",
-
-    // Importance options
     "Extremely Important": "बहुत महत्वपूर्ण",
     "Important": "महत्वपूर्ण",
-    "Neutral": "तटस्थ",
+    "Neutral": "सामान्य",
     "Not Important": "महत्वपूर्ण नहीं",
-
-    // Discovery choices
     "Friends & Family": "दोस्त और परिवार",
     "Online Ads": "ऑनलाइन विज्ञापन",
     "Google Search": "गूगल सर्च",
     "Influencers": "इन्फ्लुएंसर्स",
     "WhatsApp": "व्हाट्सएप",
-
-    // Trust Anchors
     "Ratings & Reviews": "रेटिंग और समीक्षाएँ",
     "Influencer Review": "इन्फ्लुएंसर समीक्षा",
     "Friend Recommendation": "दोस्त की सिफारिश",
     "Brand Reputation": "ब्रांड की प्रतिष्ठा",
-    "Professional Website": "पेशेवर वेबसाइट",
+    "Professional Website": "वेबसाइट",
     "Money Back Guarantee": "पैसे वापस गारंटी",
-
-    // Brand Risk
     "I love trying new brands": "मुझे नई ब्रांड आज़माना पसंद है",
-    "I try if reviews are good": "अच्छी समीक्षा होने पर कोशिश करता हूँ",
-    "I rarely try unknown brands": "अज्ञान ब्रांड कम आज़माता हूँ",
-    "I avoid unknown brands completely": "अज्ञात ब्रांड से बचता हूँ",
-
-    // Devices
-    "Android Smartphone": "एंड्रॉइड स्मार्टफोन",
+    "I try if reviews are good": "समीक्षा होने पर कोशिश करता हूँ",
+    "I rarely try unknown brands": "कम आज़माता हूँ",
+    "I avoid unknown brands completely": "बचता हूँ",
+    "Android Smartphone": "एंड्रॉइड",
     "iPhone": "आईफोन",
     "Laptop": "लैपटॉप",
     "Tablet": "टैबलेट",
-    "Desktop Computer": "डेस्कटॉप कंप्यूटर",
-
-    // Conversion Triggers
+    "Desktop Computer": "कंप्यूटर",
     "Discount": "छूट",
-    "Urgency / FOMO": "जल्दी करने का दबाव",
+    "Urgency / FOMO": "जल्दी दबाव",
     "Positive Reviews": "सकारात्मक समीक्षाएँ",
     "Limited Stock": "सीमित स्टॉक",
     "Bundle Offer": "बंडल ऑफर",
-
-    // Timeline choices
     "Instantly": "तुरंत",
     "Same Day": "उसी दिन",
     "1-3 Days": "1-3 दिन",
     "1 Week": "1 सप्ताह",
     "1 Month": "1 महीना",
-    "Only if Necessary": "केवल आवश्यकता होने पर",
-
-    // Frequencies
+    "Only if Necessary": "आवश्यकता होने पर",
     "Always": "हमेशा",
     "Often": "अक्सर",
     "Sometimes": "कभी-कभी",
@@ -314,41 +283,31 @@ const optionTranslations = {
     "Never": "कभी नहीं",
     "Most of the Time": "ज्यादातर समय",
     "Very Often": "बहुत अक्सर",
-
-    // Times
     "Morning": "सुबह",
     "Afternoon": "दोपहर",
     "Evening": "शाम",
     "Late Night": "देर रात",
     "During Sales": "सेल के दौरान",
-
-    // Categories
     "Fashion & Clothing": "फैशन और कपड़े",
-    "Beauty & Personal Care": "सौंदर्य और व्यक्तिगत देखभाल",
-    "Electronics & Gadgets": "इलेक्ट्रॉनिक्स और गैजेट्स",
+    "Beauty & Personal Care": "सौंदर्य देखभाल",
+    "Electronics & Gadgets": "इलेक्ट्रॉनिक्स",
     "Gaming": "गेमिंग",
-    "Fitness & Sports": "फिटनेस और खेल",
-    "Books & Education": "पुस्तकें और शिक्षा",
+    "Fitness & Sports": "फिटनेस",
+    "Books & Education": "पुस्तकें",
     "Home & Kitchen": "घर और रसोई",
-    "Jewellery & Accessories": "आभूषण और एक्सेसरीज़",
-    "Groceries & Daily Needs": "किराना और दैनिक आवश्यकताएँ",
-
-    // Category spend ceilings
+    "Jewellery & Accessories": "आभूषण",
+    "Groceries & Daily Needs": "किराना",
     "Under ₹300": "₹300 से कम",
     "₹300 - ₹800": "₹300 - ₹800",
     "₹800 - ₹2,000": "₹800 - ₹2,000",
     "₹2,000 - ₹5,000": "₹2,000 - ₹5,000",
     "₹5,000 - ₹15,000": "₹5,000 - ₹15,000",
     "Above ₹15,000": "₹15,000 से अधिक",
-
-    // Actions
-    "Share on Social Media": "सोशल media पर साझा करें",
+    "Share on Social Media": "सोशल मीडिया पर साझा करें",
     "Recommend to Friends": "दोस्तों को सुझाव दें",
     "Leave a Review": "समीक्षा लिखें",
     "Buy Again": "फिर से खरीदें",
     "Keep it Private": "निजी रखें",
-
-    // Return Reasons
     "Poor Quality": "खराब गुणवत्ता",
     "Wrong Size": "गलत आकार",
     "Damaged Product": "क्षतिग्रस्त उत्पाद",
@@ -357,111 +316,80 @@ const optionTranslations = {
     "Never Returned": "कभी वापस नहीं किया"
   },
   hinglish: {
-    // Media Options
     "Instagram": "Instagram",
     "YouTube": "YouTube",
-
-    // Lifestyle Spending options
     "Under ₹500": "₹500 se kam",
     "₹500 - ₹2,000": "₹500 - ₹2,000",
     "₹2,000 - ₹5,000": "₹2,000 - ₹5,000",
     "₹5,000 - ₹15,000": "₹5,000 - ₹15,000",
     "Above ₹15,000": "₹15,000 se zyada",
-    
-    // Location options
     "🏙️ Metro City (Mumbai, Delhi, Bengaluru, Chennai)": "🏙️ Metro City (Mumbai, Delhi, Bengaluru, Chennai)",
     "🌆 Large City (Ahmedabad, Surat, Jaipur, Vadodara)": "🌆 Bada Shehar (Ahmedabad, Surat, Jaipur, Vadodara)",
     "🏘️ Small City / District City (Rajkot, Udaipur, Bhavnagar, Kota)": "🏘️ Chota Shehar / District City (Rajkot, Udaipur)",
     "🌿 Town / Village (Kalol, Gangapur and similar areas)": "🌿 Kasba / Gaaon (Kalol, Gangapur aur baaki areas)",
-    
-    // User Persona options
     "Student": "Student",
     "Salaried Employee": "Salaried Job Wale",
     "Business Owner": "Business Owner",
     "Freelancer": "Freelancer",
     "Content Creator": "Content Creator",
     "Trader / Investor": "Trader / Investor",
-    
-    // Luxury Allocation options
     "Under 5%": "5% se kam",
     "5% - 15%": "5% - 15%",
     "15% - 30%": "15% - 30%",
     "30% - 50%": "30% - 50%",
     "Above 50%": "50% se zyada",
-
-    // Purchase Blockers options
     "Shipping Cost": "Delivery Charge",
     "Too Expensive": "Zyada Mehnga Hona",
     "Low Trust": "Kam Bharosa",
     "Poor Reviews": "Kharab Reviews",
     "Slow Delivery": "Late Delivery",
     "Payment Failure": "Payment Fail Hona",
-
-    // Shipping tolerance options
     "Free Only": "Sirf Free Delivery",
     "Under ₹50": "₹50 se kam",
     "Under ₹100": "₹100 se kam",
     "Under ₹300": "₹300 se kam",
     "Any if Product is Worth It": "Kuch bhi chalega agar product accha hai",
-
-    // Payment options
     "UPI": "UPI",
     "Cash on Delivery (COD)": "Cash on Delivery (COD)",
     "Debit / Credit Card": "Debit / Credit Card",
     "Net Banking": "Net Banking",
     "Buy Now Pay Later / EMI": "Buy Now Pay Later / EMI",
     "Crypto": "Crypto",
-
-    // Importance options
     "Extremely Important": "Bahut Zyada Zaroori",
     "Important": "Zaroori Hai",
     "Neutral": "Theek-Thak",
     "Not Important": "Zaroori Nahi Hai",
-
-    // Discovery choices
     "Friends & Family": "Friends & Family",
     "Online Ads": "Online Ads",
     "Google Search": "Google Search",
     "Influencers": "Influencers / Creators",
     "WhatsApp": "WhatsApp",
-
-    // Trust Anchors
     "Ratings & Reviews": "Ratings & Reviews",
     "Influencer Review": "Influencer ke Reviews",
     "Friend Recommendation": "Dost ka Kehna",
     "Brand Reputation": "Brand ka Naam",
     "Professional Website": "Acchi Website",
     "Money Back Guarantee": "Money Back Guarantee",
-
-    // Brand Risk
     "I love trying new brands": "Mujhe naye brands try karna pasand hai",
     "I try if reviews are good": "Reviews acche ho toh try karta hoon",
     "I rarely try unknown brands": "Anjaan brands bohot kam try karta hoon",
     "I avoid unknown brands completely": "Anjaan brands se bilkul door rehta hoon",
-
-    // Devices
     "Android Smartphone": "Android Phone",
     "iPhone": "iPhone",
     "Laptop": "Laptop",
     "Tablet": "Tablet",
     "Desktop Computer": "Desktop PC",
-
-    // Conversion Triggers
     "Discount": "Discount / Offer",
     "Urgency / FOMO": "Limited Time Offer / FOMO",
     "Positive Reviews": "Acche Reviews",
     "Limited Stock": "Kam Stock Hona",
     "Bundle Offer": "Combo / Bundle Offer",
-
-    // Timeline choices
     "Instantly": "Turant (Sath ke sath)",
     "Same Day": "Usi Din",
     "1-3 Days": "1-3 Din mein",
     "1 Week": "1 Hafte mein",
     "1 Month": "1 Mahine mein",
     "Only if Necessary": "Sirf Zaroorat Hone Par",
-
-    // Frequencies
     "Always": "Hamesha",
     "Often": "Aksar",
     "Sometimes": "Kabhi-Kabhi",
@@ -469,15 +397,11 @@ const optionTranslations = {
     "Never": "Bilkul Nahi",
     "Most of the Time": "Zyadaatar Time",
     "Very Often": "Bohot Baar",
-
-    // Times
     "Morning": "Subah",
     "Afternoon": "Dopahar",
     "Evening": "Shaam",
     "Late Night": "Late Night",
     "During Sales": "Sale Ke Time Par",
-
-    // Categories
     "Fashion & Clothing": "Fashion & Kapde",
     "Beauty & Personal Care": "Beauty & Personal Care",
     "Electronics & Gadgets": "Electronics & Gadgets",
@@ -487,23 +411,17 @@ const optionTranslations = {
     "Home & Kitchen": "Ghar aur Kitchen",
     "Jewellery & Accessories": "Jewellery & Accessories",
     "Groceries & Daily Needs": "Rashan & Daily Needs",
-
-    // Category spend ceilings
     "Under ₹300": "₹300 se kam",
     "₹300 - ₹800": "₹300 - ₹800",
     "₹800 - ₹2,000": "₹800 - ₹2,000",
     "₹2,000 - ₹5,000": "₹2,000 - ₹5,000",
     "₹5,000 - ₹15,000": "₹5,000 - ₹15,000",
-    "Above ₹15,000": "Aise category spend parameters 15,000 se zyada",
-
-    // Actions
+    "Above ₹15,000": "15,000 se zyada",
     "Share on Social Media": "Social Media par share karna",
     "Recommend to Friends": "Doston ko batana",
     "Leave a Review": "Review likhna",
     "Buy Again": "Dobaara khareedna",
     "Keep it Private": "Private rakhna",
-
-    // Return Reasons
     "Poor Quality": "Kharab Quality",
     "Wrong Size": "Galat Size",
     "Damaged Product": "Toota hua/Khraab Product",
