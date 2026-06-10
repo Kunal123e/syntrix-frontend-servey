@@ -16,32 +16,43 @@
     @keyframes slideDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes floatBox { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
     @keyframes pulseGlow { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.7); } 70% { box-shadow: 0 0 0 20px rgba(16,185,129,0); } 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } }
+    .badge-icon-glow { filter: drop-shadow(0 0 8px var(--glow-color, #6366f1)); }
   </style>
 
   <script>
     window.metamaskEmbeddedInstance = null;
     window.isWeb3AuthReady = false;
 
-    // DIRECT, LOOP-FREE INITIALIZATION
+    // FIXED: Correctly instantiates privateKeyProvider parameter requirements for Web3Auth v9
     window.addEventListener("load", async () => {
       try {
         const Web3AuthSDK = window.Modal || window.ModalSdk || window.Web3Auth;
+        const EthProviderSDK = window.EthereumProvider;
         
-        if (!Web3AuthSDK || !Web3AuthSDK.Web3Auth) {
-          console.error("❌ Web3Auth library did not load from CDN.");
+        if (!Web3AuthSDK || !EthProviderSDK) {
+          console.error("❌ Web3Auth registry packages failed to map globally via CDN arrays.");
           return;
         }
 
-        const Web3AuthClass = Web3AuthSDK.Web3Auth;
+        const chainConfig = {
+          chainNamespace: "eip155",
+          chainId: "0x89", // Polygon Mainnet Identifier
+          rpcTarget: "https://polygon-rpc.com",
+          displayName: "Polygon Mainnet",
+          blockExplorerUrl: "https://polygonscan.com",
+          ticker: "POL",
+          tickerName: "POL"
+        };
 
-        const web3auth = new Web3AuthClass({
+        // Initialize the mandatory private key provider layer
+        const privateKeyProvider = new EthProviderSDK.EthereumPrivateKeyProvider({
+          config: { chainConfig }
+        });
+
+        const web3auth = new Web3AuthSDK.Web3Auth({
           clientId: "BLTKOOeFj7P8fVIGNIwqX3lhHeA948YDtXgKO_ClNELkI06hZ17XKvfpiAWA0AujfpBMAs75-LivYTtCeRWg2Lo", 
           web3AuthNetwork: "sapphire_devnet", 
-          chainConfig: {
-            chainNamespace: "eip155",
-            chainId: "0x89", 
-            rpcTarget: "https://polygon-rpc.com" 
-          }
+          privateKeyProvider: privateKeyProvider
         });
 
         await web3auth.initModal();
@@ -100,6 +111,7 @@
         <div class="options-menu-container">
           <button type="button" id="menuToggleBtn" class="icon-menu-btn" aria-label="More Options">⋮</button>
           <div id="optionsPopover" class="options-popover hidden">
+            <div id="menuPsychologyBadgeWrapper" style="padding: 10px 14px; font-size: 13px; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.08); color: #fbbf24; display: none;">🎭 Profile: <span id="menuPsychologyBadgeText">None</span></div>
             <button type="button" id="menuRestartBtn">✨ New Survey Registration</button>
             <button type="button" id="menuRecoverBtn">🔍 Retrieve Pending Claim</button>
           </div>
@@ -115,43 +127,26 @@
     </div>
 
     <div id="excitementBanner" style="display: none; background: linear-gradient(145deg, #23272f 0%, #111418 100%); border: 1px solid #3f444d; box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 12px 24px -6px rgba(0,0,0,0.6); border-radius: 12px; padding: 16px 24px; margin-bottom: 25px; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; width: 100%; box-sizing: border-box;">
-      </div>
+    </div>
 
     <div id="emailGateSection" class="authCard">
       <h2 class="sectionTitle" id="emailSectionTitle">Enter Communication Profile</h2>
       <p class="cardDescription" id="emailSectionSub">Please provide your authorized email address to clear the registration gate and activate the research module matrix.</p>
       <form id="emailGateForm">
         <div class="form-group" style="margin-bottom: 20px;">
-          <input 
-            type="email" 
-            id="gateEmail" 
-            placeholder="User Communication Profile (Email Address)" 
-            required
-            style="width: 100%;"
-          >
+          <input type="email" id="gateEmail" placeholder="User Communication Profile (Email Address)" required style="width: 100%;">
         </div>
 
         <div id="otpSection" class="form-group hidden" style="margin-bottom: 20px;">
           <p style="color:#10b981; font-size:13px; margin-bottom:8px; text-align: left; padding-left: 5px;">✅ Code sent! Check your email inbox.</p>
-          <input 
-            type="text" 
-            id="gateOtp" 
-            placeholder="Enter 6-Digit Code" 
-            maxlength="6" 
-            style="width: 100%; text-align: center; letter-spacing: 5px; font-weight: bold; font-size: 18px; background: rgba(255,255,255,0.02);" 
-          >
+          <input type="text" id="gateOtp" placeholder="Enter 6-Digit Code" maxlength="6" style="width: 100%; text-align: center; letter-spacing: 5px; font-weight: bold; font-size: 18px; background: rgba(255,255,255,0.02);">
         </div>
 
         <div class="form-group" style="margin-bottom: 20px; text-align: left;">
           <label for="referredByCode" id="referralInputLabel" style="font-size: 13px; font-weight: bold; color: var(--text-secondary); display: block; margin-bottom: 8px; letter-spacing: 0.5px;">
             Referral Code (Optional)
           </label>
-          <input 
-            type="text" 
-            id="referredByCode" 
-            placeholder="Enter Referral Code (e.g. SYN-AB1234)"
-            style="width: 100%; border-color: rgba(99, 102, 241, 0.2);"
-          >
+          <input type="text" id="referredByCode" placeholder="Enter Referral Code (e.g. SYN-AB1234)" style="width: 100%; border-color: rgba(99, 102, 241, 0.2);">
         </div>
 
         <button type="submit" id="startSurveyBtn" class="primaryActionBtn">
@@ -177,6 +172,15 @@
     </form>
 
     <div id="rewardDashboardScreen" class="hidden rewardCard">
+      <div id="dashboardPsychologyBadgeCard" style="display: none; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; padding: 20px; margin-bottom: 25px; align-items: center; gap: 20px; text-align: left;">
+        <div id="dashboardBadgeIcon" style="font-size: 50px;">🎭</div>
+        <div>
+          <div style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; letter-spacing: 1px;">Your Consumer Profile Profile</div>
+          <h3 id="dashboardBadgeTitle" style="font-size: 24px; font-weight: 900; color: #ffffff; margin: 4px 0 6px 0;">Loading Profile...</h3>
+          <p id="dashboardBadgeDesc" style="font-size: 13px; color: var(--text-secondary); line-height: 1.4; margin: 0;"></p>
+        </div>
+      </div>
+
       <div class="badgeRow">
         <span class="submittedBadge" id="surveySubmittedBadge">✨ SURVEY SUBMITTED!</span>
       </div>
@@ -186,25 +190,37 @@
         Your research survey has been recorded. Connect MetaMask or input your EVM wallet address to claim your high-utility SYNX tokens.
       </p>
 
-      <button type="button" id="connectWalletBtn" class="metaMaskBtn">
-        <span id="metaMaskLabelText">💼 🦊 Connect MetaMask Wallet</span>
-      </button>
-
-      <p class="manualNotice" id="manualNoticeText">
-        ℹ️ MetaMask browser plugin not detected. Paste your token wallet address below manually.
-      </p>
-
-      <div class="manualWalletWrapper">
-        <div class="dividerLine"><span id="manualLabelText">OR ENTER YOUR EVM NETWORK PUBLIC ADDRESS</span></div>
-        <input 
-          type="text" 
-          id="dashboardWalletInput" 
-          placeholder="0x..." 
-          maxLength="42"
-        >
-        <button type="button" id="executeClaimBtn" class="executeDistributionBtn">
-          Execute Token Distribution
+      <div id="dashboardActiveClaimControls">
+        <button type="button" id="connectWalletBtn" class="metaMaskBtn">
+          <span id="metaMaskLabelText">💼 🦊 Connect MetaMask Wallet</span>
         </button>
+
+        <p class="manualNotice" id="manualNoticeText">
+          ℹ️ MetaMask browser plugin not detected. Paste your token wallet address below manually.
+        </p>
+
+        <div class="manualWalletWrapper">
+          <div class="dividerLine"><span id="manualLabelText">OR ENTER YOUR EVM NETWORK PUBLIC ADDRESS</span></div>
+          <input 
+            type="text" 
+            id="dashboardWalletInput" 
+            placeholder="0x..." 
+            maxLength="42"
+          >
+          <button type="button" id="executeClaimBtn" class="executeDistributionBtn">
+            Execute Token Distribution
+          </button>
+        </div>
+      </div>
+
+      <div id="dashboardClaimReceiptBlock" class="hidden" style="background: rgba(16, 185, 129, 0.04); border: 1px solid rgba(16, 185, 129, 0.2); padding: 25px; border-radius: 16px; margin: 20px 0; text-align: center;">
+        <div style="width: 60px; height: 60px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(16, 185, 129, 0.1); border: 2px solid #10b981; color: #10b981; font-size: 28px; font-weight: bold;">✓</div>
+        <h3 style="font-size: 20px; font-weight: 800; color: #ffffff; margin-bottom: 8px;">Tokens Distributed On-Chain</h3>
+        <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 15px; line-height: 1.4;">Your survey balance tokens have landed successfully via Polygon. Check your transactions register ledger details below.</p>
+        <div style="text-align: left; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255,255,255,0.05); padding: 14px 18px; border-radius: 12px;">
+          <div style="font-size: 10px; color: var(--text-secondary); font-weight: 700; margin-bottom: 4px;">POLYGON METRICS BLOCK TRANSACTIONS:</div>
+          <a id="dashboardReceiptTxLink" target="_blank" href="#" style="color: #6366f1; font-family: monospace; font-size: 13px; word-break: break-all; text-decoration: none; font-weight: bold;">0x000...</a>
+        </div>
       </div>
 
       <div class="referralContainer">
@@ -246,11 +262,15 @@
       <div style="font-size: 40px; margin-bottom: 15px;" id="claimStaticIcon" class="hidden">🎁</div>
       
       <h2 class="rewardTitle" id="claimScreenTitle">Resolving Claim authorization...</h2>
-      <p class="rewardSubtitle" id="claimInfoSubtitle">Retrieving credentials block registry. Please wait.</p>
+      <p class="rewardSubtitle" id="claimInfoSubtitle">
+        Retrieving credentials block registry. Please wait.
+      </p>
 
       <div id="claimErrorBox" class="hidden">
         <div style="font-size: 50px; color: #ef4444; margin-bottom: 20px;">⚠️</div>
-        <button type="button" onclick="window.location.href='/'" class="primaryActionBtn" style="max-width: 250px; margin: 0 auto;">Return to Survey Hub</button>
+        <button type="button" onclick="window.location.href='/'" class="primaryActionBtn" style="max-width: 250px; margin: 0 auto;">
+          Return to Survey Hub
+        </button>
       </div>
 
       <div id="claimRewardDetails" class="hidden" style="background-color: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.15); padding: 20px; border-radius: 16px; margin: 25px auto; text-align: left; max-width: 450px;">
@@ -344,7 +364,7 @@
     <h3 style="font-size:22px; font-weight:900; margin-bottom:8px; letter-spacing:-0.5px;">Create MetaMask Account</h3>
     <p style="font-size:14px; color:#6b6258; line-height:1.5; margin-bottom:24px;">Create a real, secure Web3 wallet address instantly using your existing accounts. No seed phrases or extensions required.</p>
     
-    <button id="authGoogleWalletBtn" style="width:100%; padding:14px; background:#f4efe8; border:1px solid #ddd4c8; border-radius:12px; font-size:15px; font-weight:800; color:#1f1f1f; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:12px; transition:0.2s;">
+    <button id="authGoogleWalletBtn" style="width:100%; padding:14px; background:#f4efe8; border:1px solid #ddd4c8; border-radius:12px; font-size:15px; font-weight:700; color:#1f1f1f; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:12px; transition:0.2s;">
       Continue with Web3Auth Gateway
     </button>
 
