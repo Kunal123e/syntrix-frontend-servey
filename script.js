@@ -227,6 +227,7 @@ function getSectionTitle(section) {
   return section.title || "";
 }
 
+// ================= STAGE 2: SURVEY RENDER SYSTEM =================
 function getQuestionText(q) {
   if (typeof questionTranslations !== "undefined" && questionTranslations[currentLanguage]) {
     return questionTranslations[currentLanguage][q.id] || q.text || q.id;
@@ -266,20 +267,23 @@ function renderSection() {
   if (progressFill) progressFill.style.width = `${progressPercent}%`;
   if (progressText) progressText.innerText = `Progress ${currentSection + 1}/${sections.length}`;
 
+  // THICK BOLD STYLING APPLIED TO TITLE
   let htmlStr = `<div class="survey-section-card animate-fade-in">
-    <h2 class="surveySectionTitle">${getSectionTitle(currentData)}</h2>`;
+    <h2 class="surveySectionTitle" style="font-size: 26px; font-weight: 800; color: #111827; margin-bottom: 5px;">${getSectionTitle(currentData)}</h2>`;
 
   currentData.questions.forEach((q) => {
     const savedAnswer = answers[q.id] || "";
+    // THICK BOLD STYLING APPLIED TO QUESTIONS
     htmlStr += `<div class="question-block" style="margin-top:30px; text-align:left;">
-      <p class="questionText" style="font-weight:700; margin-bottom:16px; font-size:17px; color:#1f1f1f;">${getQuestionText(q)}</p>
+      <p class="questionText" style="font-weight:800; margin-bottom:16px; font-size:17px; color:#1f1f1f;">${getQuestionText(q)}</p>
       <div class="options">`; 
 
     q.options.forEach((opt) => {
       const isChecked = savedAnswer === opt ? "checked" : "";
       const isSelectedClass = savedAnswer === opt ? "selected" : ""; 
+      // THICK BOLD STYLING APPLIED TO OPTIONS
       htmlStr += `
-        <label class="option ${isSelectedClass}" style="display:inline-block; user-select:none;">
+        <label class="option ${isSelectedClass}" style="display:inline-block; user-select:none; font-weight: 600;">
           <input type="radio" name="${q.id}" value="${opt}" ${isChecked} style="display:none;" onchange="recordSelection('${q.id}', this.value)">
           <span class="optionText">${getOptionText(opt)}</span>
         </label>`;
@@ -311,18 +315,51 @@ function handleNextSection() {
     alert(getUIText("validationRequired"));
     return;
   }
+  
+  // Advance to next section
   currentSection++;
+
+  // --- GAMIFICATION EXCITEMENT LOGIC ---
+  const unlockedTokens = currentSection * 8; // 8 Tokens per module completed
+  const excitementBanner = document.getElementById("excitementBanner");
+  const excitementText = document.getElementById("excitementText");
+  
+  if (excitementBanner && excitementText) {
+    excitementBanner.style.display = "flex";
+    
+    // Reset animation so it bounces every time they click next
+    excitementBanner.style.animation = 'none';
+    excitementBanner.offsetHeight; 
+    excitementBanner.style.animation = null; 
+
+    if (currentSection < 7) {
+      excitementText.innerHTML = `Great job! You've secured <strong style="font-size: 20px; font-weight: 900;">${unlockedTokens} SYNX</strong> so far! Complete the next module to claim 8 more!`;
+    } else {
+      excitementText.innerHTML = `🔥 Incredible! You've secured all <strong style="font-size: 20px; font-weight: 900;">56 SYNX</strong>! Hit Submit to claim them!`;
+    }
+  }
+  // -------------------------------------
+
   renderSection();
 }
 
 function handlePrevSection() {
   if (currentSection > 0) {
     currentSection--;
+    
+    const unlockedTokens = currentSection * 8;
+    const excitementText = document.getElementById("excitementText");
+    if (excitementText && currentSection > 0) {
+      excitementText.innerHTML = `Great job! You've secured <strong style="font-size: 20px; font-weight: 900;">${unlockedTokens} SYNX</strong> so far! Complete the next module to claim 8 more!`;
+    } else if (excitementText) {
+      document.getElementById("excitementBanner").style.display = "none";
+    }
+
     renderSection();
   }
 }
 
-// ================= STAGE 2: PROFILE LEDGER BACKEND HANDLERS =================
+// ================= STAGE 3: PROFILE LEDGER BACKEND HANDLERS =================
 async function runProfileLedgerVerification(email, isFromModal = false) {
   const outputTarget = isFromModal ? modalStatus : statusDiv;
   if (!outputTarget) return;
@@ -386,10 +423,14 @@ async function handleSurveySubmission(e) {
     return;
   }
 
-  if (statusDiv) {
-    statusDiv.innerHTML = `⏳ ${getUIText("submitting")}`;
-    statusDiv.style.color = "#57d6c2";
-  }
+  // Hide the survey UI so it looks clean
+  document.getElementById("claimForm").classList.add("hidden");
+  const excitementBanner = document.getElementById("excitementBanner");
+  if(excitementBanner) excitementBanner.style.display = "none";
+
+  // SHOW FULL SCREEN ANIMATION
+  const animOverlay = document.getElementById("rewardAnimationOverlay");
+  if (animOverlay) animOverlay.style.display = "flex";
 
   const referralCodeUsed = localStorage.getItem("referralCode") || "";
 
@@ -405,16 +446,26 @@ async function handleSurveySubmission(e) {
     });
 
     const result = await response.json();
-    if (result.success) {
-      if (statusDiv) statusDiv.innerHTML = "";
-      await runProfileLedgerVerification(userEmailAddress, false);
-    } else {
-      if (statusDiv) {
-        statusDiv.innerHTML = `❌ ${result.error || "Submission rejected by registry backend."}`;
-        statusDiv.style.color = "#ff4d4d";
+    
+    // Wait for the animation to play out nicely for the user (3.5 seconds)
+    setTimeout(async () => {
+      if (animOverlay) animOverlay.style.display = "none";
+      
+      if (result.success) {
+        if (statusDiv) statusDiv.innerHTML = "";
+        await runProfileLedgerVerification(userEmailAddress, false);
+      } else {
+        document.getElementById("claimForm").classList.remove("hidden"); // Re-show if failed
+        if (statusDiv) {
+          statusDiv.innerHTML = `❌ ${result.error || "Submission rejected by registry backend."}`;
+          statusDiv.style.color = "#ff4d4d";
+        }
       }
-    }
+    }, 3500);
+
   } catch (err) {
+    if (animOverlay) animOverlay.style.display = "none";
+    document.getElementById("claimForm").classList.remove("hidden");
     if (statusDiv) {
       statusDiv.innerHTML = "❌ Network transaction failed.";
       statusDiv.style.color = "#ff4d4d";
@@ -573,7 +624,7 @@ async function initializeClaimSection(token) {
 
       if (document.getElementById("claimInfoEmail")) document.getElementById("claimInfoEmail").innerText = details.email;
       if (document.getElementById("claimInfoType")) document.getElementById("claimInfoType").innerText = details.type || "Airdrop Claim";
-      if (document.getElementById("claimInfoAmount")) document.getElementById("claimInfoAmount").innerText = `${details.amount || 10} SYN`;
+      if (document.getElementById("claimInfoAmount")) document.getElementById("claimInfoAmount").innerText = `${details.amount || 56} SYNX`;
       
       claimScreenSection.dataset.email = details.email;
       claimScreenSection.dataset.token = token;
@@ -704,11 +755,6 @@ function translatePage() {
   if (typeof translations === "undefined" || !translations[currentLanguage]) return;
   const dict = translations[currentLanguage];
 
-  const mainTitleEl = document.getElementById("mainTitle");
-  const mainSubtitleEl = document.getElementById("mainSubtitle");
-  if (mainTitleEl && (dict.mainTitle || dict.title)) mainTitleEl.innerText = dict.mainTitle || dict.title;
-  if (mainSubtitleEl && (dict.mainSubtitle || dict.surveySubtitle)) mainSubtitleEl.innerText = dict.mainSubtitle || dict.surveySubtitle;
-
   const emailSectionTitleEl = document.querySelector("#emailGateSection .sectionTitle");
   if (emailSectionTitleEl && dict.emailSectionTitle) emailSectionTitleEl.innerText = dict.emailSectionTitle;
   
@@ -722,9 +768,6 @@ function translatePage() {
   if (nextBtnEl && (dict.next || dict.btnNext)) nextBtnEl.innerHTML = `${dict.next || dict.btnNext} &gt;`;
   if (submitClaimBtnEl && (dict.submit || dict.btnSubmit)) submitClaimBtnEl.innerHTML = dict.submit || dict.btnSubmit;
 
-  const rewardTitleEl = document.querySelector("#rewardDashboardScreen .rewardTitle");
-  if (rewardTitleEl && dict.claimTitle) rewardTitleEl.innerText = dict.claimTitle;
-  
   const connectWalletBtnEl = document.querySelector("#connectWalletBtn span");
   if (connectWalletBtnEl && dict.metaMaskLabel) connectWalletBtnEl.innerText = dict.metaMaskLabel;
   
@@ -736,9 +779,6 @@ function translatePage() {
   
   const referralTitleEl = document.querySelector(".referralContainer .dividerLine span");
   if (referralTitleEl && dict.referralTitle) referralTitleEl.innerText = dict.referralTitle;
-  
-  const referralDescriptionEl = document.querySelector(".referralContainer .referralDescription");
-  if (referralDescriptionEl && dict.referralSub) referralDescriptionEl.innerText = dict.referralSub;
   
   const copyReferralBtnEl = document.getElementById("copyReferralBtn");
   if (copyReferralBtnEl && dict.btnCopy) copyReferralBtnEl.innerText = dict.btnCopy;
