@@ -267,13 +267,11 @@ function renderSection() {
   if (progressFill) progressFill.style.width = `${progressPercent}%`;
   if (progressText) progressText.innerText = `Progress ${currentSection + 1}/${sections.length}`;
 
-  // THICK BOLD STYLING APPLIED TO TITLE
   let htmlStr = `<div class="survey-section-card animate-fade-in">
     <h2 class="surveySectionTitle" style="font-size: 26px; font-weight: 800; color: #111827; margin-bottom: 5px;">${getSectionTitle(currentData)}</h2>`;
 
   currentData.questions.forEach((q) => {
     const savedAnswer = answers[q.id] || "";
-    // THICK BOLD STYLING APPLIED TO QUESTIONS
     htmlStr += `<div class="question-block" style="margin-top:30px; text-align:left;">
       <p class="questionText" style="font-weight:800; margin-bottom:16px; font-size:17px; color:#1f1f1f;">${getQuestionText(q)}</p>
       <div class="options">`; 
@@ -281,7 +279,6 @@ function renderSection() {
     q.options.forEach((opt) => {
       const isChecked = savedAnswer === opt ? "checked" : "";
       const isSelectedClass = savedAnswer === opt ? "selected" : ""; 
-      // THICK BOLD STYLING APPLIED TO OPTIONS
       htmlStr += `
         <label class="option ${isSelectedClass}" style="display:inline-block; user-select:none; font-weight: 600;">
           <input type="radio" name="${q.id}" value="${opt}" ${isChecked} style="display:none;" onchange="recordSelection('${q.id}', this.value)">
@@ -310,51 +307,70 @@ window.recordSelection = function(questionId, selectedValue) {
   renderSection();
 };
 
+// GAMIFICATION RENDERER
+function updateExcitementBanner(sectionIndex) {
+  const banner = document.getElementById("excitementBanner");
+  if (!banner) return;
+
+  if (sectionIndex === 0) {
+      banner.style.display = "none";
+      return;
+  }
+
+  const unlockedTokens = sectionIndex * 8;
+  const totalTokens = 56;
+
+  banner.style.display = "flex";
+  // Reset animation to trigger again on click
+  banner.style.animation = 'none';
+  banner.offsetHeight;
+  banner.style.animation = 'slideDown 0.5s ease-out';
+
+  if (sectionIndex < 7) {
+      banner.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div>
+            <div>
+                <div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! You've secured <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> so far!</div>
+                <div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Complete the next module to claim <strong style="color: #fbbf24;">8 more!</strong></div>
+            </div>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+            <div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div>
+            <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div>
+        </div>
+      `;
+  } else {
+      banner.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div>
+            <div>
+                <div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! You've secured all <span style="color: #10b981; font-weight: 900; font-size: 18px;">56 SYNX</span>!</div>
+                <div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Hit Submit below to transfer them to your wallet!</div>
+            </div>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+            <div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 56 / 56 ]</div>
+            <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div>
+        </div>
+      `;
+  }
+}
+
 function handleNextSection() {
   if (!validateCurrentSectionAnswers()) {
     alert(getUIText("validationRequired"));
     return;
   }
-  
-  // Advance to next section
   currentSection++;
-
-  // --- GAMIFICATION EXCITEMENT LOGIC ---
-  const unlockedTokens = currentSection * 8; // 8 Tokens per module completed
-  const excitementBanner = document.getElementById("excitementBanner");
-  const excitementText = document.getElementById("excitementText");
-  
-  if (excitementBanner && excitementText) {
-    excitementBanner.style.display = "flex";
-    
-    // Reset animation so it bounces every time they click next
-    excitementBanner.style.animation = 'none';
-    excitementBanner.offsetHeight; 
-    excitementBanner.style.animation = null; 
-
-    if (currentSection < 7) {
-      excitementText.innerHTML = `Great job! You've secured <strong style="font-size: 20px; font-weight: 900;">${unlockedTokens} SYNX</strong> so far! Complete the next module to claim 8 more!`;
-    } else {
-      excitementText.innerHTML = `🔥 Incredible! You've secured all <strong style="font-size: 20px; font-weight: 900;">56 SYNX</strong>! Hit Submit to claim them!`;
-    }
-  }
-  // -------------------------------------
-
+  updateExcitementBanner(currentSection);
   renderSection();
 }
 
 function handlePrevSection() {
   if (currentSection > 0) {
     currentSection--;
-    
-    const unlockedTokens = currentSection * 8;
-    const excitementText = document.getElementById("excitementText");
-    if (excitementText && currentSection > 0) {
-      excitementText.innerHTML = `Great job! You've secured <strong style="font-size: 20px; font-weight: 900;">${unlockedTokens} SYNX</strong> so far! Complete the next module to claim 8 more!`;
-    } else if (excitementText) {
-      document.getElementById("excitementBanner").style.display = "none";
-    }
-
+    updateExcitementBanner(currentSection);
     renderSection();
   }
 }
