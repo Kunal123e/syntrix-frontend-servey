@@ -72,6 +72,73 @@ const statusDiv = document.getElementById("status");
 const progressFill = document.querySelector(".progressFill");
 const progressText = document.querySelector(".progressText");
 
+// ================= COGNITIVE PSYCHOLOGY BADGE RULES ENGINE =================
+const BADGE_PROFILES = {
+  Analyzer: { title: "Analyzer", desc: "Vibe: Logic over hype. You scan pages for raw data, reviews, specifications, and verifiable facts.", icon: "📊", color: "#6366f1" },
+  Stylist: { title: "Stylist", desc: "Vibe: Experience first. You buy based on emotional resonance, premium aesthetics, clean design, and storytelling.", icon: "🎨", color: "#ec4899" },
+  Hedger: { title: "Hedger", desc: "Vibe: Safe and secure. You possess zero risk tolerance. You check trust flags and exit if hit with friction.", icon: "🛡️", color: "#10b981" },
+  Native: { title: "Native", desc: "Vibe: Community validated. You choose platforms backed by word-of-mouth, peer reviews, or family context.", icon: "👥", color: "#3b82f6" }
+};
+
+function calculateConsumerPsychologyBadge() {
+  let scores = { Analyzer: 0, Stylist: 0, Hedger: 0, Native: 0 };
+
+  for (const qId in answers) {
+    const ans = String(answers[qId]);
+    if (!ans) continue;
+
+    // Analyzer vectors
+    if (ans.includes("Ratings & Reviews") || ans.includes("Price") || ans.includes("compare") || ans.includes("Google Search") || ans.includes("Low Trust")) scores.Analyzer += 2;
+    // Stylist vectors
+    if (ans.includes("Design") || ans.includes("Storytelling") || ans.includes("Fashion") || ans.includes("Beauty") || ans.includes("Social Media")) scores.Stylist += 2;
+    // Hedger vectors
+    if (ans.includes("Shipping Cost") || ans.includes("Too Expensive") || ans.includes("Guarantee") || ans.includes("Return") || ans.includes("Cash on Delivery")) scores.Hedger += 2;
+    // Native vectors
+    if (ans.includes("Friends & Family") || ans.includes("Influencer") || ans.includes("Recommendation") || ans.includes("WhatsApp")) scores.Native += 2;
+  }
+
+  let tieBreaker = "Analyzer";
+  let maxScore = -1;
+  for (const key in scores) {
+    if (scores[key] > maxScore) {
+      maxScore = scores[key];
+      tieBreaker = key;
+    }
+  }
+  return tieBreaker;
+}
+
+function displayConsumerBadgesUI(badgeKey) {
+  const profile = BADGE_PROFILES[badgeKey] || BADGE_PROFILES.Analyzer;
+  
+  // Update dashboard container card
+  const badgeCard = document.getElementById("dashboardPsychologyBadgeCard");
+  const badgeIcon = document.getElementById("dashboardBadgeIcon");
+  const badgeTitle = document.getElementById("dashboardBadgeTitle");
+  const badgeDesc = document.getElementById("dashboardBadgeDesc");
+
+  if (badgeCard && badgeTitle) {
+    badgeCard.style.display = "flex";
+    badgeCard.style.setProperty("--glow-color", profile.color);
+    if (badgeIcon) {
+      badgeIcon.innerText = profile.icon;
+      badgeIcon.className = "badge-icon-glow";
+    }
+    badgeTitle.innerText = profile.title;
+    badgeTitle.style.color = profile.color;
+    if (badgeDesc) badgeDesc.innerText = profile.desc;
+  }
+
+  // Update 3-dot dropdown slot profile indicator
+  const dropdownBadgeWrapper = document.getElementById("menuPsychologyBadgeWrapper");
+  const dropdownBadgeText = document.getElementById("menuPsychologyBadgeText");
+  if (dropdownBadgeWrapper && dropdownBadgeText) {
+    dropdownBadgeWrapper.style.display = "block";
+    dropdownBadgeText.innerText = profile.title;
+    dropdownBadgeText.style.color = profile.color;
+  }
+}
+
 // ================= GLOBAL HELPERS & FORM VALIDATION MATRIX =================
 function normalizeReferralCode(code) {
   if (!code) return "";
@@ -101,157 +168,7 @@ async function fetchWithTimeout(resource, options = {}) {
   }
 }
 
-// ================= STAGE 1: EMAIL VERIFICATION GATE =================
-if (emailGateForm) {
-  emailGateForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    if (!gateEmailInput) return;
-    
-    const emailVal = gateEmailInput.value.trim().toLowerCase();
-    
-    if (!emailVal || !EMAIL_REGEX.test(emailVal)) {
-      if (statusDiv) {
-        statusDiv.innerHTML = "❌ Please input a valid email address.";
-        statusDiv.style.color = "#ff4d4d";
-      }
-      return;
-    }
-
-    if (!isOtpSent) {
-      if (statusDiv) {
-        statusDiv.innerHTML = "⏳ Sending verification code...";
-        statusDiv.style.color = "#57d6c2";
-      }
-      
-      try {
-        const response = await fetchWithTimeout(`${BACKEND_URL}/api/send-otp`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: emailVal })
-        });
-        
-        const result = await response.json();
-        if (result.success) {
-          isOtpSent = true;
-          const otpSection = document.getElementById("otpSection");
-          if (otpSection) otpSection.classList.remove("hidden");
-          if (startSurveyBtn) startSurveyBtn.innerHTML = "Verify & Enter &rarr;";
-          gateEmailInput.readOnly = true; 
-          if (statusDiv) statusDiv.innerHTML = "";
-        } else {
-          if (statusDiv) {
-            statusDiv.innerHTML = "❌ " + (result.error || "Failed to send code.");
-            statusDiv.style.color = "#ff4d4d";
-          }
-        }
-      } catch (err) {
-        if (statusDiv) {
-          statusDiv.innerHTML = "❌ Network error. Could not send code.";
-          statusDiv.style.color = "#ff4d4d";
-        }
-      }
-      return; 
-    }
-
-    const gateOtpInput = document.getElementById("gateOtp");
-    const otpVal = gateOtpInput ? gateOtpInput.value.trim() : "";
-
-    if (!otpVal || otpVal.length !== 6) {
-      if (statusDiv) {
-        statusDiv.innerHTML = "❌ Please enter the 6-digit verification code.";
-        statusDiv.style.color = "#ff4d4d";
-      }
-      return;
-    }
-
-    if (statusDiv) {
-      statusDiv.innerHTML = "⏳ Verifying code...";
-      statusDiv.style.color = "#57d6c2";
-    }
-
-    try {
-      const response = await fetchWithTimeout(`${BACKEND_URL}/api/verify-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: emailVal, otp: otpVal })
-      });
-
-      const result = await response.json();
-      if (result.success) {
-        if (statusDiv) statusDiv.innerHTML = "✅ Verification successful!";
-        
-        userEmailAddress = emailVal;
-        localStorage.setItem("syntrix_user_email", emailVal);
-        
-        if (referredByCodeInput && referredByCodeInput.value.trim() !== "") {
-          localStorage.setItem("referralCode", normalizeReferralCode(referredByCodeInput.value));
-        }
-
-        await runProfileLedgerVerification(emailVal, false);
-      } else {
-        if (statusDiv) {
-          statusDiv.innerHTML = "❌ " + (result.error || "Invalid or expired code.");
-          statusDiv.style.color = "#ff4d4d";
-        }
-      }
-    } catch (err) {
-      if (statusDiv) {
-        statusDiv.innerHTML = "❌ Network error. Could not verify code.";
-        statusDiv.style.color = "#ff4d4d";
-      }
-    }
-  });
-}
-
-function getSurveyData() {
-  return typeof surveySections !== "undefined" ? surveySections : [];
-}
-
-function getUIText(key) {
-  const fallbacks = {
-    validationRequired: "❌ Please answer all questions before continuing.",
-    submitting: "⏳ Storing survey data metrics across secure registers...",
-    claiming: "⚡ Dispensing tokens to target network gateway...",
-    checkingLedger: "🔍 Authenticating communication profile ledger status..."
-  };
-  if (typeof translations !== "undefined" && translations[currentLanguage] && translations[currentLanguage][key]) {
-    return translations[currentLanguage][key];
-  }
-  return fallbacks[key] || key;
-}
-
-function getSectionTitle(section) {
-  if (typeof sectionTranslations !== "undefined" && sectionTranslations[currentLanguage]) {
-    return sectionTranslations[currentLanguage][section.title] || section.title;
-  }
-  return section.title || "";
-}
-
 // ================= STAGE 2: SURVEY RENDER SYSTEM =================
-function getQuestionText(q) {
-  if (typeof questionTranslations !== "undefined" && questionTranslations[currentLanguage]) {
-    return questionTranslations[currentLanguage][q.id] || q.text || q.id;
-  }
-  return q.text || q.id;
-}
-
-function getOptionText(opt) {
-  if (typeof optionTranslations !== "undefined" && optionTranslations[currentLanguage]) {
-    return optionTranslations[currentLanguage][opt] || opt;
-  }
-  return opt;
-}
-
-function validateCurrentSectionAnswers() {
-  const sections = getSurveyData();
-  const currentData = sections[currentSection];
-  if (!currentData) return false;
-  for (let q of currentData.questions) {
-    if (!answers[q.id]) return false;
-  }
-  return true;
-}
-
 function renderSection() {
   const sections = getSurveyData();
   if (!sections || sections.length === 0 || !surveyContainer) return;
@@ -453,12 +370,33 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
       if (statTotalEarned) statTotalEarned.innerText = `${(statusResult.pendingRewards || 0) + (statusResult.claimedRewards || 0)} SYN`;
       if (referralCodeDisplay) referralCodeDisplay.value = `${window.location.origin}/?ref=${statusResult.referralCode || ""}`;
 
+      // CALCULATE AND SYNC THE CONSUMER PSYCHOLOGY BADGES FLOWS
+      const computedBadgeKey = calculateConsumerPsychologyBadge();
+      displayConsumerBadgesUI(computedBadgeKey);
+
       if (statusResult.exists === true) {
         if (emailGateSection) emailGateSection.classList.add("hidden");
         if (claimForm) claimForm.classList.add("hidden");
         if (topProgressBox) topProgressBox.classList.add("hidden");
         if (rewardDashboardScreen) rewardDashboardScreen.classList.remove("hidden");
         outputTarget.innerHTML = "";
+
+        // FIXED VIEW ROUTING RULES: Handles transaction confirmations explicitly
+        const activeControls = document.getElementById("dashboardActiveClaimControls");
+        const receiptBlock = document.getElementById("dashboardClaimReceiptBlock");
+        const receiptLink = document.getElementById("dashboardReceiptTxLink");
+
+        if (statusResult.isClaimed && statusResult.txHash) {
+          if (activeControls) activeControls.classList.add("hidden");
+          if (receiptBlock) receiptBlock.classList.remove("hidden");
+          if (receiptLink) {
+            receiptLink.innerText = statusResult.txHash;
+            receiptLink.href = `https://polygonscan.com/tx/${statusResult.txHash}`;
+          }
+        } else {
+          if (activeControls) activeControls.classList.remove("hidden");
+          if (receiptBlock) receiptBlock.classList.add("hidden");
+        }
       } else {
         if (emailGateSection) emailGateSection.classList.add("hidden");
         if (claimForm) claimForm.classList.remove("hidden");
@@ -659,7 +597,9 @@ async function handleManualClaimExecution() {
         statusDiv.style.color = "#57d6c2";
       }
       if (dashboardWalletInput) dashboardWalletInput.value = "";
-      setTimeout(async () => { await runProfileLedgerVerification(userEmailAddress, false); }, 3000);
+      
+      // FIXED ENGINE POLLING: Poll ledger verification slightly longer to catch queue finalizations
+      setTimeout(async () => { await runProfileLedgerVerification(userEmailAddress, false); }, 4000);
     } else {
       if (statusDiv) {
         statusDiv.innerHTML = `❌ ${result.error || "Claim system execution failed."}`;
@@ -818,7 +758,6 @@ function resetApplicationFlowState() {
   });
 }
 
-// FIXED: Now safely uses .innerHTML to handle styles and bold highlighting correctly across translation changes
 function translatePage() {
   if (typeof translations === "undefined" || !translations[currentLanguage]) return;
   const dict = translations[currentLanguage];
@@ -925,7 +864,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   // --- ATTACH EVENT LISTENERS TO INTERACTION HANDLERS ---
   if (nextBtn) nextBtn.onclick = () => handleNextSection();
   if (prevBtn) prevBtn.onclick = () => handlePrevSection();
-  if (submitClaimBtn) submitClaimBtn.onclick = (e) => handleSurveySubmission(e);
+  if (claimForm) claimForm.onclick = (e) => {
+    // Only intercept true form submit buttons to protect choices clicks
+    if(e.target && e.target.id === "submitClaimBtn") {
+       handleSurveySubmission(e);
+    }
+  };
   if (executeClaimBtn) executeClaimBtn.onclick = () => handleManualClaimExecution();
   
   // Connect Wallets
@@ -984,7 +928,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       currentLanguage = btn.dataset.lang;
       
       translatePage();
-      updateExcitementBanner(currentSection); // Instantly updates active banner texts on switch
+      updateExcitementBanner(currentSection); 
       if (claimForm && !claimForm.classList.contains("hidden")) {
         renderSection();
       }
