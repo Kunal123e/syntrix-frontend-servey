@@ -6,15 +6,12 @@
   <title>Syntrix Consumer Analytics Hub</title>
   <link rel="stylesheet" href="style.css">
 
-  <!-- ================= WEB3 REGISTRY LIBRARIES CDN CORE DEPENDENCIES ================= -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
   
-  <!-- Web3Auth v9 requires Base and EthereumProvider to load BEFORE Modal -->
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/base@9/dist/base.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/ethereum-provider@9/dist/ethereumProvider.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@9/dist/modal.umd.min.js"></script>
 
-  <!-- Custom Animations for Gamification UI -->
   <style>
     @keyframes slideDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes floatBox { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
@@ -60,7 +57,6 @@
 </head>
 <body>
 
-<!-- POST-SUBMISSION FULL SCREEN REWARD ANIMATION -->
 <div id="rewardAnimationOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.95); z-index: 99999; flex-direction: column; align-items: center; justify-content: center; color: white; backdrop-filter: blur(10px);">
   <div style="font-size: 100px; animation: floatBox 2s ease-in-out infinite;">🎁</div>
   <h2 style="font-size: 42px; font-weight: 900; margin-top: 20px; text-align: center; background: linear-gradient(to right, #10b981, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Survey Completed!</h2>
@@ -118,10 +114,8 @@
       </div>
     </div>
 
-    <!-- PREMIUM DARK METALLIC GAMIFICATION BANNER -->
     <div id="excitementBanner" style="display: none; background: linear-gradient(145deg, #23272f 0%, #111418 100%); border: 1px solid #3f444d; box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 12px 24px -6px rgba(0,0,0,0.6); border-radius: 12px; padding: 16px 24px; margin-bottom: 25px; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; width: 100%; box-sizing: border-box;">
-      <!-- Content populated by JS -->
-    </div>
+      </div>
 
     <div id="emailGateSection" class="authCard">
       <h2 class="sectionTitle" id="emailSectionTitle">Enter Communication Profile</h2>
@@ -217,7 +211,7 @@
         <div class="dividerLine"><span id="referralDashboardTitle">🎁 SYNTRIX REFERRAL DASHBOARD</span></div>
         <h3 class="referralTitleText" id="referralTitleText">Your Referrals & Earnings</h3>
         <p class="referralDescription" id="referralSubText">
-          Invite friends using your unique referral code. For each colleague who registers and completes the modules, you earn an additional 56 SYN tokens!
+          Invite friends using your unique referral code. For each colleague who registers and completes the modules, you earn an additional 10 SYN tokens!
         </p>
 
         <div class="referralStatsGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; margin: 25px 0;">
@@ -252,15 +246,11 @@
       <div style="font-size: 40px; margin-bottom: 15px;" id="claimStaticIcon" class="hidden">🎁</div>
       
       <h2 class="rewardTitle" id="claimScreenTitle">Resolving Claim authorization...</h2>
-      <p class="rewardSubtitle" id="claimInfoSubtitle">
-        Retrieving credentials block registry. Please wait.
-      </p>
+      <p class="rewardSubtitle" id="claimInfoSubtitle">Retrieving credentials block registry. Please wait.</p>
 
       <div id="claimErrorBox" class="hidden">
         <div style="font-size: 50px; color: #ef4444; margin-bottom: 20px;">⚠️</div>
-        <button type="button" onclick="window.location.href='/'" class="primaryActionBtn" style="max-width: 250px; margin: 0 auto;">
-          Return to Survey Hub
-        </button>
+        <button type="button" onclick="window.location.href='/'" class="primaryActionBtn" style="max-width: 250px; margin: 0 auto;">Return to Survey Hub</button>
       </div>
 
       <div id="claimRewardDetails" class="hidden" style="background-color: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.15); padding: 20px; border-radius: 16px; margin: 25px auto; text-align: left; max-width: 450px;">
@@ -348,7 +338,6 @@
   </div>
 </div>
 
-<!-- ================= AUTHENTIC METAMASK EMBEDDED WALLET MODAL ================= -->
 <div id="walletCreatorModal" class="modal-overlay hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter:blur(5px); display:flex; align-items:center; justify-content:center; z-index:10000;">
   <div style="background:#ffffff; color:#1f1f1f; width:100%; max-width:400px; padding:32px; border-radius:24px; box-shadow:0 20px 40px rgba(0,0,0,0.15); border:1px solid #ece4da; text-align:center;">
     <div style="font-size:42px; margin-bottom:12px;">🦊</div>
@@ -365,9 +354,9 @@
   </div>
 </div>
 
-<script src="data.js?v=premium_ui"></script>
-<script src="translation.js?v=premium_ui"></script>
-<script src="script.js?v=premium_ui"></script>
+<script src="data.js?v=ref_fix"></script>
+<script src="translation.js?v=ref_fix"></script>
+<script src="script.js?v=ref_fix"></script>
 
 </body>
 </html>
