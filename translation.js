@@ -1,7 +1,7 @@
 const translations = {
   en: {
     mainTitle: "Syntrix Consumer Analytics Hub",
-    mainSubtitle: "Complete all 7 consumer research modules to claim your 10 SYNX token rewards.",
+    mainSubtitle: "Complete all 7 consumer research modules to claim your 56 SYNX token rewards.",
     progress: "Progress",
     next: "Next",
     previous: "Previous",
@@ -15,7 +15,7 @@ const translations = {
     // Additional UI Portal elements
     emailSectionTitle: "Enter Communication Profile",
     btnStart: "Initialize Research Modules →",
-    claimTitle: "Claim Your 10 SYNX Reward",
+    claimTitle: "Claim Your 56 SYNX Reward",
     metaMaskLabel: "💼 🦊 Connect MetaMask Wallet",
     manualLabel: "OR ENTER YOUR EVM NETWORK PUBLIC ADDRESS",
     btnExecute: "Execute Token Distribution",
@@ -25,7 +25,7 @@ const translations = {
     inviteLabel: "✉️ Email Direct Reference Link",
     btnInvite: "Send Invite",
     checkingLedger: "🔍 Authenticating communication profile ledger status...",
-    claiming: "⚡ Dispensing 10 SYNX tokens to target network gateway...",
+    claiming: "⚡ Dispensing 56 SYNX tokens to target network gateway...",
 
     // Retrieval Modal
     modalTitle: "🔍 Retrieve Pending Rewards",
@@ -40,7 +40,7 @@ const translations = {
   },
   hi: {
     mainTitle: "सिंट्रिक्स कंज्यूमर एनालिटिक्स हब",
-    mainSubtitle: "10 SYNX टोकन रिवॉर्ड पाने के लिए सभी 7 कंज्यूमर रिसर्च मॉड्यूल पूरे करें।",
+    mainSubtitle: "56 SYNX टोकन रिवॉर्ड पाने के लिए सभी 7 कंज्यूमर रिसर्च मॉड्यूल पूरे करें।",
     progress: "प्रगति",
     next: "अगला",
     previous: "पिछला",
@@ -54,7 +54,7 @@ const translations = {
     // Additional UI Portal elements
     emailSectionTitle: "संचार प्रोफ़ाइल दर्ज करें",
     btnStart: "अनुसंधान मॉड्यूल प्रारंभ करें →",
-    claimTitle: "अपने 10 SYNX पुरस्कार का दावा करें",
+    claimTitle: "अपने 56 SYNX पुरस्कार का दावा करें",
     metaMaskLabel: "💼 🦊 मेटामास्क वॉलेट कनेक्ट करें",
     manualLabel: "या अपना EVM नेटवर्क सार्वजनिक पता दर्ज करें",
     btnExecute: "टोकन वितरण निष्पादित करें",
@@ -64,7 +64,7 @@ const translations = {
     inviteLabel: "✉️ ईमेल सीधा आमंत्रण लिंक",
     btnInvite: "आमंत्रण भेजें",
     checkingLedger: "🔍 संचार प्रोफ़ाइल लेज़र स्थिति प्रमाणित की जा रही है...",
-    claiming: "⚡ लक्षित नेटवर्क गेटवे पर 10 SYNX टोकन वितरित किए जा रहे हैं...",
+    claiming: "⚡ लक्षित नेटवर्क गेटवे पर 56 SYNX टोकन वितरित किए जा रहे हैं...",
 
     // Retrieval Modal
     modalTitle: "🔍 लंबित पुरस्कार प्राप्त करें",
@@ -79,7 +79,7 @@ const translations = {
   },
   hinglish: {
     mainTitle: "Syntrix Consumer Analytics Hub",
-    mainSubtitle: "10 SYNX token rewards claim karne ke liye sabhi 7 consumer research modules ko complete karein.",
+    mainSubtitle: "56 SYNX token rewards claim karne ke liye sabhi 7 consumer research modules ko complete karein.",
     progress: "Progress",
     next: "Aage",
     previous: "Peeche",
@@ -93,7 +93,7 @@ const translations = {
     // Additional UI Portal elements
     emailSectionTitle: "Communication Profile Enter Karein",
     btnStart: "Research Modules Initialize Karein →",
-    claimTitle: "Apna 10 SYNX Reward Claim Karein",
+    claimTitle: "Apna 56 SYNX Reward Claim Karein",
     metaMaskLabel: "💼 🦊 MetaMask Wallet Connect Karein",
     manualLabel: "YA APNA EVM NETWORK PUBLIC ADDRESS ENTER KAREIN",
     btnExecute: "Execute Token Distribution",
@@ -103,7 +103,7 @@ const translations = {
     inviteLabel: "✉️ Email Direct Reference Link",
     btnInvite: "Send Invite",
     checkingLedger: "🔍 Communication profile ledger status ko authenticate kiya ja raha hai...",
-    claiming: "⚡ 10 SYNX tokens ko target network gateway par dispense kiya ja raha hai...",
+    claiming: "⚡ 56 SYNX tokens ko target network gateway par dispense kiya ja raha hai...",
 
     // Retrieval Modal
     modalTitle: "🔍 Pending Rewards Retrieve Karein",
