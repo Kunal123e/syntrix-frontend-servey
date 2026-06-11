@@ -6,8 +6,10 @@
   <title>Syntrix Consumer Analytics Hub</title>
   <link rel="stylesheet" href="style.css">
 
+  <!-- ================= WEB3 REGISTRY LIBRARIES CDN CORE DEPENDENCIES ================= -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
   
+  <!-- Web3Auth v9 Core Dependencies Package Array -->
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/base@9/dist/base.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/ethereum-provider@9/dist/ethereumProvider.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@9/dist/modal.umd.min.js"></script>
@@ -23,7 +25,6 @@
     window.metamaskEmbeddedInstance = null;
     window.isWeb3AuthReady = false;
 
-    // FIXED: Integrated explicit popups isolation parameters targeting Sapphire Network Whitelists
     window.addEventListener("load", async () => {
       try {
         const Web3AuthSDK = window.Modal || window.ModalSdk || window.Web3Auth;
@@ -48,10 +49,21 @@
           config: { chainConfig }
         });
 
+        // FIXED: Added explicitly initialized wrapper flow and configured popups target configurations
         const web3auth = new Web3AuthSDK.Web3Auth({
           clientId: "BLTKOOeFj7P8fVIGNIwqX3lhHeA948YDtXgKO_ClNELkI06hZ17XKvfpiAWA0AujfpBMAs75-LivYTtCeRWg2Lo", 
           web3AuthNetwork: "sapphire_devnet", 
           privateKeyProvider: privateKeyProvider,
+          enableLogging: false,
+          uiConfig: {
+            appName: "Syntrix",
+            mode: "dark",
+            theme: {
+              primary: "#6366f1"
+            },
+            loginMethodsOrder: ["google"],
+            defaultLanguage: "en"
+          },
           web3AuthOptions: {
             popupWindowFeatures: {
               width: 500,
@@ -62,7 +74,34 @@
           }
         });
 
-        await web3auth.initModal();
+        // Use standard fallback initialization parameter mapping configurations
+        await web3auth.initModal({
+          modalConfig: {
+            "openlogin": {
+              label: "OpenLogin",
+              showOnModal: true,
+              loginMethods: {
+                google: {
+                  name: "google",
+                  showOnModal: true
+                },
+                facebook: { showOnModal: false },
+                twitter: { showOnModal: false },
+                reddit: { showOnModal: false },
+                discord: { showOnModal: false },
+                twitch: { showOnModal: false },
+                apple: { showOnModal: false },
+                line: { showOnModal: false },
+                github: { showOnModal: false },
+                kakao: { showOnModal: false },
+                linkedin: { showOnModal: false },
+                wechat: { showOnModal: false },
+                weibo: { showOnModal: false },
+                weblink: { showOnModal: false }
+              }
+            }
+          }
+        });
         
         window.metamaskEmbeddedInstance = web3auth;
         window.isWeb3AuthReady = true;
