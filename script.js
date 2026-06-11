@@ -87,13 +87,9 @@ function calculateConsumerPsychologyBadge() {
     const ans = String(answers[qId]);
     if (!ans) continue;
 
-    // Analyzer vectors
     if (ans.includes("Ratings & Reviews") || ans.includes("Price") || ans.includes("compare") || ans.includes("Google Search") || ans.includes("Low Trust")) scores.Analyzer += 2;
-    // Stylist vectors
     if (ans.includes("Design") || ans.includes("Storytelling") || ans.includes("Fashion") || ans.includes("Beauty") || ans.includes("Social Media")) scores.Stylist += 2;
-    // Hedger vectors
     if (ans.includes("Shipping Cost") || ans.includes("Too Expensive") || ans.includes("Guarantee") || ans.includes("Return") || ans.includes("Cash on Delivery")) scores.Hedger += 2;
-    // Native vectors
     if (ans.includes("Friends & Family") || ans.includes("Influencer") || ans.includes("Recommendation") || ans.includes("WhatsApp")) scores.Native += 2;
   }
 
@@ -111,7 +107,6 @@ function calculateConsumerPsychologyBadge() {
 function displayConsumerBadgesUI(badgeKey) {
   const profile = BADGE_PROFILES[badgeKey] || BADGE_PROFILES.Analyzer;
   
-  // Update dashboard container card
   const badgeCard = document.getElementById("dashboardPsychologyBadgeCard");
   const badgeIcon = document.getElementById("dashboardBadgeIcon");
   const badgeTitle = document.getElementById("dashboardBadgeTitle");
@@ -129,7 +124,6 @@ function displayConsumerBadgesUI(badgeKey) {
     if (badgeDesc) badgeDesc.innerText = profile.desc;
   }
 
-  // Update 3-dot dropdown slot profile indicator
   const dropdownBadgeWrapper = document.getElementById("menuPsychologyBadgeWrapper");
   const dropdownBadgeText = document.getElementById("menuPsychologyBadgeText");
   if (dropdownBadgeWrapper && dropdownBadgeText) {
@@ -168,7 +162,158 @@ async function fetchWithTimeout(resource, options = {}) {
   }
 }
 
+// FIXED: Restored the missing UI Text string utility component function
+function getUIText(key) {
+  const fallbacks = {
+    validationRequired: "❌ Please answer all questions before continuing.",
+    submitting: "⏳ Storing survey data metrics across secure registers...",
+    claiming: "⚡ Appending whitelist configuration parameters...",
+    checkingLedger: "🔍 Authenticating communication profile ledger status..."
+  };
+  if (typeof translations !== "undefined" && translations[currentLanguage] && translations[currentLanguage][key]) {
+    return translations[currentLanguage][key];
+  }
+  return fallbacks[key] || key;
+}
+
+// ================= STAGE 1: EMAIL VERIFICATION GATE =================
+if (emailGateForm) {
+  emailGateForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!gateEmailInput) return;
+    
+    const emailVal = gateEmailInput.value.trim().toLowerCase();
+    
+    if (!emailVal || !EMAIL_REGEX.test(emailVal)) {
+      if (statusDiv) {
+        statusDiv.innerHTML = "❌ Please input a valid email address.";
+        statusDiv.style.color = "#ff4d4d";
+      }
+      return;
+    }
+
+    if (!isOtpSent) {
+      if (statusDiv) {
+        statusDiv.innerHTML = "⏳ Sending verification code...";
+        statusDiv.style.color = "#57d6c2";
+      }
+      
+      try {
+        const response = await fetchWithTimeout(`${BACKEND_URL}/api/send-otp`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: emailVal })
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+          isOtpSent = true;
+          const otpSection = document.getElementById("otpSection");
+          if (otpSection) otpSection.classList.remove("hidden");
+          if (startSurveyBtn) startSurveyBtn.innerHTML = "Verify & Enter &rarr;";
+          gateEmailInput.readOnly = true; 
+          if (statusDiv) statusDiv.innerHTML = "";
+        } else {
+          if (statusDiv) {
+            statusDiv.innerHTML = "❌ " + (result.error || "Failed to send code.");
+            statusDiv.style.color = "#ff4d4d";
+          }
+        }
+      } catch (err) {
+        if (statusDiv) {
+          statusDiv.innerHTML = "❌ Network error. Could not send code.";
+          statusDiv.style.color = "#ff4d4d";
+        }
+      }
+      return; 
+    }
+
+    const gateOtpInput = document.getElementById("gateOtp");
+    const otpVal = gateOtpInput ? gateOtpInput.value.trim() : "";
+
+    if (!otpVal || otpVal.length !== 6) {
+      if (statusDiv) {
+        statusDiv.innerHTML = "❌ Please enter the 6-digit verification code.";
+        statusDiv.style.color = "#ff4d4d";
+      }
+      return;
+    }
+
+    if (statusDiv) {
+      statusDiv.innerHTML = "⏳ Verifying code...";
+      statusDiv.style.color = "#57d6c2";
+    }
+
+    try {
+      const response = await fetchWithTimeout(`${BACKEND_URL}/api/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: emailVal, otp: otpVal })
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        if (statusDiv) statusDiv.innerHTML = "✅ Verification successful!";
+        
+        userEmailAddress = emailVal;
+        localStorage.setItem("syntrix_user_email", emailVal);
+        
+        if (referredByCodeInput && referredByCodeInput.value.trim() !== "") {
+          localStorage.setItem("referralCode", normalizeReferralCode(referredByCodeInput.value));
+        }
+
+        await runProfileLedgerVerification(emailVal, false);
+      } else {
+        if (statusDiv) {
+          statusDiv.innerHTML = "❌ " + (result.error || "Invalid or expired code.");
+          statusDiv.style.color = "#ff4d4d";
+        }
+      }
+    } catch (err) {
+      if (statusDiv) {
+        statusDiv.innerHTML = "❌ Network error. Could not verify code.";
+        statusDiv.style.color = "#ff4d4d";
+      }
+    }
+  });
+}
+
+function getSurveyData() {
+  return typeof surveySections !== "undefined" ? surveySections : [];
+}
+
 // ================= STAGE 2: SURVEY RENDER SYSTEM =================
+function getSectionTitle(section) {
+  if (typeof sectionTranslations !== "undefined" && sectionTranslations[currentLanguage]) {
+    return sectionTranslations[currentLanguage][section.title] || section.title;
+  }
+  return section.title || "";
+}
+
+function getQuestionText(q) {
+  if (typeof questionTranslations !== "undefined" && questionTranslations[currentLanguage]) {
+    return questionTranslations[currentLanguage][q.id] || q.text || q.id;
+  }
+  return q.text || q.id;
+}
+
+function getOptionText(opt) {
+  if (typeof optionTranslations !== "undefined" && optionTranslations[currentLanguage]) {
+    return optionTranslations[currentLanguage][opt] || opt;
+  }
+  return opt;
+}
+
+function validateCurrentSectionAnswers() {
+  const sections = getSurveyData();
+  const currentData = sections[currentSection];
+  if (!currentData) return false;
+  for (let q of currentData.questions) {
+    if (!answers[q.id]) return false;
+  }
+  return true;
+}
+
 function renderSection() {
   const sections = getSurveyData();
   if (!sections || sections.length === 0 || !surveyContainer) return;
@@ -370,7 +515,6 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
       if (statTotalEarned) statTotalEarned.innerText = `${(statusResult.pendingRewards || 0) + (statusResult.claimedRewards || 0)} SYN`;
       if (referralCodeDisplay) referralCodeDisplay.value = `${window.location.origin}/?ref=${statusResult.referralCode || ""}`;
 
-      // CALCULATE AND SYNC THE CONSUMER PSYCHOLOGY BADGES FLOWS
       const computedBadgeKey = calculateConsumerPsychologyBadge();
       displayConsumerBadgesUI(computedBadgeKey);
 
@@ -381,17 +525,19 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
         if (rewardDashboardScreen) rewardDashboardScreen.classList.remove("hidden");
         outputTarget.innerHTML = "";
 
-        // FIXED VIEW ROUTING RULES: Handles transaction confirmations explicitly
         const activeControls = document.getElementById("dashboardActiveClaimControls");
         const receiptBlock = document.getElementById("dashboardClaimReceiptBlock");
-        const receiptLink = document.getElementById("dashboardReceiptTxLink");
 
-        if (statusResult.isClaimed && statusResult.txHash) {
+        // PRE-LAUNCH REGISTRATION DISPENSARY MATRIX RULES
+        if (statusResult.status === "whitelisted" || statusResult.isClaimed) {
           if (activeControls) activeControls.classList.add("hidden");
-          if (receiptBlock) receiptBlock.classList.remove("hidden");
-          if (receiptLink) {
-            receiptLink.innerText = statusResult.txHash;
-            receiptLink.href = `https://polygonscan.com/tx/${statusResult.txHash}`;
+          if (receiptBlock) {
+            receiptBlock.classList.remove("hidden");
+            receiptBlock.innerHTML = `
+              <div style="width: 60px; height: 60px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(245, 158, 11, 0.1); border: 2px solid #f59e0b; color: #f59e0b; font-size: 28px; font-weight: bold;">🔒</div>
+              <h3 style="font-size: 20px; font-weight: 800; color: #ffffff; margin-bottom: 8px;">56 SYNX Allocation Whitelisted!</h3>
+              <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 0; line-height: 1.4;">Your profile address <strong>${statusResult.walletAddress || ""}</strong> has been added to the genesis block. Redemption airdrop links will launch when the token goes mainnet live!</p>
+            `;
           }
         } else {
           if (activeControls) activeControls.classList.remove("hidden");
@@ -593,13 +739,11 @@ async function handleManualClaimExecution() {
     const result = await response.json();
     if (result.success) {
       if (statusDiv) {
-        statusDiv.innerHTML = "✨ Request successfully queued! Your payout is being compiled into our next block cycle.";
+        statusDiv.innerHTML = "✨ Address safely whitelisted for token launch deployment cycles.";
         statusDiv.style.color = "#57d6c2";
       }
       if (dashboardWalletInput) dashboardWalletInput.value = "";
-      
-      // FIXED ENGINE POLLING: Poll ledger verification slightly longer to catch queue finalizations
-      setTimeout(async () => { await runProfileLedgerVerification(userEmailAddress, false); }, 4000);
+      setTimeout(async () => { await runProfileLedgerVerification(userEmailAddress, false); }, 3000);
     } else {
       if (statusDiv) {
         statusDiv.innerHTML = `❌ ${result.error || "Claim system execution failed."}`;
@@ -864,12 +1008,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   // --- ATTACH EVENT LISTENERS TO INTERACTION HANDLERS ---
   if (nextBtn) nextBtn.onclick = () => handleNextSection();
   if (prevBtn) prevBtn.onclick = () => handlePrevSection();
-  if (claimForm) claimForm.onclick = (e) => {
-    // Only intercept true form submit buttons to protect choices clicks
-    if(e.target && e.target.id === "submitClaimBtn") {
-       handleSurveySubmission(e);
-    }
-  };
+  if (claimForm) {
+    claimForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      handleSurveySubmission(e);
+    });
+  }
   if (executeClaimBtn) executeClaimBtn.onclick = () => handleManualClaimExecution();
   
   // Connect Wallets
@@ -895,30 +1039,31 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
   }
 
+  // FIXED RETRIEVAL MODAL TRIGGER HANDLERS: Force fresh click connections when modal fires up
   if (menuRecoverBtn && retrieveModal) {
     menuRecoverBtn.onclick = () => {
       retrieveModal.classList.remove("hidden");
       if (modalEmailInput) modalEmailInput.value = "";
       if (modalStatus) modalStatus.innerHTML = "";
+      
+      if (confirmRetrieveBtn) {
+        confirmRetrieveBtn.onclick = async () => {
+          const searchEmail = modalEmailInput ? modalEmailInput.value.trim().toLowerCase() : "";
+          if (!searchEmail || !EMAIL_REGEX.test(searchEmail)) {
+            if (modalStatus) {
+              modalStatus.innerHTML = "❌ Please provide a valid email address.";
+              modalStatus.style.color = "#ff4d4d";
+            }
+            return;
+          }
+          await runProfileLedgerVerification(searchEmail, true);
+        };
+      }
     };
   }
 
   if (closeModalBtn) closeModalBtn.onclick = () => dismissModal();
   if (cancelModalBtn) cancelModalBtn.onclick = () => dismissModal();
-  
-  if (confirmRetrieveBtn) {
-    confirmRetrieveBtn.onclick = async () => {
-      const searchEmail = modalEmailInput ? modalEmailInput.value.trim().toLowerCase() : "";
-      if (!searchEmail || !EMAIL_REGEX.test(searchEmail)) {
-        if (modalStatus) {
-          modalStatus.innerHTML = "❌ Please provide a valid email structure.";
-          modalStatus.style.color = "#ff4d4d";
-        }
-        return;
-      }
-      await runProfileLedgerVerification(searchEmail, true);
-    };
-  }
 
   const langButtons = document.querySelectorAll(".langBtn");
   langButtons.forEach(btn => {
