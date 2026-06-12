@@ -46,6 +46,13 @@ const dashboardWalletInput = document.getElementById("dashboardWalletInput");
 const executeClaimBtn = document.getElementById("executeClaimBtn");
 const connectWalletBtn = document.getElementById("connectWalletBtn");
 
+// FIXED HOOK DEFAULTS: Explicitly initialized elements to guarantee no reference drop breaks
+const claimScreenSection = document.getElementById("claimScreenSection");
+const claimConnectWalletBtn = document.getElementById("claimConnectWalletBtn");
+const claimWalletConnectedBlock = document.getElementById("claimWalletConnectedBlock");
+const claimWalletAddressDisplay = document.getElementById("claimWalletAddressDisplay");
+const submitClaimRewardBtn = document.getElementById("submitClaimRewardBtn");
+
 const statTotalReferrals = document.getElementById("statTotalReferrals");
 const statPendingRewards = document.getElementById("statPendingRewards");
 const statClaimedRewards = document.getElementById("statClaimedRewards");
@@ -141,7 +148,6 @@ async function fetchWithTimeout(resource, options = {}) {
   }
 }
 
-// Helper utility function fixed
 function getUIText(key) {
   const fallbacks = {
     validationRequired: "❌ Please answer all questions before continuing.",
@@ -169,7 +175,7 @@ if (emailGateForm) {
     }
 
     if (!isOtpSent) {
-      if (statusDiv) { statusDiv.innerHTML = "⏳ Sending verification code... "; statusDiv.style.color = "#57d6c2"; }
+      if (statusDiv) { statusDiv.innerHTML = "⏳ Sending verification code..."; statusDiv.style.color = "#57d6c2"; }
       try {
         const response = await fetchWithTimeout(`${BACKEND_URL}/api/send-otp`, {
           method: "POST",
@@ -209,6 +215,7 @@ if (emailGateForm) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: emailVal, otp: otpVal })
       });
+
       const result = await response.json();
       if (result.success) {
         if (statusDiv) statusDiv.innerHTML = "✅ Verification successful!";
@@ -558,19 +565,27 @@ async function handleManualClaimExecution() {
   }
 }
 
-// ================= STAGE 6: EXPLICIT AFFECTED CLAIM BLOCK HANDLERS =================
+// SAFE SECTIONS TRACKING: Standardized endpoints with conditional logic parameters to eliminate crashes if layout elements are omitted
 async function initializeClaimSection(token) {
+  if (!claimScreenSection) return;
   try {
     const response = await fetchWithTimeout(`${BACKEND_URL}/api/claim-details?token=${encodeURIComponent(token)}`);
     const details = await response.json();
-    if (claimLoadingGear) claimLoadingGear.classList.add("hidden");
+    const gear = document.getElementById("claimLoadingGear");
+    if (gear) gear.classList.add("hidden");
 
     if (details.success) {
-      if (claimStaticIcon) claimStaticIcon.classList.remove("hidden");
-      if (claimScreenTitle) claimScreenTitle.innerText = "Claim Authorized Successfully";
-      if (claimInfoSubtitle) claimInfoSubtitle.innerText = "Please authenticate ledger registry requirements below via message validation structures.";
-      if (claimRewardDetails) claimRewardDetails.classList.remove("hidden");
-      if (claimActionPanel) claimActionPanel.classList.remove("hidden");
+      const staticIcon = document.getElementById("claimStaticIcon");
+      const title = document.getElementById("claimScreenTitle");
+      const sub = document.getElementById("claimInfoSubtitle");
+      const detailsBox = document.getElementById("claimRewardDetails");
+      const panel = document.getElementById("claimActionPanel");
+
+      if (staticIcon) staticIcon.classList.remove("hidden");
+      if (title) title.innerText = "Claim Authorized Successfully";
+      if (sub) sub.innerText = "Please authenticate ledger registry requirements below via message validation structures.";
+      if (detailsBox) detailsBox.classList.remove("hidden");
+      if (panel) panel.classList.remove("hidden");
 
       if (document.getElementById("claimInfoEmail")) document.getElementById("claimInfoEmail").innerText = details.email;
       if (document.getElementById("claimInfoType")) document.getElementById("claimInfoType").innerText = details.type || "Airdrop Claim";
@@ -578,24 +593,36 @@ async function initializeClaimSection(token) {
       
       claimScreenSection.dataset.email = details.email; claimScreenSection.dataset.token = token;
     } else {
-      showClaimScreenError("Link Expired or Invalid", details.error || "Profile matches invalid registration framework.");
+      showClaimScreenError("Link Expired or Invalid", details.error || "The credential profile matches an invalid registration framework.");
     }
-  } catch (err) { if (claimLoadingGear) claimLoadingGear.classList.add("hidden"); showClaimScreenError("Network Error", "Failed to retrieve records."); }
+  } catch (err) { 
+    const gear = document.getElementById("claimLoadingGear");
+    if (gear) gear.classList.add("hidden"); 
+    showClaimScreenError("Network Error", "Failed to retrieve registration records."); 
+  }
 }
 
 function showClaimScreenError(title, subtitle) {
-  if (claimStaticIcon) claimStaticIcon.classList.add("hidden");
-  if (claimScreenTitle) claimScreenTitle.innerText = title;
-  if (claimInfoSubtitle) claimInfoSubtitle.innerText = subtitle;
-  if (claimErrorBox) claimErrorBox.classList.remove("hidden");
-  if (claimRewardDetails) claimRewardDetails.classList.add("hidden");
-  if (claimActionPanel) claimActionPanel.classList.add("hidden");
+  const staticIcon = document.getElementById("claimStaticIcon");
+  const heading = document.getElementById("claimScreenTitle");
+  const sub = document.getElementById("claimInfoSubtitle");
+  const errBox = document.getElementById("claimErrorBox");
+  const detailsBox = document.getElementById("claimRewardDetails");
+  const panel = document.getElementById("claimActionPanel");
+
+  if (staticIcon) staticIcon.classList.add("hidden");
+  if (heading) heading.innerText = title;
+  if (sub) sub.innerText = subtitle;
+  if (errBox) errBox.classList.remove("hidden");
+  if (detailsBox) detailsBox.classList.add("hidden");
+  if (panel) panel.classList.add("hidden");
 }
 
 async function handleSignatureTokenRelease() {
+  if (!claimScreenSection) return;
   const email = claimScreenSection.dataset.email;
   const token = claimScreenSection.dataset.token;
-  if (!userConnectedWalletAddress) { alert("Please re-establish MetaMask configurations."); return; }
+  if (!userConnectedWalletAddress) { alert("Please re-establish MetaMask structural configurations."); return; }
 
   try {
     const message = `Authenticating Token Core distribution protocols on email registry node: ${email}`;
@@ -607,10 +634,17 @@ async function handleSignatureTokenRelease() {
       signature = await provider.request({ method: "personal_sign", params: [message, userConnectedWalletAddress] });
     }
 
-    if (claimActionPanel) claimActionPanel.classList.add("hidden");
-    if (claimRewardDetails) claimRewardDetails.classList.add("hidden");
-    if (claimScreenTitle) claimScreenTitle.innerText = "Processing Verification Pipeline...";
-    if (claimLoadingGear) claimLoadingGear.classList.remove("hidden");
+    const panel = document.getElementById("claimActionPanel");
+    const detailsBox = document.getElementById("claimRewardDetails");
+    const heading = document.getElementById("claimScreenTitle");
+    const sub = document.getElementById("claimInfoSubtitle");
+    const gear = document.getElementById("claimLoadingGear");
+
+    if (panel) panel.classList.add("hidden");
+    if (detailsBox) detailsBox.classList.add("hidden");
+    if (heading) heading.innerText = "Processing Verification Pipeline...";
+    if (sub) sub.innerText = "Appending distribution requests directly to transaction loop blocks...";
+    if (gear) gear.classList.remove("hidden");
 
     const response = await fetchWithTimeout(`${BACKEND_URL}/api/execute-claim`, {
       method: "POST",
@@ -619,17 +653,21 @@ async function handleSignatureTokenRelease() {
     });
 
     const txResult = await response.json();
-    if (claimLoadingGear) claimLoadingGear.classList.add("hidden");
+    if (gear) gear.classList.add("hidden");
 
     if (txResult.success) {
-      if (claimStaticIcon) claimStaticIcon.classList.add("hidden");
-      if (claimScreenTitle) claimScreenTitle.innerText = "Claim Received Successfully!";
-      if (claimInfoSubtitle) claimInfoSubtitle.innerHTML = "✨ Your distribution is currently being written into our block processing layers.";
-    } else { showClaimScreenError("Transaction Revoked", txResult.error || "The contract rejected token distributions."); }
-  } catch (err) { if (claimLoadingGear) claimLoadingGear.classList.add("hidden"); alert("Signature process timed out."); }
+      const staticIcon = document.getElementById("claimStaticIcon");
+      if (staticIcon) staticIcon.classList.add("hidden");
+      if (heading) heading.innerText = "Claim Received Successfully!";
+      if (sub) sub.innerHTML = "✨ Your distribution is currently being written into our block processing layers.";
+    } else { showClaimScreenError("Transaction Revoked", txResult.error || "The processing smart contract rejected token asset distributions."); }
+  } catch (err) { 
+    const gear = document.getElementById("claimLoadingGear");
+    if (gear) gear.classList.add("hidden"); 
+    alert("Cryptographic signature process rejected or timed out."); 
+  }
 }
 
-// ================= UTILITIES & DASHBOARD EXTRA FEATURES =================
 function handleReferralLinkCopy() {
   if (!referralCodeDisplay) return;
   referralCodeDisplay.select(); referralCodeDisplay.setSelectionRange(0, 99999);
@@ -692,6 +730,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (executeClaimBtn) executeClaimBtn.onclick = () => handleManualClaimExecution();
   
   if (connectWalletBtn) connectWalletBtn.onclick = () => connectWallet(false);
+  
+  // SAFE REDIRECT LISTENERS: Added optional chaining logic metrics to ensure no crash leaks hit when elements are omitted in basic templates
   if (claimConnectWalletBtn) claimConnectWalletBtn.onclick = () => connectWallet(true);
   if (submitClaimRewardBtn) submitClaimRewardBtn.onclick = () => handleSignatureTokenRelease();
   if (copyReferralBtn) copyReferralBtn.onclick = () => handleReferralLinkCopy();
@@ -731,7 +771,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     btn.addEventListener("click", (e) => {
       langButtons.forEach(b => b.classList.remove("active"));
       btn.classList.add("active"); currentLanguage = btn.dataset.lang;
-      translatePage();
+      if (typeof translatePage === "function") translatePage();
       updateExcitementBanner(currentSection); 
       if (claimForm && !claimForm.classList.contains("hidden")) renderSection();
     });
