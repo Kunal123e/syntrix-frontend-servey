@@ -46,21 +46,6 @@ const dashboardWalletInput = document.getElementById("dashboardWalletInput");
 const executeClaimBtn = document.getElementById("executeClaimBtn");
 const connectWalletBtn = document.getElementById("connectWalletBtn");
 
-const claimScreenSection = document.getElementById("claimScreenSection");
-const claimLoadingGear = document.getElementById("claimLoadingGear");
-const claimStaticIcon = document.getElementById("claimStaticIcon");
-const claimScreenTitle = document.getElementById("claimScreenTitle");
-const claimInfoSubtitle = document.getElementById("claimInfoSubtitle");
-const claimErrorBox = document.getElementById("claimErrorBox");
-const claimRewardDetails = document.getElementById("claimRewardDetails");
-const claimActionPanel = document.getElementById("claimActionPanel");
-const claimConnectWalletBtn = document.getElementById("claimConnectWalletBtn");
-const claimWalletConnectedBlock = document.getElementById("claimWalletConnectedBlock");
-const claimWalletAddressDisplay = document.getElementById("claimWalletAddressDisplay");
-const submitClaimRewardBtn = document.getElementById("submitClaimRewardBtn");
-const claimTxHashLink = document.getElementById("claimTxHashLink");
-const claimSuccessPanel = document.getElementById("claimSuccessPanel");
-
 const statTotalReferrals = document.getElementById("statTotalReferrals");
 const statPendingRewards = document.getElementById("statPendingRewards");
 const statClaimedRewards = document.getElementById("statClaimedRewards");
@@ -96,10 +81,7 @@ function calculateConsumerPsychologyBadge() {
   let tieBreaker = "Analyzer";
   let maxScore = -1;
   for (const key in scores) {
-    if (scores[key] > maxScore) {
-      maxScore = scores[key];
-      tieBreaker = key;
-    }
+    if (scores[key] > maxScore) { maxScore = scores[key]; tieBreaker = key; }
   }
   return tieBreaker;
 }
@@ -139,11 +121,8 @@ function normalizeReferralCode(code) {
   let clean = code.trim().toUpperCase();
   clean = clean.replace(/\s+/g, "");
   if (!clean.startsWith("SYN-")) {
-    if (clean.startsWith("SYN")) {
-      clean = "SYN-" + clean.substring(3);
-    } else {
-      clean = "SYN-" + clean;
-    }
+    if (clean.startsWith("SYN")) clean = "SYN-" + clean.substring(3);
+    else clean = "SYN-" + clean;
   }
   return clean;
 }
@@ -162,7 +141,7 @@ async function fetchWithTimeout(resource, options = {}) {
   }
 }
 
-// FIXED: Restored the missing UI Text string utility component function
+// Helper utility function fixed
 function getUIText(key) {
   const fallbacks = {
     validationRequired: "❌ Please answer all questions before continuing.",
@@ -185,26 +164,18 @@ if (emailGateForm) {
     const emailVal = gateEmailInput.value.trim().toLowerCase();
     
     if (!emailVal || !EMAIL_REGEX.test(emailVal)) {
-      if (statusDiv) {
-        statusDiv.innerHTML = "❌ Please input a valid email address.";
-        statusDiv.style.color = "#ff4d4d";
-      }
+      if (statusDiv) { statusDiv.innerHTML = "❌ Please input a valid email address."; statusDiv.style.color = "#ff4d4d"; }
       return;
     }
 
     if (!isOtpSent) {
-      if (statusDiv) {
-        statusDiv.innerHTML = "⏳ Sending verification code...";
-        statusDiv.style.color = "#57d6c2";
-      }
-      
+      if (statusDiv) { statusDiv.innerHTML = "⏳ Sending verification code... "; statusDiv.style.color = "#57d6c2"; }
       try {
         const response = await fetchWithTimeout(`${BACKEND_URL}/api/send-otp`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: emailVal })
         });
-        
         const result = await response.json();
         if (result.success) {
           isOtpSent = true;
@@ -214,16 +185,10 @@ if (emailGateForm) {
           gateEmailInput.readOnly = true; 
           if (statusDiv) statusDiv.innerHTML = "";
         } else {
-          if (statusDiv) {
-            statusDiv.innerHTML = "❌ " + (result.error || "Failed to send code.");
-            statusDiv.style.color = "#ff4d4d";
-          }
+          if (statusDiv) { statusDiv.innerHTML = "❌ " + (result.error || "Failed to send code."); statusDiv.style.color = "#ff4d4d"; }
         }
       } catch (err) {
-        if (statusDiv) {
-          statusDiv.innerHTML = "❌ Network error. Could not send code.";
-          statusDiv.style.color = "#ff4d4d";
-        }
+        if (statusDiv) { statusDiv.innerHTML = "❌ Network error. Could not send code."; statusDiv.style.color = "#ff4d4d"; }
       }
       return; 
     }
@@ -232,17 +197,11 @@ if (emailGateForm) {
     const otpVal = gateOtpInput ? gateOtpInput.value.trim() : "";
 
     if (!otpVal || otpVal.length !== 6) {
-      if (statusDiv) {
-        statusDiv.innerHTML = "❌ Please enter the 6-digit verification code.";
-        statusDiv.style.color = "#ff4d4d";
-      }
+      if (statusDiv) { statusDiv.innerHTML = "❌ Please enter the 6-digit verification code."; statusDiv.style.color = "#ff4d4d"; }
       return;
     }
 
-    if (statusDiv) {
-      statusDiv.innerHTML = "⏳ Verifying code...";
-      statusDiv.style.color = "#57d6c2";
-    }
+    if (statusDiv) { statusDiv.innerHTML = "⏳ Verifying code..."; statusDiv.style.color = "#57d6c2"; }
 
     try {
       const response = await fetchWithTimeout(`${BACKEND_URL}/api/verify-otp`, {
@@ -250,37 +209,25 @@ if (emailGateForm) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: emailVal, otp: otpVal })
       });
-
       const result = await response.json();
       if (result.success) {
         if (statusDiv) statusDiv.innerHTML = "✅ Verification successful!";
-        
         userEmailAddress = emailVal;
         localStorage.setItem("syntrix_user_email", emailVal);
-        
         if (referredByCodeInput && referredByCodeInput.value.trim() !== "") {
           localStorage.setItem("referralCode", normalizeReferralCode(referredByCodeInput.value));
         }
-
         await runProfileLedgerVerification(emailVal, false);
       } else {
-        if (statusDiv) {
-          statusDiv.innerHTML = "❌ " + (result.error || "Invalid or expired code.");
-          statusDiv.style.color = "#ff4d4d";
-        }
+        if (statusDiv) { statusDiv.innerHTML = "❌ " + (result.error || "Invalid or expired code."); statusDiv.style.color = "#ff4d4d"; }
       }
     } catch (err) {
-      if (statusDiv) {
-        statusDiv.innerHTML = "❌ Network error. Could not verify code.";
-        statusDiv.style.color = "#ff4d4d";
-      }
+      if (statusDiv) { statusDiv.innerHTML = "❌ Network error. Could not verify code."; statusDiv.style.color = "#ff4d4d"; }
     }
   });
 }
 
-function getSurveyData() {
-  return typeof surveySections !== "undefined" ? surveySections : [];
-}
+function getSurveyData() { return typeof surveySections !== "undefined" ? surveySections : []; }
 
 // ================= STAGE 2: SURVEY RENDER SYSTEM =================
 function getSectionTitle(section) {
@@ -308,16 +255,13 @@ function validateCurrentSectionAnswers() {
   const sections = getSurveyData();
   const currentData = sections[currentSection];
   if (!currentData) return false;
-  for (let q of currentData.questions) {
-    if (!answers[q.id]) return false;
-  }
+  for (let q of currentData.questions) { if (!answers[q.id]) return false; }
   return true;
 }
 
 function renderSection() {
   const sections = getSurveyData();
   if (!sections || sections.length === 0 || !surveyContainer) return;
-
   const currentData = sections[currentSection];
   
   document.querySelectorAll(".sidebar .step").forEach((st, idx) => {
@@ -354,7 +298,6 @@ function renderSection() {
   surveyContainer.innerHTML = htmlStr;
 
   if (prevBtn) prevBtn.style.visibility = currentSection === 0 ? "hidden" : "visible";
-  
   if (currentSection === sections.length - 1) {
     if (nextBtn) nextBtn.classList.add("hidden");
     if (submitClaimBtn) submitClaimBtn.classList.remove("hidden");
@@ -364,130 +307,34 @@ function renderSection() {
   }
 }
 
-window.recordSelection = function(questionId, selectedValue) {
-  answers[questionId] = selectedValue;
-  renderSection();
-};
-
 function updateExcitementBanner(sectionIndex) {
   const banner = document.getElementById("excitementBanner");
   if (!banner) return;
-
-  if (sectionIndex === 0) {
-      banner.style.display = "none";
-      return;
-  }
+  if (sectionIndex === 0) { banner.style.display = "none"; return; }
 
   const unlockedTokens = sectionIndex * 8;
   const totalTokens = 56;
-
   banner.style.display = "flex";
-  banner.style.animation = 'none';
-  banner.offsetHeight;
-  banner.style.animation = 'slideDown 0.5s ease-out';
+  banner.style.animation = 'none'; banner.offsetHeight; banner.style.animation = 'slideDown 0.5s ease-out';
 
   if (currentLanguage === "hi") {
       if (sectionIndex < 7) {
-          banner.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 16px;">
-                <div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div>
-                <div>
-                    <div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">शानदार! आपने अब तक <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> सुरक्षित कर लिए हैं!</div>
-                    <div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">अगला मॉड्यूल पूरा करें और <strong style="color: #fbbf24;">8 और पाएं!</strong></div>
-                </div>
-            </div>
-            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
-                <div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div>
-                <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">जारी रखें & दावा करें &gt;</div>
-            </div>`;
+          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">शानदार! आपने अब तक <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> सुरक्षित कर लिए हैं!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">अगला मॉड्यूल पूरा करें और <strong style="color: #fbbf24;">8 और पाएं!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">जारी रखें & दावा करें &gt;</div></div>`;
       } else {
-          banner.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 16px;">
-                <div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div>
-                <div>
-                    <div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">अविश्वसनीय! आपने सभी <span style="color: #10b981; font-weight: 900; font-size: 18px;">56 SYNX</span> सुरक्षित कर लिए हैं!</div>
-                    <div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">दावा करने के लिए नीचे सबमिट पर क्लिक करें!</div>
-                </div>
-            </div>
-            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
-                <div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 56 / 56 ]</div>
-                <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">दावा करने के लिए तैयार</div>
-            </div>`;
+          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">अविश्वसनीय! आपने सभी <span style="color: #10b981; font-weight: 900; font-size: 18px;">56 SYNX</span> सुरक्षित कर लिए हैं!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">दावा करने के लिए नीचे सबमिट पर क्लिक करें!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 56 / 56 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">दावा करने के लिए तैयार</div></div>`;
       }
   } else if (currentLanguage === "hinglish") {
       if (sectionIndex < 7) {
-          banner.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 16px;">
-                <div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div>
-                <div>
-                    <div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! Aapne ab tak <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> secure kar liye hain!</div>
-                    <div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Next module complete karein aur <strong style="color: #fbbf24;">8 more payein!</strong></div>
-                </div>
-            </div>
-            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
-                <div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div>
-                <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div>
-            </div>`;
+          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! Aapne ab tak <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> secure kar liye hain!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Next module complete karein aur <strong style="color: #fbbf24;">8 more payein!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div></div>`;
       } else {
-          banner.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 16px;">
-                <div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div>
-                <div>
-                    <div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! Aapne sabhi <span style="color: #10b981; font-weight: 900; font-size: 18px;">56 SYNX</span> secure kar liye hain!</div>
-                    <div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Neeche Submit button par click karke claim karein!</div>
-                </div>
-            </div>
-            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
-                <div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 56 / 56 ]</div>
-                <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div>
-            </div>`;
+          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! Aapne sabhi <span style="color: #10b981; font-weight: 900; font-size: 18px;">56 SYNX</span> secure kar liye hain!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Neeche Submit button par click karke claim karein!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 56 / 56 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div>`;
       }
   } else {
       if (sectionIndex < 7) {
-          banner.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 16px;">
-                <div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div>
-                <div>
-                    <div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! You've secured <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> so far!</div>
-                    <div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Complete the next module to claim <strong style="color: #fbbf24;">8 more!</strong></div>
-                </div>
-            </div>
-            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
-                <div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div>
-                <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div>
-            </div>`;
+          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! You've secured <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> so far!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Complete the next module to claim <strong style="color: #fbbf24;">8 more!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div></div>`;
       } else {
-          banner.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 16px;">
-                <div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div>
-                <div>
-                    <div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! You've secured all <span style="color: #10b981; font-weight: 900; font-size: 18px;">56 SYNX</span>!</div>
-                    <div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Hit Submit below to transfer them to your wallet!</div>
-                </div>
-            </div>
-            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
-                <div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 56 / 56 ]</div>
-                <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div>
-            </div>`;
+          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! You've secured all <span style="color: #10b981; font-weight: 900; font-size: 18px;">56 SYNX</span>!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Hit Submit below to transfer them to your wallet!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 56 / 56 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div>`;
       }
-  }
-}
-
-function handleNextSection() {
-  if (!validateCurrentSectionAnswers()) {
-    alert(getUIText("validationRequired"));
-    return;
-  }
-  currentSection++;
-  updateExcitementBanner(currentSection);
-  renderSection();
-}
-
-function handlePrevSection() {
-  if (currentSection > 0) {
-    currentSection--;
-    updateExcitementBanner(currentSection);
-    renderSection();
   }
 }
 
@@ -528,7 +375,7 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
         const activeControls = document.getElementById("dashboardActiveClaimControls");
         const receiptBlock = document.getElementById("dashboardClaimReceiptBlock");
 
-        // PRE-LAUNCH REGISTRATION DISPENSARY MATRIX RULES
+        // PRE-LAUNCH REGISTRATION REDEMPTION STATE TRIGGER
         if (statusResult.status === "whitelisted" || statusResult.isClaimed) {
           if (activeControls) activeControls.classList.add("hidden");
           if (receiptBlock) {
@@ -601,7 +448,6 @@ async function handleSurveySubmission(e) {
     
     setTimeout(async () => {
       if (animOverlay) animOverlay.style.display = "none";
-      
       if (result.success) {
         if (statusDiv) statusDiv.innerHTML = "";
         await runProfileLedgerVerification(userEmailAddress, false);
@@ -613,14 +459,10 @@ async function handleSurveySubmission(e) {
         }
       }
     }, 3500);
-
   } catch (err) {
     if (animOverlay) animOverlay.style.display = "none";
     document.getElementById("claimForm").classList.remove("hidden");
-    if (statusDiv) {
-      statusDiv.innerHTML = "❌ Network transaction failed.";
-      statusDiv.style.color = "#ff4d4d";
-    }
+    if (statusDiv) { statusDiv.innerHTML = "❌ Network transaction failed."; statusDiv.style.color = "#ff4d4d"; }
   }
 }
 
@@ -633,72 +475,48 @@ async function connectWallet(isDirectClaimFlow = false) {
   if (typeof window.ethereum === "undefined") {
     console.log("[SYN-WEB3] Core extension missing. Launching MetaMask Embedded integration overlay.");
     if (creatorModal) creatorModal.classList.remove("hidden");
+    if (closeBtn) closeBtn.onclick = () => creatorModal.classList.add("hidden");
 
-    if (closeBtn) {
-      closeBtn.onclick = () => creatorModal.classList.add("hidden");
-    }
-
-    const handleSocialWalletGeneration = async () => {
-      if (!window.isWeb3AuthReady || !window.metamaskEmbeddedInstance) {
-        console.warn("Web3Auth is still initializing. Please wait a moment.");
-        if (statusDiv) {
-          statusDiv.innerHTML = `⏳ Web3 Engine is still loading. Please wait a moment and click again.`;
-          statusDiv.style.color = "#f59e0b";
+    if (googleAuthBtn) {
+      googleAuthBtn.onclick = null; // Clean up listeners to completely prevent EventEmitter leak drops
+      googleAuthBtn.onclick = async () => {
+        if (!window.isWeb3AuthReady || !window.metamaskEmbeddedInstance) {
+          if (statusDiv) { statusDiv.innerHTML = `⏳ Web3 Engine is still loading. Please wait a moment and click again.`; statusDiv.style.color = "#f59e0b"; }
+          return;
         }
-        return;
-      }
+        if (statusDiv) { statusDiv.innerHTML = `⏳ Initializing secure Web3Auth portal via MetaMask parameters...`; statusDiv.style.color = "#a855f7"; }
+        
+        try {
+          const provider = await window.metamaskEmbeddedInstance.connect();
+          const EthersProviderClass = (window.ethers && window.ethers.BrowserProvider) || (window.ethers && window.ethers.providers && window.ethers.providers.Web3Provider);
+          if (!EthersProviderClass) throw new Error("Ethers provider module not detected globally.");
+          
+          const ethersProvider = new EthersProviderClass(provider);
+          const signer = await ethersProvider.getSigner();
+          const realWeb3Address = await signer.getAddress();
+          userConnectedWalletAddress = realWeb3Address.toLowerCase();
 
-      if (statusDiv) {
-        statusDiv.innerHTML = `⏳ Initializing secure Web3Auth portal via MetaMask parameters...`;
-        statusDiv.style.color = "#a855f7";
-      }
-      
-      try {
-        const provider = await window.metamaskEmbeddedInstance.connect();
-        
-        const EthersProviderClass = (window.ethers && window.ethers.BrowserProvider) || (window.ethers && window.ethers.providers && window.ethers.providers.Web3Provider);
-        if (!EthersProviderClass) {
-          throw new Error("Ethers provider module not detected globally.");
-        }
-        
-        const ethersProvider = new EthersProviderClass(provider);
-        const signer = await ethersProvider.getSigner();
-        const realWeb3Address = await signer.getAddress();
-        
-        userConnectedWalletAddress = realWeb3Address.toLowerCase();
-
-        if (isDirectClaimFlow) {
-          if (claimConnectWalletBtn) claimConnectWalletBtn.classList.add("hidden");
-          if (claimWalletConnectedBlock) claimWalletConnectedBlock.classList.remove("hidden");
-          if (claimWalletAddressDisplay) claimWalletAddressDisplay.innerText = userConnectedWalletAddress + " (Web3Auth)";
-        } else {
-          if (dashboardWalletInput) {
-            dashboardWalletInput.value = userConnectedWalletAddress;
+          if (isDirectClaimFlow) {
+            if (claimConnectWalletBtn) claimConnectWalletBtn.classList.add("hidden");
+            if (claimWalletConnectedBlock) claimWalletConnectedBlock.classList.remove("hidden");
+            if (claimWalletAddressDisplay) claimWalletAddressDisplay.innerText = userConnectedWalletAddress + " (Web3Auth)";
+          } else {
+            if (dashboardWalletInput) dashboardWalletInput.value = userConnectedWalletAddress;
           }
+          if (creatorModal) creatorModal.classList.add("hidden");
+          if (statusDiv) { statusDiv.innerHTML = `✅ Authentic Web3 wallet generated and linked successfully!`; statusDiv.style.color = "#57d6c2"; }
+        } catch (authErr) {
+          console.error("Web3Auth verification abort:", authErr);
+          if (statusDiv) { statusDiv.innerHTML = `❌ Connection cancelled or denied.`; statusDiv.style.color = "#ff4d4d"; }
         }
-
-        if (creatorModal) creatorModal.classList.add("hidden");
-        if (statusDiv) {
-          statusDiv.innerHTML = `✅ Authentic Web3 wallet generated and linked successfully!`;
-          statusDiv.style.color = "#57d6c2";
-        }
-      } catch (authErr) {
-        console.error("Web3Auth verification abort:", authErr);
-        if (statusDiv) {
-          statusDiv.innerHTML = `❌ Connection cancelled or denied.`;
-          statusDiv.style.color = "#ff4d4d";
-        }
-      }
-    };
-
-    if (googleAuthBtn) googleAuthBtn.onclick = () => handleSocialWalletGeneration();
+      };
+    }
     return;
   }
 
   try {
     const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
     if (accounts.length === 0) return;
-    
     userConnectedWalletAddress = accounts[0].toLowerCase();
     
     if (isDirectClaimFlow) {
@@ -706,13 +524,9 @@ async function connectWallet(isDirectClaimFlow = false) {
       if (claimWalletConnectedBlock) claimWalletConnectedBlock.classList.remove("hidden");
       if (claimWalletAddressDisplay) claimWalletAddressDisplay.innerText = userConnectedWalletAddress;
     } else {
-      if (dashboardWalletInput) {
-        dashboardWalletInput.value = userConnectedWalletAddress;
-      }
+      if (dashboardWalletInput) dashboardWalletInput.value = userConnectedWalletAddress;
     }
-  } catch (err) {
-    console.error("MetaMask browser extension handshake failure:", err.message);
-  }
+  } catch (err) { console.error("MetaMask extension handshake failure:", err.message); }
 }
 
 async function handleManualClaimExecution() {
@@ -720,14 +534,10 @@ async function handleManualClaimExecution() {
   const targetWallet = dashboardWalletInput.value.trim();
 
   if (!WALLET_REGEX.test(targetWallet)) {
-    alert("❌ Invalid EVM public address framework detected. Address must start with 0x followed by 40 hex characters.");
+    alert("❌ Invalid EVM public address format.");
     return;
   }
-
-  if (statusDiv) {
-    statusDiv.innerHTML = `⚡ Ingesting reward request to transactional queue registers...`;
-    statusDiv.style.color = "#a855f7";
-  }
+  if (statusDiv) { statusDiv.innerHTML = `⚡ Ingesting reward request to transactional queue registers...`; statusDiv.style.color = "#a855f7"; }
 
   try {
     const response = await fetchWithTimeout(`${BACKEND_URL}/api/claim-reward`, {
@@ -735,26 +545,16 @@ async function handleManualClaimExecution() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: userEmailAddress, walletAddress: targetWallet })
     });
-
     const result = await response.json();
     if (result.success) {
-      if (statusDiv) {
-        statusDiv.innerHTML = "✨ Address safely whitelisted for token launch deployment cycles.";
-        statusDiv.style.color = "#57d6c2";
-      }
+      if (statusDiv) { statusDiv.innerHTML = "✨ Address safely whitelisted for token launch deployment cycles."; statusDiv.style.color = "#57d6c2"; }
       if (dashboardWalletInput) dashboardWalletInput.value = "";
-      setTimeout(async () => { await runProfileLedgerVerification(userEmailAddress, false); }, 3000);
+      setTimeout(async () => { await runProfileLedgerVerification(userEmailAddress, false); }, 4000);
     } else {
-      if (statusDiv) {
-        statusDiv.innerHTML = `❌ ${result.error || "Claim system execution failed."}`;
-        statusDiv.style.color = "#ff4d4d";
-      }
+      if (statusDiv) { statusDiv.innerHTML = `❌ ${result.error || "Claim system execution failed."}`; statusDiv.style.color = "#ff4d4d"; }
     }
   } catch (err) {
-    if (statusDiv) {
-      statusDiv.innerHTML = "❌ Token execution communication gateway failure.";
-      statusDiv.style.color = "#ff4d4d";
-    }
+    if (statusDiv) { statusDiv.innerHTML = "❌ Token execution communication gateway failure."; statusDiv.style.color = "#ff4d4d"; }
   }
 }
 
@@ -763,7 +563,6 @@ async function initializeClaimSection(token) {
   try {
     const response = await fetchWithTimeout(`${BACKEND_URL}/api/claim-details?token=${encodeURIComponent(token)}`);
     const details = await response.json();
-
     if (claimLoadingGear) claimLoadingGear.classList.add("hidden");
 
     if (details.success) {
@@ -777,15 +576,11 @@ async function initializeClaimSection(token) {
       if (document.getElementById("claimInfoType")) document.getElementById("claimInfoType").innerText = details.type || "Airdrop Claim";
       if (document.getElementById("claimInfoAmount")) document.getElementById("claimInfoAmount").innerText = `${details.amount || 56} SYNX`;
       
-      claimScreenSection.dataset.email = details.email;
-      claimScreenSection.dataset.token = token;
+      claimScreenSection.dataset.email = details.email; claimScreenSection.dataset.token = token;
     } else {
-      showClaimScreenError("Link Expired or Invalid", details.error || "The credential target block signature profile matches an invalid registration framework.");
+      showClaimScreenError("Link Expired or Invalid", details.error || "Profile matches invalid registration framework.");
     }
-  } catch (err) {
-    if (claimLoadingGear) claimLoadingGear.classList.add("hidden");
-    showClaimScreenError("Network Error", "Failed to retrieve registration records from target node arrays.");
-  }
+  } catch (err) { if (claimLoadingGear) claimLoadingGear.classList.add("hidden"); showClaimScreenError("Network Error", "Failed to retrieve records."); }
 }
 
 function showClaimScreenError(title, subtitle) {
@@ -800,34 +595,21 @@ function showClaimScreenError(title, subtitle) {
 async function handleSignatureTokenRelease() {
   const email = claimScreenSection.dataset.email;
   const token = claimScreenSection.dataset.token;
-
-  if (!userConnectedWalletAddress) {
-    alert("Please re-establish MetaMask structural configurations.");
-    return;
-  }
+  if (!userConnectedWalletAddress) { alert("Please re-establish MetaMask configurations."); return; }
 
   try {
     const message = `Authenticating Token Core distribution protocols on email registry node: ${email}`;
-    
     let signature;
     if (window.ethereum && typeof window.ethereum.request === "function") {
-      signature = await window.ethereum.request({
-        method: "personal_sign",
-        params: [message, userConnectedWalletAddress]
-      });
+      signature = await window.ethereum.request({ method: "personal_sign", params: [message, userConnectedWalletAddress] });
     } else {
       const provider = window.metamaskEmbeddedInstance.provider;
-      signature = await provider.request({
-        method: "personal_sign",
-        params: [message, userConnectedWalletAddress]
-      });
+      signature = await provider.request({ method: "personal_sign", params: [message, userConnectedWalletAddress] });
     }
 
     if (claimActionPanel) claimActionPanel.classList.add("hidden");
     if (claimRewardDetails) claimRewardDetails.classList.add("hidden");
-    
     if (claimScreenTitle) claimScreenTitle.innerText = "Processing Verification Pipeline...";
-    if (claimInfoSubtitle) claimInfoSubtitle.innerText = "Appending distribution requests directly to transaction loop blocks...";
     if (claimLoadingGear) claimLoadingGear.classList.remove("hidden");
 
     const response = await fetchWithTimeout(`${BACKEND_URL}/api/execute-claim`, {
@@ -842,135 +624,39 @@ async function handleSignatureTokenRelease() {
     if (txResult.success) {
       if (claimStaticIcon) claimStaticIcon.classList.add("hidden");
       if (claimScreenTitle) claimScreenTitle.innerText = "Claim Received Successfully!";
-      if (claimInfoSubtitle) claimInfoSubtitle.innerHTML = "✨ Your distribution is currently being written into our block processing layers.<br>Your tokens will automatically land in your wallet in a moments time!";
-    } else {
-      showClaimScreenError("Transaction Revoked", txResult.error || "The processing smart contract rejected token asset distributions.");
-    }
-  } catch (err) {
-    if (claimLoadingGear) claimLoadingGear.classList.add("hidden");
-    alert("Cryptographic signature process rejected or timed out.");
-  }
+      if (claimInfoSubtitle) claimInfoSubtitle.innerHTML = "✨ Your distribution is currently being written into our block processing layers.";
+    } else { showClaimScreenError("Transaction Revoked", txResult.error || "The contract rejected token distributions."); }
+  } catch (err) { if (claimLoadingGear) claimLoadingGear.classList.add("hidden"); alert("Signature process timed out."); }
 }
 
 // ================= UTILITIES & DASHBOARD EXTRA FEATURES =================
 function handleReferralLinkCopy() {
   if (!referralCodeDisplay) return;
-  referralCodeDisplay.select();
-  referralCodeDisplay.setSelectionRange(0, 99999);
+  referralCodeDisplay.select(); referralCodeDisplay.setSelectionRange(0, 99999);
   try {
     navigator.clipboard.writeText(referralCodeDisplay.value);
     if (copyReferralBtn) {
-      const originalText = copyReferralBtn.innerText;
-      copyReferralBtn.innerText = "Copied! ✓";
+      const originalText = copyReferralBtn.innerText; copyReferralBtn.innerText = "Copied! ✓";
       setTimeout(() => { copyReferralBtn.innerText = originalText; }, 2000);
     }
-  } catch (err) {
-    alert("Failed to access system clipboard registers.");
-  }
+  } catch (err) { alert("Failed to access system registers."); }
 }
 
-// ================= UTILITIES & POPOVER MODAL CONTROLS =================
 const dismissModal = () => { if (retrieveModal) retrieveModal.classList.add("hidden"); };
 
 function resetApplicationFlowState() {
   if (emailGateForm) emailGateForm.reset();
-  localStorage.removeItem("syntrix_user_email");
-  localStorage.removeItem("referralCode");
+  localStorage.removeItem("syntrix_user_email"); localStorage.removeItem("referralCode");
   if (statusDiv) statusDiv.innerHTML = "";
-  userEmailAddress = "";
-  currentSection = 0;
-  isOtpSent = false;
-  
-  const otpSection = document.getElementById("otpSection");
-  if (otpSection) otpSection.classList.add("hidden");
+  userEmailAddress = ""; currentSection = 0; isOtpSent = false;
+  const otpSection = document.getElementById("otpSection"); if (otpSection) otpSection.classList.add("hidden");
   if (startSurveyBtn) startSurveyBtn.innerHTML = "Send Verification Code &rarr;";
   if (gateEmailInput) gateEmailInput.readOnly = false;
-  
-  for (const prop in answers) { 
-    if (Object.prototype.hasOwnProperty.call(answers, prop)) delete answers[prop]; 
-  }
-  
+  for (const prop in answers) { if (Object.prototype.hasOwnProperty.call(answers, prop)) delete answers[prop]; }
   if (emailGateSection) emailGateSection.classList.remove("hidden");
-  if (claimForm) claimForm.classList.add("hidden");
-  if (topProgressBox) topProgressBox.classList.add("hidden");
+  if (claimForm) claimForm.classList.add("hidden"); if (topProgressBox) topProgressBox.classList.add("hidden");
   if (rewardDashboardScreen) rewardDashboardScreen.classList.add("hidden");
-  if (claimScreenSection) claimScreenSection.classList.add("hidden");
-  
-  document.querySelectorAll(".step").forEach((st, idx) => {
-    if (idx === 0) st.classList.add("active");
-    else st.classList.remove("active");
-  });
-}
-
-function translatePage() {
-  if (typeof translations === "undefined" || !translations[currentLanguage]) return;
-  const dict = translations[currentLanguage];
-
-  const mainTitleEl = document.getElementById("mainTitle");
-  const mainSubtitleEl = document.getElementById("mainSubtitle");
-  if (mainTitleEl && dict.mainTitle) mainTitleEl.innerHTML = dict.mainTitle;
-  if (mainSubtitleEl && dict.mainSubtitle) mainSubtitleEl.innerHTML = dict.mainSubtitle;
-
-  const emailSectionTitleEl = document.querySelector("#emailGateSection .sectionTitle");
-  if (emailSectionTitleEl && dict.emailSectionTitle) emailSectionTitleEl.innerText = dict.emailSectionTitle;
-  
-  const startSurveyBtnEl = document.getElementById("startSurveyBtn");
-  if (startSurveyBtnEl && dict.btnStart) startSurveyBtnEl.innerHTML = dict.btnStart;
-
-  const prevBtnEl = document.getElementById("prevBtn");
-  const nextBtnEl = document.getElementById("nextBtn");
-  const submitClaimBtnEl = document.getElementById("submitClaimBtn");
-  if (prevBtnEl && dict.previous) prevBtnEl.innerHTML = `&lt; ${dict.previous}`;
-  if (nextBtnEl && dict.next) nextBtnEl.innerHTML = `${dict.next} &gt;`;
-  if (submitClaimBtnEl && dict.submit) submitClaimBtnEl.innerHTML = dict.submit;
-
-  const rewardTitleEl = document.querySelector("#rewardDashboardScreen .rewardTitle");
-  if (rewardTitleEl && dict.claimTitle) rewardTitleEl.innerHTML = dict.claimTitle;
-
-  const connectWalletBtnEl = document.querySelector("#connectWalletBtn span");
-  if (connectWalletBtnEl && dict.metaMaskLabel) connectWalletBtnEl.innerText = dict.metaMaskLabel;
-  
-  const manualLabelEl = document.querySelector(".manualWalletWrapper .dividerLine span");
-  if (manualLabelEl && dict.manualLabel) manualLabelEl.innerText = dict.manualLabel;
-  
-  const executeClaimBtnEl = document.getElementById("executeClaimBtn");
-  if (executeClaimBtnEl && dict.btnExecute) executeClaimBtnEl.innerText = dict.btnExecute;
-  
-  const referralTitleEl = document.querySelector(".referralContainer .dividerLine span");
-  if (referralTitleEl && dict.referralTitle) referralTitleEl.innerText = dict.referralTitle;
-
-  const referralDescriptionEl = document.querySelector(".referralContainer .referralDescription");
-  if (referralDescriptionEl && dict.referralSub) referralDescriptionEl.innerHTML = dict.referralSub;
-  
-  const copyReferralBtnEl = document.getElementById("copyReferralBtn");
-  if (copyReferralBtnEl && dict.btnCopy) copyReferralBtnEl.innerText = dict.btnCopy;
-
-  const modalTitleEl = document.querySelector("#retrieveModal .modal-header h2");
-  if (modalTitleEl && dict.modalTitle) modalTitleEl.innerText = dict.modalTitle;
-  
-  const modalSubEl = document.querySelector("#retrieveModal .modal-subtitle");
-  if (modalSubEl && dict.modalSub) modalSubEl.innerText = dict.modalSub;
-  
-  const modalDetailsTitleEl = document.querySelector("#retrieveModal .extra-details-box h4");
-  if (modalDetailsTitleEl && dict.modalDetailsTitle) modalDetailsTitleEl.innerText = dict.modalDetailsTitle;
-  
-  const modalDetails1El = document.querySelector("#retrieveModal .extra-details-box li:nth-child(1)");
-  if (modalDetails1El && dict.modalDetails1) modalDetails1El.innerText = dict.modalDetails1;
-  
-  const modalDetails2El = document.querySelector("#retrieveModal .extra-details-box li:nth-child(2)");
-  if (modalDetails2El && dict.modalDetails2) modalDetails2El.innerText = dict.modalDetails2;
-  
-  const modalDetails3El = document.querySelector("#retrieveModal .extra-details-box li:nth-child(3)");
-  if (modalDetails3El && dict.modalDetails3) modalDetails3El.innerText = dict.modalDetails3;
-  
-  const modalInputLabelEl = document.querySelector("#retrieveModal .input-wrapper label");
-  if (modalInputLabelEl && dict.modalInputLabel) modalInputLabelEl.innerText = dict.modalInputLabel;
-  
-  const cancelModalBtnEl = document.getElementById("cancelModalBtn");
-  if (cancelModalBtnEl && dict.btnCancel) cancelModalBtnEl.innerText = dict.btnCancel;
-  
-  const confirmRetrieveBtnEl = document.getElementById("confirmRetrieveBtn");
-  if (confirmRetrieveBtnEl && dict.btnSearch) confirmRetrieveBtnEl.innerText = dict.btnSearch;
+  document.querySelectorAll(".step").forEach((st, idx) => { if (idx === 0) st.classList.add("active"); else st.classList.remove("active"); });
 }
 
 // ================= LIFE CYCLE REGISTRATION RUNNERS & EVENT ROUTERS =================
@@ -983,29 +669,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     localStorage.setItem("referralCode", normalizeReferralCode(refParam));
     window.history.replaceState({}, document.title, window.location.pathname);
   }
-  
   const savedRefCode = localStorage.getItem("referralCode");
-  if (savedRefCode && referredByCodeInput) {
-    referredByCodeInput.value = savedRefCode;
-  }
+  if (savedRefCode && referredByCodeInput) referredByCodeInput.value = savedRefCode;
 
   if (claimToken) {
-    if (emailGateSection) emailGateSection.classList.add("hidden");
-    if (claimForm) claimForm.classList.add("hidden");
-    if (topProgressBox) topProgressBox.classList.add("hidden");
-    if (rewardDashboardScreen) rewardDashboardScreen.classList.add("hidden");
-    if (claimScreenSection) claimScreenSection.classList.remove("hidden");
-    if (claimLoadingGear) claimLoadingGear.classList.remove("hidden");
+    if (emailGateSection) emailGateSection.classList.add("hidden"); if (claimForm) claimForm.classList.add("hidden");
+    if (topProgressBox) topProgressBox.classList.add("hidden"); if (rewardDashboardScreen) rewardDashboardScreen.classList.add("hidden");
     await initializeClaimSection(claimToken);
   } else {
     const localSavedEmail = localStorage.getItem("syntrix_user_email");
-    if (localSavedEmail) {
-      userEmailAddress = localSavedEmail;
-      await runProfileLedgerVerification(userEmailAddress, false);
-    }
+    if (localSavedEmail) { userEmailAddress = localSavedEmail; await runProfileLedgerVerification(userEmailAddress, false); }
   }
 
-  // --- ATTACH EVENT LISTENERS TO INTERACTION HANDLERS ---
   if (nextBtn) nextBtn.onclick = () => handleNextSection();
   if (prevBtn) prevBtn.onclick = () => handlePrevSection();
   if (claimForm) {
@@ -1016,30 +691,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
   if (executeClaimBtn) executeClaimBtn.onclick = () => handleManualClaimExecution();
   
-  // Connect Wallets
   if (connectWalletBtn) connectWalletBtn.onclick = () => connectWallet(false);
   if (claimConnectWalletBtn) claimConnectWalletBtn.onclick = () => connectWallet(true);
   if (submitClaimRewardBtn) submitClaimRewardBtn.onclick = () => handleSignatureTokenRelease();
   if (copyReferralBtn) copyReferralBtn.onclick = () => handleReferralLinkCopy();
 
-  // Popover Nav Menu Interactivity Matrix
   if (menuToggleBtn && optionsPopover) {
-    menuToggleBtn.onclick = (e) => {
-      e.stopPropagation();
-      optionsPopover.classList.toggle("hidden");
-    };
+    menuToggleBtn.onclick = (e) => { e.stopPropagation(); optionsPopover.classList.toggle("hidden"); };
     document.addEventListener("click", () => optionsPopover.classList.add("hidden"));
   }
-
   if (menuRestartBtn) {
-    menuRestartBtn.onclick = () => {
-      if (confirm("Are you sure you want to clear your current progress session?")) {
-        resetApplicationFlowState();
-      }
-    };
+    menuRestartBtn.onclick = () => { if (confirm("Clear session progress?")) resetApplicationFlowState(); };
   }
 
-  // FIXED RETRIEVAL MODAL TRIGGER HANDLERS: Force fresh click connections when modal fires up
   if (menuRecoverBtn && retrieveModal) {
     menuRecoverBtn.onclick = () => {
       retrieveModal.classList.remove("hidden");
@@ -1050,10 +714,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         confirmRetrieveBtn.onclick = async () => {
           const searchEmail = modalEmailInput ? modalEmailInput.value.trim().toLowerCase() : "";
           if (!searchEmail || !EMAIL_REGEX.test(searchEmail)) {
-            if (modalStatus) {
-              modalStatus.innerHTML = "❌ Please provide a valid email address.";
-              modalStatus.style.color = "#ff4d4d";
-            }
+            if (modalStatus) { modalStatus.innerHTML = "❌ Please provide a valid email structure."; modalStatus.style.color = "#ff4d4d"; }
             return;
           }
           await runProfileLedgerVerification(searchEmail, true);
@@ -1069,14 +730,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   langButtons.forEach(btn => {
     btn.addEventListener("click", (e) => {
       langButtons.forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      currentLanguage = btn.dataset.lang;
-      
+      btn.classList.add("active"); currentLanguage = btn.dataset.lang;
       translatePage();
       updateExcitementBanner(currentSection); 
-      if (claimForm && !claimForm.classList.contains("hidden")) {
-        renderSection();
-      }
+      if (claimForm && !claimForm.classList.contains("hidden")) renderSection();
     });
   });
 });
