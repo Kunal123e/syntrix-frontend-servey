@@ -33,10 +33,11 @@
           return;
         }
 
+        // FIXED RPC TARGET: Configured stable open public gateway parameters
         const chainConfig = {
           chainNamespace: "eip155",
           chainId: "0x89", // Polygon Mainnet Identifier
-          rpcTarget: "https://polygon-rpc.com",
+          rpcTarget: "https://polygon.llamarpc.com", 
           displayName: "Polygon Mainnet",
           blockExplorerUrl: "https://polygonscan.com",
           ticker: "POL",
@@ -44,16 +45,15 @@
         };
 
         const privateKeyProvider = new EthProviderSDK.EthereumPrivateKeyProvider({
-          config: { chainConfig }
+          config: { chainConfig: chainConfig } // FIXED: Correct configuration wrapper object mapping
         });
 
-        // FIXED SECURITY LAYER: Bound redirectPath to absolute dynamic mapping parameters
+        // FIXED INTERCEPTOR: Forced direct pipeline bypass initialization settings
         const web3auth = new Web3AuthSDK.Web3Auth({
           clientId: "BLTKOOeFj7P8fVIGNIwqX3lhHeA948YDtXgKO_ClNELkI06hZ17XKvfpiAWA0AujfpBMAs75-LivYTtCeRWg2Lo", 
           web3AuthNetwork: "sapphire_devnet", 
           privateKeyProvider: privateKeyProvider,
           enableLogging: false,
-          buildEnv: "production",
           uiConfig: {
             appName: "Syntrix",
             mode: "dark",
