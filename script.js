@@ -46,13 +46,6 @@ const dashboardWalletInput = document.getElementById("dashboardWalletInput");
 const executeClaimBtn = document.getElementById("executeClaimBtn");
 const connectWalletBtn = document.getElementById("connectWalletBtn");
 
-// FIXED HOOK DEFAULTS: Explicitly initialized elements to guarantee no reference drop breaks
-const claimScreenSection = document.getElementById("claimScreenSection");
-const claimConnectWalletBtn = document.getElementById("claimConnectWalletBtn");
-const claimWalletConnectedBlock = document.getElementById("claimWalletConnectedBlock");
-const claimWalletAddressDisplay = document.getElementById("claimWalletAddressDisplay");
-const submitClaimRewardBtn = document.getElementById("submitClaimRewardBtn");
-
 const statTotalReferrals = document.getElementById("statTotalReferrals");
 const statPendingRewards = document.getElementById("statPendingRewards");
 const statClaimedRewards = document.getElementById("statClaimedRewards");
@@ -504,9 +497,12 @@ async function connectWallet(isDirectClaimFlow = false) {
           userConnectedWalletAddress = realWeb3Address.toLowerCase();
 
           if (isDirectClaimFlow) {
-            if (claimConnectWalletBtn) claimConnectWalletBtn.classList.add("hidden");
-            if (claimWalletConnectedBlock) claimWalletConnectedBlock.classList.remove("hidden");
-            if (claimWalletAddressDisplay) claimWalletAddressDisplay.innerText = userConnectedWalletAddress + " (Web3Auth)";
+            const directClaimBtn = document.getElementById("claimConnectWalletBtn");
+            const connectedBlock = document.getElementById("claimWalletConnectedBlock");
+            const addressDisplay = document.getElementById("claimWalletAddressDisplay");
+            if (directClaimBtn) directClaimBtn.classList.add("hidden");
+            if (connectedBlock) connectedBlock.classList.remove("hidden");
+            if (addressDisplay) addressDisplay.innerText = userConnectedWalletAddress + " (Web3Auth)";
           } else {
             if (dashboardWalletInput) dashboardWalletInput.value = userConnectedWalletAddress;
           }
@@ -527,9 +523,12 @@ async function connectWallet(isDirectClaimFlow = false) {
     userConnectedWalletAddress = accounts[0].toLowerCase();
     
     if (isDirectClaimFlow) {
-      if (claimConnectWalletBtn) claimConnectWalletBtn.classList.add("hidden");
-      if (claimWalletConnectedBlock) claimWalletConnectedBlock.classList.remove("hidden");
-      if (claimWalletAddressDisplay) claimWalletAddressDisplay.innerText = userConnectedWalletAddress;
+      const directClaimBtn = document.getElementById("claimConnectWalletBtn");
+      const connectedBlock = document.getElementById("claimWalletConnectedBlock");
+      const addressDisplay = document.getElementById("claimWalletAddressDisplay");
+      if (directClaimBtn) directClaimBtn.classList.add("hidden");
+      if (connectedBlock) connectedBlock.classList.remove("hidden");
+      if (addressDisplay) addressDisplay.innerText = userConnectedWalletAddress;
     } else {
       if (dashboardWalletInput) dashboardWalletInput.value = userConnectedWalletAddress;
     }
@@ -565,7 +564,6 @@ async function handleManualClaimExecution() {
   }
 }
 
-// SAFE SECTIONS TRACKING: Standardized endpoints with conditional logic parameters to eliminate crashes if layout elements are omitted
 async function initializeClaimSection(token) {
   if (!claimScreenSection) return;
   try {
@@ -697,6 +695,81 @@ function resetApplicationFlowState() {
   document.querySelectorAll(".step").forEach((st, idx) => { if (idx === 0) st.classList.add("active"); else st.classList.remove("active"); });
 }
 
+// FIXED: Enhanced translation layout function to map elements with high-utility IDs flawlessly
+function translatePage() {
+  if (typeof translations === "undefined" || !translations[currentLanguage]) return;
+  const dict = translations[currentLanguage];
+
+  const mainTitleEl = document.getElementById("mainTitle");
+  const mainSubtitleEl = document.getElementById("mainSubtitle");
+  if (mainTitleEl && dict.mainTitle) mainTitleEl.innerHTML = dict.mainTitle;
+  if (mainSubtitleEl && dict.mainSubtitle) mainSubtitleEl.innerHTML = dict.mainSubtitle;
+
+  const emailSectionTitleEl = document.querySelector("#emailGateSection .sectionTitle");
+  if (emailSectionTitleEl && dict.emailSectionTitle) emailSectionTitleEl.innerText = dict.emailSectionTitle;
+  
+  const startSurveyBtnEl = document.getElementById("startSurveyBtn");
+  if (startSurveyBtnEl && dict.btnStart) startSurveyBtnEl.innerHTML = dict.btnStart;
+
+  const prevBtnEl = document.getElementById("prevBtn");
+  const nextBtnEl = document.getElementById("nextBtn");
+  const submitClaimBtnEl = document.getElementById("submitClaimBtn");
+  if (prevBtnEl && dict.previous) prevBtnEl.innerHTML = `&lt; ${dict.previous}`;
+  if (nextBtnEl && dict.next) nextBtnEl.innerHTML = `${dict.next} &gt;`;
+  if (submitClaimBtnEl && dict.submit) submitClaimBtnEl.innerHTML = dict.submit;
+
+  // FIXED TRANSLATION TARGETS: Handled matching mapping layouts securely
+  const rewardTitleEl = document.getElementById("claimTitle");
+  const rewardSubtitleEl = document.getElementById("rewardSubtitleDesc");
+  if (rewardTitleEl && dict.claimTitle) rewardTitleEl.innerHTML = dict.claimTitle;
+  if (rewardSubtitleEl && dict.rewardSubtitle) rewardSubtitleEl.innerHTML = dict.rewardSubtitle;
+
+  const connectWalletBtnEl = document.querySelector("#connectWalletBtn span");
+  if (connectWalletBtnEl && dict.metaMaskLabel) connectWalletBtnEl.innerText = dict.metaMaskLabel;
+  
+  const manualLabelEl = document.querySelector(".manualWalletWrapper .dividerLine span");
+  if (manualLabelEl && dict.manualLabel) manualLabelEl.innerText = dict.manualLabel;
+  
+  const executeClaimBtnEl = document.getElementById("executeClaimBtn");
+  if (executeClaimBtnEl && dict.btnExecute) executeClaimBtnEl.innerText = dict.btnExecute;
+  
+  const referralTitleEl = document.querySelector(".referralContainer .dividerLine span");
+  if (referralTitleEl && dict.referralTitle) referralTitleEl.innerText = dict.referralTitle;
+
+  const referralDescriptionEl = document.getElementById("referralSubText");
+  if (referralDescriptionEl && dict.referralSub) referralDescriptionEl.innerHTML = dict.referralSub;
+  
+  const copyReferralBtnEl = document.getElementById("copyReferralBtn");
+  if (copyReferralBtnEl && dict.btnCopy) copyReferralBtnEl.innerText = dict.btnCopy;
+
+  const modalTitleEl = document.querySelector("#retrieveModal .modal-header h2");
+  if (modalTitleEl && dict.modalTitle) modalTitleEl.innerText = dict.modalTitle;
+  
+  const modalSubEl = document.querySelector("#retrieveModal .modal-subtitle");
+  if (modalSubEl && dict.modalSub) modalSubEl.innerText = dict.modalSub;
+  
+  const modalDetailsTitleEl = document.querySelector("#retrieveModal .extra-details-box h4");
+  if (modalDetailsTitleEl && dict.modalDetailsTitle) modalDetailsTitleEl.innerText = dict.modalDetailsTitle;
+  
+  const modalDetails1El = document.querySelector("#retrieveModal .extra-details-box li:nth-child(1)");
+  if (modalDetails1El && dict.modalDetails1) modalDetails1El.innerText = dict.modalDetails1;
+  
+  const modalDetails2El = document.querySelector("#retrieveModal .extra-details-box li:nth-child(2)");
+  if (modalDetails2El && dict.modalDetails2) modalDetails2El.innerText = dict.modalDetails2;
+  
+  const modalDetails3El = document.querySelector("#retrieveModal .extra-details-box li:nth-child(3)");
+  if (modalDetails3El && dict.modalDetails3) modalDetails3El.innerText = dict.modalDetails3;
+  
+  const modalInputLabelEl = document.querySelector("#retrieveModal .input-wrapper label");
+  if (modalInputLabelEl && dict.modalInputLabel) modalInputLabelEl.innerText = dict.modalInputLabel;
+  
+  const cancelModalBtnEl = document.getElementById("cancelModalBtn");
+  if (cancelModalBtnEl && dict.btnCancel) cancelModalBtnEl.innerText = dict.btnCancel;
+  
+  const confirmRetrieveBtnEl = document.getElementById("confirmRetrieveBtn");
+  if (confirmRetrieveBtnEl && dict.btnSearch) confirmRetrieveBtnEl.innerText = dict.btnSearch;
+}
+
 // ================= LIFE CYCLE REGISTRATION RUNNERS & EVENT ROUTERS =================
 document.addEventListener("DOMContentLoaded", async () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -731,8 +804,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   
   if (connectWalletBtn) connectWalletBtn.onclick = () => connectWallet(false);
   
-  // SAFE REDIRECT LISTENERS: Added optional chaining logic metrics to ensure no crash leaks hit when elements are omitted in basic templates
+  const claimConnectWalletBtn = document.getElementById("claimConnectWalletBtn");
   if (claimConnectWalletBtn) claimConnectWalletBtn.onclick = () => connectWallet(true);
+  
+  const submitClaimRewardBtn = document.getElementById("submitClaimRewardBtn");
   if (submitClaimRewardBtn) submitClaimRewardBtn.onclick = () => handleSignatureTokenRelease();
   if (copyReferralBtn) copyReferralBtn.onclick = () => handleReferralLinkCopy();
 
@@ -771,7 +846,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     btn.addEventListener("click", (e) => {
       langButtons.forEach(b => b.classList.remove("active"));
       btn.classList.add("active"); currentLanguage = btn.dataset.lang;
-      if (typeof translatePage === "function") translatePage();
+      translatePage();
       updateExcitementBanner(currentSection); 
       if (claimForm && !claimForm.classList.contains("hidden")) renderSection();
     });
