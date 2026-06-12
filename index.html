@@ -33,11 +33,10 @@
           return;
         }
 
-        // FIXED RPC TARGET: Configured open llama public node path to fix 401 error blocks
         const chainConfig = {
           chainNamespace: "eip155",
-          chainId: "0x89", // Polygon Mainnet Identifier
-          rpcTarget: "https://polygon.llamarpc.com", 
+          chainId: "0x89", 
+          rpcTarget: "https://polygon-rpc.com",
           displayName: "Polygon Mainnet",
           blockExplorerUrl: "https://polygonscan.com",
           ticker: "POL",
@@ -123,6 +122,7 @@
   </div>
 
   <div class="content">
+    
     <div class="topbar">
       <div>
         <h1 id="mainTitle" style="font-size: 44px; font-weight: 900; letter-spacing: -1.5px; color: #111827; line-height: 1.1; margin-bottom: 12px;">Syntrix Consumer Analytics Hub</h1>
@@ -217,7 +217,7 @@
         <span class="submittedBadge" id="surveySubmittedBadge">✨ SURVEY SUBMITTED!</span>
       </div>
       
-      <h2 class="rewardTitle">Claim Your 56 SYNX Reward</h2>
+      <h2 class="rewardTitle" id="claimTitle">Claim Your 56 SYNX Reward</h2>
       <p class="rewardSubtitle" id="rewardSubtitleDesc">
         Your research survey has been recorded. Connect MetaMask or input your EVM wallet address to claim your high-utility SYNX tokens.
       </p>
@@ -246,7 +246,7 @@
       </div>
 
       <div id="dashboardClaimReceiptBlock" class="hidden" style="background: rgba(16, 185, 129, 0.04); border: 1px solid rgba(16, 185, 129, 0.2); padding: 25px; border-radius: 16px; margin: 20px 0; text-align: center;">
-        </div>
+      </div>
 
       <div class="referralContainer">
         <div class="dividerLine"><span id="referralDashboardTitle">🎁 SYNTRIX REFERRAL DASHBOARD</span></div>
@@ -278,6 +278,7 @@
           <input type="text" id="referralCodeDisplay" value="https://domain.com/?ref=SYN-AB1234" readonly>
           <button type="button" id="copyReferralBtn" class="copyBtn">Copy Link</button>
         </div>
+
       </div>
     </div>
 
