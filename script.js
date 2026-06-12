@@ -46,6 +46,13 @@ const dashboardWalletInput = document.getElementById("dashboardWalletInput");
 const executeClaimBtn = document.getElementById("executeClaimBtn");
 const connectWalletBtn = document.getElementById("connectWalletBtn");
 
+// FIXED: Defined globally to prevent runtime reference crash
+const claimScreenSection = document.getElementById("claimScreenSection");
+const claimConnectWalletBtn = document.getElementById("claimConnectWalletBtn");
+const claimWalletConnectedBlock = document.getElementById("claimWalletConnectedBlock");
+const claimWalletAddressDisplay = document.getElementById("claimWalletAddressDisplay");
+const submitClaimRewardBtn = document.getElementById("submitClaimRewardBtn");
+
 const statTotalReferrals = document.getElementById("statTotalReferrals");
 const statPendingRewards = document.getElementById("statPendingRewards");
 const statClaimedRewards = document.getElementById("statClaimedRewards");
@@ -307,6 +314,11 @@ function renderSection() {
   }
 }
 
+window.recordSelection = function(questionId, selectedValue) {
+  answers[questionId] = selectedValue;
+  renderSection();
+};
+
 function updateExcitementBanner(sectionIndex) {
   const banner = document.getElementById("excitementBanner");
   if (!banner) return;
@@ -375,7 +387,6 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
         const activeControls = document.getElementById("dashboardActiveClaimControls");
         const receiptBlock = document.getElementById("dashboardClaimReceiptBlock");
 
-        // PRE-LAUNCH REGISTRATION REDEMPTION STATE TRIGGER
         if (statusResult.status === "whitelisted" || statusResult.isClaimed) {
           if (activeControls) activeControls.classList.add("hidden");
           if (receiptBlock) {
@@ -478,7 +489,8 @@ async function connectWallet(isDirectClaimFlow = false) {
     if (closeBtn) closeBtn.onclick = () => creatorModal.classList.add("hidden");
 
     if (googleAuthBtn) {
-      googleAuthBtn.onclick = null; // Clean up listeners to completely prevent EventEmitter leak drops
+      // FIXED LEAK: Clean assignment of listener 
+      googleAuthBtn.onclick = null; 
       googleAuthBtn.onclick = async () => {
         if (!window.isWeb3AuthReady || !window.metamaskEmbeddedInstance) {
           if (statusDiv) { statusDiv.innerHTML = `⏳ Web3 Engine is still loading. Please wait a moment and click again.`; statusDiv.style.color = "#f59e0b"; }
@@ -497,12 +509,9 @@ async function connectWallet(isDirectClaimFlow = false) {
           userConnectedWalletAddress = realWeb3Address.toLowerCase();
 
           if (isDirectClaimFlow) {
-            const directClaimBtn = document.getElementById("claimConnectWalletBtn");
-            const connectedBlock = document.getElementById("claimWalletConnectedBlock");
-            const addressDisplay = document.getElementById("claimWalletAddressDisplay");
-            if (directClaimBtn) directClaimBtn.classList.add("hidden");
-            if (connectedBlock) connectedBlock.classList.remove("hidden");
-            if (addressDisplay) addressDisplay.innerText = userConnectedWalletAddress + " (Web3Auth)";
+            if (claimConnectWalletBtn) claimConnectWalletBtn.classList.add("hidden");
+            if (claimWalletConnectedBlock) claimWalletConnectedBlock.classList.remove("hidden");
+            if (claimWalletAddressDisplay) claimWalletAddressDisplay.innerText = userConnectedWalletAddress + " (Web3Auth)";
           } else {
             if (dashboardWalletInput) dashboardWalletInput.value = userConnectedWalletAddress;
           }
@@ -523,12 +532,9 @@ async function connectWallet(isDirectClaimFlow = false) {
     userConnectedWalletAddress = accounts[0].toLowerCase();
     
     if (isDirectClaimFlow) {
-      const directClaimBtn = document.getElementById("claimConnectWalletBtn");
-      const connectedBlock = document.getElementById("claimWalletConnectedBlock");
-      const addressDisplay = document.getElementById("claimWalletAddressDisplay");
-      if (directClaimBtn) directClaimBtn.classList.add("hidden");
-      if (connectedBlock) connectedBlock.classList.remove("hidden");
-      if (addressDisplay) addressDisplay.innerText = userConnectedWalletAddress;
+      if (claimConnectWalletBtn) claimConnectWalletBtn.classList.add("hidden");
+      if (claimWalletConnectedBlock) claimWalletConnectedBlock.classList.remove("hidden");
+      if (claimWalletAddressDisplay) claimWalletAddressDisplay.innerText = userConnectedWalletAddress;
     } else {
       if (dashboardWalletInput) dashboardWalletInput.value = userConnectedWalletAddress;
     }
@@ -801,11 +807,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (executeClaimBtn) executeClaimBtn.onclick = () => handleManualClaimExecution();
   
   if (connectWalletBtn) connectWalletBtn.onclick = () => connectWallet(false);
-  
-  const claimConnectWalletBtn = document.getElementById("claimConnectWalletBtn");
   if (claimConnectWalletBtn) claimConnectWalletBtn.onclick = () => connectWallet(true);
   
-  const submitClaimRewardBtn = document.getElementById("submitClaimRewardBtn");
   if (submitClaimRewardBtn) submitClaimRewardBtn.onclick = () => handleSignatureTokenRelease();
   if (copyReferralBtn) copyReferralBtn.onclick = () => handleReferralLinkCopy();
 
@@ -844,7 +847,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     btn.addEventListener("click", (e) => {
       langButtons.forEach(b => b.classList.remove("active"));
       btn.classList.add("active"); currentLanguage = btn.dataset.lang;
-      translatePage();
+      if (typeof translatePage === "function") translatePage();
       updateExcitementBanner(currentSection); 
       if (claimForm && !claimForm.classList.contains("hidden")) renderSection();
     });
