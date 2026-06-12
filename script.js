@@ -695,7 +695,6 @@ function resetApplicationFlowState() {
   document.querySelectorAll(".step").forEach((st, idx) => { if (idx === 0) st.classList.add("active"); else st.classList.remove("active"); });
 }
 
-// FIXED: Enhanced translation layout function to map elements with high-utility IDs flawlessly
 function translatePage() {
   if (typeof translations === "undefined" || !translations[currentLanguage]) return;
   const dict = translations[currentLanguage];
@@ -718,7 +717,6 @@ function translatePage() {
   if (nextBtnEl && dict.next) nextBtnEl.innerHTML = `${dict.next} &gt;`;
   if (submitClaimBtnEl && dict.submit) submitClaimBtnEl.innerHTML = dict.submit;
 
-  // FIXED TRANSLATION TARGETS: Handled matching mapping layouts securely
   const rewardTitleEl = document.getElementById("claimTitle");
   const rewardSubtitleEl = document.getElementById("rewardSubtitleDesc");
   if (rewardTitleEl && dict.claimTitle) rewardTitleEl.innerHTML = dict.claimTitle;
