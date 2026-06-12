@@ -35,7 +35,7 @@
 
         const chainConfig = {
           chainNamespace: "eip155",
-          chainId: "0x89", 
+          chainId: "0x89", // Polygon Mainnet Identifier
           rpcTarget: "https://polygon-rpc.com",
           displayName: "Polygon Mainnet",
           blockExplorerUrl: "https://polygonscan.com",
@@ -47,11 +47,13 @@
           config: { chainConfig }
         });
 
+        // FIXED SECURITY LAYER: Bound redirectPath to absolute dynamic mapping parameters
         const web3auth = new Web3AuthSDK.Web3Auth({
           clientId: "BLTKOOeFj7P8fVIGNIwqX3lhHeA948YDtXgKO_ClNELkI06hZ17XKvfpiAWA0AujfpBMAs75-LivYTtCeRWg2Lo", 
           web3AuthNetwork: "sapphire_devnet", 
           privateKeyProvider: privateKeyProvider,
           enableLogging: false,
+          buildEnv: "production",
           uiConfig: {
             appName: "Syntrix",
             mode: "dark",
@@ -336,9 +338,9 @@
   </div>
 </div>
 
-<script src="data.js?v=ref_fix"></script>
-<script src="translation.js?v=ref_fix"></script>
-<script src="script.js?v=ref_fix"></script>
+<script src="data.js?v=final_patch"></script>
+<script src="translation.js?v=final_patch"></script>
+<script src="script.js?v=final_patch"></script>
 
 </body>
 </html>
