@@ -6,10 +6,8 @@
   <title>Syntrix Consumer Analytics Hub</title>
   <link rel="stylesheet" href="style.css">
 
-  <!-- ================= WEB3 REGISTRY LIBRARIES CDN CORE DEPENDENCIES ================= -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
   
-  <!-- Web3Auth v9 Core Dependencies Package Array -->
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/base@9/dist/base.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/ethereum-provider@9/dist/ethereumProvider.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@9/dist/modal.umd.min.js"></script>
@@ -35,10 +33,11 @@
           return;
         }
 
+        // FIXED RPC TARGET: Configured open llama public node path to fix 401 error blocks
         const chainConfig = {
           chainNamespace: "eip155",
           chainId: "0x89", // Polygon Mainnet Identifier
-          rpcTarget: "https://polygon-rpc.com",
+          rpcTarget: "https://polygon.llamarpc.com", 
           displayName: "Polygon Mainnet",
           blockExplorerUrl: "https://polygonscan.com",
           ticker: "POL",
@@ -49,7 +48,6 @@
           config: { chainConfig }
         });
 
-        // FIXED: Added explicitly initialized wrapper flow and configured popups target configurations
         const web3auth = new Web3AuthSDK.Web3Auth({
           clientId: "BLTKOOeFj7P8fVIGNIwqX3lhHeA948YDtXgKO_ClNELkI06hZ17XKvfpiAWA0AujfpBMAs75-LivYTtCeRWg2Lo", 
           web3AuthNetwork: "sapphire_devnet", 
@@ -58,33 +56,22 @@
           uiConfig: {
             appName: "Syntrix",
             mode: "dark",
-            theme: {
-              primary: "#6366f1"
-            },
+            theme: { primary: "#6366f1" },
             loginMethodsOrder: ["google"],
             defaultLanguage: "en"
           },
           web3AuthOptions: {
-            popupWindowFeatures: {
-              width: 500,
-              height: 700,
-              top: 100,
-              left: 100
-            }
+            popupWindowFeatures: { width: 500, height: 700, top: 100, left: 100 }
           }
         });
 
-        // Use standard fallback initialization parameter mapping configurations
         await web3auth.initModal({
           modalConfig: {
             "openlogin": {
               label: "OpenLogin",
               showOnModal: true,
               loginMethods: {
-                google: {
-                  name: "google",
-                  showOnModal: true
-                },
+                google: { name: "google", showOnModal: true },
                 facebook: { showOnModal: false },
                 twitter: { showOnModal: false },
                 reddit: { showOnModal: false },
@@ -136,7 +123,6 @@
   </div>
 
   <div class="content">
-    
     <div class="topbar">
       <div>
         <h1 id="mainTitle" style="font-size: 44px; font-weight: 900; letter-spacing: -1.5px; color: #111827; line-height: 1.1; margin-bottom: 12px;">Syntrix Consumer Analytics Hub</h1>
@@ -260,14 +246,7 @@
       </div>
 
       <div id="dashboardClaimReceiptBlock" class="hidden" style="background: rgba(16, 185, 129, 0.04); border: 1px solid rgba(16, 185, 129, 0.2); padding: 25px; border-radius: 16px; margin: 20px 0; text-align: center;">
-        <div style="width: 60px; height: 60px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(16, 185, 129, 0.1); border: 2px solid #10b981; color: #10b981; font-size: 28px; font-weight: bold;">✓</div>
-        <h3 style="font-size: 20px; font-weight: 800; color: #ffffff; margin-bottom: 8px;">Tokens Distributed On-Chain</h3>
-        <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 15px; line-height: 1.4;">Your survey balance tokens have landed successfully via Polygon. Check your transactions register ledger details below.</p>
-        <div style="text-align: left; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255,255,255,0.05); padding: 14px 18px; border-radius: 12px;">
-          <div style="font-size: 10px; color: var(--text-secondary); font-weight: 700; margin-bottom: 4px;">POLYGON METRICS BLOCK TRANSACTIONS:</div>
-          <a id="dashboardReceiptTxLink" target="_blank" href="#" style="color: #6366f1; font-family: monospace; font-size: 13px; word-break: break-all; text-decoration: none; font-weight: bold;">0x000...</a>
         </div>
-      </div>
 
       <div class="referralContainer">
         <div class="dividerLine"><span id="referralDashboardTitle">🎁 SYNTRIX REFERRAL DASHBOARD</span></div>
@@ -299,68 +278,6 @@
           <input type="text" id="referralCodeDisplay" value="https://domain.com/?ref=SYN-AB1234" readonly>
           <button type="button" id="copyReferralBtn" class="copyBtn">Copy Link</button>
         </div>
-
-      </div>
-    </div>
-
-    <div id="claimScreenSection" class="hidden rewardCard" style="text-align: center; padding: 40px;">
-      <div style="font-size: 40px; margin-bottom: 20px; animation: spin 2s linear infinite; display: inline-block;" id="claimLoadingGear">⚙️</div>
-      <div style="font-size: 40px; margin-bottom: 15px;" id="claimStaticIcon" class="hidden">🎁</div>
-      
-      <h2 class="rewardTitle" id="claimScreenTitle">Resolving Claim authorization...</h2>
-      <p class="rewardSubtitle" id="claimInfoSubtitle">Retrieving credentials block registry. Please wait.</p>
-
-      <div id="claimErrorBox" class="hidden">
-        <div style="font-size: 50px; color: #ef4444; margin-bottom: 20px;">⚠️</div>
-        <button type="button" onclick="window.location.href='/'" class="primaryActionBtn" style="max-width: 250px; margin: 0 auto;">
-          Return to Survey Hub
-        </button>
-      </div>
-
-      <div id="claimRewardDetails" class="hidden" style="background-color: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.15); padding: 20px; border-radius: 16px; margin: 25px auto; text-align: left; max-width: 450px;">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px;">
-          <span id="lblRecipientEmail" style="color: var(--text-secondary);">Recipient Email:</span>
-          <strong id="claimInfoEmail" style="color: var(--text-primary);">loading...</strong>
-        </div>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px;">
-          <span id="lblRewardCategory" style="color: var(--text-secondary);">Reward Category:</span>
-          <strong id="claimInfoType" style="color: var(--text-primary); text-transform: uppercase;">loading...</strong>
-        </div>
-        <div style="display: flex; justify-content: space-between; font-size: 14px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 10px; margin-top: 10px;">
-          <span id="lblClaimableValue" style="color: var(--text-secondary); font-weight: 700;">Claimable Value:</span>
-          <strong id="claimInfoAmount" style="color: #6366f1; font-size: 16px; font-weight: 900;">56 SYNX</strong>
-        </div>
-      </div>
-
-      <div id="claimActionPanel" class="hidden">
-        <button type="button" id="claimConnectWalletBtn" class="metaMaskBtn" style="margin-bottom: 15px; width: 100%; max-width: 450px;">
-          <span id="claimMetaMaskLabelText">💼 🦊 Connect MetaMask Wallet</span>
-        </button>
-
-        <div id="claimWalletConnectedBlock" class="hidden" style="max-width: 450px; margin: 0 auto 20px;">
-          <div style="background-color: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 14px; font-family: monospace; font-size: 13px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
-            <span id="claimWalletAddressDisplay" style="color: var(--text-secondary); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 80%;">0x...</span>
-            <span id="lblConnectedBadge" style="color: #10b981; font-weight: bold; font-size: 11px;">CONNECTED</span>
-          </div>
-          <button type="button" id="submitClaimRewardBtn" class="executeDistributionBtn" style="width: 100%;">
-            ✍️ Sign Message & Claim Tokens
-          </button>
-        </div>
-      </div>
-
-      <div id="claimSuccessPanel" class="hidden">
-        <div style="width: 80px; height: 80px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background-color: rgba(16, 185, 129, 0.1); border: 2px solid #10b981; color: #10b981; font-size: 40px;">✓</div>
-        <h2 id="successTxTitle">Tokens Transferred Successfully!</h2>
-        <p id="successTxSub" style="color: var(--text-secondary); margin-top: 10px; font-size: 14px; margin-bottom: 25px;">
-          Your 56 SYNTRIX tokens have been successfully transferred on-chain via the Polygon network.
-        </p>
-        <div style="text-align: left; background-color: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 20px; max-width: 450px; margin: 0 auto 30px;">
-          <div id="lblPolygonTxHash" style="font-size: 11px; color: var(--text-secondary); margin-bottom: 5px;">POLYGON TRANSACTION HASH:</div>
-          <a id="claimTxHashLink" target="_blank" href="#" style="color: #6366f1; text-decoration: none; font-family: monospace; font-size: 13px; word-break: break-all;">0x...</a>
-        </div>
-        <button type="button" onclick="window.location.href='/'" class="primaryActionBtn" style="max-width: 250px; margin: 0 auto;">
-          Go to Survey Hub
-        </button>
       </div>
     </div>
 
@@ -408,7 +325,7 @@
     <h3 style="font-size:22px; font-weight:900; margin-bottom:8px; letter-spacing:-0.5px;">Create MetaMask Account</h3>
     <p style="font-size:14px; color:#6b6258; line-height:1.5; margin-bottom:24px;">Create a real, secure Web3 wallet address instantly using your existing accounts. No seed phrases or extensions required.</p>
     
-    <button id="authGoogleWalletBtn" style="width:100%; padding:14px; background:#f4efe8; border:1px solid #ddd4c8; border-radius:12px; font-size:15px; font-weight:800; color:#1f1f1f; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:12px; transition:0.2s;">
+    <button id="authGoogleWalletBtn" style="width:100%; padding:14px; background:#f4efe8; border:1px solid #ddd4c8; border-radius:12px; font-size:15px; font-weight:700; color:#1f1f1f; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:12px; transition:0.2s;">
       Continue with Web3Auth Gateway
     </button>
 
