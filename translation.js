@@ -1,3 +1,8 @@
+// =========================================================================
+// SYNTRIX MULTILINGUAL CORE TRANSLATION ARCHITECTURE
+// Supports complete rendering vectors across English, Hindi, and Hinglish
+// =========================================================================
+
 const translations = {
   en: {
     mainTitle: "Syntrix Consumer Analytics Hub",
@@ -227,7 +232,7 @@ const optionTranslations = {
     "Shipping Cost": "डिलीवरी शुल्क",
     "Too Expensive": "बहुत महंगा",
     "Low Trust": "कम भरोसा",
-    "Poor Reviews": "خराब समीक्षाएँ",
+    "Poor Reviews": "खराब समीक्षाएँ", // 🚀 FIXED TYPO HERE (Replaced Urdu script strings)
     "Slow Delivery": "धीमी डिलीवरी",
     "Payment Failure": "भुगतान विफल",
     "Free Only": "केवल मुफ्त",
@@ -297,12 +302,10 @@ const optionTranslations = {
     "Home & Kitchen": "घर और रसोई",
     "Jewellery & Accessories": "आभूषण",
     "Groceries & Daily Needs": "किराना",
-    "Under ₹300": "₹300 से कम",
     "₹300 - ₹800": "₹300 - ₹800",
     "₹800 - ₹2,000": "₹800 - ₹2,000",
     "₹2,000 - ₹5,000": "₹2,000 - ₹5,000",
     "₹5,000 - ₹15,000": "₹5,000 - ₹15,000",
-    "Above ₹15,000": "₹15,000 से अधिक",
     "Share on Social Media": "सोशल मीडिया पर साझा करें",
     "Recommend to Friends": "दोस्तों को सुझाव दें",
     "Leave a Review": "समीक्षा लिखें",
