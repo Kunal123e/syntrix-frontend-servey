@@ -330,7 +330,7 @@ function getQuestionText(q) {
   if (typeof questionTranslations !== "undefined" && questionTranslations[currentLanguage]) {
     return questionTranslations[currentLanguage][q.id] || q.text || q.id;
   }
-  return q.text || q.id;
+  return q.question || q.id;
 }
 
 function getOptionText(opt) {
@@ -355,19 +355,16 @@ function validateCurrentSectionAnswers() {
   return true;
 }
 
-// 🚀 FIXED RENDER LOGIC: Matches 0-indexed HTML step IDs and explicitly removes hidden states
 function renderSection() {
   const sections = getSurveyData();
   if (!sections || sections.length === 0 || !surveyContainer) return;
   const currentData = sections[currentSection];
   
   try {
-    // Reveal hidden tracking blocks once authorized survey launches
     if (topProgressBox) topProgressBox.classList.remove("hidden");
     if (claimForm) claimForm.classList.remove("hidden");
     if (emailGateSection) emailGateSection.classList.add("hidden");
 
-    // Map correctly to your 0-indexed sidebar element selectors (step-0 to step-7)
     document.querySelectorAll(".sidebar .step").forEach((st, idx) => {
       if (idx === currentSection) st.classList.add("active");
       else st.classList.remove("active");
@@ -540,7 +537,6 @@ async function handleSurveySubmission(e) {
   }
 
   document.getElementById("claimForm").classList.add("hidden");
-  if (topProgressBox) topProgressBox.classList.add("hidden"); // Also hide progress on complete animation
   const excitementBanner = document.getElementById("excitementBanner");
   if(excitementBanner) excitementBanner.style.display = "none";
 
@@ -569,7 +565,6 @@ async function handleSurveySubmission(e) {
         await runProfileLedgerVerification(userEmailAddress, false);
       } else {
         document.getElementById("claimForm").classList.remove("hidden"); 
-        if (topProgressBox) topProgressBox.classList.remove("hidden");
         if (statusDiv) {
           statusDiv.innerHTML = `❌ ${result.error || "Submission rejected by registry backend."}`;
           statusDiv.style.color = "#ff4d4d";
@@ -579,7 +574,6 @@ async function handleSurveySubmission(e) {
   } catch (err) {
     if (animOverlay) animOverlay.style.display = "none";
     document.getElementById("claimForm").classList.remove("hidden");
-    if (topProgressBox) topProgressBox.classList.remove("hidden");
     if (statusDiv) { statusDiv.innerHTML = "❌ Network transaction failed."; statusDiv.style.color = "#ff4d4d"; }
   }
 }
@@ -614,7 +608,8 @@ async function connectWallet(isDirectClaimFlow = false) {
           const realWeb3Address = await signer.getAddress();
           userConnectedWalletAddress = realWeb3Address.toLowerCase();
 
-          if (isDirectDirectClaimFlow) {
+          // 🚀 FIXED TYPO HERE (Removed duplicate word 'Direct')
+          if (isDirectClaimFlow) {
             if (claimConnectWalletBtn) claimConnectWalletBtn.classList.add("hidden");
             if (claimWalletConnectedBlock) claimWalletConnectedBlock.classList.remove("hidden");
             if (claimWalletAddressDisplay) claimWalletAddressDisplay.innerText = userConnectedWalletAddress + " (Web3Auth)";
@@ -959,4 +954,3 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 });
-now logic is changed tell me changes if anything wrong ok bcoz i don want any bug in these file ok code must be full long form code no sort cut
