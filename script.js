@@ -64,7 +64,6 @@ const progressFill = document.querySelector(".progressFill");
 const progressText = document.querySelector(".progressText");
 
 // ================= COGNITIVE PSYCHOLOGY BADGE RULES ENGINE =================
-// 🚀 IMAGE FIX: Pointing exactly to your 4 individual GitHub JPEG files
 const BADGE_PROFILES = {
   Analyzer: { 
     title: "ANALYZER", 
@@ -96,7 +95,6 @@ const BADGE_PROFILES = {
   }
 };
 
-// MULTILINGUAL SCORING LOGIC Matrix for English, Hindi & Hinglish
 function calculateConsumerPsychologyBadge() {
   let scores = { Analyzer: 0, Stylist: 0, Hedger: 0, Native: 0 };
 
@@ -105,62 +103,45 @@ function calculateConsumerPsychologyBadge() {
     if (!ans) continue;
 
     if (
-      ans.includes("Too Expensive") || ans.includes("Zyada Mehnga") || ans.includes("महंगा") ||
-      ans.includes("Poor Reviews") || ans.includes("Kharab Reviews") || ans.includes("खराब समीक्षाएँ") ||
-      ans.includes("Ratings & Reviews") || ans.includes("रेटिंग") ||
-      ans.includes("Always") || ans.includes("Hamesha") || ans.includes("हमेशा") ||
-      ans.includes("Google Search") || ans.includes("गूगल सर्च") ||
-      ans.includes("Electronics") || ans.includes("इलेक्ट्रॉनिक्स") ||
-      ans.includes("compare") || ans.includes("तुलना")
-    ) {
-      scores.Analyzer += 2;
-    }
+      ans.includes("Too Expensive") || ans.includes("Poor Reviews") || 
+      ans.includes("Ratings & Reviews") || ans.includes("I try if reviews are good") || 
+      ans.includes("Positive Reviews") || ans.includes("Discount") || 
+      ans.includes("Always") || ans.includes("Electronics & Gadgets")
+    ) { scores.Analyzer += 2; }
 
     if (
-      ans.includes("Content Creator") || ans.includes("कंटेंट क्रिएटर") ||
-      ans.includes("Above 50%") || ans.includes("50% se zyada") || ans.includes("50% से अधिक") ||
-      ans.includes("Instagram") || ans.includes("इंस्टाग्राम") ||
-      ans.includes("YouTube") || ans.includes("यूट्यूब") ||
-      ans.includes("Influencer") || ans.includes("इन्फ्लुएंसर") ||
-      ans.includes("Design") || ans.includes("डिज़ाइन") ||
-      ans.includes("Fashion") || ans.includes("फैशन") ||
-      ans.includes("Beauty") || ans.includes("सौंदर्य")
-    ) {
-      scores.Stylist += 2;
-    }
+      ans.includes("Content Creator") || ans.includes("Above 50%") || 
+      ans.includes("Instagram") || ans.includes("YouTube") || 
+      ans.includes("Professional Website") || ans.includes("Brand Reputation") || 
+      ans.includes("I love trying new brands") || ans.includes("Limited Stock") || 
+      ans.includes("Fashion & Clothing") || ans.includes("Beauty & Personal Care")
+    ) { scores.Stylist += 2; }
 
     if (
-      ans.includes("Shipping Cost") || ans.includes("Delivery Charge") || ans.includes("डिलीवरी शुल्क") ||
-      ans.includes("Low Trust") || ans.includes("Kam Bharosa") || ans.includes("कम भरोसा") ||
-      ans.includes("Payment Failure") || ans.includes("Fail") || ans.includes("विफल") ||
-      ans.includes("Free Only") || ans.includes("Sirf Free") || ans.includes("केवल मुफ्त") ||
-      ans.includes("Cash on Delivery") ||
-      ans.includes("Guarantee") || ans.includes("गारंटी") ||
-      ans.includes("Return") || ans.includes("वापसी") ||
-      ans.includes("Private") || ans.includes("निजी")
-    ) {
-      scores.Hedger += 2;
-    }
+      ans.includes("Shipping Cost") || ans.includes("Low Trust") || 
+      ans.includes("Payment Failure") || ans.includes("Free Only") || 
+      ans.includes("Cash on Delivery") || ans.includes("avoid unknown brands") || 
+      ans.includes("rarely try unknown") || ans.includes("Only if Necessary") || 
+      ans.includes("Keep it Private")
+    ) { scores.Hedger += 2; }
 
     if (
-      ans.includes("Friends & Family") || ans.includes("दोस्त और परिवार") ||
-      ans.includes("WhatsApp") || ans.includes("व्हाट्सएप") ||
-      ans.includes("Friend Recommendation") || ans.includes("Dost ka Kehna") || ans.includes("दोस्त की सिफारिश") ||
-      ans.includes("Very Often") || ans.includes("Bohot Baar") || ans.includes("बहुत अक्सर") ||
-      ans.includes("Social Media") || ans.includes("सोशल मीडिया") ||
-      ans.includes("Recommend to Friends") || ans.includes("Doston ko batana") || ans.includes("दोस्तों को सुझाव दें")
-    ) {
-      scores.Native += 2;
-    }
+      ans.includes("Friends & Family") || ans.includes("Influencers") || 
+      ans.includes("WhatsApp") || ans.includes("Friend Recommendation") || 
+      ans.includes("Very Often") || ans.includes("Share on Social Media") || 
+      ans.includes("Recommend to Friends")
+    ) { scores.Native += 2; }
   }
 
-  let tieBreaker = "Analyzer";
-  let maxScore = -1;
-  for (const key in scores) {
-    if (scores[key] > maxScore) { maxScore = scores[key]; tieBreaker = key; }
-  }
+  let tieBreaker = "Stylist"; 
+  let maxScore = 0;
   
-  if (maxScore === 0) return "Stylist";
+  for (const key in scores) {
+    if (scores[key] > maxScore) { 
+      maxScore = scores[key]; 
+      tieBreaker = key; 
+    }
+  }
   return tieBreaker;
 }
 
@@ -364,7 +345,6 @@ function validateCurrentSectionAnswers() {
   const currentData = sections[currentSection];
   if (!currentData) return false;
   
-  // Custom validation to safely handle textareas
   for (let q of currentData.questions) { 
     if (q.type === "textarea") {
       if (!answers[q.id] || answers[q.id].trim() === "") return false;
@@ -375,15 +355,21 @@ function validateCurrentSectionAnswers() {
   return true;
 }
 
-// 🚀 CRASH FIX: Explicit logic to render Textareas correctly without breaking
+// 🚀 FIXED RENDER LOGIC: Matches 0-indexed HTML step IDs and explicitly removes hidden states
 function renderSection() {
   const sections = getSurveyData();
   if (!sections || sections.length === 0 || !surveyContainer) return;
   const currentData = sections[currentSection];
   
   try {
+    // Reveal hidden tracking blocks once authorized survey launches
+    if (topProgressBox) topProgressBox.classList.remove("hidden");
+    if (claimForm) claimForm.classList.remove("hidden");
+    if (emailGateSection) emailGateSection.classList.add("hidden");
+
+    // Map correctly to your 0-indexed sidebar element selectors (step-0 to step-7)
     document.querySelectorAll(".sidebar .step").forEach((st, idx) => {
-      if (idx === currentSection + 1) st.classList.add("active");
+      if (idx === currentSection) st.classList.add("active");
       else st.classList.remove("active");
     });
 
@@ -401,11 +387,9 @@ function renderSection() {
             <p class="questionText" style="font-weight:800; margin-bottom:16px; font-size:17px; color:#1f1f1f;">${getQuestionText(q)}</p>
             <div class="options">`; 
 
-          // EXPLICIT CHECK FOR TEXTAREA TYPES
           if (q.type === "textarea") {
                htmlStr += `<textarea id="${q.id}" placeholder="Type your answer here..." onchange="recordSelection('${q.id}', this.value)" style="width:100%; border:2px solid #e2e8f0; border-radius:14px; padding:16px; font-size:15px; font-family:inherit;">${savedAnswer}</textarea>`;
           } 
-          // SAFE ARRAY ITERATION FOR STANDARD OPTIONS
           else if (q.options && Array.isArray(q.options)) {
               q.options.forEach((opt) => {
                 const isChecked = savedAnswer === opt ? "checked" : "";
@@ -527,8 +511,6 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
         }
       } else {
         if (emailGateSection) emailGateSection.classList.add("hidden");
-        if (claimForm) claimForm.classList.remove("hidden");
-        if (topProgressBox) topProgressBox.classList.remove("hidden");
         currentSection = 0;
         renderSection();
         outputTarget.innerHTML = "";
@@ -536,8 +518,6 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
     } else {
       if (!isFromModal) {
         if (emailGateSection) emailGateSection.classList.add("hidden");
-        if (claimForm) claimForm.classList.remove("hidden");
-        if (topProgressBox) topProgressBox.classList.remove("hidden");
         currentSection = 0;
         renderSection();
         outputTarget.innerHTML = "";
@@ -560,6 +540,7 @@ async function handleSurveySubmission(e) {
   }
 
   document.getElementById("claimForm").classList.add("hidden");
+  if (topProgressBox) topProgressBox.classList.add("hidden"); // Also hide progress on complete animation
   const excitementBanner = document.getElementById("excitementBanner");
   if(excitementBanner) excitementBanner.style.display = "none";
 
@@ -588,6 +569,7 @@ async function handleSurveySubmission(e) {
         await runProfileLedgerVerification(userEmailAddress, false);
       } else {
         document.getElementById("claimForm").classList.remove("hidden"); 
+        if (topProgressBox) topProgressBox.classList.remove("hidden");
         if (statusDiv) {
           statusDiv.innerHTML = `❌ ${result.error || "Submission rejected by registry backend."}`;
           statusDiv.style.color = "#ff4d4d";
@@ -597,6 +579,7 @@ async function handleSurveySubmission(e) {
   } catch (err) {
     if (animOverlay) animOverlay.style.display = "none";
     document.getElementById("claimForm").classList.remove("hidden");
+    if (topProgressBox) topProgressBox.classList.remove("hidden");
     if (statusDiv) { statusDiv.innerHTML = "❌ Network transaction failed."; statusDiv.style.color = "#ff4d4d"; }
   }
 }
@@ -631,7 +614,7 @@ async function connectWallet(isDirectClaimFlow = false) {
           const realWeb3Address = await signer.getAddress();
           userConnectedWalletAddress = realWeb3Address.toLowerCase();
 
-          if (isDirectClaimFlow) {
+          if (isDirectDirectClaimFlow) {
             if (claimConnectWalletBtn) claimConnectWalletBtn.classList.add("hidden");
             if (claimWalletConnectedBlock) claimWalletConnectedBlock.classList.remove("hidden");
             if (claimWalletAddressDisplay) claimWalletAddressDisplay.innerText = userConnectedWalletAddress + " (Web3Auth)";
@@ -976,3 +959,4 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 });
+now logic is changed tell me changes if anything wrong ok bcoz i don want any bug in these file ok code must be full long form code no sort cut
