@@ -64,39 +64,39 @@ const progressFill = document.querySelector(".progressFill");
 const progressText = document.querySelector(".progressText");
 
 // ================= COGNITIVE PSYCHOLOGY BADGE RULES ENGINE =================
-const SPRITE_BASE = `<img src="./badges.png" alt="Badge Persona" style="position: absolute; width: 200px; height: 200px; max-width: none; pointer-events: none; `;
-
+// 🚀 IMAGE FIX: Pointing exactly to your 4 individual GitHub JPEG files
 const BADGE_PROFILES = {
   Analyzer: { 
     title: "ANALYZER", 
     sub: "The Mindful Shopper",
     desc: "You shop with brilliant clarity! For you, real value and true quality matter most. By thoughtfully comparing details and trusting genuine reviews, you always make incredibly smart and satisfying choices.", 
-    iconHTML: `${SPRITE_BASE} top: 0; left: 0;">`, 
+    iconHTML: `<img src="badge 1 analyzer .jpeg" alt="Analyzer" style="width: 100%; height: 100%; object-fit: cover;">`, 
     color: "#2563eb", textColor: "#0f172a"
   },
   Stylist: { 
     title: "STYLIST", 
     sub: "The Tasteful Explorer",
     desc: "You have a beautiful eye for design! For you, shopping is about joy, artistry, and wonderful experiences. You naturally gravitate towards things that tell a great story and bring an extra touch of elegance into your everyday life.", 
-    iconHTML: `${SPRITE_BASE} top: 0; left: -100px;">`, 
+    iconHTML: `<img src="badge 2 .jpeg" alt="Stylist" style="width: 100%; height: 100%; object-fit: cover;">`, 
     color: "#8b5cf6", textColor: "#0f172a"
   },
   Hedger: { 
     title: "HEDGER", 
     sub: "The Thoughtful Planner",
     desc: "You value peace of mind and total reliability! You love knowing your purchases are safe and backed by great guarantees. By choosing trusted paths, you ensure every shopping experience is completely smooth, secure, and worry-free.", 
-    iconHTML: `${SPRITE_BASE} top: -100px; left: 0;">`, 
+    iconHTML: `<img src="badge 3 .jpeg" alt="Hedger" style="width: 100%; height: 100%; object-fit: cover;">`, 
     color: "#ea580c", textColor: "#0f172a"
   },
   Native: { 
     title: "NATIVE", 
     sub: "The Connected Heart",
     desc: "You deeply value genuine connections! Your best shopping moments come from trusted recommendations and shared stories. By listening to friends and family, you always bring home products that carry real warmth and authenticity.", 
-    iconHTML: `${SPRITE_BASE} top: -100px; left: -100px;">`, 
+    iconHTML: `<img src="badge 4 .jpeg" alt="Native" style="width: 100%; height: 100%; object-fit: cover;">`, 
     color: "#eab308", textColor: "#0f172a"
   }
 };
 
+// MULTILINGUAL SCORING LOGIC Matrix for English, Hindi & Hinglish
 function calculateConsumerPsychologyBadge() {
   let scores = { Analyzer: 0, Stylist: 0, Hedger: 0, Native: 0 };
 
@@ -363,11 +363,19 @@ function validateCurrentSectionAnswers() {
   const sections = getSurveyData();
   const currentData = sections[currentSection];
   if (!currentData) return false;
-  for (let q of currentData.questions) { if (!answers[q.id]) return false; }
+  
+  // Custom validation to safely handle textareas
+  for (let q of currentData.questions) { 
+    if (q.type === "textarea") {
+      if (!answers[q.id] || answers[q.id].trim() === "") return false;
+    } else {
+      if (!answers[q.id]) return false; 
+    }
+  }
   return true;
 }
 
-// 🚀 BULLETPROOF RENDERING ENGINE WITH ERROR BOUNDARY
+// 🚀 CRASH FIX: Explicit logic to render Textareas correctly without breaking
 function renderSection() {
   const sections = getSurveyData();
   if (!sections || sections.length === 0 || !surveyContainer) return;
@@ -393,7 +401,7 @@ function renderSection() {
             <p class="questionText" style="font-weight:800; margin-bottom:16px; font-size:17px; color:#1f1f1f;">${getQuestionText(q)}</p>
             <div class="options">`; 
 
-          // EXPLICIT CHECK FOR TEXTAREA TYPES TO PREVENT JAVASCRIPT CRASH
+          // EXPLICIT CHECK FOR TEXTAREA TYPES
           if (q.type === "textarea") {
                htmlStr += `<textarea id="${q.id}" placeholder="Type your answer here..." onchange="recordSelection('${q.id}', this.value)" style="width:100%; border:2px solid #e2e8f0; border-radius:14px; padding:16px; font-size:15px; font-family:inherit;">${savedAnswer}</textarea>`;
           } 
@@ -425,7 +433,6 @@ function renderSection() {
       if (submitClaimBtn) submitClaimBtn.classList.add("hidden");
     }
   } catch (err) {
-    // FAILSAFE: Prints exact error to the screen instead of silently hiding everything
     surveyContainer.innerHTML = `<div style="background:#fee2e2; border: 2px solid #ef4444; color:#991b1b; padding: 20px; border-radius: 12px; font-weight:bold; margin-top:20px;">🚨 System Error: ${err.message}</div>`;
     console.error(err);
   }
