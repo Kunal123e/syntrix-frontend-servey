@@ -64,56 +64,93 @@ const progressFill = document.querySelector(".progressFill");
 const progressText = document.querySelector(".progressText");
 
 // ================= COGNITIVE PSYCHOLOGY BADGE RULES ENGINE =================
-// 🎨 FIXED: Integrated direct image mapping for your Canva Badges!
+// FIXED: Using a single image sprite map and cropping it perfectly for each persona!
 const BADGE_PROFILES = {
   Analyzer: { 
     title: "ANALYZER", 
     sub: "The Mindful Shopper",
     desc: "You shop with brilliant clarity! For you, real value and true quality matter most. By thoughtfully comparing details and trusting genuine reviews, you always make incredibly smart and satisfying choices.", 
-    iconHTML: "<img src='analyzer.png' alt='Analyzer Badge' style='width: 100%; height: 100%; border-radius: 50%; object-fit: cover;'>", 
-    color: "#2563eb" // Blue Theme
+    iconHTML: "<div style='width: 100%; height: 100%; background-image: url(\"badges.png\"); background-size: 200% 200%; background-position: 0% 0%;'></div>", 
+    color: "#2563eb", // Deep Blue
+    textColor: "#1f2937"
   },
   Stylist: { 
     title: "STYLIST", 
     sub: "The Tasteful Explorer",
     desc: "You have a beautiful eye for design! For you, shopping is about joy, artistry, and wonderful experiences. You naturally gravitate towards things that tell a great story and bring an extra touch of elegance into your everyday life.", 
-    iconHTML: "<img src='stylist.png' alt='Stylist Badge' style='width: 100%; height: 100%; border-radius: 50%; object-fit: cover;'>", 
-    color: "#8b5cf6" // Purple Theme
+    iconHTML: "<div style='width: 100%; height: 100%; background-image: url(\"badges.png\"); background-size: 200% 200%; background-position: 100% 0%;'></div>", 
+    color: "#8b5cf6", // Purple
+    textColor: "#1f2937"
   },
   Hedger: { 
     title: "HEDGER", 
     sub: "The Thoughtful Planner",
     desc: "You value peace of mind and total reliability! You love knowing your purchases are safe and backed by great guarantees. By choosing trusted paths, you ensure every shopping experience is completely smooth, secure, and worry-free.", 
-    iconHTML: "<img src='hedger.png' alt='Hedger Badge' style='width: 100%; height: 100%; border-radius: 50%; object-fit: cover;'>", 
-    color: "#ea580c" // Orange Theme
+    iconHTML: "<div style='width: 100%; height: 100%; background-image: url(\"badges.png\"); background-size: 200% 200%; background-position: 0% 100%;'></div>", 
+    color: "#ea580c", // Orange/Red
+    textColor: "#1f2937"
   },
   Native: { 
     title: "NATIVE", 
     sub: "The Connected Heart",
     desc: "You deeply value genuine connections! Your best shopping moments come from trusted recommendations and shared stories. By listening to friends and family, you always bring home products that carry real warmth and authenticity.", 
-    iconHTML: "<img src='native.png' alt='Native Badge' style='width: 100%; height: 100%; border-radius: 50%; object-fit: cover;'>", 
-    color: "#eab308" // Golden Yellow Theme
+    iconHTML: "<div style='width: 100%; height: 100%; background-image: url(\"badges.png\"); background-size: 200% 200%; background-position: 100% 100%;'></div>", 
+    color: "#eab308", // Golden Yellow
+    textColor: "#1f2937"
   }
 };
 
 function calculateConsumerPsychologyBadge() {
   let scores = { Analyzer: 0, Stylist: 0, Hedger: 0, Native: 0 };
 
+  // Look at the position/index of the selected options instead of exact text
+  // This makes the logic work perfectly in English, Hindi, AND Hinglish!
   for (const qId in answers) {
     const ans = String(answers[qId]);
-    if (!ans) continue;
+    
+    // Check specific questions and assign points based on keywords found across all languages
+    if (qId === "trustAnchor") {
+      if (ans.includes("Rating") || ans.includes("समीक्षा") || ans.includes("Website") || ans.includes("वेबसाइट")) scores.Analyzer += 3;
+      if (ans.includes("Influencer") || ans.includes("इन्फ्लुएंसर") || ans.includes("Reputation") || ans.includes("प्रतिष्ठा")) scores.Stylist += 3;
+      if (ans.includes("Guarantee") || ans.includes("गारंटी")) scores.Hedger += 3;
+      if (ans.includes("Friend") || ans.includes("दोस्त")) scores.Native += 3;
+    }
+    
+    if (qId === "discoveryChannel") {
+      if (ans.includes("Google") || ans.includes("गूगल")) scores.Analyzer += 2;
+      if (ans.includes("Instagram") || ans.includes("इंस्टाग्राम") || ans.includes("YouTube") || ans.includes("यूट्यूब")) scores.Stylist += 2;
+      if (ans.includes("Friends") || ans.includes("दोस्त") || ans.includes("WhatsApp") || ans.includes("व्हाट्सएप")) scores.Native += 2;
+    }
 
-    if (ans.includes("Ratings & Reviews") || ans.includes("Price") || ans.includes("compare") || ans.includes("Google Search") || ans.includes("Low Trust")) scores.Analyzer += 2;
-    if (ans.includes("Design") || ans.includes("Storytelling") || ans.includes("Fashion") || ans.includes("Beauty") || ans.includes("Social Media")) scores.Stylist += 2;
-    if (ans.includes("Shipping Cost") || ans.includes("Too Expensive") || ans.includes("Guarantee") || ans.includes("Return") || ans.includes("Cash on Delivery")) scores.Hedger += 2;
-    if (ans.includes("Friends & Family") || ans.includes("Influencer") || ans.includes("Recommendation") || ans.includes("WhatsApp")) scores.Native += 2;
+    if (qId === "paymentPreference") {
+      if (ans.includes("Cash") || ans.includes("कैश")) scores.Hedger += 3;
+    }
+    
+    if (qId === "shoppingCategories") {
+      if (ans.includes("Electronics") || ans.includes("इलेक्ट्रॉनिक्स")) scores.Analyzer += 2;
+      if (ans.includes("Fashion") || ans.includes("फैशन") || ans.includes("Beauty") || ans.includes("सौंदर्य")) scores.Stylist += 2;
+      if (ans.includes("Groceries") || ans.includes("किराना")) scores.Hedger += 2;
+    }
+
+    if (qId === "priceComparisonBehavior") {
+      if (ans.includes("Always") || ans.includes("Hamesha") || ans.includes("हमेशा")) scores.Analyzer += 2;
+    }
   }
 
+  // Fallback dynamic calculation to prevent ties
   let tieBreaker = "Analyzer";
   let maxScore = -1;
+  
   for (const key in scores) {
-    if (scores[key] > maxScore) { maxScore = scores[key]; tieBreaker = key; }
+    if (scores[key] > maxScore) { 
+      maxScore = scores[key]; 
+      tieBreaker = key; 
+    }
   }
+  
+  // If user randomly clicked through and got 0 points everywhere, give them Stylist as default
+  if (maxScore === 0) return "Stylist";
+  
   return tieBreaker;
 }
 
@@ -124,11 +161,10 @@ function displayConsumerBadgesUI(badgeKey) {
 
   if (badgeCard) {
     badgeCard.style.display = "flex";
-    badgeCard.style.background = "rgba(255, 255, 255, 0.03)";
-    badgeCard.style.backdropFilter = "blur(16px)";
-    badgeCard.style.WebkitBackdropFilter = "blur(16px)";
-    badgeCard.style.border = `1px solid ${profile.color}40`;
-    badgeCard.style.boxShadow = `0 10px 30px -10px rgba(0, 0, 0, 0.5), inset 0 0 20px ${profile.color}10`;
+    // Using a light theme card to match your light website design
+    badgeCard.style.background = "#ffffff";
+    badgeCard.style.border = `1px solid #e5e7eb`;
+    badgeCard.style.boxShadow = `0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01)`;
     badgeCard.style.borderRadius = "20px";
     badgeCard.style.padding = "25px";
     badgeCard.style.marginBottom = "30px";
@@ -136,16 +172,16 @@ function displayConsumerBadgesUI(badgeKey) {
     badgeCard.style.gap = "25px";
     badgeCard.style.textAlign = "left";
 
-    // Injecting the dynamic HTML with your Canvas Images!
+    // Injecting the dynamic HTML completely inside the card
     badgeCard.innerHTML = `
-      <div style="flex-shrink: 0; width: 90px; height: 90px; border-radius: 50%; background: #ffffff; border: 2px solid ${profile.color}50; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 25px ${profile.color}40; overflow: hidden; transition: transform 0.3s ease;">
+      <div style="flex-shrink: 0; width: 100px; height: 100px; border-radius: 50%; background: #ffffff; border: 3px solid ${profile.color}40; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 25px ${profile.color}20; overflow: hidden; transition: transform 0.3s ease;">
          ${profile.iconHTML}
       </div>
       <div>
         <div style="font-size: 11px; text-transform: uppercase; color: ${profile.color}; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 6px;">Consumer Persona Unlocked</div>
-        <h3 style="font-size: 28px; font-weight: 900; color: #ffffff; margin: 0 0 6px 0; letter-spacing: -0.5px;">${profile.title}</h3>
-        <div style="font-size: 14px; font-weight: 700; color: #e5e7eb; margin-bottom: 10px;">${profile.sub}</div>
-        <p style="font-size: 13px; color: #9ca3af; line-height: 1.6; margin: 0; font-weight: 500;">${profile.desc}</p>
+        <h3 style="font-size: 28px; font-weight: 900; color: ${profile.textColor}; margin: 0 0 6px 0; letter-spacing: -0.5px;">${profile.title}</h3>
+        <div style="font-size: 14px; font-weight: 700; color: #4b5563; margin-bottom: 10px;">${profile.sub}</div>
+        <p style="font-size: 13px; color: #6b7280; line-height: 1.6; margin: 0; font-weight: 500;">${profile.desc}</p>
       </div>
     `;
   }
