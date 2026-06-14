@@ -64,40 +64,39 @@ const progressFill = document.querySelector(".progressFill");
 const progressText = document.querySelector(".progressText");
 
 // ================= COGNITIVE PSYCHOLOGY BADGE RULES ENGINE =================
-// 🚀 FIXED: Directly linking to the 4 separate .jpeg files in the root folder!
+const SPRITE_BASE = `<img src="./badges.png" alt="Badge Persona" style="position: absolute; width: 200px; height: 200px; max-width: none; pointer-events: none; `;
 
 const BADGE_PROFILES = {
   Analyzer: { 
     title: "ANALYZER", 
     sub: "The Mindful Shopper",
     desc: "You shop with brilliant clarity! For you, real value and true quality matter most. By thoughtfully comparing details and trusting genuine reviews, you always make incredibly smart and satisfying choices.", 
-    iconHTML: `<img src="badge 1 analyzer .jpeg" alt="Analyzer" style="width: 100%; height: 100%; object-fit: cover;">`, 
+    iconHTML: `${SPRITE_BASE} top: 0; left: 0;">`, 
     color: "#2563eb", textColor: "#0f172a"
   },
   Stylist: { 
     title: "STYLIST", 
     sub: "The Tasteful Explorer",
     desc: "You have a beautiful eye for design! For you, shopping is about joy, artistry, and wonderful experiences. You naturally gravitate towards things that tell a great story and bring an extra touch of elegance into your everyday life.", 
-    iconHTML: `<img src="badge 2 .jpeg" alt="Stylist" style="width: 100%; height: 100%; object-fit: cover;">`, 
+    iconHTML: `${SPRITE_BASE} top: 0; left: -100px;">`, 
     color: "#8b5cf6", textColor: "#0f172a"
   },
   Hedger: { 
     title: "HEDGER", 
     sub: "The Thoughtful Planner",
     desc: "You value peace of mind and total reliability! You love knowing your purchases are safe and backed by great guarantees. By choosing trusted paths, you ensure every shopping experience is completely smooth, secure, and worry-free.", 
-    iconHTML: `<img src="badge 3 .jpeg" alt="Hedger" style="width: 100%; height: 100%; object-fit: cover;">`, 
+    iconHTML: `${SPRITE_BASE} top: -100px; left: 0;">`, 
     color: "#ea580c", textColor: "#0f172a"
   },
   Native: { 
     title: "NATIVE", 
     sub: "The Connected Heart",
     desc: "You deeply value genuine connections! Your best shopping moments come from trusted recommendations and shared stories. By listening to friends and family, you always bring home products that carry real warmth and authenticity.", 
-    iconHTML: `<img src="badge 4 .jpeg" alt="Native" style="width: 100%; height: 100%; object-fit: cover;">`, 
+    iconHTML: `${SPRITE_BASE} top: -100px; left: -100px;">`, 
     color: "#eab308", textColor: "#0f172a"
   }
 };
 
-// MULTILINGUAL SCORING LOGIC Matrix for English, Hindi & Hinglish
 function calculateConsumerPsychologyBadge() {
   let scores = { Analyzer: 0, Stylist: 0, Hedger: 0, Native: 0 };
 
@@ -181,7 +180,6 @@ function displayConsumerBadgesUI(badgeKey) {
     badgeCard.style.gap = "30px";
     badgeCard.style.textAlign = "left";
 
-    // Dynamic absolute clipped mask framework
     badgeCard.innerHTML = `
       <div style="position: relative; flex-shrink: 0; width: 100px; height: 100px; border-radius: 50%; background: #ffffff; border: 3px solid ${profile.color}60; display: block; box-shadow: 0 0 30px ${profile.color}30; overflow: hidden;">
          ${profile.iconHTML}
@@ -369,51 +367,67 @@ function validateCurrentSectionAnswers() {
   return true;
 }
 
+// 🚀 BULLETPROOF RENDERING ENGINE WITH ERROR BOUNDARY
 function renderSection() {
   const sections = getSurveyData();
   if (!sections || sections.length === 0 || !surveyContainer) return;
   const currentData = sections[currentSection];
   
-  document.querySelectorAll(".sidebar .step").forEach((st, idx) => {
-    if (idx === currentSection + 1) st.classList.add("active");
-    else st.classList.remove("active");
-  });
-
-  const progressPercent = ((currentSection + 1) / sections.length) * 100;
-  if (progressFill) progressFill.style.width = `${progressPercent}%`;
-  if (progressText) progressText.innerText = `Progress ${currentSection + 1}/${sections.length}`;
-
-  let htmlStr = `<div class="survey-section-card animate-fade-in">
-    <h2 class="surveySectionTitle" style="font-size: 26px; font-weight: 800; color: #111827; margin-bottom: 5px;">${getSectionTitle(currentData)}</h2>`;
-
-  currentData.questions.forEach((q) => {
-    const savedAnswer = answers[q.id] || "";
-    htmlStr += `<div class="question-block" style="margin-top:30px; text-align:left;">
-      <p class="questionText" style="font-weight:800; margin-bottom:16px; font-size:17px; color:#1f1f1f;">${getQuestionText(q)}</p>
-      <div class="options">`; 
-
-    q.options.forEach((opt) => {
-      const isChecked = savedAnswer === opt ? "checked" : "";
-      const isSelectedClass = savedAnswer === opt ? "selected" : ""; 
-      htmlStr += `
-        <label class="option ${isSelectedClass}" style="display:inline-block; user-select:none; font-weight: 600;">
-          <input type="radio" name="${q.id}" value="${opt}" ${isChecked} style="display:none;" onchange="recordSelection('${q.id}', this.value)">
-          <span class="optionText">${getOptionText(opt)}</span>
-        </label>`;
+  try {
+    document.querySelectorAll(".sidebar .step").forEach((st, idx) => {
+      if (idx === currentSection + 1) st.classList.add("active");
+      else st.classList.remove("active");
     });
-    htmlStr += `</div></div>`;
-  });
 
-  htmlStr += `</div>`;
-  surveyContainer.innerHTML = htmlStr;
+    const progressPercent = ((currentSection + 1) / sections.length) * 100;
+    if (progressFill) progressFill.style.width = `${progressPercent}%`;
+    if (progressText) progressText.innerText = `Progress ${currentSection + 1}/${sections.length}`;
 
-  if (prevBtn) prevBtn.style.visibility = currentSection === 0 ? "hidden" : "visible";
-  if (currentSection === sections.length - 1) {
-    if (nextBtn) nextBtn.classList.add("hidden");
-    if (submitClaimBtn) submitClaimBtn.classList.remove("hidden");
-  } else {
-    if (nextBtn) nextBtn.classList.remove("hidden");
-    if (submitClaimBtn) submitClaimBtn.classList.add("hidden");
+    let htmlStr = `<div class="survey-section-card animate-fade-in">
+      <h2 class="surveySectionTitle" style="font-size: 26px; font-weight: 800; color: #111827; margin-bottom: 5px;">${getSectionTitle(currentData)}</h2>`;
+
+    if (currentData && currentData.questions) {
+        currentData.questions.forEach((q) => {
+          const savedAnswer = answers[q.id] || "";
+          htmlStr += `<div class="question-block" style="margin-top:30px; text-align:left;">
+            <p class="questionText" style="font-weight:800; margin-bottom:16px; font-size:17px; color:#1f1f1f;">${getQuestionText(q)}</p>
+            <div class="options">`; 
+
+          // EXPLICIT CHECK FOR TEXTAREA TYPES TO PREVENT JAVASCRIPT CRASH
+          if (q.type === "textarea") {
+               htmlStr += `<textarea id="${q.id}" placeholder="Type your answer here..." onchange="recordSelection('${q.id}', this.value)" style="width:100%; border:2px solid #e2e8f0; border-radius:14px; padding:16px; font-size:15px; font-family:inherit;">${savedAnswer}</textarea>`;
+          } 
+          // SAFE ARRAY ITERATION FOR STANDARD OPTIONS
+          else if (q.options && Array.isArray(q.options)) {
+              q.options.forEach((opt) => {
+                const isChecked = savedAnswer === opt ? "checked" : "";
+                const isSelectedClass = savedAnswer === opt ? "selected" : ""; 
+                htmlStr += `
+                  <label class="option ${isSelectedClass}" style="display:inline-block; user-select:none; font-weight: 600;">
+                    <input type="radio" name="${q.id}" value="${opt}" ${isChecked} style="display:none;" onchange="recordSelection('${q.id}', this.value)">
+                    <span class="optionText">${getOptionText(opt)}</span>
+                  </label>`;
+              });
+          }
+          htmlStr += `</div></div>`;
+        });
+    }
+
+    htmlStr += `</div>`;
+    surveyContainer.innerHTML = htmlStr;
+
+    if (prevBtn) prevBtn.style.visibility = currentSection === 0 ? "hidden" : "visible";
+    if (currentSection === sections.length - 1) {
+      if (nextBtn) nextBtn.classList.add("hidden");
+      if (submitClaimBtn) submitClaimBtn.classList.remove("hidden");
+    } else {
+      if (nextBtn) nextBtn.classList.remove("hidden");
+      if (submitClaimBtn) submitClaimBtn.classList.add("hidden");
+    }
+  } catch (err) {
+    // FAILSAFE: Prints exact error to the screen instead of silently hiding everything
+    surveyContainer.innerHTML = `<div style="background:#fee2e2; border: 2px solid #ef4444; color:#991b1b; padding: 20px; border-radius: 12px; font-weight:bold; margin-top:20px;">🚨 System Error: ${err.message}</div>`;
+    console.error(err);
   }
 }
 
