@@ -33,7 +33,6 @@
           return;
         }
 
-        // FIXED 401 ERROR: Using an open public RPC node
         const chainConfig = {
           chainNamespace: "eip155",
           chainId: "0x89", 
@@ -48,7 +47,6 @@
           config: { chainConfig: chainConfig }
         });
 
-        // FIXED REDIRECT BUG: Added buildEnv production parameter
         const web3auth = new Web3AuthSDK.Web3Auth({
           clientId: "BLTKOOeFj7P8fVIGNIwqX3lhHeA948YDtXgKO_ClNELkI06hZ17XKvfpiAWA0AujfpBMAs75-LivYTtCeRWg2Lo", 
           web3AuthNetwork: "sapphire_devnet", 
