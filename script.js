@@ -64,42 +64,41 @@ const progressFill = document.querySelector(".progressFill");
 const progressText = document.querySelector(".progressText");
 
 // ================= COGNITIVE PSYCHOLOGY BADGE RULES ENGINE =================
-// 🎨 FIXED: Assigned explicit operational dimensions inside styles layout loops
+// 🚀 FOOLPROOF FIX: Emits a native absolute positioned image crop calculation wrapper
+const SPRITE_BASE = `<img src="./badges.png" alt="Badge Persona" style="position: absolute; width: 200px; height: 200px; max-width: none; pointer-events: none; `;
+
 const BADGE_PROFILES = {
   Analyzer: { 
     title: "ANALYZER", 
     sub: "The Mindful Shopper",
     desc: "You shop with brilliant clarity! For you, real value and true quality matter most. By thoughtfully comparing details and trusting genuine reviews, you always make incredibly smart and satisfying choices.", 
-    iconHTML: `<div style="width: 100px; height: 100px; background-image: url('badges.png'); background-size: 200% 200%; background-position: 0% 0%; background-repeat: no-repeat;"></div>`, 
-    color: "#2563eb", 
-    textColor: "#1f2937"
+    iconHTML: `${SPRITE_BASE} top: 0; left: 0;">`, 
+    color: "#2563eb", textColor: "#0f172a"
   },
   Stylist: { 
     title: "STYLIST", 
     sub: "The Tasteful Explorer",
     desc: "You have a beautiful eye for design! For you, shopping is about joy, artistry, and wonderful experiences. You naturally gravitate towards things that tell a great story and bring an extra touch of elegance into your everyday life.", 
-    iconHTML: `<div style="width: 100px; height: 100px; background-image: url('badges.png'); background-size: 200% 200%; background-position: 100% 0%; background-repeat: no-repeat;"></div>`, 
-    color: "#8b5cf6", 
-    textColor: "#1f2937"
+    iconHTML: `${SPRITE_BASE} top: 0; left: -100px;">`, 
+    color: "#8b5cf6", textColor: "#0f172a"
   },
   Hedger: { 
     title: "HEDGER", 
     sub: "The Thoughtful Planner",
     desc: "You value peace of mind and total reliability! You love knowing your purchases are safe and backed by great guarantees. By choosing trusted paths, you ensure every shopping experience is completely smooth, secure, and worry-free.", 
-    iconHTML: `<div style="width: 100px; height: 100px; background-image: url('badges.png'); background-size: 200% 200%; background-position: 0% 100%; background-repeat: no-repeat;"></div>`, 
-    color: "#ea580c", 
-    textColor: "#1f2937"
+    iconHTML: `${SPRITE_BASE} top: -100px; left: 0;">`, 
+    color: "#ea580c", textColor: "#0f172a"
   },
   Native: { 
     title: "NATIVE", 
     sub: "The Connected Heart",
     desc: "You deeply value genuine connections! Your best shopping moments come from trusted recommendations and shared stories. By listening to friends and family, you always bring home products that carry real warmth and authenticity.", 
-    iconHTML: `<div style="width: 100px; height: 100px; background-image: url('badges.png'); background-size: 200% 200%; background-position: 100% 100%; background-repeat: no-repeat;"></div>`, 
-    color: "#eab308", 
-    textColor: "#1f2937"
+    iconHTML: `${SPRITE_BASE} top: -100px; left: -100px;">`, 
+    color: "#eab308", textColor: "#0f172a"
   }
 };
 
+// MULTILINGUAL SCORING LOGIC Matrix for English, Hindi & Hinglish
 function calculateConsumerPsychologyBadge() {
   let scores = { Analyzer: 0, Stylist: 0, Hedger: 0, Native: 0 };
 
@@ -174,25 +173,25 @@ function displayConsumerBadgesUI(badgeKey) {
   if (badgeCard) {
     badgeCard.style.display = "flex";
     badgeCard.style.background = "#ffffff";
-    badgeCard.style.border = `1px solid #e5e7eb`;
-    badgeCard.style.boxShadow = `0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01)`;
-    badgeCard.style.borderRadius = "20px";
-    badgeCard.style.padding = "25px";
-    badgeCard.style.marginBottom = "30px";
+    badgeCard.style.border = `2px solid ${profile.color}30`;
+    badgeCard.style.boxShadow = `0 15px 35px -5px rgba(0, 0, 0, 0.05), 0 0 20px ${profile.color}15`;
+    badgeCard.style.borderRadius = "24px";
+    badgeCard.style.padding = "30px";
+    badgeCard.style.marginBottom = "35px";
     badgeCard.style.alignItems = "center";
-    badgeCard.style.gap = "25px";
+    badgeCard.style.gap = "30px";
     badgeCard.style.textAlign = "left";
 
-    // Dynamic clean structural payload
+    // Dynamic absolute clipped mask framework
     badgeCard.innerHTML = `
-      <div style="flex-shrink: 0; width: 100px; height: 100px; border-radius: 50%; background: #ffffff; border: 3px solid ${profile.color}40; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 25px ${profile.color}20; overflow: hidden;">
+      <div style="position: relative; flex-shrink: 0; width: 100px; height: 100px; border-radius: 50%; background: #ffffff; border: 3px solid ${profile.color}60; display: block; box-shadow: 0 0 30px ${profile.color}30; overflow: hidden;">
          ${profile.iconHTML}
       </div>
       <div>
-        <div style="font-size: 11px; text-transform: uppercase; color: ${profile.color}; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 6px;">Consumer Persona Unlocked</div>
-        <h3 style="font-size: 28px; font-weight: 900; color: ${profile.textColor}; margin: 0 0 6px 0; letter-spacing: -0.5px;">${profile.title}</h3>
-        <div style="font-size: 14px; font-weight: 700; color: #4b5563; margin-bottom: 10px;">${profile.sub}</div>
-        <p style="font-size: 13px; color: #6b7280; line-height: 1.6; margin: 0; font-weight: 500;">${profile.desc}</p>
+        <div style="font-size: 11px; text-transform: uppercase; color: ${profile.color}; font-weight: 900; letter-spacing: 2px; margin-bottom: 8px;">Consumer Persona Unlocked</div>
+        <h3 style="font-size: 32px; font-weight: 900; color: ${profile.textColor}; margin: 0 0 8px 0; letter-spacing: -1px;">${profile.title}</h3>
+        <div style="font-size: 16px; font-weight: 800; color: #475569; margin-bottom: 12px;">${profile.sub}</div>
+        <p style="font-size: 15px; color: #64748b; line-height: 1.7; margin: 0; font-weight: 500;">${profile.desc}</p>
       </div>
     `;
   }
@@ -328,6 +327,28 @@ function getSectionTitle(section) {
   return section.title || "";
 }
 
+// FIXED DIRECTIONAL ACTIONS System Matrix handlers
+function handleNextSection() {
+  const sections = getSurveyData();
+  if (!validateCurrentSectionAnswers()) {
+    alert(getUIText("validationRequired"));
+    return;
+  }
+  if (currentSection < sections.length - 1) {
+    currentSection++;
+    renderSection();
+    updateExcitementBanner(currentSection);
+  }
+}
+
+function handlePrevSection() {
+  if (currentSection > 0) {
+    currentSection--;
+    renderSection();
+    updateExcitementBanner(currentSection);
+  }
+}
+
 function getQuestionText(q) {
   if (typeof questionTranslations !== "undefined" && questionTranslations[currentLanguage]) {
     return questionTranslations[currentLanguage][q.id] || q.text || q.id;
@@ -415,7 +436,7 @@ function updateExcitementBanner(sectionIndex) {
 
   if (currentLanguage === "hi") {
       if (sectionIndex < 7) {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">शानदार! आपने अब तक <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> सुरक्षित कर लिए हैं!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">अगला मॉड्यूल पूरा करें और <strong style="color: #fbbf24;">8 और पाएं!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">जारी रखें & दावा करें &gt;</div></div>`;
+          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">शानदार! आपने अब तक <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> सुरक्षित कर लिए हैं!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">अगला मॉड्यूल पूरा करें Aur <strong style="color: #fbbf24;">8 Aur Paayein!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">जारी रखें & दावा करें &gt;</div></div>`;
       } else {
           banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">अविश्वसनीय! आपने सभी <span style="color: #10b981; font-weight: 900; font-size: 18px;">56 SYNX</span> सुरक्षित कर लिए हैं!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">दावा करने के लिए नीचे सबमिट पर क्लिक करें!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 56 / 56 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">दावा करने के लिए तैयार</div></div>`;
       }
