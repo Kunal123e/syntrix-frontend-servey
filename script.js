@@ -46,7 +46,6 @@ const dashboardWalletInput = document.getElementById("dashboardWalletInput");
 const executeClaimBtn = document.getElementById("executeClaimBtn");
 const connectWalletBtn = document.getElementById("connectWalletBtn");
 
-// FIXED: Defined globally to prevent runtime reference crash
 const claimScreenSection = document.getElementById("claimScreenSection");
 const claimConnectWalletBtn = document.getElementById("claimConnectWalletBtn");
 const claimWalletConnectedBlock = document.getElementById("claimWalletConnectedBlock");
@@ -65,11 +64,36 @@ const progressFill = document.querySelector(".progressFill");
 const progressText = document.querySelector(".progressText");
 
 // ================= COGNITIVE PSYCHOLOGY BADGE RULES ENGINE =================
+// 🎨 FIXED: Integrated direct image mapping for your Canva Badges!
 const BADGE_PROFILES = {
-  Analyzer: { title: "Analyzer", desc: "Vibe: Logic over hype. You scan pages for raw data, reviews, specifications, and verifiable facts.", icon: "📊", color: "#6366f1" },
-  Stylist: { title: "Stylist", desc: "Vibe: Experience first. You buy based on emotional resonance, premium aesthetics, clean design, and storytelling.", icon: "🎨", color: "#ec4899" },
-  Hedger: { title: "Hedger", desc: "Vibe: Safe and secure. You possess zero risk tolerance. You check trust flags and exit if hit with friction.", icon: "🛡️", color: "#10b981" },
-  Native: { title: "Native", desc: "Vibe: Community validated. You choose platforms backed by word-of-mouth, peer reviews, or family context.", icon: "👥", color: "#3b82f6" }
+  Analyzer: { 
+    title: "ANALYZER", 
+    sub: "The Mindful Shopper",
+    desc: "You shop with brilliant clarity! For you, real value and true quality matter most. By thoughtfully comparing details and trusting genuine reviews, you always make incredibly smart and satisfying choices.", 
+    iconHTML: "<img src='analyzer.png' alt='Analyzer Badge' style='width: 100%; height: 100%; border-radius: 50%; object-fit: cover;'>", 
+    color: "#2563eb" // Blue Theme
+  },
+  Stylist: { 
+    title: "STYLIST", 
+    sub: "The Tasteful Explorer",
+    desc: "You have a beautiful eye for design! For you, shopping is about joy, artistry, and wonderful experiences. You naturally gravitate towards things that tell a great story and bring an extra touch of elegance into your everyday life.", 
+    iconHTML: "<img src='stylist.png' alt='Stylist Badge' style='width: 100%; height: 100%; border-radius: 50%; object-fit: cover;'>", 
+    color: "#8b5cf6" // Purple Theme
+  },
+  Hedger: { 
+    title: "HEDGER", 
+    sub: "The Thoughtful Planner",
+    desc: "You value peace of mind and total reliability! You love knowing your purchases are safe and backed by great guarantees. By choosing trusted paths, you ensure every shopping experience is completely smooth, secure, and worry-free.", 
+    iconHTML: "<img src='hedger.png' alt='Hedger Badge' style='width: 100%; height: 100%; border-radius: 50%; object-fit: cover;'>", 
+    color: "#ea580c" // Orange Theme
+  },
+  Native: { 
+    title: "NATIVE", 
+    sub: "The Connected Heart",
+    desc: "You deeply value genuine connections! Your best shopping moments come from trusted recommendations and shared stories. By listening to friends and family, you always bring home products that carry real warmth and authenticity.", 
+    iconHTML: "<img src='native.png' alt='Native Badge' style='width: 100%; height: 100%; border-radius: 50%; object-fit: cover;'>", 
+    color: "#eab308" // Golden Yellow Theme
+  }
 };
 
 function calculateConsumerPsychologyBadge() {
@@ -97,20 +121,33 @@ function displayConsumerBadgesUI(badgeKey) {
   const profile = BADGE_PROFILES[badgeKey] || BADGE_PROFILES.Analyzer;
   
   const badgeCard = document.getElementById("dashboardPsychologyBadgeCard");
-  const badgeIcon = document.getElementById("dashboardBadgeIcon");
-  const badgeTitle = document.getElementById("dashboardBadgeTitle");
-  const badgeDesc = document.getElementById("dashboardBadgeDesc");
 
-  if (badgeCard && badgeTitle) {
+  if (badgeCard) {
     badgeCard.style.display = "flex";
-    badgeCard.style.setProperty("--glow-color", profile.color);
-    if (badgeIcon) {
-      badgeIcon.innerText = profile.icon;
-      badgeIcon.className = "badge-icon-glow";
-    }
-    badgeTitle.innerText = profile.title;
-    badgeTitle.style.color = profile.color;
-    if (badgeDesc) badgeDesc.innerText = profile.desc;
+    badgeCard.style.background = "rgba(255, 255, 255, 0.03)";
+    badgeCard.style.backdropFilter = "blur(16px)";
+    badgeCard.style.WebkitBackdropFilter = "blur(16px)";
+    badgeCard.style.border = `1px solid ${profile.color}40`;
+    badgeCard.style.boxShadow = `0 10px 30px -10px rgba(0, 0, 0, 0.5), inset 0 0 20px ${profile.color}10`;
+    badgeCard.style.borderRadius = "20px";
+    badgeCard.style.padding = "25px";
+    badgeCard.style.marginBottom = "30px";
+    badgeCard.style.alignItems = "center";
+    badgeCard.style.gap = "25px";
+    badgeCard.style.textAlign = "left";
+
+    // Injecting the dynamic HTML with your Canvas Images!
+    badgeCard.innerHTML = `
+      <div style="flex-shrink: 0; width: 90px; height: 90px; border-radius: 50%; background: #ffffff; border: 2px solid ${profile.color}50; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 25px ${profile.color}40; overflow: hidden; transition: transform 0.3s ease;">
+         ${profile.iconHTML}
+      </div>
+      <div>
+        <div style="font-size: 11px; text-transform: uppercase; color: ${profile.color}; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 6px;">Consumer Persona Unlocked</div>
+        <h3 style="font-size: 28px; font-weight: 900; color: #ffffff; margin: 0 0 6px 0; letter-spacing: -0.5px;">${profile.title}</h3>
+        <div style="font-size: 14px; font-weight: 700; color: #e5e7eb; margin-bottom: 10px;">${profile.sub}</div>
+        <p style="font-size: 13px; color: #9ca3af; line-height: 1.6; margin: 0; font-weight: 500;">${profile.desc}</p>
+      </div>
+    `;
   }
 
   const dropdownBadgeWrapper = document.getElementById("menuPsychologyBadgeWrapper");
@@ -489,7 +526,6 @@ async function connectWallet(isDirectClaimFlow = false) {
     if (closeBtn) closeBtn.onclick = () => creatorModal.classList.add("hidden");
 
     if (googleAuthBtn) {
-      // FIXED LEAK: Clean assignment of listener 
       googleAuthBtn.onclick = null; 
       googleAuthBtn.onclick = async () => {
         if (!window.isWeb3AuthReady || !window.metamaskEmbeddedInstance) {
