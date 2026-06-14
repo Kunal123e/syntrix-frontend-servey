@@ -64,38 +64,38 @@ const progressFill = document.querySelector(".progressFill");
 const progressText = document.querySelector(".progressText");
 
 // ================= COGNITIVE PSYCHOLOGY BADGE RULES ENGINE =================
-// FIXED: Using a single image sprite map and cropping it perfectly for each persona!
+// 🎨 FIXED: Assigned explicit operational dimensions inside styles layout loops
 const BADGE_PROFILES = {
   Analyzer: { 
     title: "ANALYZER", 
     sub: "The Mindful Shopper",
     desc: "You shop with brilliant clarity! For you, real value and true quality matter most. By thoughtfully comparing details and trusting genuine reviews, you always make incredibly smart and satisfying choices.", 
-    iconHTML: "<div style='width: 100%; height: 100%; background-image: url(\"badges.png\"); background-size: 200% 200%; background-position: 0% 0%;'></div>", 
-    color: "#2563eb", // Deep Blue
+    iconHTML: `<div style="width: 100px; height: 100px; background-image: url('badges.png'); background-size: 200% 200%; background-position: 0% 0%; background-repeat: no-repeat;"></div>`, 
+    color: "#2563eb", 
     textColor: "#1f2937"
   },
   Stylist: { 
     title: "STYLIST", 
     sub: "The Tasteful Explorer",
     desc: "You have a beautiful eye for design! For you, shopping is about joy, artistry, and wonderful experiences. You naturally gravitate towards things that tell a great story and bring an extra touch of elegance into your everyday life.", 
-    iconHTML: "<div style='width: 100%; height: 100%; background-image: url(\"badges.png\"); background-size: 200% 200%; background-position: 100% 0%;'></div>", 
-    color: "#8b5cf6", // Purple
+    iconHTML: `<div style="width: 100px; height: 100px; background-image: url('badges.png'); background-size: 200% 200%; background-position: 100% 0%; background-repeat: no-repeat;"></div>`, 
+    color: "#8b5cf6", 
     textColor: "#1f2937"
   },
   Hedger: { 
     title: "HEDGER", 
     sub: "The Thoughtful Planner",
     desc: "You value peace of mind and total reliability! You love knowing your purchases are safe and backed by great guarantees. By choosing trusted paths, you ensure every shopping experience is completely smooth, secure, and worry-free.", 
-    iconHTML: "<div style='width: 100%; height: 100%; background-image: url(\"badges.png\"); background-size: 200% 200%; background-position: 0% 100%;'></div>", 
-    color: "#ea580c", // Orange/Red
+    iconHTML: `<div style="width: 100px; height: 100px; background-image: url('badges.png'); background-size: 200% 200%; background-position: 0% 100%; background-repeat: no-repeat;"></div>`, 
+    color: "#ea580c", 
     textColor: "#1f2937"
   },
   Native: { 
     title: "NATIVE", 
     sub: "The Connected Heart",
     desc: "You deeply value genuine connections! Your best shopping moments come from trusted recommendations and shared stories. By listening to friends and family, you always bring home products that carry real warmth and authenticity.", 
-    iconHTML: "<div style='width: 100%; height: 100%; background-image: url(\"badges.png\"); background-size: 200% 200%; background-position: 100% 100%;'></div>", 
-    color: "#eab308", // Golden Yellow
+    iconHTML: `<div style="width: 100px; height: 100px; background-image: url('badges.png'); background-size: 200% 200%; background-position: 100% 100%; background-repeat: no-repeat;"></div>`, 
+    color: "#eab308", 
     textColor: "#1f2937"
   }
 };
@@ -103,65 +103,76 @@ const BADGE_PROFILES = {
 function calculateConsumerPsychologyBadge() {
   let scores = { Analyzer: 0, Stylist: 0, Hedger: 0, Native: 0 };
 
-  // Look at the position/index of the selected options instead of exact text
-  // This makes the logic work perfectly in English, Hindi, AND Hinglish!
   for (const qId in answers) {
     const ans = String(answers[qId]);
-    
-    // Check specific questions and assign points based on keywords found across all languages
-    if (qId === "trustAnchor") {
-      if (ans.includes("Rating") || ans.includes("समीक्षा") || ans.includes("Website") || ans.includes("वेबसाइट")) scores.Analyzer += 3;
-      if (ans.includes("Influencer") || ans.includes("इन्फ्लुएंसर") || ans.includes("Reputation") || ans.includes("प्रतिष्ठा")) scores.Stylist += 3;
-      if (ans.includes("Guarantee") || ans.includes("गारंटी")) scores.Hedger += 3;
-      if (ans.includes("Friend") || ans.includes("दोस्त")) scores.Native += 3;
-    }
-    
-    if (qId === "discoveryChannel") {
-      if (ans.includes("Google") || ans.includes("गूगल")) scores.Analyzer += 2;
-      if (ans.includes("Instagram") || ans.includes("इंस्टाग्राम") || ans.includes("YouTube") || ans.includes("यूट्यूब")) scores.Stylist += 2;
-      if (ans.includes("Friends") || ans.includes("दोस्त") || ans.includes("WhatsApp") || ans.includes("व्हाट्सएप")) scores.Native += 2;
+    if (!ans) continue;
+
+    if (
+      ans.includes("Too Expensive") || ans.includes("Zyada Mehnga") || ans.includes("महंगा") ||
+      ans.includes("Poor Reviews") || ans.includes("Kharab Reviews") || ans.includes("खराब समीक्षाएँ") ||
+      ans.includes("Ratings & Reviews") || ans.includes("रेटिंग") ||
+      ans.includes("Always") || ans.includes("Hamesha") || ans.includes("हमेशा") ||
+      ans.includes("Google Search") || ans.includes("गूगल सर्च") ||
+      ans.includes("Electronics") || ans.includes("इलेक्ट्रॉनिक्स") ||
+      ans.includes("compare") || ans.includes("तुलना")
+    ) {
+      scores.Analyzer += 2;
     }
 
-    if (qId === "paymentPreference") {
-      if (ans.includes("Cash") || ans.includes("कैश")) scores.Hedger += 3;
-    }
-    
-    if (qId === "shoppingCategories") {
-      if (ans.includes("Electronics") || ans.includes("इलेक्ट्रॉनिक्स")) scores.Analyzer += 2;
-      if (ans.includes("Fashion") || ans.includes("फैशन") || ans.includes("Beauty") || ans.includes("सौंदर्य")) scores.Stylist += 2;
-      if (ans.includes("Groceries") || ans.includes("किराना")) scores.Hedger += 2;
+    if (
+      ans.includes("Content Creator") || ans.includes("कंटेंट क्रिएटर") ||
+      ans.includes("Above 50%") || ans.includes("50% se zyada") || ans.includes("50% से अधिक") ||
+      ans.includes("Instagram") || ans.includes("इंस्टाग्राम") ||
+      ans.includes("YouTube") || ans.includes("यूट्यूब") ||
+      ans.includes("Influencer") || ans.includes("इन्फ्लुएंसर") ||
+      ans.includes("Design") || ans.includes("डिज़ाइन") ||
+      ans.includes("Fashion") || ans.includes("फैशन") ||
+      ans.includes("Beauty") || ans.includes("सौंदर्य")
+    ) {
+      scores.Stylist += 2;
     }
 
-    if (qId === "priceComparisonBehavior") {
-      if (ans.includes("Always") || ans.includes("Hamesha") || ans.includes("हमेशा")) scores.Analyzer += 2;
+    if (
+      ans.includes("Shipping Cost") || ans.includes("Delivery Charge") || ans.includes("डिलीवरी शुल्क") ||
+      ans.includes("Low Trust") || ans.includes("Kam Bharosa") || ans.includes("कम भरोसा") ||
+      ans.includes("Payment Failure") || ans.includes("Fail") || ans.includes("विफल") ||
+      ans.includes("Free Only") || ans.includes("Sirf Free") || ans.includes("केवल मुफ्त") ||
+      ans.includes("Cash on Delivery") ||
+      ans.includes("Guarantee") || ans.includes("गारंटी") ||
+      ans.includes("Return") || ans.includes("वापसी") ||
+      ans.includes("Private") || ans.includes("निजी")
+    ) {
+      scores.Hedger += 2;
+    }
+
+    if (
+      ans.includes("Friends & Family") || ans.includes("दोस्त और परिवार") ||
+      ans.includes("WhatsApp") || ans.includes("व्हाट्सएप") ||
+      ans.includes("Friend Recommendation") || ans.includes("Dost ka Kehna") || ans.includes("दोस्त की सिफारिश") ||
+      ans.includes("Very Often") || ans.includes("Bohot Baar") || ans.includes("बहुत अक्सर") ||
+      ans.includes("Social Media") || ans.includes("सोशल मीडिया") ||
+      ans.includes("Recommend to Friends") || ans.includes("Doston ko batana") || ans.includes("दोस्तों को सुझाव दें")
+    ) {
+      scores.Native += 2;
     }
   }
 
-  // Fallback dynamic calculation to prevent ties
   let tieBreaker = "Analyzer";
   let maxScore = -1;
-  
   for (const key in scores) {
-    if (scores[key] > maxScore) { 
-      maxScore = scores[key]; 
-      tieBreaker = key; 
-    }
+    if (scores[key] > maxScore) { maxScore = scores[key]; tieBreaker = key; }
   }
   
-  // If user randomly clicked through and got 0 points everywhere, give them Stylist as default
   if (maxScore === 0) return "Stylist";
-  
   return tieBreaker;
 }
 
 function displayConsumerBadgesUI(badgeKey) {
   const profile = BADGE_PROFILES[badgeKey] || BADGE_PROFILES.Analyzer;
-  
   const badgeCard = document.getElementById("dashboardPsychologyBadgeCard");
 
   if (badgeCard) {
     badgeCard.style.display = "flex";
-    // Using a light theme card to match your light website design
     badgeCard.style.background = "#ffffff";
     badgeCard.style.border = `1px solid #e5e7eb`;
     badgeCard.style.boxShadow = `0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01)`;
@@ -172,9 +183,9 @@ function displayConsumerBadgesUI(badgeKey) {
     badgeCard.style.gap = "25px";
     badgeCard.style.textAlign = "left";
 
-    // Injecting the dynamic HTML completely inside the card
+    // Dynamic clean structural payload
     badgeCard.innerHTML = `
-      <div style="flex-shrink: 0; width: 100px; height: 100px; border-radius: 50%; background: #ffffff; border: 3px solid ${profile.color}40; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 25px ${profile.color}20; overflow: hidden; transition: transform 0.3s ease;">
+      <div style="flex-shrink: 0; width: 100px; height: 100px; border-radius: 50%; background: #ffffff; border: 3px solid ${profile.color}40; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 25px ${profile.color}20; overflow: hidden;">
          ${profile.iconHTML}
       </div>
       <div>
