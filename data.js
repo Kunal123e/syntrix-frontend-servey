@@ -132,69 +132,75 @@ function calculateConsumerPsychologyBadge() {
   let scores = { Analyzer: 0, Stylist: 0, Hedger: 0, Native: 0 };
 
   for (const qId in answers) {
-    const ans = String(answers[qId]);
+    const ans = String(answers[qId]).toLowerCase().trim();
     if (!ans) continue;
 
-    // 📊 ANALYZER: Focuses on data, reviews, price, comparisons, and logic.
+    // 📊 ANALYZER: Data, reviews, discount structures, logic parameters
     if (
-      ans.includes("Too Expensive") || 
-      ans.includes("Poor Reviews") || 
-      ans.includes("Ratings & Reviews") || 
-      ans.includes("I try if reviews are good") || 
-      ans.includes("Positive Reviews") || 
-      ans.includes("Discount") || 
-      ans.includes("Always") || 
-      ans.includes("Electronics & Gadgets")
+      ans.includes("expensive") || 
+      ans.includes("poor reviews") || 
+      ans.includes("ratings") || 
+      ans.includes("reviews are good") || 
+      ans.includes("positive reviews") || 
+      ans.includes("discount") || 
+      ans.includes("compares prices") || 
+      ans.includes("always") || 
+      ans.includes("electronics") ||
+      ans.includes("gadgets")
     ) {
       scores.Analyzer += 2;
     }
 
-    // ✨ STYLIST: Focuses on aesthetics, trends, premium experiences, and social platforms.
+    // ✨ STYLIST: Aesthetics, trends, premium content, presentation
     if (
-      ans.includes("Content Creator") || 
-      ans.includes("Above 50%") || 
-      ans.includes("Instagram") || 
-      ans.includes("YouTube") || 
-      ans.includes("Professional Website") || 
-      ans.includes("Brand Reputation") || 
-      ans.includes("I love trying new brands") || 
-      ans.includes("Limited Stock") || 
-      ans.includes("Fashion & Clothing") || 
-      ans.includes("Beauty & Personal Care")
+      ans.includes("creator") || 
+      ans.includes("above 50%") || 
+      ans.includes("instagram") || 
+      访问.includes("youtube") || 
+      ans.includes("website") || 
+      ans.includes("reputation") || 
+      ans.includes("trying new brands") || 
+      ans.includes("limited stock") || 
+      ans.includes("fashion") || 
+      ans.includes("clothing") || 
+      ans.includes("beauty") || 
+      ans.includes("personal care")
     ) {
       scores.Stylist += 2;
     }
 
-    // 🛡️ HEDGER: Focuses on safety, avoiding risks, free shipping, COD, and trust.
+    // 🛡️ HEDGER: Risk aversion, secure paths, explicit guarantees
     if (
-      ans.includes("Shipping Cost") || 
-      ans.includes("Low Trust") || 
-      ans.includes("Payment Failure") || 
-      ans.includes("Free Only") || 
-      ans.includes("Cash on Delivery") || 
-      ans.includes("avoid unknown brands") || 
-      ans.includes("rarely try unknown") || 
-      ans.includes("Only if Necessary") || 
-      ans.includes("Keep it Private")
+      ans.includes("shipping cost") || 
+      ans.includes("delivery charge") || 
+      ans.includes("low trust") || 
+      ans.includes("failure") || 
+      ans.includes("free only") || 
+      ans.includes("delivery (cod)") || 
+      ans.includes("avoid unknown") || 
+      ans.includes("rarely try") || 
+      ans.includes("if necessary") || 
+      ans.includes("private")
     ) {
       scores.Hedger += 2;
     }
 
-    // 🌐 NATIVE: Focuses on community, word-of-mouth, gifting, and friends/family.
+    // 🌐 NATIVE: Interpersonal loops, direct word of mouth channels, references
     if (
-      ans.includes("Friends & Family") || 
-      ans.includes("Influencers") || 
-      ans.includes("WhatsApp") || 
-      ans.includes("Friend Recommendation") || 
-      ans.includes("Very Often") || 
-      ans.includes("Share on Social Media") || 
-      ans.includes("Recommend to Friends")
+      ans.includes("friends") || 
+      ans.includes("family") || 
+      ans.includes("influencer") || 
+      ans.includes("whatsapp") || 
+      ans.includes("recommendation") || 
+      ans.includes("very often") || 
+      ans.includes("share on social") || 
+      ans.includes("recommend")
     ) {
       scores.Native += 2;
     }
   }
 
-  // 🚀 FIXED TIE-BREAKER LOGIC: Safely initializes variables to force an explicit fallback configuration tracking layout
+  // 🚀 TIE-BREAKER LOGIC: Safely initializes baseline rules to trigger Stylist on empty values
   let tieBreaker = "Stylist"; 
   let maxScore = 0; 
   
