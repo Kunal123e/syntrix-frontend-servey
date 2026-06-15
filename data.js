@@ -156,7 +156,7 @@ function calculateConsumerPsychologyBadge() {
       ans.includes("creator") || 
       ans.includes("above 50%") || 
       ans.includes("instagram") || 
-      访问.includes("youtube") || 
+      ans.includes("youtube") || // 🚀 TYPO FIXED HERE (Replaced Chinese character characters with 'ans')
       ans.includes("website") || 
       ans.includes("reputation") || 
       ans.includes("trying new brands") || 
