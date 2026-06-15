@@ -17,6 +17,19 @@
         {
           "key": "Cross-Origin-Embedder-Policy",
           "value": "unsafe-none"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
+    },
+    {
+      "source": "/(.*).(jpg|jpeg|png|svg|css|js)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
         }
       ]
     }
