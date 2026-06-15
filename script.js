@@ -64,33 +64,34 @@ const progressFill = document.querySelector(".progressFill");
 const progressText = document.querySelector(".progressText");
 
 // ================= COGNITIVE PSYCHOLOGY BADGE RULES ENGINE =================
+// 🚀 FIXED: Subfolder target vectors matching your file list parameters exactly
 const BADGE_PROFILES = {
   Analyzer: { 
     title: "ANALYZER", 
     sub: "The Mindful Shopper",
     desc: "You shop with brilliant clarity! For you, real value and true quality matter most. By thoughtfully comparing details and trusting genuine reviews, you always make incredibly smart and satisfying choices.", 
-    iconHTML: `<img src="badge 1 analyzer .jpeg" alt="Analyzer" style="width: 100%; height: 100%; object-fit: cover;">`, 
+    iconHTML: `<img src="BADGES PNG/badge 1 analyzer.jpeg" alt="Analyzer" style="width: 100%; height: 100%; object-fit: cover;">`, 
     color: "#2563eb", textColor: "#0f172a"
   },
   Stylist: { 
     title: "STYLIST", 
     sub: "The Tasteful Explorer",
     desc: "You have a beautiful eye for design! For you, shopping is about joy, artistry, and wonderful experiences. You naturally gravitate towards things that tell a great story and bring an extra touch of elegance into your everyday life.", 
-    iconHTML: `<img src="badge 2 .jpeg" alt="Stylist" style="width: 100%; height: 100%; object-fit: cover;">`, 
+    iconHTML: `<img src="BADGES PNG/badge 2.jpeg" alt="Stylist" style="width: 100%; height: 100%; object-fit: cover;">`, 
     color: "#8b5cf6", textColor: "#0f172a"
   },
   Hedger: { 
     title: "HEDGER", 
     sub: "The Thoughtful Planner",
     desc: "You value peace of mind and total reliability! You love knowing your purchases are safe and backed by great guarantees. By choosing trusted paths, you ensure every shopping experience is completely smooth, secure, and worry-free.", 
-    iconHTML: `<img src="badge 3 .jpeg" alt="Hedger" style="width: 100%; height: 100%; object-fit: cover;">`, 
+    iconHTML: `<img src="BADGES PNG/badge 3.jpeg" alt="Hedger" style="width: 100%; height: 100%; object-fit: cover;">`, 
     color: "#ea580c", textColor: "#0f172a"
   },
   Native: { 
     title: "NATIVE", 
     sub: "The Connected Heart",
     desc: "You deeply value genuine connections! Your best shopping moments come from trusted recommendations and shared stories. By listening to friends and family, you always bring home products that carry real warmth and authenticity.", 
-    iconHTML: `<img src="badge 4 .jpeg" alt="Native" style="width: 100%; height: 100%; object-fit: cover;">`, 
+    iconHTML: `<img src="BADGES PNG/badge 4.jpeg" alt="Native" style="width: 100%; height: 100%; object-fit: cover;">`, 
     color: "#eab308", textColor: "#0f172a"
   }
 };
@@ -305,6 +306,7 @@ function getSectionTitle(section) {
   return section.title || "";
 }
 
+// REST of standard mapping handlers remain longform
 function handleNextSection() {
   const sections = getSurveyData();
   if (!validateCurrentSectionAnswers()) {
@@ -608,7 +610,6 @@ async function connectWallet(isDirectClaimFlow = false) {
           const realWeb3Address = await signer.getAddress();
           userConnectedWalletAddress = realWeb3Address.toLowerCase();
 
-          // 🚀 FIXED TYPO HERE (Removed duplicate word 'Direct')
           if (isDirectClaimFlow) {
             if (claimConnectWalletBtn) claimConnectWalletBtn.classList.add("hidden");
             if (claimWalletConnectedBlock) claimWalletConnectedBlock.classList.remove("hidden");
