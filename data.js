@@ -130,12 +130,16 @@ var surveySections = [
 
 function calculateConsumerPsychologyBadge() {
   let scores = { Analyzer: 0, Stylist: 0, Hedger: 0, Native: 0 };
+  
+  // 🚀 SCOPING FIX: Safely targets window level answers repository context fallback
+  const activeAnswers = typeof answers !== "undefined" ? answers : (window.answers || {});
 
-  for (const qId in answers) {
-    const ans = String(answers[qId]).toLowerCase().trim();
+  for (const qId in activeAnswers) {
+    const ans = String(activeAnswers[qId]).toLowerCase().trim();
     if (!ans) continue;
 
     // 📊 ANALYZER: Data, reviews, discount structures, logic parameters
+    // 🚀 CASE FIX: Strings updated to matching lowercase tokens
     if (
       ans.includes("expensive") || 
       ans.includes("poor reviews") || 
@@ -156,7 +160,7 @@ function calculateConsumerPsychologyBadge() {
       ans.includes("creator") || 
       ans.includes("above 50%") || 
       ans.includes("instagram") || 
-      ans.includes("youtube") || // 🚀 TYPO FIXED HERE (Replaced Chinese character characters with 'ans')
+      ans.includes("youtube") || 
       ans.includes("website") || 
       ans.includes("reputation") || 
       ans.includes("trying new brands") || 
@@ -176,10 +180,10 @@ function calculateConsumerPsychologyBadge() {
       ans.includes("low trust") || 
       ans.includes("failure") || 
       ans.includes("free only") || 
-      ans.includes("delivery (cod)") || 
+      ans.includes("cash on delivery") || 
       ans.includes("avoid unknown") || 
       ans.includes("rarely try") || 
-      ans.includes("if necessary") || 
+      ans.includes("necessary") || 
       ans.includes("private")
     ) {
       scores.Hedger += 2;
