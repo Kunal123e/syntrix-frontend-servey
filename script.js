@@ -1,10 +1,7 @@
 // =========================================================================
 // SYNTRIX CORE PLATFORM APPLICATION LOGIC ENGINE
-// Architecture: Single Page Application Matrix Core
-// Security Infrastructure: Web3Auth Embedded OAuth & Ethers Signer Gateway
 // =========================================================================
 
-// ================= GLOBAL CONFIGURATION ENGINES & CONSTANTS =================
 const BACKEND_URL = window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1")
   ? "http://localhost:5000"
   : "https://syntrix-airdrop.onrender.com";
@@ -20,83 +17,89 @@ let currentLanguage = "en";
 let isOtpSent = false;
 let userConnectedWalletAddress = "";
 
-// ================= DOM LINK HIERARCHY HOOK NODES =================
 const emailGateSection = document.getElementById("emailGateSection");
 const emailGateForm = document.getElementById("emailGateForm");
 const gateEmailInput = document.getElementById("gateEmail");
 const startSurveyBtn = document.getElementById("startSurveyBtn");
 const referredByCodeInput = document.getElementById("referredByCode"); 
-
 const menuToggleBtn = document.getElementById("menuToggleBtn");
 const optionsPopover = document.getElementById("optionsPopover");
 const menuRestartBtn = document.getElementById("menuRestartBtn");
 const menuRecoverBtn = document.getElementById("menuRecoverBtn");
-
 const retrieveModal = document.getElementById("retrieveModal");
 const closeModalBtn = document.getElementById("closeModalBtn");
 const cancelModalBtn = document.getElementById("cancelModalBtn");
 const confirmRetrieveBtn = document.getElementById("confirmRetrieveBtn");
 const modalEmailInput = document.getElementById("modalEmailInput");
 const modalStatus = document.getElementById("modalStatus");
-
 const topProgressBox = document.getElementById("topProgressBox");
 const claimForm = document.getElementById("claimForm");
 const surveyContainer = document.getElementById("surveyContainer");
-
 const nextBtn = document.getElementById("nextBtn");
 const prevBtn = document.getElementById("prevBtn");
 const submitClaimBtn = document.getElementById("submitClaimBtn");
-
 const rewardDashboardScreen = document.getElementById("rewardDashboardScreen");
 const dashboardWalletInput = document.getElementById("dashboardWalletInput");
 const executeClaimBtn = document.getElementById("executeClaimBtn");
 const connectWalletBtn = document.getElementById("connectWalletBtn");
-
 const claimScreenSection = document.getElementById("claimScreenSection");
 const claimConnectWalletBtn = document.getElementById("claimConnectWalletBtn");
 const claimWalletConnectedBlock = document.getElementById("claimWalletConnectedBlock");
 const claimWalletAddressDisplay = document.getElementById("claimWalletAddressDisplay");
 const submitClaimRewardBtn = document.getElementById("submitClaimRewardBtn");
-
 const statTotalReferrals = document.getElementById("statTotalReferrals");
 const statPendingRewards = document.getElementById("statPendingRewards");
 const statClaimedRewards = document.getElementById("statClaimedRewards");
 const statTotalEarned = document.getElementById("statTotalEarned");
 const referralCodeDisplay = document.getElementById("referralCodeDisplay");
 const copyReferralBtn = document.getElementById("copyReferralBtn");
-
 const statusDiv = document.getElementById("status");
 const progressFill = document.querySelector(".progressFill");
 const progressText = document.querySelector(".progressText");
 
-// ================= COGNITIVE PSYCHOLOGY BADGE RULES ENGINE =================
+// 🚀 FIXED: Professional Custom Toast Overrides Default Alert
+function showToast(message, icon = "⚠️") {
+  const toast = document.getElementById("customToast");
+  const toastMsg = document.getElementById("toastMessage");
+  const toastIcon = document.querySelector(".toast-icon");
+  
+  if (toast && toastMsg) {
+    toastMsg.innerText = message;
+    if(toastIcon) toastIcon.innerText = icon;
+    toast.classList.add("show");
+    
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 3500);
+  } else {
+    alert(message);
+  }
+}
+
+// 🚀 FIXED: Vercel Path Image Errors (Proper URL Escaping `%20`)
 const BADGE_PROFILES = {
   Analyzer: { 
-    title: "ANALYZER", 
-    sub: "The Mindful Shopper",
+    title: "ANALYZER", sub: "The Mindful Shopper",
     desc: "You shop with brilliant clarity! For you, real value and true quality matter most. By thoughtfully comparing details and trusting genuine reviews, you always make incredibly smart and satisfying choices.", 
-    iconHTML: `<img src="BADGES PNG/badge 1 analyzer.jpeg" alt="Analyzer" style="width: 100%; height: 100%; object-fit: cover;">`, 
+    iconHTML: `<img src="BADGES%20PNG/badge%201%20analyzer.jpeg" alt="Analyzer" style="width: 100%; height: 100%; object-fit: cover;">`, 
     color: "#2563eb", textColor: "#0f172a"
   },
   Stylist: { 
-    title: "STYLIST", 
-    sub: "The Tasteful Explorer",
+    title: "STYLIST", sub: "The Tasteful Explorer",
     desc: "You have a beautiful eye for design! For you, shopping is about joy, artistry, and wonderful experiences. You naturally gravitate towards things that tell a great story and bring an extra touch of elegance into your everyday life.", 
-    iconHTML: `<img src="BADGES PNG/badge 3.jpeg" alt="Stylist" style="width: 100%; height: 100%; object-fit: cover;">`, 
+    iconHTML: `<img src="BADGES%20PNG/badge%203.jpeg" alt="Stylist" style="width: 100%; height: 100%; object-fit: cover;">`, 
     color: "#8b5cf6", textColor: "#0f172a"
   },
   Hedger: { 
-    title: "HEDGER", 
-    sub: "The Thoughtful Planner",
+    title: "HEDGER", sub: "The Thoughtful Planner",
     desc: "You value peace of mind and total reliability! You love knowing your purchases are safe and backed by great guarantees. By choosing trusted paths, you ensure every shopping experience is completely smooth, secure, and worry-free.", 
-    iconHTML: `<img src="BADGES PNG/badge 2.jpeg" alt="Hedger" style="width: 100%; height: 100%; object-fit: cover;">`, 
+    iconHTML: `<img src="BADGES%20PNG/badge%202.jpeg" alt="Hedger" style="width: 100%; height: 100%; object-fit: cover;">`, 
     color: "#ea580c", textColor: "#0f172a"
   },
   Native: { 
-    title: "NATIVE", 
-    sub: "The Connected Heart",
+    title: "NATIVE", sub: "The Connected Heart",
     desc: "You deeply value genuine connections! Your best shopping moments come from trusted recommendations and shared stories. By listening to friends and family, you always bring home products that carry real warmth and authenticity.", 
-    iconHTML: `<img src="BADGES PNG/badge 4.jpeg" alt="Native" style="width: 100%; height: 100%; object-fit: cover;">`, 
+    iconHTML: `<img src="BADGES%20PNG/badge%204.jpeg" alt="Native" style="width: 100%; height: 100%; object-fit: cover;">`, 
     color: "#eab308", textColor: "#0f172a"
   }
 };
@@ -139,7 +142,6 @@ function displayConsumerBadgesUI(badgeKey) {
   }
 }
 
-// ================= GLOBAL HELPERS & FORM VALIDATION MATRIX =================
 function normalizeReferralCode(code) {
   if (!code) return "";
   let clean = code.trim().toUpperCase();
@@ -167,7 +169,7 @@ async function fetchWithTimeout(resource, options = {}) {
 
 function getUIText(key) {
   const fallbacks = {
-    validationRequired: "❌ Please answer all questions before continuing.",
+    validationRequired: "Please answer all questions before continuing.",
     submitting: "⏳ Storing survey data metrics across secure registers...",
     claiming: "⚡ Appending whitelist configuration parameters...",
     checkingLedger: "🔍 Authenticating communication profile ledger status..."
@@ -178,7 +180,6 @@ function getUIText(key) {
   return fallbacks[key] || key;
 }
 
-// ================= STAGE 1: EMAIL VERIFICATION GATE =================
 if (emailGateForm) {
   emailGateForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -253,7 +254,6 @@ if (emailGateForm) {
 
 function getSurveyData() { return typeof surveySections !== "undefined" ? surveySections : []; }
 
-// ================= STAGE 2: SURVEY RENDER SYSTEM =================
 function getSectionTitle(section) {
   if (typeof sectionTranslations !== "undefined" && sectionTranslations[currentLanguage]) {
     return sectionTranslations[currentLanguage][section.title] || section.title;
@@ -264,7 +264,7 @@ function getSectionTitle(section) {
 function handleNextSection() {
   const sections = getSurveyData();
   if (!validateCurrentSectionAnswers()) {
-    alert(getUIText("validationRequired"));
+    showToast(getUIText("validationRequired"), "⚠️");
     return;
   }
   if (currentSection < sections.length - 1) {
@@ -391,7 +391,6 @@ function updateExcitementBanner(sectionIndex) {
   if (!banner) return;
   if (sectionIndex === 0) { banner.style.display = "none"; return; }
 
-  // 🚀 FIXED: Incremental calculations locked to exact 8 tokens per block (Total 48 SYNX Matrix)
   const unlockedTokens = sectionIndex * 8;
   const totalTokens = 48;
   
@@ -419,7 +418,6 @@ function updateExcitementBanner(sectionIndex) {
   }
 }
 
-// ================= STAGE 3: PROFILE LEDGER BACKEND HANDLERS =================
 async function runProfileLedgerVerification(email, isFromModal = false) {
   const outputTarget = isFromModal ? modalStatus : statusDiv;
   if (!outputTarget) return;
@@ -483,20 +481,18 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
         renderSection();
         outputTarget.innerHTML = "";
       } else {
-        outputTarget.innerHTML = "❌ Profile ledger entry not found.";
-        outputTarget.style.color = "#ff4d4d";
+        showToast("Profile ledger entry not found.", "❌");
       }
     }
   } catch (err) {
-    outputTarget.innerHTML = "❌ Communication framework offline.";
-    outputTarget.style.color = "#ff4d4d";
+    showToast("Communication framework offline.", "❌");
   }
 }
 
 async function handleSurveySubmission(e) {
   if (e) e.preventDefault();
   if (!validateCurrentSectionAnswers()) {
-    alert(getUIText("validationRequired"));
+    showToast(getUIText("validationRequired"), "⚠️");
     return;
   }
 
@@ -529,20 +525,16 @@ async function handleSurveySubmission(e) {
         await runProfileLedgerVerification(userEmailAddress, false);
       } else {
         document.getElementById("claimForm").classList.remove("hidden"); 
-        if (statusDiv) {
-          statusDiv.innerHTML = `❌ ${result.error || "Submission rejected by registry backend."}`;
-          statusDiv.style.color = "#ff4d4d";
-        }
+        showToast(`${result.error || "Submission rejected by registry backend."}`, "❌");
       }
     }, 3500);
   } catch (err) {
     if (animOverlay) animOverlay.style.display = "none";
     document.getElementById("claimForm").classList.remove("hidden");
-    if (statusDiv) { statusDiv.innerHTML = "❌ Network transaction failed."; statusDiv.style.color = "#ff4d4d"; }
+    showToast("Network transaction failed.", "❌");
   }
 }
 
-// ================= STAGE 5: WEB3 EMBEDDED OAUTH WALLET HANDLING =================
 async function connectWallet(isDirectClaimFlow = false) {
   const creatorModal = document.getElementById("walletCreatorModal");
   const closeBtn = document.getElementById("closeWalletCreatorBtn");
@@ -557,10 +549,10 @@ async function connectWallet(isDirectClaimFlow = false) {
       googleAuthBtn.onclick = null; 
       googleAuthBtn.onclick = async () => {
         if (!window.isWeb3AuthReady || !window.metamaskEmbeddedInstance) {
-          if (statusDiv) { statusDiv.innerHTML = `⏳ Web3 Engine is still loading. Please wait a moment and click again.`; statusDiv.style.color = "#f59e0b"; }
+          showToast("Web3 Engine is still loading. Please wait a moment.", "⏳");
           return;
         }
-        if (statusDiv) { statusDiv.innerHTML = `⏳ Initializing secure Web3Auth portal via MetaMask parameters...`; statusDiv.style.color = "#a855f7"; }
+        showToast("Initializing secure Web3Auth portal...", "⏳");
         
         try {
           const provider = await window.metamaskEmbeddedInstance.connect();
@@ -580,10 +572,10 @@ async function connectWallet(isDirectClaimFlow = false) {
             if (dashboardWalletInput) dashboardWalletInput.value = userConnectedWalletAddress;
           }
           if (creatorModal) creatorModal.classList.add("hidden");
-          if (statusDiv) { statusDiv.innerHTML = `✅ Authentic Web3 wallet generated and linked successfully!`; statusDiv.style.color = "#57d6c2"; }
+          showToast("Authentic Web3 wallet generated and linked!", "✅");
         } catch (authErr) {
           console.error("Web3Auth verification abort:", authErr);
-          if (statusDiv) { statusDiv.innerHTML = `❌ Connection cancelled or denied.`; statusDiv.style.color = "#ff4d4d"; }
+          showToast("Connection cancelled or denied.", "❌");
         }
       };
     }
@@ -610,10 +602,10 @@ async function handleManualClaimExecution() {
   const targetWallet = dashboardWalletInput.value.trim();
 
   if (!WALLET_REGEX.test(targetWallet)) {
-    alert("❌ Invalid EVM public address format.");
+    showToast("Invalid EVM public address format.", "❌");
     return;
   }
-  if (statusDiv) { statusDiv.innerHTML = `⚡ Ingesting reward request to transactional queue registers...`; statusDiv.style.color = "#a855f7"; }
+  showToast("Ingesting reward request to transactional queue registers...", "⚡");
 
   try {
     const response = await fetchWithTimeout(`${BACKEND_URL}/api/claim-reward`, {
@@ -623,14 +615,14 @@ async function handleManualClaimExecution() {
     });
     const result = await response.json();
     if (result.success) {
-      if (statusDiv) { statusDiv.innerHTML = "✨ Address safely whitelisted for token launch deployment cycles."; statusDiv.style.color = "#57d6c2"; }
+      showToast("Address safely whitelisted for token launch.", "✨");
       if (dashboardWalletInput) dashboardWalletInput.value = "";
       setTimeout(async () => { await runProfileLedgerVerification(userEmailAddress, false); }, 4000);
     } else {
-      if (statusDiv) { statusDiv.innerHTML = `❌ ${result.error || "Claim system execution failed."}`; statusDiv.style.color = "#ff4d4d"; }
+      showToast(`${result.error || "Claim system execution failed."}`, "❌");
     }
   } catch (err) {
-    if (statusDiv) { statusDiv.innerHTML = "❌ Token execution communication gateway failure."; statusDiv.style.color = "#ff4d4d"; }
+    showToast("Token execution communication gateway failure.", "❌");
   }
 }
 
@@ -657,7 +649,7 @@ async function initializeClaimSection(token) {
 
       if (document.getElementById("claimInfoEmail")) document.getElementById("claimInfoEmail").innerText = details.email;
       if (document.getElementById("claimInfoType")) document.getElementById("claimInfoType").innerText = details.type || "Airdrop Claim";
-      if (document.getElementById("claimInfoAmount")) document.getElementById("claimInfoAmount").innerText = `${details.amount || 48} SYNX`; // 🚀 FIXED TO 48
+      if (document.getElementById("claimInfoAmount")) document.getElementById("claimInfoAmount").innerText = `${details.amount || 48} SYNX`;
       
       claimScreenSection.dataset.email = details.email; claimScreenSection.dataset.token = token;
     } else {
@@ -683,14 +675,14 @@ function showClaimScreenError(title, subtitle) {
   if (sub) sub.innerText = subtitle;
   if (errBox) errBox.classList.remove("hidden");
   if (detailsBox) detailsBox.classList.add("hidden");
-  if (panel) panel.add("hidden");
+  if (panel) panel.classList.add("hidden");
 }
 
 async function handleSignatureTokenRelease() {
   if (!claimScreenSection) return;
   const email = claimScreenSection.dataset.email;
   const token = claimScreenSection.dataset.token;
-  if (!userConnectedWalletAddress) { alert("Please re-establish MetaMask structural configurations."); return; }
+  if (!userConnectedWalletAddress) { showToast("Please re-establish MetaMask structural configurations.", "⚠️"); return; }
 
   try {
     const message = `Authenticating Token Core distribution protocols on email registry node: ${email}`;
@@ -732,7 +724,7 @@ async function handleSignatureTokenRelease() {
   } catch (err) { 
     const gear = document.getElementById("claimLoadingGear");
     if (gear) gear.classList.add("hidden"); 
-    alert("Cryptographic signature process rejected or timed out."); 
+    showToast("Cryptographic signature process rejected or timed out.", "❌"); 
   }
 }
 
@@ -745,7 +737,7 @@ function handleReferralLinkCopy() {
       const originalText = copyReferralBtn.innerText; copyReferralBtn.innerText = "Copied! ✓";
       setTimeout(() => { copyReferralBtn.innerText = originalText; }, 2000);
     }
-  } catch (err) { alert("Failed to access system registers."); }
+  } catch (err) { showToast("Failed to access system registers.", "❌"); }
 }
 
 const dismissModal = () => { if (retrieveModal) retrieveModal.classList.add("hidden"); };
