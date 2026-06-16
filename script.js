@@ -101,56 +101,6 @@ const BADGE_PROFILES = {
   }
 };
 
-function calculateConsumerPsychologyBadge() {
-  let scores = { Analyzer: 0, Stylist: 0, Hedger: 0, Native: 0 };
-
-  for (const qId in answers) {
-    const ans = String(answers[qId]);
-    if (!ans) continue;
-
-    if (
-      ans.includes("Too Expensive") || ans.includes("Poor Reviews") || 
-      ans.includes("Ratings & Reviews") || ans.includes("I try if reviews are good") || 
-      ans.includes("Positive Reviews") || ans.includes("Discount") || 
-      ans.includes("Always") || ans.includes("Electronics & Gadgets")
-    ) { scores.Analyzer += 2; }
-
-    if (
-      ans.includes("Content Creator") || ans.includes("Above 50%") || 
-      ans.includes("Instagram") || ans.includes("YouTube") || 
-      ans.includes("Professional Website") || ans.includes("Brand Reputation") || 
-      ans.includes("I love trying new brands") || ans.includes("Limited Stock") || 
-      ans.includes("Fashion & Clothing") || ans.includes("Beauty & Personal Care")
-    ) { scores.Stylist += 2; }
-
-    if (
-      ans.includes("Shipping Cost") || ans.includes("Low Trust") || 
-      ans.includes("Payment Failure") || ans.includes("Free Only") || 
-      ans.includes("Cash on Delivery") || ans.includes("avoid unknown brands") || 
-      ans.includes("rarely try unknown") || ans.includes("Only if Necessary") || 
-      ans.includes("Keep it Private")
-    ) { scores.Hedger += 2; }
-
-    if (
-      ans.includes("Friends & Family") || ans.includes("Influencers") || 
-      ans.includes("WhatsApp") || ans.includes("Friend Recommendation") || 
-      ans.includes("Very Often") || ans.includes("Share on Social Media") || 
-      ans.includes("Recommend to Friends")
-    ) { scores.Native += 2; }
-  }
-
-  let tieBreaker = "Stylist"; 
-  let maxScore = 0;
-  
-  for (const key in scores) {
-    if (scores[key] > maxScore) { 
-      maxScore = scores[key]; 
-      tieBreaker = key; 
-    }
-  }
-  return tieBreaker;
-}
-
 function displayConsumerBadgesUI(badgeKey) {
   const profile = BADGE_PROFILES[badgeKey] || BADGE_PROFILES.Analyzer;
   const badgeCard = document.getElementById("dashboardPsychologyBadgeCard");
@@ -324,7 +274,6 @@ function handleNextSection() {
   }
 }
 
-// Continued clean pipeline execution loops
 function handlePrevSection() {
   if (currentSection > 0) {
     currentSection--;
@@ -372,9 +321,15 @@ function renderSection() {
     if (claimForm) claimForm.classList.remove("hidden");
     if (emailGateSection) emailGateSection.classList.add("hidden");
 
-    document.querySelectorAll(".sidebar .step").forEach((st, idx) => {
+    const sidebarSteps = document.querySelectorAll(".sidebar .step");
+    sidebarSteps.forEach((st, idx) => {
       if (idx === currentSection) st.classList.add("active");
       else st.classList.remove("active");
+      if (sections[idx]) {
+        const titleText = sections[idx].title.split(".")[1] || sections[idx].title;
+        const stepLabel = st.querySelector(".stepLabel") || st;
+        if (stepLabel) stepLabel.innerText = titleText.trim();
+      }
     });
 
     const progressPercent = ((currentSection + 1) / sections.length) * 100;
@@ -436,28 +391,30 @@ function updateExcitementBanner(sectionIndex) {
   if (!banner) return;
   if (sectionIndex === 0) { banner.style.display = "none"; return; }
 
+  // 🚀 FIXED: Incremental calculations locked to exact 8 tokens per block (Total 48 SYNX Matrix)
   const unlockedTokens = sectionIndex * 8;
-  const totalTokens = 56;
+  const totalTokens = 48;
+  
   banner.style.display = "flex";
   banner.style.animation = 'none'; banner.offsetHeight; banner.style.animation = 'slideDown 0.5s ease-out';
 
   if (currentLanguage === "hi") {
-      if (sectionIndex < 7) {
+      if (sectionIndex < 5) {
           banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">शानदार! आपने अब तक <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> सुरक्षित कर लिए हैं!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">अगला मॉड्यूल पूरा करें Aur <strong style="color: #fbbf24;">8 Aur Paayein!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">जारी रखें & दावा करें &gt;</div></div>`;
       } else {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">अविश्वसनीय! आपने सभी <span style="color: #10b981; font-weight: 900; font-size: 18px;">56 SYNX</span> सुरक्षित कर लिए हैं!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">दावा करने के लिए नीचे सबमिट पर क्लिक करें!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 56 / 56 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">दावा करने के लिए तैयार</div></div>`;
+          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">अविश्वसनीय! आपने सभी <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span> सुरक्षित कर लिए हैं!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">दावा करने के लिए नीचे सबमिट पर क्लिक करें!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">दावा करने के लिए तैयार</div></div>`;
       }
   } else if (currentLanguage === "hinglish") {
-      if (sectionIndex < 7) {
+      if (sectionIndex < 5) {
           banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! Aapne ab tak <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> secure kar liye hain!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Next module complete karein aur <strong style="color: #fbbf24;">8 more payein!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div></div>`;
       } else {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! Aapne sabhi <span style="color: #10b981; font-weight: 900; font-size: 18px;">56 SYNX</span> secure kar liye hain!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Neeche Submit button par click karke claim karein!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 56 / 56 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div>`;
+          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! Aapne sabhi <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span> secure kar liye hain!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Neeche Submit button par click karke claim karein!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div>`;
       }
   } else {
-      if (sectionIndex < 7) {
+      if (sectionIndex < 5) {
           banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! You've secured <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> so far!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Complete the next module to claim <strong style="color: #fbbf24;">8 more!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div></div>`;
       } else {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! You've secured all <span style="color: #10b981; font-weight: 900; font-size: 18px;">56 SYNX</span>!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Hit Submit below to transfer them to your wallet!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 56 / 56 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div>`;
+          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! You've secured all <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span>!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Hit Submit below to transfer them to your wallet!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div>`;
       }
   }
 }
@@ -505,7 +462,7 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
             receiptBlock.classList.remove("hidden");
             receiptBlock.innerHTML = `
               <div style="width: 60px; height: 60px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(245, 158, 11, 0.1); border: 2px solid #f59e0b; color: #f59e0b; font-size: 28px; font-weight: bold;">🔒</div>
-              <h3 style="font-size: 20px; font-weight: 800; color: #ffffff; margin-bottom: 8px;">56 SYNX Allocation Whitelisted!</h3>
+              <h3 style="font-size: 20px; font-weight: 800; color: #ffffff; margin-bottom: 8px;">48 SYNX Allocation Whitelisted!</h3>
               <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 0; line-height: 1.4;">Your profile address <strong>${statusResult.walletAddress || ""}</strong> has been added to the genesis block. Redemption airdrop links will launch when the token goes mainnet live!</p>
             `;
           }
@@ -700,7 +657,7 @@ async function initializeClaimSection(token) {
 
       if (document.getElementById("claimInfoEmail")) document.getElementById("claimInfoEmail").innerText = details.email;
       if (document.getElementById("claimInfoType")) document.getElementById("claimInfoType").innerText = details.type || "Airdrop Claim";
-      if (document.getElementById("claimInfoAmount")) document.getElementById("claimInfoAmount").innerText = `${details.amount || 56} SYNX`;
+      if (document.getElementById("claimInfoAmount")) document.getElementById("claimInfoAmount").innerText = `${details.amount || 48} SYNX`; // 🚀 FIXED TO 48
       
       claimScreenSection.dataset.email = details.email; claimScreenSection.dataset.token = token;
     } else {
@@ -726,7 +683,7 @@ function showClaimScreenError(title, subtitle) {
   if (sub) sub.innerText = subtitle;
   if (errBox) errBox.classList.remove("hidden");
   if (detailsBox) detailsBox.classList.add("hidden");
-  if (panel) panel.classList.add("hidden");
+  if (panel) panel.add("hidden");
 }
 
 async function handleSignatureTokenRelease() {
