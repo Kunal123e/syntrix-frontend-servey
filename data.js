@@ -1,6 +1,6 @@
 // =========================================================================
 // SYNTRIX CONSUMER ANCHOR DATA LEDGER SYSTEM
-// Contains the full multilingual survey question registry matrix (Real New Questions)
+// Contains the full multilingual survey question registry matrix (6-Section Array)
 // =========================================================================
 
 var surveySections = [
@@ -143,32 +143,7 @@ var surveySections = [
     ]
   },
   {
-    title: "5. High-Fidelity Sentiment (Written Experience)",
-    questions: [
-      {
-        id: "painPoint",
-        question: "What makes you leave a 1-star review? Describe your worst experience.",
-        type: "textarea"
-      },
-      {
-        id: "bestPoint",
-        question: "What makes you a loyal customer? Describe your best purchase experience.",
-        type: "textarea"
-      },
-      {
-        id: "complementPoint",
-        question: "What is the bare minimum you expect from any online purchase?",
-        type: "textarea"
-      },
-      {
-        id: "referralVoice",
-        question: "Describe the last time you recommended a product to someone. What did you say?",
-        type: "textarea"
-      }
-    ]
-  },
-  {
-    title: "6. Niche Vertical - Shopping Categories",
+    title: "5. Niche Vertical - Shopping Categories",
     questions: [
       {
         id: "shoppingCategories",
@@ -185,7 +160,7 @@ var surveySections = [
     ]
   },
   {
-    title: "7. Post-Purchase Behavior",
+    title: "6. Post-Purchase Behavior",
     questions: [
       {
         id: "postPurchaseAction",
@@ -203,11 +178,6 @@ var surveySections = [
   }
 ];
 
-// =========================================================================
-// COGNITIVE PSYCHOLOGY BADGE RULES ENGINE
-// Evaluates scoring matrices across dynamic global answers
-// =========================================================================
-
 function calculateConsumerPsychologyBadge() {
   let scores = { Analyzer: 0, Stylist: 0, Hedger: 0, Native: 0 };
   const activeAnswers = typeof answers !== "undefined" ? answers : (window.answers || {});
@@ -216,7 +186,6 @@ function calculateConsumerPsychologyBadge() {
     const ans = String(activeAnswers[qId]).toLowerCase().trim();
     if (!ans) continue;
 
-    // 📊 ANALYZER: Focuses on data, logic, and metrics
     if (
       ans.includes("expensive") || ans.includes("poor reviews") || 
       ans.includes("ratings") || ans.includes("reviews are good") || 
@@ -227,7 +196,6 @@ function calculateConsumerPsychologyBadge() {
       scores.Analyzer += 2;
     }
 
-    // ✨ STYLIST: Focuses on aesthetics, design, and trends
     if (
       ans.includes("creator") || ans.includes("above 50%") || 
       ans.includes("instagram") || ans.includes("youtube") || 
@@ -239,7 +207,6 @@ function calculateConsumerPsychologyBadge() {
       scores.Stylist += 2;
     }
 
-    // 🛡️ HEDGER: Focuses on security, safety, and warranties
     if (
       ans.includes("shipping cost") || ans.includes("delivery charge") || 
       ans.includes("low trust") || ans.includes("failure") || 
@@ -250,7 +217,6 @@ function calculateConsumerPsychologyBadge() {
       scores.Hedger += 2;
     }
 
-    // 🌐 NATIVE: Focuses on social circles, recommendations, and family
     if (
       ans.includes("friends") || ans.includes("family") || 
       ans.includes("influencer") || ans.includes("whatsapp") || 
