@@ -1,123 +1,203 @@
 // =========================================================================
 // SYNTRIX CONSUMER ANCHOR DATA LEDGER SYSTEM
-// Contains the full multilingual survey question registry matrix
+// Contains the full multilingual survey question registry matrix (Real New Questions)
 // =========================================================================
 
 var surveySections = [
   {
-    title: "Financial",
+    title: "1. Financial Power & Demographics",
     questions: [
       {
-        id: "fin_q1",
-        question: "How do you usually handle high-priced product configurations?",
+        id: "monthlySpend",
+        question: "What is your monthly online shopping spend?",
         type: "radio",
-        options: ["Too Expensive", "Discount", "Always compares prices", "Only if Necessary"]
+        options: ["Under ₹500", "₹500 - ₹2,000", "₹2,000 - ₹5,000", "₹5,000 - ₹15,000", "Above ₹15,000"]
       },
       {
-        id: "fin_q2",
-        question: "Which product category do you spend most of your monthly capital reserves on?",
+        id: "locationType",
+        question: "Which city tier are you from?",
         type: "radio",
-        options: ["Electronics & Gadgets", "Fashion & Clothing", "Beauty & Personal Care", "Other"]
+        options: [
+          "🏙️ Metro City (Mumbai, Delhi, Bengaluru, Chennai)",
+          "🌆 Large City (Ahmedabad, Surat, Jaipur, Vadodara)",
+          "🏘️ Small City / District City (Rajkot, Udaipur, Bhavnagar, Kota)",
+          "🌿 Town / Village (Kalol, Gangapur and similar areas)"
+        ]
+      },
+      {
+        id: "ageGroup",
+        question: "What is your age group?",
+        type: "radio",
+        options: ["Under 18", "18-24", "25-34", "35-44", "Above 44"]
+      },
+      {
+        id: "userPersona",
+        question: "What best describes you?",
+        type: "radio",
+        options: ["Student", "Salaried Employee", "Business Owner", "Freelancer", "Content Creator", "Trader / Investor"]
+      },
+      {
+        id: "luxuryAllocation",
+        question: "How much of your income goes to non-essential / fun purchases?",
+        type: "radio",
+        options: ["Under 5%", "5% - 15%", "15% - 30%", "30% - 50%", "Above 50%"]
       }
     ]
   },
   {
-    title: "Checkout",
+    title: "2. Checkout Friction & Drop-Off Killers",
     questions: [
       {
-        id: "chk_q1",
-        question: "What is your preferred transaction execution framework method?",
+        id: "purchaseBlocker",
+        question: "What most often stops you from completing a purchase?",
         type: "radio",
-        options: ["Cash on Delivery", "Payment Failure protection cards", "Digital Wallets", "Bank Transfer"]
+        options: ["Shipping Cost", "Too Expensive", "Low Trust", "Poor Reviews", "Slow Delivery", "Payment Failure"]
       },
       {
-        id: "chk_q2",
-        question: "What parameter instantly forces you to abandon an active shopping cart session?",
+        id: "shippingCostTolerance",
+        question: "How much shipping cost will you accept before abandoning?",
         type: "radio",
-        options: ["Shipping Cost", "Low Trust indicators", "Long Delivery times", "Complicated Checkout"]
+        options: ["Free Only", "Under ₹50", "Under ₹100", "Under ₹300", "Any if Product is Worth It"]
+      },
+      {
+        id: "paymentPreference",
+        question: "How do you prefer to pay?",
+        type: "radio",
+        options: ["UPI", "Cash on Delivery (COD)", "Debit / Credit Card", "Net Banking", "Buy Now Pay Later / EMI", "Crypto"]
+      },
+      {
+        id: "returnPolicyImportance",
+        question: "How important is a good return / exchange policy to you?",
+        type: "radio",
+        options: ["Extremely Important", "Important", "Neutral", "Not Important"]
       }
     ]
   },
   {
-    title: "Discovery",
+    title: "3. Discovery Engines & Trust Anchors",
     questions: [
       {
-        id: "dsc_q1",
-        question: "Where do you discover new consumer web applications or product trends?",
+        id: "discoveryChannel",
+        question: "Where do you usually first discover a new product you end up buying?",
         type: "radio",
-        options: ["Instagram", "YouTube", "Google Search", "Friends & Family"]
+        options: ["Instagram", "YouTube", "Online Ads", "Google Search", "Influencers", "Friends & Family", "WhatsApp"]
       },
       {
-        id: "dsc_q2",
-        question: "How often do you engage with active social media brand channels?",
+        id: "trustAnchor",
+        question: "What finally makes you trust a product enough to buy?",
         type: "radio",
-        options: ["Very Often", "Sometimes", "Rarely", "Never"]
+        options: ["Ratings & Reviews", "Influencer Review", "Friend Recommendation", "Brand Reputation", "Professional Website", "Money Back Guarantee"]
+      },
+      {
+        id: "brandRiskTolerance",
+        question: "How do you feel about trying brands you have never heard of?",
+        type: "radio",
+        options: [
+          "I love trying new brands",
+          "I try if reviews are good",
+          "I rarely try unknown brands",
+          "I avoid unknown brands completely"
+        ]
+      },
+      {
+        id: "shoppingDevice",
+        question: "Which device do you mostly use to shop online?",
+        type: "radio",
+        options: ["Android Smartphone", "iPhone", "Laptop", "Tablet", "Desktop Computer"]
       }
     ]
   },
   {
-    title: "Psychology",
+    title: "4. Buying Psychology & Timelines",
     questions: [
       {
-        id: "psy_q1",
-        question: "What primary core driver motivates you to try out completely unknown brands?",
+        id: "conversionTrigger",
+        question: "What most directly makes you go from 'I want this' to actually buying?",
         type: "radio",
-        options: ["I love trying new brands", "I try if reviews are good", "avoid unknown brands", "Friend Recommendation"]
+        options: ["Discount", "Urgency / FOMO", "Positive Reviews", "Limited Stock", "Bundle Offer"]
       },
       {
-        id: "psy_q2",
-        question: "How do you value social status validation when choosing premium items?",
+        id: "decisionTimeline",
+        question: "How long does it usually take from first seeing a product to buying it?",
         type: "radio",
-        options: ["Brand Reputation", "Limited Stock urgency", "Ratings & Reviews matrix", "No opinion"]
+        options: ["Instantly", "Same Day", "1-3 Days", "1 Week", "1 Month", "Only if Necessary"]
+      },
+      {
+        id: "giftingBehavior",
+        question: "Do you ever buy products as gifts for others?",
+        type: "radio",
+        options: ["Always", "Often", "Sometimes", "Rarely", "Never"]
+      },
+      {
+        id: "priceComparisonBehavior",
+        question: "Before buying, do you compare prices across multiple platforms?",
+        type: "radio",
+        options: ["Always", "Often", "Sometimes", "Rarely", "Never"]
+      },
+      {
+        id: "peakShoppingTime",
+        question: "When do you shop the most online?",
+        type: "radio",
+        options: ["Morning", "Afternoon", "Evening", "Late Night", "During Sales"]
       }
     ]
   },
   {
-    title: "Categories",
+    title: "5. High-Fidelity Sentiment (Written Experience)",
     questions: [
       {
-        id: "cat_q1",
-        question: "Which consumer persona structure best describes your day-to-day lifestyle profile?",
-        type: "radio",
-        options: ["Content Creator", "Influencers", "Thoughtful Planner", "Mindful Explorer"]
-      },
-      {
-        id: "cat_q2",
-        question: "What percentage of your retail transactions are completed inside verified digital marketplaces?",
-        type: "radio",
-        options: ["Above 50%", "Below 50%", "Free Only web solutions", "None"]
-      }
-    ]
-  },
-  {
-    title: "Post-Purchase",
-    questions: [
-      {
-        id: "pst_q1",
-        question: "How do you handle your transactional data footprints across centralized architectures?",
-        type: "radio",
-        options: ["Keep it Private", "Share on Social Media", "Recommend to Friends", "Don't Care"]
-      },
-      {
-        id: "pst_q2",
-        question: "How frequently do you procure retail products specifically intended for family gifting cycles?",
-        type: "radio",
-        options: ["Very Often", "WhatsApp community recommendations", "rarely try unknown paths", "Never"]
-      }
-    ]
-  },
-  {
-    title: "Experience",
-    questions: [
-      {
-        id: "exp_q1",
-        question: "Provide direct qualitative feedback detailing parameters that maximize transactional execution flow speeds.",
+        id: "painPoint",
+        question: "What makes you leave a 1-star review? Describe your worst experience.",
         type: "textarea"
       },
       {
-        id: "exp_q2",
-        question: "Detail your functional requirements for zero-knowledge privacy layers inside alpha web builds.",
+        id: "bestPoint",
+        question: "What makes you a loyal customer? Describe your best purchase experience.",
         type: "textarea"
+      },
+      {
+        id: "complementPoint",
+        question: "What is the bare minimum you expect from any online purchase?",
+        type: "textarea"
+      },
+      {
+        id: "referralVoice",
+        question: "Describe the last time you recommended a product to someone. What did you say?",
+        type: "textarea"
+      }
+    ]
+  },
+  {
+    title: "6. Niche Vertical - Shopping Categories",
+    questions: [
+      {
+        id: "shoppingCategories",
+        question: "Which categories do you shop online most?",
+        type: "radio",
+        options: ["Fashion & Clothing", "Beauty & Personal Care", "Electronics & Gadgets", "Gaming", "Fitness & Sports", "Books & Education", "Home & Kitchen", "Jewellery & Accessories", "Groceries & Daily Needs"]
+      },
+      {
+        id: "categorySpendCeiling",
+        question: "How much do you typically spend per purchase in your main category?",
+        type: "radio",
+        options: ["Under ₹300", "₹300 - ₹800", "₹800 - ₹2,000", "₹2,000 - ₹5,000", "₹5,000 - ₹15,000", "Above ₹15,000"]
+      }
+    ]
+  },
+  {
+    title: "7. Post-Purchase Behavior",
+    questions: [
+      {
+        id: "postPurchaseAction",
+        question: "After buying something you love, what do you usually do?",
+        type: "radio",
+        options: ["Share on Social Media", "Recommend to Friends", "Leave a Review", "Buy Again", "Keep it Private"]
+      },
+      {
+        id: "returnHistoryReason",
+        question: "Have you ever returned a product? What was the reason?",
+        type: "radio",
+        options: ["Poor Quality", "Wrong Size", "Damaged Product", "Fake Product", "Different from Photos", "Never Returned"]
       }
     ]
   }
@@ -130,81 +210,57 @@ var surveySections = [
 
 function calculateConsumerPsychologyBadge() {
   let scores = { Analyzer: 0, Stylist: 0, Hedger: 0, Native: 0 };
-  
-  // 🚀 SCOPING FIX: Safely targets window level answers repository context fallback
   const activeAnswers = typeof answers !== "undefined" ? answers : (window.answers || {});
 
   for (const qId in activeAnswers) {
     const ans = String(activeAnswers[qId]).toLowerCase().trim();
     if (!ans) continue;
 
-    // 📊 ANALYZER: Data, reviews, discount structures, logic parameters
-    // 🚀 CASE FIX: Strings updated to matching lowercase tokens
+    // 📊 ANALYZER: Focuses on data, logic, and metrics
     if (
-      ans.includes("expensive") || 
-      ans.includes("poor reviews") || 
-      ans.includes("ratings") || 
-      ans.includes("reviews are good") || 
-      ans.includes("positive reviews") || 
-      ans.includes("discount") || 
-      ans.includes("compares prices") || 
-      ans.includes("always") || 
-      ans.includes("electronics") ||
-      ans.includes("gadgets")
+      ans.includes("expensive") || ans.includes("poor reviews") || 
+      ans.includes("ratings") || ans.includes("reviews are good") || 
+      ans.includes("positive reviews") || ans.includes("discount") || 
+      ans.includes("compare prices") || ans.includes("electronics") || 
+      ans.includes("gadgets") || ans.includes("always")
     ) {
       scores.Analyzer += 2;
     }
 
-    // ✨ STYLIST: Aesthetics, trends, premium content, presentation
+    // ✨ STYLIST: Focuses on aesthetics, design, and trends
     if (
-      ans.includes("creator") || 
-      ans.includes("above 50%") || 
-      ans.includes("instagram") || 
-      ans.includes("youtube") || 
-      ans.includes("website") || 
-      ans.includes("reputation") || 
-      ans.includes("trying new brands") || 
-      ans.includes("limited stock") || 
-      ans.includes("fashion") || 
-      ans.includes("clothing") || 
-      ans.includes("beauty") || 
+      ans.includes("creator") || ans.includes("above 50%") || 
+      ans.includes("instagram") || ans.includes("youtube") || 
+      ans.includes("reputation") || ans.includes("trying new brands") || 
+      ans.includes("limited stock") || ans.includes("fashion") || 
+      ans.includes("clothing") || ans.includes("beauty") || 
       ans.includes("personal care")
     ) {
       scores.Stylist += 2;
     }
 
-    // 🛡️ HEDGER: Risk aversion, secure paths, explicit guarantees
+    // 🛡️ HEDGER: Focuses on security, safety, and warranties
     if (
-      ans.includes("shipping cost") || 
-      ans.includes("delivery charge") || 
-      ans.includes("low trust") || 
-      ans.includes("failure") || 
-      ans.includes("free only") || 
-      ans.includes("cash on delivery") || 
-      ans.includes("avoid unknown") || 
-      ans.includes("rarely try") || 
-      ans.includes("necessary") || 
-      ans.includes("private")
+      ans.includes("shipping cost") || ans.includes("delivery charge") || 
+      ans.includes("low trust") || ans.includes("failure") || 
+      ans.includes("free only") || ans.includes("cash on delivery") || 
+      ans.includes("avoid unknown") || ans.includes("rarely try") || 
+      ans.includes("necessary") || ans.includes("private")
     ) {
       scores.Hedger += 2;
     }
 
-    // 🌐 NATIVE: Interpersonal loops, direct word of mouth channels, references
+    // 🌐 NATIVE: Focuses on social circles, recommendations, and family
     if (
-      ans.includes("friends") || 
-      ans.includes("family") || 
-      ans.includes("influencer") || 
-      ans.includes("whatsapp") || 
-      ans.includes("recommendation") || 
-      ans.includes("very often") || 
-      ans.includes("share on social") || 
-      ans.includes("recommend")
+      ans.includes("friends") || ans.includes("family") || 
+      ans.includes("influencer") || ans.includes("whatsapp") || 
+      ans.includes("recommendation") || ans.includes("very often") || 
+      ans.includes("share on social") || ans.includes("recommend")
     ) {
       scores.Native += 2;
     }
   }
 
-  // 🚀 TIE-BREAKER LOGIC: Safely initializes baseline rules to trigger Stylist on empty values
   let tieBreaker = "Stylist"; 
   let maxScore = 0; 
   
