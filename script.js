@@ -76,6 +76,10 @@ function showToast(message, icon = "⚠️") {
   }
 }
 
+// 🚀 FIXED: Legal Modal Handlers Matrix
+function openLegalModal() { document.getElementById("legalModal").classList.remove("hidden"); }
+function closeLegalModal() { document.getElementById("legalModal").classList.add("hidden"); }
+
 // 🚀 FIXED: Vercel Path Image Errors (Proper URL Escaping `%20`)
 const BADGE_PROFILES = {
   Analyzer: { 
@@ -180,10 +184,18 @@ function getUIText(key) {
   return fallbacks[key] || key;
 }
 
+// ================= STAGE 1: EMAIL VERIFICATION GATE =================
 if (emailGateForm) {
   emailGateForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (!gateEmailInput) return;
+
+    // 🚀 NEW: Legal Block Verification Pre-check
+    const legalConsent = document.getElementById("legalConsent");
+    if (legalConsent && !legalConsent.checked) {
+      showToast("You must agree to the Legal Terms of Research to continue.", "⚖️");
+      return;
+    }
     
     const emailVal = gateEmailInput.value.trim().toLowerCase();
     
@@ -207,6 +219,10 @@ if (emailGateForm) {
           if (otpSection) otpSection.classList.remove("hidden");
           if (startSurveyBtn) startSurveyBtn.innerHTML = "Verify & Enter &rarr;";
           gateEmailInput.readOnly = true; 
+          
+          // Automatically hide legal block after code is sent
+          if(legalConsent) legalConsent.parentElement.style.display = "none";
+          
           if (statusDiv) statusDiv.innerHTML = "";
         } else {
           if (statusDiv) { statusDiv.innerHTML = "❌ " + (result.error || "Failed to send code."); statusDiv.style.color = "#ff4d4d"; }
