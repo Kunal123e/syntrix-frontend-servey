@@ -1,3 +1,9 @@
+// =========================================================================
+// SYNTRIX CORE PLATFORM APPLICATION LOGIC ENGINE
+// Architecture: Single Page Application Matrix Core
+// Security Infrastructure: Web3Auth Embedded OAuth & Ethers Signer Gateway
+// =========================================================================
+
 // ================= GLOBAL CONFIGURATION ENGINES & CONSTANTS =================
 const BACKEND_URL = window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1")
   ? "http://localhost:5000"
@@ -64,7 +70,6 @@ const progressFill = document.querySelector(".progressFill");
 const progressText = document.querySelector(".progressText");
 
 // ================= COGNITIVE PSYCHOLOGY BADGE RULES ENGINE =================
-// 🚀 FIXED: Double declaration removed and image mapping perfectly synchronized
 const BADGE_PROFILES = {
   Analyzer: { 
     title: "ANALYZER", 
@@ -77,7 +82,6 @@ const BADGE_PROFILES = {
     title: "STYLIST", 
     sub: "The Tasteful Explorer",
     desc: "You have a beautiful eye for design! For you, shopping is about joy, artistry, and wonderful experiences. You naturally gravitate towards things that tell a great story and bring an extra touch of elegance into your everyday life.", 
-    // 🚀 MAPS TO YOUR TRIANGLE LOGO (badge 3.jpeg)
     iconHTML: `<img src="BADGES PNG/badge 3.jpeg" alt="Stylist" style="width: 100%; height: 100%; object-fit: cover;">`, 
     color: "#8b5cf6", textColor: "#0f172a"
   },
@@ -85,7 +89,6 @@ const BADGE_PROFILES = {
     title: "HEDGER", 
     sub: "The Thoughtful Planner",
     desc: "You value peace of mind and total reliability! You love knowing your purchases are safe and backed by great guarantees. By choosing trusted paths, you ensure every shopping experience is completely smooth, secure, and worry-free.", 
-    // 🚀 MAPS TO YOUR ORANGE DESIGN (badge 2.jpeg)
     iconHTML: `<img src="BADGES PNG/badge 2.jpeg" alt="Hedger" style="width: 100%; height: 100%; object-fit: cover;">`, 
     color: "#ea580c", textColor: "#0f172a"
   },
@@ -212,7 +215,6 @@ async function fetchWithTimeout(resource, options = {}) {
   }
 }
 
-// ================= REST OF LONGFORM HANDLERS REMAIN INTACT =================
 function getUIText(key) {
   const fallbacks = {
     validationRequired: "❌ Please answer all questions before continuing.",
@@ -226,6 +228,7 @@ function getUIText(key) {
   return fallbacks[key] || key;
 }
 
+// ================= STAGE 1: EMAIL VERIFICATION GATE =================
 if (emailGateForm) {
   emailGateForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -300,6 +303,7 @@ if (emailGateForm) {
 
 function getSurveyData() { return typeof surveySections !== "undefined" ? surveySections : []; }
 
+// ================= STAGE 2: SURVEY RENDER SYSTEM =================
 function getSectionTitle(section) {
   if (typeof sectionTranslations !== "undefined" && sectionTranslations[currentLanguage]) {
     return sectionTranslations[currentLanguage][section.title] || section.title;
@@ -320,6 +324,7 @@ function handleNextSection() {
   }
 }
 
+// Continued clean pipeline execution loops
 function handlePrevSection() {
   if (currentSection > 0) {
     currentSection--;
@@ -342,7 +347,6 @@ function getOptionText(opt) {
   return opt;
 }
 
-// ================= STAGE 2: SURVEY RENDER SYSTEM =================
 function validateCurrentSectionAnswers() {
   const sections = getSurveyData();
   const currentData = sections[currentSection];
