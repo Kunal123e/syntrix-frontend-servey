@@ -494,8 +494,12 @@ body {
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-.animate-fade-in {
+/* 🚀 FIXED: The animation class is now strictly scoped only to the modal. It will no longer cause the survey section to "pop/blink" black on every click */
+.modal-card.animate-fade-in {
   animation: fadeInModal 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.survey-section-card.animate-fade-in {
+  animation: none !important; 
 }
 
 .modal-header {
@@ -688,6 +692,7 @@ body {
   gap: 12px;
 }
 
+/* 🚀 FIXED: Added scale transition for premium, buttery-smooth clicking feel */
 .option {
   padding: 14px 20px;
   border-radius: 14px;
@@ -696,7 +701,8 @@ body {
   color: #2f2f2f;
   font-weight: 600;
   cursor: pointer;
-  transition: .2s;
+  transition: all 0.2s ease-in-out;
+  transform: scale(1);
   min-width: 160px;
   text-align: center;
 }
@@ -704,6 +710,10 @@ body {
 .option:hover {
   background: #faf7f2;
   border-color: #1f1f1f;
+}
+
+.option:active {
+  transform: scale(0.97);
 }
 
 .option.selected {
