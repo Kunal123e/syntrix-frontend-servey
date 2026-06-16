@@ -17,6 +17,11 @@
     @keyframes floatBox { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
     @keyframes pulseGlow { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.7); } 70% { box-shadow: 0 0 0 20px rgba(16,185,129,0); } 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } }
     .badge-icon-glow { filter: drop-shadow(0 0 8px var(--glow-color, #6366f1)); }
+    /* 🚀 FIXED: Prevent flashing/popping background overrides during state swaps */
+    .app, body { transition: background-color 0.3s ease-in-out; }
+    .option { transition: all 0.2s ease; transform: scale(1); }
+    .option:active { transform: scale(0.98); }
+    .option.selected { background-color: rgba(99, 102, 241, 0.1); border-color: #6366f1; }
   </style>
 
   <script>
@@ -104,7 +109,7 @@
 <div id="rewardAnimationOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.95); z-index: 99999; flex-direction: column; align-items: center; justify-content: center; color: white; backdrop-filter: blur(10px);">
   <div style="font-size: 100px; animation: floatBox 2s ease-in-out infinite;">🎁</div>
   <h2 style="font-size: 42px; font-weight: 900; margin-top: 20px; text-align: center; background: linear-gradient(to right, #10b981, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Survey Completed!</h2>
-  <p style="font-size: 20px; color: #d1d5db; margin-top: 15px; font-weight: 600; text-align: center; max-width: 500px; line-height: 1.5;">You did it! Calculating your answers...<br><span style="color: #34d399; font-size: 24px; font-weight: 800; display: inline-block; margin-top: 10px;">Your 56 SYNX reward is waiting!</span></p>
+  <p style="font-size: 20px; color: #d1d5db; margin-top: 15px; font-weight: 600; text-align: center; max-width: 500px; line-height: 1.5;">You did it! Calculating your answers...<br><span style="color: #34d399; font-size: 24px; font-weight: 800; display: inline-block; margin-top: 10px;">Your 48 SYNX reward is waiting!</span></p>
 </div>
 
 <div class="app">
@@ -118,7 +123,6 @@
       <div class="step" id="step-4">Psychology</div>
       <div class="step" id="step-5">Categories</div>
       <div class="step" id="step-6">Post-Purchase</div>
-      <div class="step" id="step-7">Experience</div>
     </div>
   </div>
 
@@ -128,7 +132,7 @@
       <div>
         <h1 id="mainTitle" style="font-size: 44px; font-weight: 900; letter-spacing: -1.5px; color: #111827; line-height: 1.1; margin-bottom: 12px;">Syntrix Consumer Analytics Hub</h1>
         <p class="subtitle" id="mainSubtitle" style="font-size: 16px; font-weight: 500; color: #4b5563; max-width: 550px; line-height: 1.6;">
-          Complete all 7 consumer research modules to claim your <span style="font-weight: 800; color: #111827; background: #e0e7ff; padding: 2px 8px; border-radius: 6px;">56 SYNX</span> token rewards.
+          Complete all 6 consumer research modules to claim your <span style="font-weight: 800; color: #111827; background: #e0e7ff; padding: 2px 8px; border-radius: 6px;">48 SYNX</span> token rewards.
         </p>
       </div>
 
@@ -152,9 +156,9 @@
       </div>
 
       <div class="progressBox hidden" id="topProgressBox">
-        <div class="progressText">Progress 1/7</div>
+        <div class="progressText">Progress 1/6</div>
         <div class="progressBar">
-          <div class="progressFill" style="width: 14.28%;"></div>
+          <div class="progressFill" style="width: 16.66%;"></div>
         </div>
       </div>
     </div>
@@ -211,7 +215,7 @@
         <span class="submittedBadge" id="surveySubmittedBadge">✨ SURVEY SUBMITTED!</span>
       </div>
       
-      <h2 class="rewardTitle" id="claimTitle">Claim Your 56 SYNX Reward</h2>
+      <h2 class="rewardTitle" id="claimTitle">Claim Your 48 SYNX Reward</h2>
       <p class="rewardSubtitle" id="rewardSubtitleDesc">
         Your research survey has been recorded. Connect MetaMask or input your EVM wallet address to claim your high-utility SYNX tokens.
       </p>
@@ -301,7 +305,7 @@
         </div>
         <div style="display: flex; justify-content: space-between; font-size: 14px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 10px; margin-top: 10px;">
           <span id="lblClaimableValue" style="color: var(--text-secondary); font-weight: 700;">Claimable Value:</span>
-          <strong id="claimInfoAmount" style="color: #6366f1; font-size: 16px; font-weight: 900;">56 SYNX</strong>
+          <strong id="claimInfoAmount" style="color: #6366f1; font-size: 16px; font-weight: 900;">48 SYNX</strong>
         </div>
       </div>
 
@@ -325,7 +329,7 @@
         <div style="width: 80px; height: 80px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background-color: rgba(16, 185, 129, 0.1); border: 2px solid #10b981; color: #10b981; font-size: 40px;">✓</div>
         <h2 id="successTxTitle">Tokens Transferred Successfully!</h2>
         <p id="successTxSub" style="color: var(--text-secondary); margin-top: 10px; font-size: 14px; margin-bottom: 25px;">
-          Your 56 SYNTRIX tokens have been successfully transferred on-chain via the Polygon network.
+          Your 48 SYNTRIX tokens have been successfully transferred on-chain via the Polygon network.
         </p>
         <div style="text-align: left; background-color: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 20px; max-width: 450px; margin: 0 auto 30px;">
           <div id="lblPolygonTxHash" style="font-size: 11px; color: var(--text-secondary); margin-bottom: 5px;">POLYGON TRANSACTION HASH:</div>
