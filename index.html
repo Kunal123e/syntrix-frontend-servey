@@ -21,7 +21,13 @@
     .app, body { transition: background-color 0.3s ease-in-out; }
     .option { transition: all 0.2s ease; transform: scale(1); }
     .option:active { transform: scale(0.98); }
-    .option.selected { background-color: rgba(99, 102, 241, 0.1); border-color: #6366f1; }
+    
+    /* 🚀 FIXED: Premium Solid Black Selection Style */
+    .option.selected { 
+      background-color: #1f1f1f !important; 
+      border-color: #1f1f1f !important; 
+      color: #ffffff !important; 
+    }
   </style>
 
   <script>
