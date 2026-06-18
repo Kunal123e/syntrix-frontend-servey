@@ -57,13 +57,12 @@ const statusDiv = document.getElementById("status");
 const progressFill = document.querySelector(".progressFill");
 const progressText = document.querySelector(".progressText");
 
-// 🚀 FIXED: DYNAMIC PREMIUM TOAST (Kills all cheap alerts globally)
+// 🚀 FIXED: DYNAMIC PREMIUM TOAST
 function showToast(message, icon = "⚠️") {
   let toast = document.getElementById("customToast");
   let toastMsg = document.getElementById("toastMessage");
   let toastIcon = document.querySelector(".toast-icon");
   
-  // Failsafe: Automatically create UI if HTML is missing
   if (!toast) {
     toast = document.createElement("div");
     toast.id = "customToast";
@@ -77,18 +76,15 @@ function showToast(message, icon = "⚠️") {
   toastMsg.innerText = message;
   if(toastIcon) toastIcon.innerText = icon;
   
-  // Force DOM Reflow for buttery smooth mobile animation
   void toast.offsetWidth;
   
   toast.classList.add("show");
   setTimeout(() => { toast.classList.remove("show"); }, 3500);
 }
 
-// 🚀 FIXED: Legal Modal Handlers Matrix
 function openLegalModal() { document.getElementById("legalModal").classList.remove("hidden"); }
 function closeLegalModal() { document.getElementById("legalModal").classList.add("hidden"); }
 
-// 🚀 FIXED: Vercel Path Image Errors (Proper URL Escaping `%20`)
 const BADGE_PROFILES = {
   Analyzer: { 
     title: "ANALYZER", sub: "The Mindful Shopper",
@@ -198,7 +194,6 @@ if (emailGateForm) {
     e.preventDefault();
     if (!gateEmailInput) return;
 
-    // 🚀 NEW: Legal Block Verification Pre-check
     const legalConsent = document.getElementById("legalConsent");
     if (legalConsent && !legalConsent.checked) {
       showToast("You must agree to the Legal Terms of Research to continue.", "⚖️");
@@ -229,7 +224,6 @@ if (emailGateForm) {
           if (startSurveyBtn) startSurveyBtn.innerHTML = "Verify & Enter &rarr;";
           gateEmailInput.readOnly = true; 
           
-          // Automatically hide legal block after code is sent
           if(legalConsent && legalConsent.parentElement) {
             legalConsent.parentElement.style.display = "none";
           }
@@ -247,7 +241,9 @@ if (emailGateForm) {
     }
 
     const gateOtpInput = document.getElementById("gateOtp");
-    const otpVal = gateOtpInput ? gateOtpInput.value.trim() : "";
+    // 🚀 FIXED: Auto-strips all spaces and dashes from copy-pasted OTPs
+    const rawOtpVal = gateOtpInput ? gateOtpInput.value : "";
+    const otpVal = rawOtpVal.replace(/[\s-]/g, "");
 
     if (!otpVal || otpVal.length !== 6) {
       showToast("Please enter the 6-digit verification code.", "❌");
