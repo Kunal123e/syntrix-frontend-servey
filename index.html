@@ -156,7 +156,9 @@
         <div class="options-menu-container">
           <button type="button" id="menuToggleBtn" class="icon-menu-btn" aria-label="More Options">⋮</button>
           <div id="optionsPopover" class="options-popover hidden">
-            <div id="menuPsychologyBadgeWrapper" style="padding: 10px 14px; font-size: 13px; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.08); color: #fbbf24; display: none;">🎭 Profile: <span id="menuPsychologyBadgeText">None</span></div>
+            <div id="menuPsychologyBadgeWrapper" style="padding: 10px 14px; font-size: 13px; font-weight: 700; border-bottom: 1px solid #ece4da; color: #6b6258; display: none; align-items: center; gap: 6px;">
+              <span id="menuBadgeIcon" style="display: flex; align-items: center;"></span> Profile: <span id="menuPsychologyBadgeText">None</span>
+            </div>
             <button type="button" id="menuRestartBtn">✨ New Survey Registration</button>
             <button type="button" id="menuRecoverBtn">🔍 Retrieve Pending Claim</button>
           </div>
@@ -184,7 +186,7 @@
 
         <div id="otpSection" class="form-group hidden" style="margin-bottom: 20px;">
           <p style="color:#10b981; font-size:13px; margin-bottom:8px; text-align: left; padding-left: 5px;">✅ Code sent! Check your email inbox.</p>
-          <input type="text" id="gateOtp" placeholder="Enter 6-Digit Code" maxlength="6" style="width: 100%; text-align: center; letter-spacing: 5px; font-weight: bold; font-size: 18px; background: rgba(255,255,255,0.02);">
+          <input type="text" id="gateOtp" placeholder="Enter 6-Digit Code" maxlength="12" style="width: 100%; text-align: center; letter-spacing: 5px; font-weight: bold; font-size: 18px; background: rgba(255,255,255,0.02);">
         </div>
 
         <div class="form-group" style="margin-bottom: 20px; text-align: left;">
@@ -195,7 +197,7 @@
         </div>
 
         <div class="form-group" style="margin-bottom: 20px; text-align: left; display: flex; align-items: flex-start; gap: 12px; background: #faf7f2; padding: 15px; border-radius: 12px; border: 1px solid #ece4da;">
-          <input type="checkbox" id="legalConsent" required style="width: 20px; height: 20px; margin-top: 3px; cursor: pointer; accent-color: #1f1f1f;">
+          <input type="checkbox" id="legalConsent" style="width: 20px; height: 20px; margin-top: 3px; cursor: pointer; accent-color: #1f1f1f;">
           <label for="legalConsent" style="font-size: 13px; color: #5c544c; line-height: 1.5; cursor: pointer; user-select: none;">
             I confirm that I have read and agree to the <a href="#" onclick="openLegalModal(); return false;" style="color: #6366f1; text-decoration: underline; font-weight: bold;">Terms of Research & Privacy Policy</a>. I understand token rewards are subject to internal data validation and institutional approvals.
           </label>
