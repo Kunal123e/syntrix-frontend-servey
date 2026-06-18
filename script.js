@@ -57,6 +57,11 @@ const statusDiv = document.getElementById("status");
 const progressFill = document.querySelector(".progressFill");
 const progressText = document.querySelector(".progressText");
 
+// 🚀 NEW: Custom Confirm DOM Elements
+const confirmRestartModal = document.getElementById("confirmRestartModal");
+const cancelRestartBtn = document.getElementById("cancelRestartBtn");
+const confirmRestartBtn = document.getElementById("confirmRestartBtn");
+
 // 🚀 FIXED: DYNAMIC PREMIUM TOAST
 function showToast(message, icon = "⚠️") {
   let toast = document.getElementById("customToast");
@@ -928,8 +933,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     menuToggleBtn.onclick = (e) => { e.stopPropagation(); optionsPopover.classList.toggle("hidden"); };
     document.addEventListener("click", () => optionsPopover.classList.add("hidden"));
   }
+
+  // 🚀 FIXED: Replaced native confirm() with Custom Premium Modal
   if (menuRestartBtn) {
-    menuRestartBtn.onclick = () => { if (confirm("Clear session progress?")) resetApplicationFlowState(); };
+    menuRestartBtn.onclick = () => { 
+      optionsPopover.classList.add("hidden"); 
+      if(confirmRestartModal) confirmRestartModal.classList.remove("hidden"); 
+    };
+  }
+  if (cancelRestartBtn) {
+    cancelRestartBtn.onclick = () => {
+      if(confirmRestartModal) confirmRestartModal.classList.add("hidden");
+    };
+  }
+  if (confirmRestartBtn) {
+    confirmRestartBtn.onclick = () => {
+      if(confirmRestartModal) confirmRestartModal.classList.add("hidden");
+      resetApplicationFlowState();
+    };
   }
 
   if (menuRecoverBtn && retrieveModal) {
