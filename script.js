@@ -57,23 +57,31 @@ const statusDiv = document.getElementById("status");
 const progressFill = document.querySelector(".progressFill");
 const progressText = document.querySelector(".progressText");
 
-// 🚀 FIXED: Professional Custom Toast Overrides Default Alert
+// 🚀 FIXED: DYNAMIC PREMIUM TOAST (Kills all cheap alerts globally)
 function showToast(message, icon = "⚠️") {
-  const toast = document.getElementById("customToast");
-  const toastMsg = document.getElementById("toastMessage");
-  const toastIcon = document.querySelector(".toast-icon");
+  let toast = document.getElementById("customToast");
+  let toastMsg = document.getElementById("toastMessage");
+  let toastIcon = document.querySelector(".toast-icon");
   
-  if (toast && toastMsg) {
-    toastMsg.innerText = message;
-    if(toastIcon) toastIcon.innerText = icon;
-    toast.classList.add("show");
-    
-    setTimeout(() => {
-      toast.classList.remove("show");
-    }, 3500);
-  } else {
-    alert(message);
+  // Failsafe: Automatically create UI if HTML is missing
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "customToast";
+    toast.className = "custom-toast";
+    toast.innerHTML = `<span class="toast-icon">${icon}</span><span id="toastMessage">${message}</span>`;
+    document.body.appendChild(toast);
+    toastMsg = document.getElementById("toastMessage");
+    toastIcon = document.querySelector(".toast-icon");
   }
+
+  toastMsg.innerText = message;
+  if(toastIcon) toastIcon.innerText = icon;
+  
+  // Force DOM Reflow for buttery smooth mobile animation
+  void toast.offsetWidth;
+  
+  toast.classList.add("show");
+  setTimeout(() => { toast.classList.remove("show"); }, 3500);
 }
 
 // 🚀 FIXED: Legal Modal Handlers Matrix
@@ -200,7 +208,8 @@ if (emailGateForm) {
     const emailVal = gateEmailInput.value.trim().toLowerCase();
     
     if (!emailVal || !EMAIL_REGEX.test(emailVal)) {
-      if (statusDiv) { statusDiv.innerHTML = "❌ Please input a valid email address."; statusDiv.style.color = "#ff4d4d"; }
+      showToast("Please input a valid email address.", "❌");
+      if (statusDiv) { statusDiv.innerHTML = ""; }
       return;
     }
 
@@ -221,14 +230,18 @@ if (emailGateForm) {
           gateEmailInput.readOnly = true; 
           
           // Automatically hide legal block after code is sent
-          if(legalConsent) legalConsent.parentElement.style.display = "none";
+          if(legalConsent && legalConsent.parentElement) {
+            legalConsent.parentElement.style.display = "none";
+          }
           
           if (statusDiv) statusDiv.innerHTML = "";
         } else {
-          if (statusDiv) { statusDiv.innerHTML = "❌ " + (result.error || "Failed to send code."); statusDiv.style.color = "#ff4d4d"; }
+          showToast(result.error || "Failed to send code.", "❌");
+          if (statusDiv) { statusDiv.innerHTML = ""; }
         }
       } catch (err) {
-        if (statusDiv) { statusDiv.innerHTML = "❌ Network error. Could not send code."; statusDiv.style.color = "#ff4d4d"; }
+        showToast("Network error. Could not send code.", "❌");
+        if (statusDiv) { statusDiv.innerHTML = ""; }
       }
       return; 
     }
@@ -237,7 +250,8 @@ if (emailGateForm) {
     const otpVal = gateOtpInput ? gateOtpInput.value.trim() : "";
 
     if (!otpVal || otpVal.length !== 6) {
-      if (statusDiv) { statusDiv.innerHTML = "❌ Please enter the 6-digit verification code."; statusDiv.style.color = "#ff4d4d"; }
+      showToast("Please enter the 6-digit verification code.", "❌");
+      if (statusDiv) { statusDiv.innerHTML = ""; }
       return;
     }
 
@@ -260,10 +274,12 @@ if (emailGateForm) {
         }
         await runProfileLedgerVerification(emailVal, false);
       } else {
-        if (statusDiv) { statusDiv.innerHTML = "❌ " + (result.error || "Invalid or expired code."); statusDiv.style.color = "#ff4d4d"; }
+        showToast(result.error || "Invalid or expired code.", "❌");
+        if (statusDiv) { statusDiv.innerHTML = ""; }
       }
     } catch (err) {
-      if (statusDiv) { statusDiv.innerHTML = "❌ Network error. Could not verify code."; statusDiv.style.color = "#ff4d4d"; }
+      showToast("Network error. Could not verify code.", "❌");
+      if (statusDiv) { statusDiv.innerHTML = ""; }
     }
   });
 }
@@ -902,7 +918,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         confirmRetrieveBtn.onclick = async () => {
           const searchEmail = modalEmailInput ? modalEmailInput.value.trim().toLowerCase() : "";
           if (!searchEmail || !EMAIL_REGEX.test(searchEmail)) {
-            if (modalStatus) { modalStatus.innerHTML = "❌ Please provide a valid email structure."; modalStatus.style.color = "#ff4d4d"; }
+            showToast("Please provide a valid email structure.", "❌");
             return;
           }
           await runProfileLedgerVerification(searchEmail, true);
