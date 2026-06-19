@@ -140,7 +140,7 @@
       <div>
         <h1 id="mainTitle" style="font-size: 44px; font-weight: 900; letter-spacing: -1.5px; color: #111827; line-height: 1.1; margin-bottom: 12px;">Syntrix Consumer Analytics Hub</h1>
         <p class="subtitle" id="mainSubtitle" style="font-size: 16px; font-weight: 500; color: #4b5563; max-width: 550px; line-height: 1.6;">
-          Complete all 6 consumer research modules to claim your <span style="font-weight: 800; color: #111827; background: #e0e7ff; padding: 2px 8px; border-radius: 6px;">48 SYNX</span> token rewards.
+          Complete all 6 consumer research modules to secure your <span style="font-weight: 800; color: #111827; background: #e0e7ff; padding: 2px 8px; border-radius: 6px;">48 SYNX</span> token allocation.
         </p>
       </div>
 
@@ -160,7 +160,7 @@
               <span id="menuBadgeIcon" style="display: flex; align-items: center;"></span> Profile: <span id="menuPsychologyBadgeText">None</span>
             </div>
             <button type="button" id="menuRestartBtn">✨ New Survey Registration</button>
-            <button type="button" id="menuRecoverBtn">🔍 Retrieve Pending Claim</button>
+            <button type="button" id="menuRecoverBtn">🔍 Retrieve Pending Allocation</button>
           </div>
         </div>
       </div>
@@ -178,7 +178,12 @@
 
     <div id="emailGateSection" class="authCard">
       <h2 class="sectionTitle" id="emailSectionTitle">Enter Communication Profile</h2>
-      <p class="cardDescription" id="emailSectionSub">Please provide your authorized email address to clear the registration gate and activate the research module matrix.</p>
+      <p class="cardDescription" id="emailSectionSub" style="margin-bottom: 15px;">Please provide your authorized email address to clear the registration gate and activate the research module matrix.</p>
+      
+      <div style="display: inline-flex; align-items: center; gap: 8px; background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; margin-bottom: 25px; box-shadow: 0 2px 10px rgba(21, 128, 61, 0.05);">
+        ⏱️ Takes ~3 Minutes to Complete
+      </div>
+
       <form id="emailGateForm">
         <div class="form-group" style="margin-bottom: 20px;">
           <input type="email" id="gateEmail" placeholder="User Communication Profile (Email Address)" style="width: 100%;">
@@ -232,7 +237,7 @@
         <span class="submittedBadge" id="surveySubmittedBadge">✨ SURVEY SUBMITTED!</span>
       </div>
       
-      <h2 class="rewardTitle" id="claimTitle">Claim Your 48 SYNX Reward</h2>
+      <h2 class="rewardTitle" id="claimTitle">Secure Your 48 SYNX Allocation</h2>
       <p class="rewardSubtitle" id="rewardSubtitleDesc">
         Your research survey has been recorded. Connect MetaMask or input your EVM wallet address to claim your high-utility SYNX tokens.
       </p>
@@ -255,7 +260,7 @@
             maxLength="42"
           >
           <button type="button" id="executeClaimBtn" class="executeDistributionBtn">
-            Execute Token Distribution
+            Execute Token Allocation
           </button>
         </div>
       </div>
@@ -345,7 +350,7 @@
         <div style="width: 80px; height: 80px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background-color: rgba(16, 185, 129, 0.1); border: 2px solid #10b981; color: #10b981; font-size: 40px;">✓</div>
         <h2 id="successTxTitle">Tokens Transferred Successfully!</h2>
         <p id="successTxSub" style="color: var(--text-secondary); margin-top: 10px; font-size: 14px; margin-bottom: 25px;">
-          Your 48 SYNTRIX tokens have been successfully transferred on-chain via the Polygon network.
+          Your 48 SYNTRIX tokens have been successfully allocated via the Polygon network.
         </p>
         <div style="text-align: left; background-color: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 20px; max-width: 450px; margin: 0 auto 30px;">
           <div id="lblPolygonTxHash" style="font-size: 11px; color: var(--text-secondary); margin-bottom: 5px;">POLYGON TRANSACTION HASH:</div>
@@ -364,7 +369,7 @@
 <div id="retrieveModal" class="modal-overlay hidden">
   <div class="modal-card animate-fade-in">
     <div class="modal-header">
-      <h2>🔍 Retrieve Pending Rewards</h2>
+      <h2>🔍 Retrieve Pending Allocation</h2>
       <button type="button" id="closeModalBtn" class="close-btn">&times;</button>
     </div>
     
@@ -390,7 +395,7 @@
     
     <div class="modal-footer">
       <button type="button" id="cancelModalBtn" class="btn-secondary">Cancel</button>
-      <button type="button" id="confirmRetrieveBtn" class="btn-primary">Search Ledger &rarr;</button>
+      <button type="button" id="confirmRetrieveBtn" class="btn-primary">Search Ledger →</button>
     </div>
   </div>
 </div>
@@ -467,9 +472,9 @@
   </div>
 </div>
 
-<script src="data.js?v=luxury_v1"></script>
-<script src="translation.js?v=luxury_v1"></script>
-<script src="script.js?v=luxury_v1"></script>
+<script src="data.js?v=luxury_v2"></script>
+<script src="translation.js?v=luxury_v2"></script>
+<script src="script.js?v=luxury_v2"></script>
 
 </body>
 </html>
