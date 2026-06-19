@@ -6,7 +6,7 @@
 const translations = {
   en: {
     mainTitle: "Syntrix Consumer Analytics Hub",
-    mainSubtitle: "Complete all 7 consumer research modules to claim your <span style='font-weight: 800; color: #111827; background: #e0e7ff; padding: 2px 8px; border-radius: 6px;'>56 SYNX</span> token rewards.",
+    mainSubtitle: "Complete all 6 consumer research modules to secure your <span style='font-weight: 800; color: #111827; background: #e0e7ff; padding: 2px 8px; border-radius: 6px;'>48 SYNX</span> token allocation.",
     progress: "Progress",
     next: "Next",
     previous: "Previous",
@@ -20,7 +20,7 @@ const translations = {
     // Additional UI Portal elements
     emailSectionTitle: "Enter Communication Profile",
     btnStart: "Initialize Research Modules →",
-    claimTitle: "Claim Your 56 SYNX Reward",
+    claimTitle: "Secure Your 48 SYNX Allocation",
     metaMaskLabel: "💼 🦊 Connect MetaMask Wallet",
     manualLabel: "OR ENTER YOUR EVM NETWORK PUBLIC ADDRESS",
     btnExecute: "Execute Token Distribution",
@@ -30,10 +30,10 @@ const translations = {
     inviteLabel: "✉️ Email Direct Reference Link",
     btnInvite: "Send Invite",
     checkingLedger: "🔍 Authenticating communication profile ledger status...",
-    claiming: "⚡ Dispensing 56 SYNX tokens to target network gateway...",
+    claiming: "⚡ Allocating 48 SYNX tokens to target network gateway...",
 
     // Retrieval Modal
-    modalTitle: "🔍 Retrieve Pending Rewards",
+    modalTitle: "🔍 Retrieve Pending Allocation",
     modalSub: "Enter your authorized communication profile to bypass the questionnaire matrix and open the Web3 settlement gateway.",
     modalDetailsTitle: "📌 Dynamic Registry Details:",
     modalDetails1: "Verification searches real-time historical database blocks.",
@@ -45,7 +45,7 @@ const translations = {
   },
   hi: {
     mainTitle: "सिंट्रिक्स कंज्यूमर एनालिटिक्स हब",
-    mainSubtitle: "सभी 6 कंज्यूमर रिसर्च मॉड्यूल पूरे करें और <span style='font-weight: 800; color: #111827; background: #e0e7ff; padding: 2px 8px; border-radius: 6px;'>48 SYNX</span> टोकन रिवॉर्ड पाएं।",
+    mainSubtitle: "सभी 6 कंज्यूमर रिसर्च मॉड्यूल पूरे करें और अपना <span style='font-weight: 800; color: #111827; background: #e0e7ff; padding: 2px 8px; border-radius: 6px;'>48 SYNX</span> टोकन आवंटन सुरक्षित करें।",
     progress: "प्रगति",
     next: "अगला",
     previous: "पिछला",
@@ -59,20 +59,20 @@ const translations = {
     // Additional UI Portal elements
     emailSectionTitle: "संचार प्रोफ़ाइल दर्ज करें",
     btnStart: "अनुसंधान मॉड्यूल प्रारंभ करें →",
-    claimTitle: "अपना 48 SYNX इनाम प्राप्त करें",
+    claimTitle: "अपना 48 SYNX आवंटन सुरक्षित करें",
     metaMaskLabel: "💼 🦊 मेटामास्क वॉलेट कनेक्ट करें",
     manualLabel: "या अपना EVM नेटवर्क सार्वजनिक पता दर्ज करें",
-    btnExecute: "टोकन वितरण निष्पादित करें",
+    btnExecute: "टोकन आवंटन निष्पादित करें",
     referralTitle: "🎁 सिंट्रिक्स रेफरल डैशबोर्ड",
     referralSub: "अपने अद्वितीय रेफरल कोड का उपयोग करके दोस्तों को आमंत्रित करें। पंजीकरण करने वाले प्रत्येक मित्र के लिए 10 SYN अतिरिक्त अर्जित करें!",
     btnCopy: "लिंक कॉपी करें",
     inviteLabel: "✉️ ईमेल सीधा आमंत्रण लिंक",
     btnInvite: "आमंत्रण भेजें",
     checkingLedger: "🔍 संचार प्रोफ़ाइल लेज़र स्थिति प्रमाणित की जा रही है...",
-    claiming: "⚡ लक्षित नेटवर्क गेटवे पर 56 SYNX टोकन वितरित किए जा रहे हैं...",
+    claiming: "⚡ लक्षित नेटवर्क गेटवे पर 48 SYNX टोकन आवंटित किए जा रहे हैं...",
 
     // Retrieval Modal
-    modalTitle: "🔍 लंबित पुरस्कार प्राप्त करें",
+    modalTitle: "🔍 लंबित आवंटन प्राप्त करें",
     modalSub: "प्रश्नावली मैट्रिक्स को बायपास करने और Web3 निपटान गेटवे खोलने के लिए अपने अधिकृत संचार प्रोफ़ाइल दर्ज करें।",
     modalDetailsTitle: "📌 गतिशील रजिस्ट्री विवरण:",
     modalDetails1: "सत्यापन वास्तविक समय के ऐतिहासिक डेटाबेस ब्लॉकों की खोज करता है।",
@@ -84,7 +84,7 @@ const translations = {
   },
   hinglish: {
     mainTitle: "Syntrix Consumer Analytics Hub",
-    mainSubtitle: "Sabhi 6 consumer research modules pure karein aur <span style='font-weight: 800; color: #111827; background: #e0e7ff; padding: 2px 8px; border-radius: 6px;'>48 SYNX</span> token reward payein.",
+    mainSubtitle: "Sabhi 6 consumer research modules pure karein aur apna <span style='font-weight: 800; color: #111827; background: #e0e7ff; padding: 2px 8px; border-radius: 6px;'>48 SYNX</span> token allocation secure karein.",
     progress: "Progress",
     next: "Aage",
     previous: "Peeche",
@@ -98,20 +98,20 @@ const translations = {
     // Additional UI Portal elements
     emailSectionTitle: "Communication Profile Enter Karein",
     btnStart: "Research Modules Initialize Karein →",
-    claimTitle: "Apna 48 SYNX Reward Claim Karein", 
+    claimTitle: "Apna 48 SYNX Allocation Secure Karein", 
     metaMaskLabel: "💼 🦊 MetaMask Wallet Connect Karein",
     manualLabel: "YA APNA EVM NETWORK PUBLIC ADDRESS ENTER KAREIN",
-    btnExecute: "Execute Token Distribution",
+    btnExecute: "Execute Token Allocation",
     referralTitle: "🎁 SYNTRIX REFERRAL DASHBOARD",
     referralSub: "Apne unique referral code se friends ko invite karein. Har registration aur module completion par extra 10 SYN kamaein!",
     btnCopy: "Copy Link",
     inviteLabel: "✉️ Email Direct Reference Link",
     btnInvite: "Send Invite",
     checkingLedger: "🔍 Communication profile ledger status ko authenticate kiya ja raha hai...",
-    claiming: "⚡ 56 SYNX tokens ko target network gateway par dispense kiya ja raha hai...",
+    claiming: "⚡ 48 SYNX tokens ko target network gateway par allocate kiya ja raha hai...",
 
     // Retrieval Modal
-    modalTitle: "🔍 Pending Rewards Retrieve Karein",
+    modalTitle: "🔍 Pending Allocation Retrieve Karein",
     modalSub: "Questionnaire matrix ko bypass karne aur Web3 settlement gateway ko open karne ke liye apna authorized communication profile enter karein.",
     modalDetailsTitle: "📌 Dynamic Registry Details:",
     modalDetails1: "Verification real-time historical database blocks ko search karta hai.",
@@ -232,7 +232,7 @@ const optionTranslations = {
     "Shipping Cost": "डिलीवरी शुल्क",
     "Too Expensive": "बहुत महंगा",
     "Low Trust": "कम भरोसा",
-    "Poor Reviews": "खराब समीक्षाएँ", // 🚀 FIXED TYPO HERE (Replaced Urdu script strings)
+    "Poor Reviews": "खराब समीक्षाएँ",
     "Slow Delivery": "धीमी डिलीवरी",
     "Payment Failure": "भुगतान विफल",
     "Free Only": "केवल मुफ्त",
