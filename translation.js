@@ -15,22 +15,24 @@ const translations = {
     validationRequired: "❌ Please answer all questions before continuing.",
     fillRequired: "❌ Please fill all required fields.",
     invalidWallet: "❌ Invalid wallet address.",
-    submitting: "⏳ Submitting survey...",
     
+    // 🚀 NEW: Premium Loading Vibes
+    submitting: "✨ Saving your valuable insights securely...",
+    checkingLedger: "✨ Setting up your exclusive premium experience...",
+    claiming: "💎 Securing your 48 SYNX allocation safely...",
+
     // Additional UI Portal elements
     emailSectionTitle: "Enter Communication Profile",
     btnStart: "Initialize Research Modules →",
     claimTitle: "Secure Your 48 SYNX Allocation",
     metaMaskLabel: "💼 🦊 Connect MetaMask Wallet",
     manualLabel: "OR ENTER YOUR EVM NETWORK PUBLIC ADDRESS",
-    btnExecute: "Execute Token Distribution",
+    btnExecute: "Execute Token Allocation",
     referralTitle: "🎁 SYNTRIX REFERRAL DASHBOARD",
     referralSub: "Invite friends using your unique referral code. For each colleague who registers and completes the modules, you earn an additional 10 SYN tokens!",
     btnCopy: "Copy Link",
     inviteLabel: "✉️ Email Direct Reference Link",
     btnInvite: "Send Invite",
-    checkingLedger: "🔍 Authenticating communication profile ledger status...",
-    claiming: "⚡ Allocating 48 SYNX tokens to target network gateway...",
 
     // Retrieval Modal
     modalTitle: "🔍 Retrieve Pending Allocation",
@@ -54,7 +56,11 @@ const translations = {
     validationRequired: "❌ आगे बढ़ने से पहले सभी प्रश्नों के उत्तर दें।",
     fillRequired: "❌ कृपया सभी आवश्यक जानकारी भरें।",
     invalidWallet: "❌ अमान्य वॉलेट पता।",
-    submitting: "⏳ सर्वे जमा किया जा रहा है...",
+    
+    // 🚀 NEW: Premium Loading Vibes
+    submitting: "✨ आपके महत्वपूर्ण जवाब सुरक्षित किए जा रहे हैं...",
+    checkingLedger: "✨ आपका विशेष डैशबोर्ड तैयार किया जा रहा है...",
+    claiming: "💎 आपका 48 SYNX आवंटन सुरक्षित किया जा रहा है...",
 
     // Additional UI Portal elements
     emailSectionTitle: "संचार प्रोफ़ाइल दर्ज करें",
@@ -68,8 +74,6 @@ const translations = {
     btnCopy: "लिंक कॉपी करें",
     inviteLabel: "✉️ ईमेल सीधा आमंत्रण लिंक",
     btnInvite: "आमंत्रण भेजें",
-    checkingLedger: "🔍 संचार प्रोफ़ाइल लेज़र स्थिति प्रमाणित की जा रही है...",
-    claiming: "⚡ लक्षित नेटवर्क गेटवे पर 48 SYNX टोकन आवंटित किए जा रहे हैं...",
 
     // Retrieval Modal
     modalTitle: "🔍 लंबित आवंटन प्राप्त करें",
@@ -93,7 +97,11 @@ const translations = {
     validationRequired: "❌ Aage badhne se pehle kripya sabhi sawalon ke jawab dein.",
     fillRequired: "❌ Kripya sabhi zaroori details ko bharein.",
     invalidWallet: "❌ Invalid wallet address.",
-    submitting: "⏳ Survey submit ho raha hai...",
+    
+    // 🚀 NEW: Premium Loading Vibes
+    submitting: "✨ Aapke important answers securely save ho rahe hain...",
+    checkingLedger: "✨ Aapka premium dashboard ready ho raha hai...",
+    claiming: "💎 Aapka 48 SYNX allocation secure kiya ja raha hai...",
 
     // Additional UI Portal elements
     emailSectionTitle: "Communication Profile Enter Karein",
@@ -107,8 +115,6 @@ const translations = {
     btnCopy: "Copy Link",
     inviteLabel: "✉️ Email Direct Reference Link",
     btnInvite: "Send Invite",
-    checkingLedger: "🔍 Communication profile ledger status ko authenticate kiya ja raha hai...",
-    claiming: "⚡ 48 SYNX tokens ko target network gateway par allocate kiya ja raha hai...",
 
     // Retrieval Modal
     modalTitle: "🔍 Pending Allocation Retrieve Karein",
