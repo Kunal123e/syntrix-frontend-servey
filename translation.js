@@ -45,7 +45,7 @@ const translations = {
   },
   hi: {
     mainTitle: "सिंट्रिक्स कंज्यूमर एनालिटिक्स हब",
-    mainSubtitle: "सभी 7 कंज्यूमर रिसर्च मॉड्यूल पूरे करें और <span style='font-weight: 800; color: #111827; background: #e0e7ff; padding: 2px 8px; border-radius: 6px;'>56 SYNX</span> टोकन रिवॉर्ड पाएं।",
+    mainSubtitle: "सभी 6 कंज्यूमर रिसर्च मॉड्यूल पूरे करें और <span style='font-weight: 800; color: #111827; background: #e0e7ff; padding: 2px 8px; border-radius: 6px;'>48 SYNX</span> टोकन रिवॉर्ड पाएं।",
     progress: "प्रगति",
     next: "अगला",
     previous: "पिछला",
@@ -59,7 +59,7 @@ const translations = {
     // Additional UI Portal elements
     emailSectionTitle: "संचार प्रोफ़ाइल दर्ज करें",
     btnStart: "अनुसंधान मॉड्यूल प्रारंभ करें →",
-    claimTitle: "अपने 56 SYNX पुरस्कार का दावा करें",
+    claimTitle: "अपना 48 SYNX इनाम प्राप्त करें",
     metaMaskLabel: "💼 🦊 मेटामास्क वॉलेट कनेक्ट करें",
     manualLabel: "या अपना EVM नेटवर्क सार्वजनिक पता दर्ज करें",
     btnExecute: "टोकन वितरण निष्पादित करें",
@@ -84,7 +84,7 @@ const translations = {
   },
   hinglish: {
     mainTitle: "Syntrix Consumer Analytics Hub",
-    mainSubtitle: "Sabhi 7 consumer research modules ko complete karein aur <span style='font-weight: 800; color: #111827; background: #e0e7ff; padding: 2px 8px; border-radius: 6px;'>56 SYNX</span> token rewards claim karein.",
+    mainSubtitle: "Sabhi 6 consumer research modules pure karein aur <span style='font-weight: 800; color: #111827; background: #e0e7ff; padding: 2px 8px; border-radius: 6px;'>48 SYNX</span> token reward payein.",
     progress: "Progress",
     next: "Aage",
     previous: "Peeche",
@@ -98,7 +98,7 @@ const translations = {
     // Additional UI Portal elements
     emailSectionTitle: "Communication Profile Enter Karein",
     btnStart: "Research Modules Initialize Karein →",
-    claimTitle: "Apna 56 SYNX Reward Claim Karein",
+    claimTitle: "Apna 48 SYNX Reward Claim Karein", 
     metaMaskLabel: "💼 🦊 MetaMask Wallet Connect Karein",
     manualLabel: "YA APNA EVM NETWORK PUBLIC ADDRESS ENTER KAREIN",
     btnExecute: "Execute Token Distribution",
