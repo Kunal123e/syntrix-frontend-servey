@@ -464,23 +464,45 @@
   </div>
 </div>
 
-<div id="confirmRestartModal" class="modal-overlay hidden" style="backdrop-filter: blur(10px); background: rgba(17, 24, 39, 0.4);">
-  <div class="animate-fade-in" style="background: #ffffff; border-radius: 28px; width: 100%; max-width: 420px; padding: 40px 30px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15); border: 1px solid #ece4da; position: relative; margin: 20px;">
-    <div style="width: 70px; height: 70px; background: #fff1f2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 4px solid #ffe4e6;">
-      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+<!-- 🚀 NEW: Premium Dark Technical Restart Modal (Color Graded) -->
+<div id="confirmRestartModal" class="modal-overlay hidden" style="backdrop-filter: blur(8px); background: rgba(10, 10, 10, 0.75);">
+  <div class="animate-fade-in" style="background: #18181c; border-radius: 24px; width: 100%; max-width: 440px; padding: 35px 30px 20px; text-align: center; box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); position: relative; margin: 20px;">
+
+    <!-- Technical Refresh Icon -->
+    <div style="width: 56px; height: 56px; background: rgba(99, 102, 241, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 1px solid rgba(99, 102, 241, 0.2);">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
     </div>
-    <h2 style="font-size: 26px; font-weight: 900; color: #111827; margin-bottom: 12px; letter-spacing: -0.5px;">Restart Session?</h2>
-    <p style="color: #6b7280; font-size: 15px; margin-bottom: 35px; line-height: 1.6; padding: 0 10px;">Are you sure you want to clear your current progress? You will need to start the module sequence from the beginning.</p>
-    <div style="display: flex; gap: 15px; justify-content: center;">
-      <button type="button" id="cancelRestartBtn" style="flex: 1; padding: 15px; background: #f3f4f6; color: #374151; border: none; border-radius: 16px; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s;">Keep Progress</button>
-      <button type="button" id="confirmRestartBtn" style="flex: 1; padding: 15px; background: #ef4444; color: white; border: none; border-radius: 16px; font-weight: 700; font-size: 15px; cursor: pointer; box-shadow: 0 8px 16px rgba(239, 68, 68, 0.25); transition: 0.2s;">Yes, Reset</button>
+
+    <!-- Title Alert -->
+    <h2 style="font-size: 21px; font-weight: 800; color: #facc15; margin-bottom: 12px; letter-spacing: -0.5px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+      ⚠️ Potential Data Loss Ahead!
+    </h2>
+
+    <!-- Technical Copy -->
+    <p style="color: #a1a1aa; font-size: 14.5px; margin-bottom: 30px; line-height: 1.6; padding: 0 5px;">
+      The requested reset operation will result in the loss of all current session progress. Reverting to the starting state will require the re-sequencing of all analysis modules.
+    </p>
+
+    <!-- 3D Interactive Buttons -->
+    <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 25px;">
+      <button type="button" id="cancelRestartBtn" style="flex: 1; padding: 14px; background: #e5e7eb; color: #1f2937; border: none; border-bottom: 4px solid #9ca3af; border-radius: 14px; font-weight: 800; font-size: 15px; cursor: pointer; transition: background 0.2s;" onmousedown="this.style.transform='translateY(4px)'; this.style.borderBottomWidth='0px';" onmouseup="this.style.transform='translateY(0px)'; this.style.borderBottomWidth='4px';" onmouseleave="this.style.transform='translateY(0px)'; this.style.borderBottomWidth='4px';">
+        Keep Progress
+      </button>
+      <button type="button" id="confirmRestartBtn" style="flex: 1; padding: 14px; background: #dc2626; color: white; border: none; border-bottom: 4px solid #991b1b; border-radius: 14px; font-weight: 800; font-size: 15px; cursor: pointer; transition: background 0.2s;" onmousedown="this.style.transform='translateY(4px)'; this.style.borderBottomWidth='0px';" onmouseup="this.style.transform='translateY(0px)'; this.style.borderBottomWidth='4px';" onmouseleave="this.style.transform='translateY(0px)'; this.style.borderBottomWidth='4px';">
+        Yes, Reset
+      </button>
+    </div>
+
+    <!-- Sub-system text -->
+    <div style="font-family: monospace; color: #52525b; font-size: 11px; letter-spacing: 0.5px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
+      Session Data: active_node_clear
     </div>
   </div>
 </div>
 
-<script src="data.js?v=luxury_v3"></script>
-<script src="translation.js?v=luxury_v3"></script>
-<script src="script.js?v=luxury_v3"></script>
+<script src="data.js?v=luxury_v4"></script>
+<script src="translation.js?v=luxury_v4"></script>
+<script src="script.js?v=luxury_v4"></script>
 
 </body>
 </html>
