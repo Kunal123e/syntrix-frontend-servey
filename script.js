@@ -17,6 +17,10 @@ let currentLanguage = "en";
 let isOtpSent = false;
 let userConnectedWalletAddress = "";
 
+// 🚀 NEW: Legal Consent tracking variables
+let legalConsentTimestamp = "";
+let clientUserAgent = "";
+
 const emailGateSection = document.getElementById("emailGateSection");
 const emailGateForm = document.getElementById("emailGateForm");
 const gateEmailInput = document.getElementById("gateEmail");
@@ -57,12 +61,10 @@ const statusDiv = document.getElementById("status");
 const progressFill = document.querySelector(".progressFill");
 const progressText = document.querySelector(".progressText");
 
-// 🚀 NEW: Custom Confirm DOM Elements
 const confirmRestartModal = document.getElementById("confirmRestartModal");
 const cancelRestartBtn = document.getElementById("cancelRestartBtn");
 const confirmRestartBtn = document.getElementById("confirmRestartBtn");
 
-// 🚀 FIXED: DYNAMIC PREMIUM TOAST
 function showToast(message, icon = "⚠️") {
   let toast = document.getElementById("customToast");
   let toastMsg = document.getElementById("toastMessage");
@@ -90,7 +92,6 @@ function showToast(message, icon = "⚠️") {
 function openLegalModal() { document.getElementById("legalModal").classList.remove("hidden"); }
 function closeLegalModal() { document.getElementById("legalModal").classList.add("hidden"); }
 
-// 🚀 FIXED: Premium SVGs integrated
 const BADGE_PROFILES = {
   Analyzer: { 
     title: "ANALYZER", sub: "The Mindful Shopper",
@@ -211,6 +212,12 @@ if (emailGateForm) {
     if (legalConsent && !legalConsent.checked) {
       showToast("You must agree to the Legal Terms of Research to continue.", "⚖️");
       return;
+    }
+    
+    // 🚀 NEW: Capture Digital Signature / Consent Proof
+    if (legalConsent && legalConsent.checked && !legalConsentTimestamp) {
+      legalConsentTimestamp = new Date().toISOString();
+      clientUserAgent = navigator.userAgent;
     }
     
     const emailVal = gateEmailInput.value.trim().toLowerCase();
@@ -566,15 +573,21 @@ async function handleSurveySubmission(e) {
 
   const referralCodeUsed = localStorage.getItem("referralCode") || "";
 
+  // 🚀 NEW: Preparing Payload with Legal Signature
+  const finalPayload = {
+    email: userEmailAddress,
+    answers: answers,
+    referredBy: referralCodeUsed,
+    legal_consent: true,
+    consent_timestamp: legalConsentTimestamp || new Date().toISOString(),
+    user_agent: clientUserAgent || navigator.userAgent
+  };
+
   try {
     const response = await fetchWithTimeout(`${BACKEND_URL}/api/submit-survey`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: userEmailAddress,
-        answers: answers,
-        referredBy: referralCodeUsed
-      })
+      body: JSON.stringify(finalPayload)
     });
 
     const result = await response.json();
@@ -808,6 +821,7 @@ function resetApplicationFlowState() {
   localStorage.removeItem("syntrix_user_email"); localStorage.removeItem("referralCode");
   if (statusDiv) statusDiv.innerHTML = "";
   userEmailAddress = ""; currentSection = 0; isOtpSent = false;
+  legalConsentTimestamp = ""; clientUserAgent = ""; // Clear consent cache
   const otpSection = document.getElementById("otpSection"); if (otpSection) otpSection.classList.add("hidden");
   if (startSurveyBtn) startSurveyBtn.innerHTML = "Send Verification Code &rarr;";
   if (gateEmailInput) gateEmailInput.readOnly = false;
@@ -934,7 +948,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.addEventListener("click", () => optionsPopover.classList.add("hidden"));
   }
 
-  // 🚀 FIXED: Replaced native confirm() with Custom Premium Modal
   if (menuRestartBtn) {
     menuRestartBtn.onclick = () => { 
       optionsPopover.classList.add("hidden"); 
