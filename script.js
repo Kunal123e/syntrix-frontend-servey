@@ -1,57 +1,200 @@
-const BACKEND_URL = "https://syntrix-airdrop.onrender.com";
+// =========================================================================
+// SYNTRIX CORE PLATFORM APPLICATION LOGIC ENGINE
+// =========================================================================
 
-const emailGateSection = document.getElementById("emailGateSection");
-const gateEmailInput = document.getElementById("gateEmail");
-const startSurveyBtn = document.getElementById("startSurveyBtn");
+const BACKEND_URL = window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1")
+  ? "http://localhost:5000"
+  : "https://syntrix-airdrop.onrender.com";
 
-const topProgressBox = document.getElementById("topProgressBox");
-const claimForm = document.getElementById("claimForm");
-const surveyContainer = document.getElementById("surveyContainer");
-
-const nextBtn = document.getElementById("nextBtn");
-const prevBtn = document.getElementById("prevBtn");
-const submitClaimBtn = document.getElementById("submitClaimBtn");
-
-const rewardDashboardScreen = document.getElementById("rewardDashboardScreen");
-const dashboardWalletInput = document.getElementById("dashboardWalletInput");
-const executeClaimBtn = document.getElementById("executeClaimBtn");
-const connectWalletBtn = document.getElementById("connectWalletBtn");
-
-const statusDiv = document.getElementById("status");
-const progressFill = document.querySelector(".progressFill");
-const progressText = document.querySelector(".progressText");
+const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+const WALLET_REGEX = /^0x[a-fA-F0-9]{40}$/;
+const DEFAULT_TIMEOUT_MS = 60000;
 
 let userEmailAddress = "";
 let currentSection = 0;
 const answers = {};
 let currentLanguage = "en";
+let isOtpSent = false;
+let userConnectedWalletAddress = "";
 
-// ================= LANGUAGE SELECTION INTERFACE CONTROLS =================
-const langButtons = document.querySelectorAll(".langBtn");
-langButtons.forEach(btn => {
-  btn.addEventListener("click", (e) => {
-    langButtons.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    currentLanguage = btn.dataset.lang;
-    
-    // Rerender layout content matching translation engine profiles
-    if (claimForm.classList.contains("hidden") === false) {
-      renderSection();
-    } else {
-      translateMainHeadings();
-    }
-  });
-});
+// 🚀 NEW: Legal Consent tracking variables
+let legalConsentTimestamp = "";
+let clientUserAgent = "";
 
-function getSurveyData() {
-  return typeof surveySections !== "undefined" ? surveySections : [];
+const emailGateSection = document.getElementById("emailGateSection");
+const emailGateForm = document.getElementById("emailGateForm");
+const gateEmailInput = document.getElementById("gateEmail");
+const startSurveyBtn = document.getElementById("startSurveyBtn");
+const referredByCodeInput = document.getElementById("referredByCode"); 
+const menuToggleBtn = document.getElementById("menuToggleBtn");
+const optionsPopover = document.getElementById("optionsPopover");
+const menuRestartBtn = document.getElementById("menuRestartBtn");
+const menuRecoverBtn = document.getElementById("menuRecoverBtn");
+const retrieveModal = document.getElementById("retrieveModal");
+const closeModalBtn = document.getElementById("closeModalBtn");
+const cancelModalBtn = document.getElementById("cancelModalBtn");
+const confirmRetrieveBtn = document.getElementById("confirmRetrieveBtn");
+const modalEmailInput = document.getElementById("modalEmailInput");
+const modalStatus = document.getElementById("modalStatus");
+const topProgressBox = document.getElementById("topProgressBox");
+const claimForm = document.getElementById("claimForm");
+const surveyContainer = document.getElementById("surveyContainer");
+const nextBtn = document.getElementById("nextBtn");
+const prevBtn = document.getElementById("prevBtn");
+const submitClaimBtn = document.getElementById("submitClaimBtn");
+const rewardDashboardScreen = document.getElementById("rewardDashboardScreen");
+const dashboardWalletInput = document.getElementById("dashboardWalletInput");
+const executeClaimBtn = document.getElementById("executeClaimBtn");
+const connectWalletBtn = document.getElementById("connectWalletBtn");
+const claimScreenSection = document.getElementById("claimScreenSection");
+const claimConnectWalletBtn = document.getElementById("claimConnectWalletBtn");
+const claimWalletConnectedBlock = document.getElementById("claimWalletConnectedBlock");
+const claimWalletAddressDisplay = document.getElementById("claimWalletAddressDisplay");
+const submitClaimRewardBtn = document.getElementById("submitClaimRewardBtn");
+const statTotalReferrals = document.getElementById("statTotalReferrals");
+const statPendingRewards = document.getElementById("statPendingRewards");
+const statClaimedRewards = document.getElementById("statClaimedRewards");
+const statTotalEarned = document.getElementById("statTotalEarned");
+const referralCodeDisplay = document.getElementById("referralCodeDisplay");
+const copyReferralBtn = document.getElementById("copyReferralBtn");
+const statusDiv = document.getElementById("status");
+const progressFill = document.querySelector(".progressFill");
+const progressText = document.querySelector(".progressText");
+
+const confirmRestartModal = document.getElementById("confirmRestartModal");
+const cancelRestartBtn = document.getElementById("cancelRestartBtn");
+const confirmRestartBtn = document.getElementById("confirmRestartBtn");
+
+function showToast(message, icon = "⚠️") {
+  let toast = document.getElementById("customToast");
+  let toastMsg = document.getElementById("toastMessage");
+  let toastIcon = document.querySelector(".toast-icon");
+  
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "customToast";
+    toast.className = "custom-toast";
+    toast.innerHTML = `<span class="toast-icon">${icon}</span><span id="toastMessage">${message}</span>`;
+    document.body.appendChild(toast);
+    toastMsg = document.getElementById("toastMessage");
+    toastIcon = document.querySelector(".toast-icon");
+  }
+
+  toastMsg.innerText = message;
+  if(toastIcon) toastIcon.innerText = icon;
+  
+  void toast.offsetWidth;
+  
+  toast.classList.add("show");
+  setTimeout(() => { toast.classList.remove("show"); }, 3500);
+}
+
+function openLegalModal() { document.getElementById("legalModal").classList.remove("hidden"); }
+function closeLegalModal() { document.getElementById("legalModal").classList.add("hidden"); }
+
+const BADGE_PROFILES = {
+  Analyzer: { 
+    title: "ANALYZER", sub: "The Mindful Shopper",
+    desc: "You shop with brilliant clarity! For you, real value and true quality matter most. By thoughtfully comparing details and trusting genuine reviews, you always make incredibly smart and satisfying choices.", 
+    iconHTML: `<img src="BADGES%20PNG/badge%201%20analyzer.jpeg" alt="Analyzer" style="width: 100%; height: 100%; object-fit: cover;">`, 
+    menuIcon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`,
+    color: "#2563eb", textColor: "#0f172a"
+  },
+  Stylist: { 
+    title: "STYLIST", sub: "The Tasteful Explorer",
+    desc: "You have a beautiful eye for design! For you, shopping is about joy, artistry, and wonderful experiences. You naturally gravitate towards things that tell a great story and bring an extra touch of elegance into your everyday life.", 
+    iconHTML: `<img src="BADGES%20PNG/badge%203.jpeg" alt="Stylist" style="width: 100%; height: 100%; object-fit: cover;">`, 
+    menuIcon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L15 9L22 12L15 15L12 22L9 15L2 12L9 9Z"></path></svg>`,
+    color: "#8b5cf6", textColor: "#0f172a"
+  },
+  Hedger: { 
+    title: "HEDGER", sub: "The Thoughtful Planner",
+    desc: "You value peace of mind and total reliability! You love knowing your purchases are safe and backed by great guarantees. By choosing trusted paths, you ensure every shopping experience is completely smooth, secure, and worry-free.", 
+    iconHTML: `<img src="BADGES%20PNG/badge%202.jpeg" alt="Hedger" style="width: 100%; height: 100%; object-fit: cover;">`, 
+    menuIcon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>`,
+    color: "#ea580c", textColor: "#0f172a"
+  },
+  Native: { 
+    title: "NATIVE", sub: "The Connected Heart",
+    desc: "You deeply value genuine connections! Your best shopping moments come from trusted recommendations and shared stories. By listening to friends and family, you always bring home products that carry real warmth and authenticity.", 
+    iconHTML: `<img src="BADGES%20PNG/badge%204.jpeg" alt="Native" style="width: 100%; height: 100%; object-fit: cover;">`, 
+    menuIcon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`,
+    color: "#eab308", textColor: "#0f172a"
+  }
+};
+
+function displayConsumerBadgesUI(badgeKey) {
+  const profile = BADGE_PROFILES[badgeKey] || BADGE_PROFILES.Analyzer;
+  const badgeCard = document.getElementById("dashboardPsychologyBadgeCard");
+
+  if (badgeCard) {
+    badgeCard.style.display = "flex";
+    badgeCard.style.background = "#ffffff";
+    badgeCard.style.border = `2px solid ${profile.color}30`;
+    badgeCard.style.boxShadow = `0 15px 35px -5px rgba(0, 0, 0, 0.05), 0 0 20px ${profile.color}15`;
+    badgeCard.style.borderRadius = "24px";
+    badgeCard.style.padding = "30px";
+    badgeCard.style.marginBottom = "35px";
+    badgeCard.style.alignItems = "center";
+    badgeCard.style.gap = "30px";
+    badgeCard.style.textAlign = "left";
+
+    badgeCard.innerHTML = `
+      <div style="position: relative; flex-shrink: 0; width: 100px; height: 100px; border-radius: 50%; background: #ffffff; border: 3px solid ${profile.color}60; display: block; box-shadow: 0 0 30px ${profile.color}30; overflow: hidden;">
+         ${profile.iconHTML}
+      </div>
+      <div>
+        <div style="font-size: 11px; text-transform: uppercase; color: ${profile.color}; font-weight: 900; letter-spacing: 2px; margin-bottom: 8px;">Consumer Persona Unlocked</div>
+        <h3 style="font-size: 32px; font-weight: 900; color: ${profile.textColor}; margin: 0 0 8px 0; letter-spacing: -1px;">${profile.title}</h3>
+        <div style="font-size: 16px; font-weight: 800; color: #475569; margin-bottom: 12px;">${profile.sub}</div>
+        <p style="font-size: 15px; color: #64748b; line-height: 1.7; margin: 0; font-weight: 500;">${profile.desc}</p>
+      </div>
+    `;
+  }
+
+  const dropdownBadgeWrapper = document.getElementById("menuPsychologyBadgeWrapper");
+  const dropdownBadgeText = document.getElementById("menuPsychologyBadgeText");
+  const dropdownBadgeIcon = document.getElementById("menuBadgeIcon");
+  
+  if (dropdownBadgeWrapper && dropdownBadgeText && dropdownBadgeIcon) {
+    dropdownBadgeWrapper.style.display = "flex";
+    dropdownBadgeIcon.innerHTML = profile.menuIcon;
+    dropdownBadgeText.innerText = profile.title;
+    dropdownBadgeText.style.color = profile.color;
+  }
+}
+
+function normalizeReferralCode(code) {
+  if (!code) return "";
+  let clean = code.trim().toUpperCase();
+  clean = clean.replace(/\s+/g, "");
+  if (!clean.startsWith("SYN-")) {
+    if (clean.startsWith("SYN")) clean = "SYN-" + clean.substring(3);
+    else clean = "SYN-" + clean;
+  }
+  return clean;
+}
+
+async function fetchWithTimeout(resource, options = {}) {
+  const { timeout = DEFAULT_TIMEOUT_MS } = options;
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  try {
+    const response = await fetch(resource, { ...options, signal: controller.signal });
+    clearTimeout(id);
+    return response;
+  } catch (error) {
+    clearTimeout(id);
+    throw error;
+  }
 }
 
 function getUIText(key) {
   const fallbacks = {
-    validationRequired: "❌ Please answer all questions before continuing.",
+    validationRequired: "Please answer all questions before continuing.",
     submitting: "⏳ Storing survey data metrics across secure registers...",
-    claiming: "⚡ Dispensing 10 SYNX tokens to target network gateway..."
+    claiming: "⚡ Appending whitelist configuration parameters...",
+    checkingLedger: "🔍 Authenticating communication profile ledger status..."
   };
   if (typeof translations !== "undefined" && translations[currentLanguage] && translations[currentLanguage][key]) {
     return translations[currentLanguage][key];
@@ -59,16 +202,126 @@ function getUIText(key) {
   return fallbacks[key] || key;
 }
 
-function translateMainHeadings() {
-  if (typeof translations !== "undefined" && translations[currentLanguage]) {
-    const mainTitleEl = document.getElementById("mainTitle");
-    const mainSubtitleEl = document.getElementById("mainSubtitle");
-    if (mainTitleEl && translations[currentLanguage].mainTitle) mainTitleEl.innerText = translations[currentLanguage].mainTitle;
-    if (mainSubtitleEl && translations[currentLanguage].mainSubtitle) mainSubtitleEl.innerText = translations[currentLanguage].mainSubtitle;
-  }
+// ================= STAGE 1: EMAIL VERIFICATION GATE =================
+if (emailGateForm) {
+  emailGateForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!gateEmailInput) return;
+
+    const legalConsent = document.getElementById("legalConsent");
+    if (legalConsent && !legalConsent.checked) {
+      showToast("You must agree to the Legal Terms of Research to continue.", "⚖️");
+      return;
+    }
+    
+    // 🚀 NEW: Capture Digital Signature / Consent Proof
+    if (legalConsent && legalConsent.checked && !legalConsentTimestamp) {
+      legalConsentTimestamp = new Date().toISOString();
+      clientUserAgent = navigator.userAgent;
+    }
+    
+    const emailVal = gateEmailInput.value.trim().toLowerCase();
+    
+    if (!emailVal || !EMAIL_REGEX.test(emailVal)) {
+      showToast("Please input a valid email address.", "❌");
+      if (statusDiv) { statusDiv.innerHTML = ""; }
+      return;
+    }
+
+    if (!isOtpSent) {
+      if (startSurveyBtn.disabled) return; 
+      startSurveyBtn.disabled = true;
+      const originalText = startSurveyBtn.innerHTML;
+      startSurveyBtn.innerHTML = "⏳ Sending Code...";
+
+      if (statusDiv) { statusDiv.innerHTML = "⏳ Generating secure token..."; statusDiv.style.color = "#57d6c2"; }
+      
+      try {
+        const response = await fetchWithTimeout(`${BACKEND_URL}/api/send-otp`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: emailVal })
+        });
+        const result = await response.json();
+        if (result.success) {
+          isOtpSent = true;
+          const otpSection = document.getElementById("otpSection");
+          if (otpSection) otpSection.classList.remove("hidden");
+          startSurveyBtn.innerHTML = "Verify & Enter &rarr;";
+          startSurveyBtn.disabled = false;
+          gateEmailInput.readOnly = true; 
+          
+          if(legalConsent && legalConsent.parentElement) {
+            legalConsent.parentElement.style.display = "none";
+          }
+          
+          if (statusDiv) statusDiv.innerHTML = "";
+        } else {
+          showToast(result.error || "Failed to send code.", "❌");
+          startSurveyBtn.disabled = false;
+          startSurveyBtn.innerHTML = originalText;
+          if (statusDiv) { statusDiv.innerHTML = ""; }
+        }
+      } catch (err) {
+        showToast("Network error. Could not send code.", "❌");
+        startSurveyBtn.disabled = false;
+        startSurveyBtn.innerHTML = originalText;
+        if (statusDiv) { statusDiv.innerHTML = ""; }
+      }
+      return; 
+    }
+
+    const gateOtpInput = document.getElementById("gateOtp");
+    const rawOtpVal = gateOtpInput ? gateOtpInput.value : "";
+    const otpVal = rawOtpVal.replace(/[\s-]/g, "");
+
+    if (!otpVal || otpVal.length !== 6) {
+      showToast("Please enter the 6-digit verification code.", "❌");
+      if (statusDiv) { statusDiv.innerHTML = ""; }
+      return;
+    }
+
+    if (startSurveyBtn.disabled) return;
+    startSurveyBtn.disabled = true;
+    const originalVerifyText = startSurveyBtn.innerHTML;
+    startSurveyBtn.innerHTML = "⏳ Verifying...";
+
+    if (statusDiv) { statusDiv.innerHTML = "⏳ Verifying code..."; statusDiv.style.color = "#57d6c2"; }
+
+    try {
+      const response = await fetchWithTimeout(`${BACKEND_URL}/api/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: emailVal, otp: otpVal })
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        if (statusDiv) statusDiv.innerHTML = "✅ Verification successful!";
+        userEmailAddress = emailVal;
+        localStorage.setItem("syntrix_user_email", emailVal);
+        if (referredByCodeInput && referredByCodeInput.value.trim() !== "") {
+          localStorage.setItem("referralCode", normalizeReferralCode(referredByCodeInput.value));
+        }
+        startSurveyBtn.disabled = false;
+        await runProfileLedgerVerification(emailVal, false);
+      } else {
+        showToast(result.error || "Invalid or expired code.", "❌");
+        startSurveyBtn.disabled = false;
+        startSurveyBtn.innerHTML = originalVerifyText;
+        if (statusDiv) { statusDiv.innerHTML = ""; }
+      }
+    } catch (err) {
+      showToast("Network error. Could not verify code.", "❌");
+      startSurveyBtn.disabled = false;
+      startSurveyBtn.innerHTML = originalVerifyText;
+      if (statusDiv) { statusDiv.innerHTML = ""; }
+    }
+  });
 }
 
-// ================= DYNAMIC TRANSLATION ENGINE INTERCEPTORS =================
+function getSurveyData() { return typeof surveySections !== "undefined" ? surveySections : []; }
+
 function getSectionTitle(section) {
   if (typeof sectionTranslations !== "undefined" && sectionTranslations[currentLanguage]) {
     return sectionTranslations[currentLanguage][section.title] || section.title;
@@ -76,14 +329,34 @@ function getSectionTitle(section) {
   return section.title || "";
 }
 
+function handleNextSection() {
+  const sections = getSurveyData();
+  if (!validateCurrentSectionAnswers()) {
+    showToast(getUIText("validationRequired"), "⚠️");
+    return;
+  }
+  if (currentSection < sections.length - 1) {
+    currentSection++;
+    renderSection();
+    updateExcitementBanner(currentSection);
+  }
+}
+
+function handlePrevSection() {
+  if (currentSection > 0) {
+    currentSection--;
+    renderSection();
+    updateExcitementBanner(currentSection);
+  }
+}
+
 function getQuestionText(q) {
   if (typeof questionTranslations !== "undefined" && questionTranslations[currentLanguage]) {
     return questionTranslations[currentLanguage][q.id] || q.text || q.id;
   }
-  return q.text || q.id;
+  return q.question || q.id;
 }
 
-// Intercepts and parses option values dynamically out of your dictionaries
 function getOptionText(opt) {
   if (typeof optionTranslations !== "undefined" && optionTranslations[currentLanguage]) {
     return optionTranslations[currentLanguage][opt] || opt;
@@ -91,262 +364,638 @@ function getOptionText(opt) {
   return opt;
 }
 
-// ================= STAGE 1: ENTRY ONBOARDING INITIALIZATION GATE =================
-startSurveyBtn.addEventListener("click", () => {
-  const emailVal = gateEmailInput.value.trim();
-  if (!emailVal || !emailVal.includes("@")) {
-    statusDiv.innerHTML = "❌ Please input a valid identification email profile address.";
-    statusDiv.style.color = "#ff4d4d";
-    return;
-  }
+function validateCurrentSectionAnswers() {
+  const sections = getSurveyData();
+  const currentData = sections[currentSection];
+  if (!currentData) return false;
   
-  statusDiv.innerHTML = "";
-  userEmailAddress = emailVal;
-  
-  // Transition views out of Onboarding into Step 1 of the survey questionnaire
-  emailGateSection.classList.add("hidden");
-  claimForm.classList.remove("hidden");
-  topProgressBox.classList.remove("hidden");
-  
-  renderSection();
-});
-
-// ================= STAGE 2: SURVEY LAYOUT GENERATOR MATRIX =================
-function renderSection() {
-  const surveyData = getSurveyData();
-  if (surveyData.length === 0) return;
-
-  const section = surveyData[currentSection];
-  
-  // Highlighting matching steps on sidebar tracker panels cleanly
-  document.querySelectorAll(".step").forEach((st, idx) => {
-    if (idx === currentSection + 1) st.classList.add("active");
-    else st.classList.remove("active");
-  });
-
-  translateMainHeadings();
-
-  surveyContainer.innerHTML = `
-    <div class="section">
-      <h2 class="sectionTitle">${getSectionTitle(section)}</h2>
-      ${section.questions.map(q => {
-        const translatedQuestionText = getQuestionText(q);
-
-        if (q.type === "textarea") {
-          return `
-            <div class="question">
-              <h3>${translatedQuestionText}</h3>
-              <textarea data-id="${q.id}" placeholder="Write your answer...">${answers[q.id] || ""}</textarea>
-            </div>
-          `;
-        }
-        if (q.multiple) {
-          const selectedValues = answers[q.id] || [];
-          return `
-            <div class="question">
-              <h3>${translatedQuestionText}</h3>
-              <div class="options">
-                ${(q.options || []).map(opt => `
-                  <div class="option ${selectedValues.includes(opt) ? "selected" : ""}" data-question="${q.id}" data-value="${opt}" data-multiple="true">
-                    ${getOptionText(opt)}
-                  </div>
-                `).join("")}
-              </div>
-            </div>
-          `;
-        }
-        return `
-          <div class="question">
-            <h3>${translatedQuestionText}</h3>
-            <div class="options">
-              ${(q.options || []).map(opt => `
-                <div class="option ${answers[q.id] === opt ? "selected" : ""}" data-question="${q.id}" data-value="${opt}">
-                  ${getOptionText(opt)}
-                </div>
-              `).join("")}
-            </div>
-          </div>
-        `;
-      }).join("")}
-    </div>
-  `;
-
-  updateProgressIndicators();
-  attachInputEventListeners();
-  configureNavigationActionButtons();
-}
-
-function configureNavigationActionButtons() {
-  const surveyData = getSurveyData();
-  
-  // Handle layout visibility variations
-  prevBtn.style.display = currentSection === 0 ? "none" : "inline-block";
-
-  if (currentSection === surveyData.length - 1) {
-    nextBtn.classList.add("hidden");
-    submitClaimBtn.classList.remove("hidden"); // Reveals "Submit Survey & Claim ✨"
-  } else {
-    nextBtn.classList.remove("hidden");
-    submitClaimBtn.classList.add("hidden");
-  }
-}
-
-function attachInputEventListeners() {
-  document.querySelectorAll(".option").forEach(opt => {
-    opt.addEventListener("click", () => {
-      const qId = opt.dataset.question;
-      const val = opt.dataset.value;
-      if (opt.dataset.multiple) {
-        if (!answers[qId]) answers[qId] = [];
-        if (answers[qId].includes(val)) answers[qId] = answers[qId].filter(i => i !== val);
-        else answers[qId].push(val);
-      } else {
-        answers[qId] = val;
-      }
-      renderSection();
-    });
-  });
-
-  document.querySelectorAll("textarea").forEach(tx => {
-    tx.addEventListener("input", () => { answers[tx.dataset.id] = tx.value; });
-  });
-}
-
-function updateProgressIndicators() {
-  const surveyData = getSurveyData();
-  const percentage = ((currentSection + 1) / surveyData.length) * 100;
-  progressFill.style.width = percentage + "%";
-  progressText.innerText = `Progress ${currentSection + 1}/${surveyData.length}`;
-}
-
-function validateSectionInputs() {
-  const surveyData = getSurveyData();
-  const currentQuestions = surveyData[currentSection].questions;
-  let isPass = true;
-
-  currentQuestions.forEach(q => {
+  for (let q of currentData.questions) { 
     if (q.type === "textarea") {
-      if (!answers[q.id] || answers[q.id].trim() === "") isPass = false;
-    } else if (q.multiple) {
-      if (!answers[q.id] || answers[q.id].length === 0) isPass = false;
+      if (!answers[q.id] || answers[q.id].trim() === "") return false;
     } else {
-      if (!answers[q.id]) isPass = false;
+      if (!answers[q.id]) return false; 
     }
-  });
-  return isPass;
+  }
+  return true;
 }
 
-nextBtn.addEventListener("click", () => {
-  if (!validateSectionInputs()) {
-    statusDiv.innerHTML = getUIText("validationRequired");
-    statusDiv.style.color = "#ff4d4d";
-    return;
-  }
-  statusDiv.innerHTML = "";
-  currentSection++;
-  renderSection();
-});
-
-prevBtn.addEventListener("click", () => {
-  statusDiv.innerHTML = "";
-  currentSection--;
-  renderSection();
-});
-
-// ================= SUBMIT ENTIRE DATA BUNDLE OUT TO PHASE 1 METRICS ENDPOINT =================
-claimForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  statusDiv.innerHTML = getUIText("submitting");
-  statusDiv.style.color = "#57d6c2";
-
-  try {
-    const response = await fetch(`${BACKEND_URL}/api/claim-airdrop`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: userEmailAddress, ...answers })
-    });
-
-    const output = await response.json();
-
-    if (output.success) {
-      statusDiv.innerHTML = "";
-      
-      // Advance user instantly into Stage 3 Post-Submission dashboard screen container
-      claimForm.classList.add("hidden");
-      topProgressBox.classList.add("hidden");
-      rewardDashboardScreen.classList.remove("hidden");
-      
-      document.querySelectorAll(".sidebar .step").forEach(s => s.classList.remove("active"));
-      const finalStepNode = document.getElementById("step-7");
-      if (finalStepNode) finalStepNode.classList.add("active");
-    } else {
-      statusDiv.innerHTML = "❌ " + (output.error || "Survey submission integration failure.");
-      statusDiv.style.color = "#ff4d4d";
-    }
-  } catch (err) {
-    statusDiv.innerHTML = "❌ Communication channel with Render cluster down.";
-    statusDiv.style.color = "#ff4d4d";
-  }
-});
-
-// ================= STAGE 3: EXECUTE LIVE REWARD MINT/TRANSFER VIA DASHBOARD =================
-connectWalletBtn.addEventListener("click", async () => {
-  if (typeof window.ethereum !== "undefined") {
-    try {
-      const addresses = await window.ethereum.request({ method: "eth_requestAccounts" });
-      if (addresses.length > 0) {
-        dashboardWalletInput.value = addresses[0];
-        statusDiv.innerHTML = "🦊 MetaMask Wallet successfully integrated.";
-        statusDiv.style.color = "#57d6c2";
-      }
-    } catch (walletErr) {
-      statusDiv.innerHTML = "⚠️ Wallet hook authorization denied by user connection.";
-      statusDiv.style.color = "#ffb347";
-    }
-  } else {
-    statusDiv.innerHTML = "ℹ️ Browser wallet standard injection provider missing. Paste manually.";
-    statusDiv.style.color = "#ffb347";
-  }
-});
-
-executeClaimBtn.addEventListener("click", async () => {
-  const targetedWallet = dashboardWalletInput.value.trim();
+function renderSection() {
+  const sections = getSurveyData();
+  if (!sections || sections.length === 0 || !surveyContainer) return;
+  const currentData = sections[currentSection];
   
-  if (!targetedWallet || targetedWallet.length !== 42 || !targetedWallet.startsWith("0x")) {
-    statusDiv.innerHTML = "❌ Please specify a valid EVM public network cryptographic address.";
-    statusDiv.style.color = "#ff4d4d";
+  try {
+    if (topProgressBox) topProgressBox.classList.remove("hidden");
+    if (claimForm) claimForm.classList.remove("hidden");
+    if (emailGateSection) emailGateSection.classList.add("hidden");
+
+    const sidebarSteps = document.querySelectorAll(".sidebar .step");
+    sidebarSteps.forEach((st, idx) => {
+      if (idx === currentSection) st.classList.add("active");
+      else st.classList.remove("active");
+      if (sections[idx]) {
+        const titleText = sections[idx].title.split(".")[1] || sections[idx].title;
+        const stepLabel = st.querySelector(".stepLabel") || st;
+        if (stepLabel) stepLabel.innerText = titleText.trim();
+      }
+    });
+
+    const progressPercent = ((currentSection + 1) / sections.length) * 100;
+    if (progressFill) progressFill.style.width = `${progressPercent}%`;
+    if (progressText) progressText.innerText = `Progress ${currentSection + 1}/${sections.length}`;
+
+    let htmlStr = `<div class="survey-section-card animate-fade-in">
+      <h2 class="surveySectionTitle" style="font-size: 26px; font-weight: 800; color: #111827; margin-bottom: 5px;">${getSectionTitle(currentData)}</h2>`;
+
+    if (currentData && currentData.questions) {
+        currentData.questions.forEach((q) => {
+          const savedAnswer = answers[q.id] || "";
+          htmlStr += `<div class="question-block" style="margin-top:30px; text-align:left;">
+            <p class="questionText" style="font-weight:800; margin-bottom:16px; font-size:17px; color:#1f1f1f;">${getQuestionText(q)}</p>
+            <div class="options">`; 
+
+          if (q.type === "textarea") {
+               htmlStr += `<textarea id="${q.id}" placeholder="Type your answer here..." onchange="recordSelection('${q.id}', this.value)" style="width:100%; border:2px solid #e2e8f0; border-radius:14px; padding:16px; font-size:15px; font-family:inherit;">${savedAnswer}</textarea>`;
+          } 
+          else if (q.options && Array.isArray(q.options)) {
+              q.options.forEach((opt) => {
+                const isChecked = savedAnswer === opt ? "checked" : "";
+                const isSelectedClass = savedAnswer === opt ? "selected" : ""; 
+                htmlStr += `
+                  <label class="option ${isSelectedClass}" style="display:inline-block; user-select:none; font-weight: 600;">
+                    <input type="radio" name="${q.id}" value="${opt}" ${isChecked} style="display:none;" onchange="recordSelection('${q.id}', this.value)">
+                    <span class="optionText">${getOptionText(opt)}</span>
+                  </label>`;
+              });
+          }
+          htmlStr += `</div></div>`;
+        });
+    }
+
+    htmlStr += `</div>`;
+    surveyContainer.innerHTML = htmlStr;
+
+    if (prevBtn) prevBtn.style.visibility = currentSection === 0 ? "hidden" : "visible";
+    if (currentSection === sections.length - 1) {
+      if (nextBtn) nextBtn.classList.add("hidden");
+      if (submitClaimBtn) submitClaimBtn.classList.remove("hidden");
+    } else {
+      if (nextBtn) nextBtn.classList.remove("hidden");
+      if (submitClaimBtn) submitClaimBtn.classList.add("hidden");
+    }
+  } catch (err) {
+    surveyContainer.innerHTML = `<div style="background:#fee2e2; border: 2px solid #ef4444; color:#991b1b; padding: 20px; border-radius: 12px; font-weight:bold; margin-top:20px;">🚨 System Error: ${err.message}</div>`;
+    console.error(err);
+  }
+}
+
+window.recordSelection = function(questionId, selectedValue) {
+  answers[questionId] = selectedValue;
+  renderSection();
+};
+
+function updateExcitementBanner(sectionIndex) {
+  const banner = document.getElementById("excitementBanner");
+  if (!banner) return;
+  if (sectionIndex === 0) { banner.style.display = "none"; return; }
+
+  const unlockedTokens = sectionIndex * 8;
+  const totalTokens = 48;
+  
+  banner.style.display = "flex";
+  banner.style.animation = 'none'; banner.offsetHeight; banner.style.animation = 'slideDown 0.5s ease-out';
+
+  if (currentLanguage === "hi") {
+      if (sectionIndex < 5) {
+          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">शानदार! आपने अब तक <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> सुरक्षित कर लिए हैं!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">अगला मॉड्यूल पूरा करें Aur <strong style="color: #fbbf24;">8 Aur Paayein!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">जारी रखें & दावा करें &gt;</div></div>`;
+      } else {
+          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">अविश्वसनीय! आपने सभी <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span> सुरक्षित कर लिए हैं!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">दावा करने के लिए नीचे सबमिट पर क्लिक करें!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">दावा करने के लिए तैयार</div></div>`;
+      }
+  } else if (currentLanguage === "hinglish") {
+      if (sectionIndex < 5) {
+          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! Aapne ab tak <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> secure kar liye hain!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Next module complete karein aur <strong style="color: #fbbf24;">8 more payein!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div></div>`;
+      } else {
+          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! Aapne sabhi <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span> secure kar liye hain!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Neeche Submit button par click karke claim karein!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div>`;
+      }
+  } else {
+      if (sectionIndex < 5) {
+          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! You've secured <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> so far!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Complete the next module to claim <strong style="color: #fbbf24;">8 more!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div></div>`;
+      } else {
+          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! You've secured all <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span>!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Hit Submit below to transfer them to your wallet!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div>`;
+      }
+  }
+}
+
+async function runProfileLedgerVerification(email, isFromModal = false) {
+  const outputTarget = isFromModal ? modalStatus : statusDiv;
+  if (!outputTarget) return;
+
+  outputTarget.innerHTML = `⏳ ${getUIText("checkingLedger")}`;
+  outputTarget.style.color = "#57d6c2";
+
+  try {
+    const response = await fetchWithTimeout(`${BACKEND_URL}/api/user-status?email=${encodeURIComponent(email)}`);
+    const statusResult = await response.json();
+
+    if (isFromModal) dismissModal();
+
+    if (statusResult.success) {
+      userEmailAddress = email;
+      localStorage.setItem("syntrix_user_email", email);
+      
+      if (statTotalReferrals) statTotalReferrals.innerText = statusResult.referralsCount || "0";
+      if (statPendingRewards) statPendingRewards.innerText = `${statusResult.pendingRewards || 0} SYN`;
+      if (statClaimedRewards) statClaimedRewards.innerText = `${statusResult.claimedRewards || 0} SYN`;
+      if (statTotalEarned) statTotalEarned.innerText = `${(statusResult.pendingRewards || 0) + (statusResult.claimedRewards || 0)} SYN`;
+      if (referralCodeDisplay) referralCodeDisplay.value = `${window.location.origin}/?ref=${statusResult.referralCode || ""}`;
+
+      const computedBadgeKey = calculateConsumerPsychologyBadge();
+      displayConsumerBadgesUI(computedBadgeKey);
+
+      if (statusResult.exists === true) {
+        if (emailGateSection) emailGateSection.classList.add("hidden");
+        if (claimForm) claimForm.classList.add("hidden");
+        if (topProgressBox) topProgressBox.classList.add("hidden");
+        if (rewardDashboardScreen) rewardDashboardScreen.classList.remove("hidden");
+        outputTarget.innerHTML = "";
+
+        const activeControls = document.getElementById("dashboardActiveClaimControls");
+        const receiptBlock = document.getElementById("dashboardClaimReceiptBlock");
+
+        if (statusResult.status === "whitelisted" || statusResult.isClaimed) {
+          if (activeControls) activeControls.classList.add("hidden");
+          if (receiptBlock) {
+            receiptBlock.classList.remove("hidden");
+            receiptBlock.innerHTML = `
+              <div style="width: 60px; height: 60px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(245, 158, 11, 0.1); border: 2px solid #f59e0b; color: #f59e0b; font-size: 28px; font-weight: bold;">🔒</div>
+              <h3 style="font-size: 20px; font-weight: 800; color: #ffffff; margin-bottom: 8px;">48 SYNX Allocation Whitelisted!</h3>
+              <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 0; line-height: 1.4;">Your profile address <strong>${statusResult.walletAddress || ""}</strong> has been added to the genesis block. Redemption airdrop links will launch when the token goes mainnet live!</p>
+            `;
+          }
+        } else {
+          if (activeControls) activeControls.classList.remove("hidden");
+          if (receiptBlock) receiptBlock.classList.add("hidden");
+        }
+      } else {
+        if (emailGateSection) emailGateSection.classList.add("hidden");
+        currentSection = 0;
+        renderSection();
+        outputTarget.innerHTML = "";
+      }
+    } else {
+      if (!isFromModal) {
+        if (emailGateSection) emailGateSection.classList.add("hidden");
+        currentSection = 0;
+        renderSection();
+        outputTarget.innerHTML = "";
+      } else {
+        showToast("Profile ledger entry not found.", "❌");
+      }
+    }
+  } catch (err) {
+    showToast("Communication framework offline.", "❌");
+  }
+}
+
+async function handleSurveySubmission(e) {
+  if (e) e.preventDefault();
+  if (!validateCurrentSectionAnswers()) {
+    showToast(getUIText("validationRequired"), "⚠️");
     return;
   }
 
-  statusDiv.innerHTML = getUIText("claiming");
-  statusDiv.style.color = "#57d6c2";
+  document.getElementById("claimForm").classList.add("hidden");
+  const excitementBanner = document.getElementById("excitementBanner");
+  if(excitementBanner) excitementBanner.style.display = "none";
+
+  const animOverlay = document.getElementById("rewardAnimationOverlay");
+  if (animOverlay) animOverlay.style.display = "flex";
+
+  const referralCodeUsed = localStorage.getItem("referralCode") || "";
+
+  // 🚀 NEW: Preparing Payload with Legal Signature
+  const finalPayload = {
+    email: userEmailAddress,
+    answers: answers,
+    referredBy: referralCodeUsed,
+    legal_consent: true,
+    consent_timestamp: legalConsentTimestamp || new Date().toISOString(),
+    user_agent: clientUserAgent || navigator.userAgent
+  };
 
   try {
-    const res = await fetch(`${BACKEND_URL}/api/claim-reward`, {
+    const response = await fetchWithTimeout(`${BACKEND_URL}/api/submit-survey`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: userEmailAddress, walletAddress: targetedWallet })
+      body: JSON.stringify(finalPayload)
     });
 
-    const claimResult = await res.json();
+    const result = await response.json();
+    
+    setTimeout(async () => {
+      if (animOverlay) animOverlay.style.display = "none";
+      if (result.success) {
+        if (statusDiv) statusDiv.innerHTML = "";
+        await runProfileLedgerVerification(userEmailAddress, false);
+      } else {
+        document.getElementById("claimForm").classList.remove("hidden"); 
+        showToast(`${result.error || "Submission rejected by registry backend."}`, "❌");
+      }
+    }, 3500);
+  } catch (err) {
+    if (animOverlay) animOverlay.style.display = "none";
+    document.getElementById("claimForm").classList.remove("hidden");
+    showToast("Network transaction failed.", "❌");
+  }
+}
 
-    if (claimResult.success) {
-      statusDiv.innerHTML = `
-        <div class="successBox" style="background: rgba(87, 214, 194, 0.1); border: 1px solid #57d6c2; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left;">
-          <h3 style="color: #57d6c2; margin-top:0;">🚀 Token Distribution Complete!</h3>
-          <p style="color:#fff; margin-bottom:10px;">10 SYNX tokens have been pushed directly to your account address.</p>
-          <a href="https://polygonscan.com/tx/${claimResult.transactionHash}" target="_blank" style="color: #57d6c2; text-decoration: underline; font-family: monospace; font-size: 13px;">
-            Tx Hash: ${claimResult.transactionHash.substring(0, 20)}...
-          </a>
-        </div>
-      `;
+async function connectWallet(isDirectClaimFlow = false) {
+  const creatorModal = document.getElementById("walletCreatorModal");
+  const closeBtn = document.getElementById("closeWalletCreatorBtn");
+  const googleAuthBtn = document.getElementById("authGoogleWalletBtn");
+
+  if (typeof window.ethereum === "undefined") {
+    console.log("[SYN-WEB3] Core extension missing. Launching MetaMask Embedded integration overlay.");
+    if (creatorModal) creatorModal.classList.remove("hidden");
+    if (closeBtn) closeBtn.onclick = () => creatorModal.classList.add("hidden");
+
+    if (googleAuthBtn) {
+      googleAuthBtn.onclick = null; 
+      googleAuthBtn.onclick = async () => {
+        if (!window.isWeb3AuthReady || !window.metamaskEmbeddedInstance) {
+          showToast("Web3 Engine is still loading. Please wait a moment.", "⏳");
+          return;
+        }
+        showToast("Initializing secure Web3Auth portal...", "⏳");
+        
+        try {
+          const provider = await window.metamaskEmbeddedInstance.connect();
+          const EthersProviderClass = (window.ethers && window.ethers.BrowserProvider) || (window.ethers && window.ethers.providers && window.ethers.providers.Web3Provider);
+          if (!EthersProviderClass) throw new Error("Ethers provider module not detected globally.");
+          
+          const ethersProvider = new EthersProviderClass(provider);
+          const signer = await ethersProvider.getSigner();
+          const realWeb3Address = await signer.getAddress();
+          userConnectedWalletAddress = realWeb3Address.toLowerCase();
+
+          if (isDirectClaimFlow) {
+            if (claimConnectWalletBtn) claimConnectWalletBtn.classList.add("hidden");
+            if (claimWalletConnectedBlock) claimWalletConnectedBlock.classList.remove("hidden");
+            if (claimWalletAddressDisplay) claimWalletAddressDisplay.innerText = userConnectedWalletAddress + " (Web3Auth)";
+          } else {
+            if (dashboardWalletInput) dashboardWalletInput.value = userConnectedWalletAddress;
+          }
+          if (creatorModal) creatorModal.classList.add("hidden");
+          showToast("Authentic Web3 wallet generated and linked!", "✅");
+        } catch (authErr) {
+          console.error("Web3Auth verification abort:", authErr);
+          showToast("Connection cancelled or denied.", "❌");
+        }
+      };
+    }
+    return;
+  }
+
+  try {
+    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+    if (accounts.length === 0) return;
+    userConnectedWalletAddress = accounts[0].toLowerCase();
+    
+    if (isDirectClaimFlow) {
+      if (claimConnectWalletBtn) claimConnectWalletBtn.classList.add("hidden");
+      if (claimWalletConnectedBlock) claimWalletConnectedBlock.classList.remove("hidden");
+      if (claimWalletAddressDisplay) claimWalletAddressDisplay.innerText = userConnectedWalletAddress;
     } else {
-      statusDiv.innerHTML = "❌ " + (claimResult.error || "Reward asset generation rejected.");
-      statusDiv.style.color = "#ff4d4d";
+      if (dashboardWalletInput) dashboardWalletInput.value = userConnectedWalletAddress;
+    }
+  } catch (err) { console.error("MetaMask extension handshake failure:", err.message); }
+}
+
+async function handleManualClaimExecution() {
+  if (!dashboardWalletInput) return;
+  const targetWallet = dashboardWalletInput.value.trim();
+
+  if (!WALLET_REGEX.test(targetWallet)) {
+    showToast("Invalid EVM public address format.", "❌");
+    return;
+  }
+  showToast("Ingesting reward request to transactional queue registers...", "⚡");
+
+  try {
+    const response = await fetchWithTimeout(`${BACKEND_URL}/api/claim-reward`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: userEmailAddress, walletAddress: targetWallet })
+    });
+    const result = await response.json();
+    if (result.success) {
+      showToast("Address safely whitelisted for token launch.", "✨");
+      if (dashboardWalletInput) dashboardWalletInput.value = "";
+      setTimeout(async () => { await runProfileLedgerVerification(userEmailAddress, false); }, 4000);
+    } else {
+      showToast(`${result.error || "Claim system execution failed."}`, "❌");
     }
   } catch (err) {
-    statusDiv.innerHTML = "❌ Network processing failure executing claim asset parameters.";
-    statusDiv.style.color = "#ff4d4d";
+    showToast("Token execution communication gateway failure.", "❌");
   }
+}
+
+async function initializeClaimSection(token) {
+  if (!claimScreenSection) return;
+  try {
+    const response = await fetchWithTimeout(`${BACKEND_URL}/api/claim-details?token=${encodeURIComponent(token)}`);
+    const details = await response.json();
+    const gear = document.getElementById("claimLoadingGear");
+    if (gear) gear.classList.add("hidden");
+
+    if (details.success) {
+      const staticIcon = document.getElementById("claimStaticIcon");
+      const title = document.getElementById("claimScreenTitle");
+      const sub = document.getElementById("claimInfoSubtitle");
+      const detailsBox = document.getElementById("claimRewardDetails");
+      const panel = document.getElementById("claimActionPanel");
+
+      if (staticIcon) staticIcon.classList.remove("hidden");
+      if (title) title.innerText = "Claim Authorized Successfully";
+      if (sub) sub.innerText = "Please authenticate ledger registry requirements below via message validation structures.";
+      if (detailsBox) detailsBox.classList.remove("hidden");
+      if (panel) panel.classList.remove("hidden");
+
+      if (document.getElementById("claimInfoEmail")) document.getElementById("claimInfoEmail").innerText = details.email;
+      if (document.getElementById("claimInfoType")) document.getElementById("claimInfoType").innerText = details.type || "Airdrop Claim";
+      if (document.getElementById("claimInfoAmount")) document.getElementById("claimInfoAmount").innerText = `${details.amount || 48} SYNX`;
+      
+      claimScreenSection.dataset.email = details.email; claimScreenSection.dataset.token = token;
+    } else {
+      showClaimScreenError("Link Expired or Invalid", details.error || "The credential profile matches an invalid registration framework.");
+    }
+  } catch (err) { 
+    const gear = document.getElementById("claimLoadingGear");
+    if (gear) gear.classList.add("hidden"); 
+    showClaimScreenError("Network Error", "Failed to retrieve registration records."); 
+  }
+}
+
+function showClaimScreenError(title, subtitle) {
+  const staticIcon = document.getElementById("claimStaticIcon");
+  const heading = document.getElementById("claimScreenTitle");
+  const sub = document.getElementById("claimInfoSubtitle");
+  const errBox = document.getElementById("claimErrorBox");
+  const detailsBox = document.getElementById("claimRewardDetails");
+  const panel = document.getElementById("claimActionPanel");
+
+  if (staticIcon) staticIcon.classList.add("hidden");
+  if (heading) heading.innerText = title;
+  if (sub) sub.innerText = subtitle;
+  if (errBox) errBox.classList.remove("hidden");
+  if (detailsBox) detailsBox.classList.add("hidden");
+  if (panel) panel.classList.add("hidden");
+}
+
+async function handleSignatureTokenRelease() {
+  if (!claimScreenSection) return;
+  const email = claimScreenSection.dataset.email;
+  const token = claimScreenSection.dataset.token;
+  if (!userConnectedWalletAddress) { showToast("Please re-establish MetaMask structural configurations.", "⚠️"); return; }
+
+  try {
+    const message = `Authenticating Token Core distribution protocols on email registry node: ${email}`;
+    let signature;
+    if (window.ethereum && typeof window.ethereum.request === "function") {
+      signature = await window.ethereum.request({ method: "personal_sign", params: [message, userConnectedWalletAddress] });
+    } else {
+      const provider = window.metamaskEmbeddedInstance.provider;
+      signature = await provider.request({ method: "personal_sign", params: [message, userConnectedWalletAddress] });
+    }
+
+    const panel = document.getElementById("claimActionPanel");
+    const detailsBox = document.getElementById("claimRewardDetails");
+    const heading = document.getElementById("claimScreenTitle");
+    const sub = document.getElementById("claimInfoSubtitle");
+    const gear = document.getElementById("claimLoadingGear");
+
+    if (panel) panel.classList.add("hidden");
+    if (detailsBox) detailsBox.classList.add("hidden");
+    if (heading) heading.innerText = "Processing Verification Pipeline...";
+    if (sub) sub.innerText = "Appending distribution requests directly to transaction loop blocks...";
+    if (gear) gear.classList.remove("hidden");
+
+    const response = await fetchWithTimeout(`${BACKEND_URL}/api/execute-claim`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: token, signature: signature, walletAddress: userConnectedWalletAddress })
+    });
+
+    const txResult = await response.json();
+    if (gear) gear.classList.add("hidden");
+
+    if (txResult.success) {
+      const staticIcon = document.getElementById("claimStaticIcon");
+      if (staticIcon) staticIcon.classList.add("hidden");
+      if (heading) heading.innerText = "Claim Received Successfully!";
+      if (sub) sub.innerHTML = "✨ Your distribution is currently being written into our block processing layers.";
+    } else { showClaimScreenError("Transaction Revoked", txResult.error || "The processing smart contract rejected token asset distributions."); }
+  } catch (err) { 
+    const gear = document.getElementById("claimLoadingGear");
+    if (gear) gear.classList.add("hidden"); 
+    showToast("Cryptographic signature process rejected or timed out.", "❌"); 
+  }
+}
+
+function handleReferralLinkCopy() {
+  if (!referralCodeDisplay) return;
+  referralCodeDisplay.select(); referralCodeDisplay.setSelectionRange(0, 99999);
+  try {
+    navigator.clipboard.writeText(referralCodeDisplay.value);
+    if (copyReferralBtn) {
+      const originalText = copyReferralBtn.innerText; copyReferralBtn.innerText = "Copied! ✓";
+      setTimeout(() => { copyReferralBtn.innerText = originalText; }, 2000);
+    }
+  } catch (err) { showToast("Failed to access system registers.", "❌"); }
+}
+
+const dismissModal = () => { if (retrieveModal) retrieveModal.classList.add("hidden"); };
+
+function resetApplicationFlowState() {
+  if (emailGateForm) emailGateForm.reset();
+  localStorage.removeItem("syntrix_user_email"); localStorage.removeItem("referralCode");
+  if (statusDiv) statusDiv.innerHTML = "";
+  userEmailAddress = ""; currentSection = 0; isOtpSent = false;
+  legalConsentTimestamp = ""; clientUserAgent = ""; // Clear consent cache
+  const otpSection = document.getElementById("otpSection"); if (otpSection) otpSection.classList.add("hidden");
+  if (startSurveyBtn) startSurveyBtn.innerHTML = "Send Verification Code &rarr;";
+  if (gateEmailInput) gateEmailInput.readOnly = false;
+  for (const prop in answers) { if (Object.prototype.hasOwnProperty.call(answers, prop)) delete answers[prop]; }
+  if (emailGateSection) emailGateSection.classList.remove("hidden");
+  if (claimForm) claimForm.classList.add("hidden"); if (topProgressBox) topProgressBox.classList.add("hidden");
+  if (rewardDashboardScreen) rewardDashboardScreen.classList.add("hidden");
+  document.querySelectorAll(".step").forEach((st, idx) => { if (idx === 0) st.classList.add("active"); else st.classList.remove("active"); });
+}
+
+function translatePage() {
+  if (typeof translations === "undefined" || !translations[currentLanguage]) return;
+  const dict = translations[currentLanguage];
+
+  const mainTitleEl = document.getElementById("mainTitle");
+  const mainSubtitleEl = document.getElementById("mainSubtitle");
+  if (mainTitleEl && dict.mainTitle) mainTitleEl.innerHTML = dict.mainTitle;
+  if (mainSubtitleEl && dict.mainSubtitle) mainSubtitleEl.innerHTML = dict.mainSubtitle;
+
+  const emailSectionTitleEl = document.querySelector("#emailGateSection .sectionTitle");
+  if (emailSectionTitleEl && dict.emailSectionTitle) emailSectionTitleEl.innerText = dict.emailSectionTitle;
+  
+  const startSurveyBtnEl = document.getElementById("startSurveyBtn");
+  if (startSurveyBtnEl && dict.btnStart) startSurveyBtnEl.innerHTML = dict.btnStart;
+
+  const prevBtnEl = document.getElementById("prevBtn");
+  const nextBtnEl = document.getElementById("nextBtn");
+  const submitClaimBtnEl = document.getElementById("submitClaimBtn");
+  if (prevBtnEl && dict.previous) prevBtnEl.innerHTML = `&lt; ${dict.previous}`;
+  if (nextBtnEl && dict.next) nextBtnEl.innerHTML = `${dict.next} &gt;`;
+  if (submitClaimBtnEl && dict.submit) submitClaimBtnEl.innerHTML = dict.submit;
+
+  const rewardTitleEl = document.getElementById("claimTitle");
+  const rewardSubtitleEl = document.getElementById("rewardSubtitleDesc");
+  if (rewardTitleEl && dict.claimTitle) rewardTitleEl.innerHTML = dict.claimTitle;
+  if (rewardSubtitleEl && dict.rewardSubtitle) rewardSubtitleEl.innerHTML = dict.rewardSubtitle;
+
+  const connectWalletBtnEl = document.querySelector("#connectWalletBtn span");
+  if (connectWalletBtnEl && dict.metaMaskLabel) connectWalletBtnEl.innerText = dict.metaMaskLabel;
+  
+  const manualLabelEl = document.querySelector(".manualWalletWrapper .dividerLine span");
+  if (manualLabelEl && dict.manualLabel) manualLabelEl.innerText = dict.manualLabel;
+  
+  const executeClaimBtnEl = document.getElementById("executeClaimBtn");
+  if (executeClaimBtnEl && dict.btnExecute) executeClaimBtnEl.innerText = dict.btnExecute;
+  
+  const referralTitleEl = document.querySelector(".referralContainer .dividerLine span");
+  if (referralTitleEl && dict.referralTitle) referralTitleEl.innerText = dict.referralTitle;
+
+  const referralDescriptionEl = document.getElementById("referralSubText");
+  if (referralDescriptionEl && dict.referralSub) referralDescriptionEl.innerHTML = dict.referralSub;
+  
+  const copyReferralBtnEl = document.getElementById("copyReferralBtn");
+  if (copyReferralBtnEl && dict.btnCopy) copyReferralBtnEl.innerText = dict.btnCopy;
+
+  const modalTitleEl = document.querySelector("#retrieveModal .modal-header h2");
+  if (modalTitleEl && dict.modalTitle) modalTitleEl.innerText = dict.modalTitle;
+  
+  const modalSubEl = document.querySelector("#retrieveModal .modal-subtitle");
+  if (modalSubEl && dict.modalSub) modalSubEl.innerText = dict.modalSub;
+  
+  const modalDetailsTitleEl = document.querySelector("#retrieveModal .extra-details-box h4");
+  if (modalDetailsTitleEl && dict.modalDetailsTitle) modalDetailsTitleEl.innerText = dict.modalDetailsTitle;
+  
+  const modalDetails1El = document.querySelector("#retrieveModal .extra-details-box li:nth-child(1)");
+  if (modalDetails1El && dict.modalDetails1) modalDetails1El.innerText = dict.modalDetails1;
+  
+  const modalDetails2El = document.querySelector("#retrieveModal .extra-details-box li:nth-child(2)");
+  if (modalDetails2El && dict.modalDetails2) modalDetails2El.innerText = dict.modalDetails2;
+  
+  const modalDetails3El = document.querySelector("#retrieveModal .extra-details-box li:nth-child(3)");
+  if (modalDetails3El && dict.modalDetails3) modalDetails3El.innerText = dict.modalDetails3;
+  
+  const modalInputLabelEl = document.querySelector("#retrieveModal .input-wrapper label");
+  if (modalInputLabelEl && dict.modalInputLabel) modalInputLabelEl.innerText = dict.modalInputLabel;
+  
+  const cancelModalBtnEl = document.getElementById("cancelModalBtn");
+  if (cancelModalBtnEl && dict.btnCancel) cancelModalBtnEl.innerText = dict.btnCancel;
+  
+  const confirmRetrieveBtnEl = document.getElementById("confirmRetrieveBtn");
+  if (confirmRetrieveBtnEl && dict.btnSearch) confirmRetrieveBtnEl.innerText = dict.btnSearch;
+}
+
+// ================= LIFE CYCLE REGISTRATION RUNNERS & EVENT ROUTERS =================
+document.addEventListener("DOMContentLoaded", async () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const claimToken = urlParams.get("token");
+  const refParam = urlParams.get("ref");
+  
+  if (refParam) {
+    localStorage.setItem("referralCode", normalizeReferralCode(refParam));
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+  const savedRefCode = localStorage.getItem("referralCode");
+  if (savedRefCode && referredByCodeInput) referredByCodeInput.value = savedRefCode;
+
+  if (claimToken) {
+    if (emailGateSection) emailGateSection.classList.add("hidden"); if (claimForm) claimForm.classList.add("hidden");
+    if (topProgressBox) topProgressBox.classList.add("hidden"); if (rewardDashboardScreen) rewardDashboardScreen.classList.add("hidden");
+    await initializeClaimSection(claimToken);
+  } else {
+    const localSavedEmail = localStorage.getItem("syntrix_user_email");
+    if (localSavedEmail) { userEmailAddress = localSavedEmail; await runProfileLedgerVerification(userEmailAddress, false); }
+  }
+
+  if (nextBtn) nextBtn.onclick = () => handleNextSection();
+  if (prevBtn) prevBtn.onclick = () => handlePrevSection();
+  if (claimForm) {
+    claimForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      handleSurveySubmission(e);
+    });
+  }
+  if (executeClaimBtn) executeClaimBtn.onclick = () => handleManualClaimExecution();
+  
+  if (connectWalletBtn) connectWalletBtn.onclick = () => connectWallet(false);
+  if (claimConnectWalletBtn) claimConnectWalletBtn.onclick = () => connectWallet(true);
+  
+  if (submitClaimRewardBtn) submitClaimRewardBtn.onclick = () => handleSignatureTokenRelease();
+  if (copyReferralBtn) copyReferralBtn.onclick = () => handleReferralLinkCopy();
+
+  if (menuToggleBtn && optionsPopover) {
+    menuToggleBtn.onclick = (e) => { e.stopPropagation(); optionsPopover.classList.toggle("hidden"); };
+    document.addEventListener("click", () => optionsPopover.classList.add("hidden"));
+  }
+
+  if (menuRestartBtn) {
+    menuRestartBtn.onclick = () => { 
+      optionsPopover.classList.add("hidden"); 
+      if(confirmRestartModal) confirmRestartModal.classList.remove("hidden"); 
+    };
+  }
+  if (cancelRestartBtn) {
+    cancelRestartBtn.onclick = () => {
+      if(confirmRestartModal) confirmRestartModal.classList.add("hidden");
+    };
+  }
+  if (confirmRestartBtn) {
+    confirmRestartBtn.onclick = () => {
+      if(confirmRestartModal) confirmRestartModal.classList.add("hidden");
+      resetApplicationFlowState();
+    };
+  }
+
+  if (menuRecoverBtn && retrieveModal) {
+    menuRecoverBtn.onclick = () => {
+      retrieveModal.classList.remove("hidden");
+      if (modalEmailInput) modalEmailInput.value = "";
+      if (modalStatus) modalStatus.innerHTML = "";
+      
+      if (confirmRetrieveBtn) {
+        confirmRetrieveBtn.onclick = async () => {
+          const searchEmail = modalEmailInput ? modalEmailInput.value.trim().toLowerCase() : "";
+          if (!searchEmail || !EMAIL_REGEX.test(searchEmail)) {
+            showToast("Please provide a valid email structure.", "❌");
+            return;
+          }
+          await runProfileLedgerVerification(searchEmail, true);
+        };
+      }
+    };
+  }
+
+  if (closeModalBtn) closeModalBtn.onclick = () => dismissModal();
+  if (cancelModalBtn) cancelModalBtn.onclick = () => dismissModal();
+
+  const langButtons = document.querySelectorAll(".langBtn");
+  langButtons.forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      langButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active"); currentLanguage = btn.dataset.lang;
+      if (typeof translatePage === "function") translatePage();
+      updateExcitementBanner(currentSection); 
+      if (claimForm && !claimForm.classList.contains("hidden")) renderSection();
+    });
+  });
 });
