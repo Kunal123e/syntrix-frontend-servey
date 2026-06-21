@@ -34,13 +34,61 @@ body {
   border-right: 1px solid rgba(0,0,0,0.04); 
 }
 
-.logo { 
-  font-size: 32px; 
-  font-weight: 900; 
-  letter-spacing: -1.5px; 
-  color: #111827; 
-  margin-bottom: 45px; 
-  padding-left: 10px;
+/* ================= PREMIUM FUSION LOGO STYLES ================= */
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 45px;
+  padding-left: 5px;
+  user-select: none;
+}
+
+.logo-mark {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 4px 8px rgba(99, 102, 241, 0.25));
+  transition: transform 0.3s ease;
+}
+
+.logo-container:hover .logo-mark {
+  transform: scale(1.08) rotate(6deg);
+}
+
+.logo-text {
+  font-size: 30px;
+  letter-spacing: -1px;
+  display: flex;
+  align-items: center;
+}
+
+.logo-bold {
+  font-weight: 900;
+  color: #111827;
+}
+
+.logo-light {
+  font-weight: 500;
+  color: #6b7280;
+}
+
+/* Mobile Responsive Fix for Logo */
+@media(max-width: 900px) {
+  .logo-container {
+    margin-bottom: 25px;
+    padding-left: 0;
+    justify-content: center; /* Center logo on mobile */
+  }
+  .logo-mark {
+    width: 32px;
+    height: 32px;
+  }
+  .logo-text {
+    font-size: 26px;
+  }
 }
 
 .steps { 
