@@ -17,6 +17,8 @@ let clientUserAgent = "";
 // Element Selectors
 const splashLandingGate = document.getElementById("splashLandingGate");
 const initializePlatformBtn = document.getElementById("initializePlatformBtn");
+const mainApplicationLayout = document.getElementById("mainApplicationLayout");
+
 const emailGateSection = document.getElementById("emailGateSection");
 const emailGateForm = document.getElementById("emailGateForm");
 const gateEmailInput = document.getElementById("gateEmail");
@@ -60,16 +62,61 @@ function showToast(message, icon = "⚠️") {
 function openLegalModal() { document.getElementById("legalModal").classList.remove("hidden"); }
 function closeLegalModal() { document.getElementById("legalModal").classList.add("hidden"); }
 
-// Language Translation
+// ================= TRANSLATION ENGINE & BADGES =================
+
 const langButtons = document.querySelectorAll(".langBtn");
 langButtons.forEach(btn => {
   btn.addEventListener("click", (e) => {
     langButtons.forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     currentLanguage = btn.dataset.lang;
-    if (claimForm.classList.contains("hidden") === false) { renderSection(); }
+    
+    translateMainHeadings();
+    if (claimForm && !claimForm.classList.contains("hidden")) { 
+      renderSection(); 
+    }
   });
 });
+
+function translateMainHeadings() {
+  if (typeof translations !== "undefined" && translations[currentLanguage]) {
+    const mainTitleEl = document.getElementById("mainTitle");
+    const mainSubtitleEl = document.getElementById("mainSubtitle");
+    if (mainTitleEl && translations[currentLanguage].mainTitle) mainTitleEl.innerHTML = translations[currentLanguage].mainTitle;
+    if (mainSubtitleEl && translations[currentLanguage].mainSubtitle) mainSubtitleEl.innerHTML = translations[currentLanguage].mainSubtitle;
+  }
+}
+
+function getUIText(key) {
+  const fallbacks = {
+    validationRequired: "❌ Please answer all questions before continuing."
+  };
+  if (typeof translations !== "undefined" && translations[currentLanguage] && translations[currentLanguage][key]) {
+    return translations[currentLanguage][key];
+  }
+  return fallbacks[key] || key;
+}
+
+function getSectionTitle(section) {
+  if (typeof sectionTranslations !== "undefined" && sectionTranslations[currentLanguage]) {
+    return sectionTranslations[currentLanguage][section.title] || section.title;
+  }
+  return section.title || "";
+}
+
+function getQuestionText(q) {
+  if (typeof questionTranslations !== "undefined" && questionTranslations[currentLanguage]) {
+    return questionTranslations[currentLanguage][q.id] || q.text || q.id;
+  }
+  return q.text || q.id;
+}
+
+function getOptionText(opt) {
+  if (typeof optionTranslations !== "undefined" && optionTranslations[currentLanguage]) {
+    return optionTranslations[currentLanguage][opt] || opt;
+  }
+  return opt;
+}
 
 const BADGE_PROFILES = {
   Analyzer: { title: "ANALYZER", sub: "The Mindful Shopper", desc: "You shop with brilliant clarity! For you, real value and true quality matter most.", color: "#2563eb", textColor: "#0f172a", iconHTML: `<div style='padding:20px; font-size:40px;'>📊</div>` },
@@ -98,17 +145,26 @@ function displayConsumerBadgesUI(badgeKey) {
   }
 }
 
+function normalizeReferralCode(code) {
+  if (!code) return "";
+  let clean = code.trim().toUpperCase().replace(/\s+/g, "");
+  if (!clean.startsWith("SYN-")) clean = "SYN-" + clean.replace("SYN", "");
+  return clean;
+}
+
 // Navigation Tab Routing
 function routeDashboardTabs(targetTab) {
-  [tabScreenHub, tabScreenBadge, tabScreenReferrals].forEach(screen => screen.classList.add("hidden"));
-  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+  [tabScreenHub, tabScreenBadge, tabScreenReferrals].forEach(screen => {
+    if(screen) screen.classList.add("hidden");
+  });
   
+  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
   const clickedBtn = document.querySelector(`[data-tab="${targetTab}"]`);
   if (clickedBtn) clickedBtn.classList.add("active");
 
-  if (targetTab === "hub") tabScreenHub.classList.remove("hidden");
-  if (targetTab === "badge") tabScreenBadge.classList.remove("hidden");
-  if (targetTab === "referrals") tabScreenReferrals.classList.remove("hidden");
+  if (targetTab === "hub" && tabScreenHub) tabScreenHub.classList.remove("hidden");
+  if (targetTab === "badge" && tabScreenBadge) tabScreenBadge.classList.remove("hidden");
+  if (targetTab === "referrals" && tabScreenReferrals) tabScreenReferrals.classList.remove("hidden");
 }
 
 async function fetchWithTimeout(resource, options = {}) {
@@ -125,21 +181,25 @@ async function fetchWithTimeout(resource, options = {}) {
   }
 }
 
-// Stage 0: Splash -> Check LocalStorage Auto Login
+// ================= STAGE 0 & 1: SESSION FLOW ROUTING =================
+
+// Trigger: Click "Start Analytical Survey" on Landing Splash
 if (initializePlatformBtn) {
   initializePlatformBtn.addEventListener("click", () => {
-    splashLandingGate.classList.add("hidden");
+    if(splashLandingGate) splashLandingGate.classList.add("hidden");
+    if(mainApplicationLayout) mainApplicationLayout.classList.remove("hidden");
+    
     const savedEmail = localStorage.getItem("syntrix_user_email");
     if (savedEmail) {
       userEmailAddress = savedEmail;
-      runProfileLedgerVerification(userEmailAddress); // Bypass email, go to dash
+      runProfileLedgerVerification(userEmailAddress); // Bypass email, check backend
     } else {
-      emailGateSection.classList.remove("hidden");
+      if(emailGateSection) emailGateSection.classList.remove("hidden");
     }
   });
 }
 
-// Stage 1: Email Form
+// Email Verification Form Submit
 if (emailGateForm) {
   emailGateForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -205,6 +265,9 @@ if (emailGateForm) {
       if (result.success) {
         userEmailAddress = emailVal;
         localStorage.setItem("syntrix_user_email", emailVal);
+        if (referredByCodeInput && referredByCodeInput.value.trim() !== "") {
+          localStorage.setItem("referralCode", normalizeReferralCode(referredByCodeInput.value));
+        }
         await runProfileLedgerVerification(emailVal);
       } else {
         showToast(result.error || "Cryptographic matching key match failure.", "❌");
@@ -218,6 +281,8 @@ if (emailGateForm) {
     }
   });
 }
+
+// ================= STAGE 2: SURVEY LAYOUT ENGINE =================
 
 function getSurveyData() { return typeof surveySections !== "undefined" ? surveySections : []; }
 
@@ -239,19 +304,21 @@ function renderSection() {
   if (progressFill) progressFill.style.width = `${progressPercent}%`;
   if (progressText) progressText.innerText = `Progress ${currentSection + 1}/${sections.length}`;
 
-  let htmlStr = `<div class="survey-section-card"><h2 class="sectionTitle" style="font-size:24px; font-weight:800; margin-bottom:10px;">${currentData.title}</h2>`;
+  translateMainHeadings();
+
+  let htmlStr = `<div class="survey-section-card"><h2 class="sectionTitle" style="font-size:24px; font-weight:800; margin-bottom:10px;">${getSectionTitle(currentData)}</h2>`;
 
   currentData.questions.forEach((q) => {
     const savedAnswer = answers[q.id] || "";
     htmlStr += `<div class="question" style="margin-top:24px;">
-      <h3 style="font-weight:700; margin-bottom:12px; color:#1f1f1f;">${q.question || q.text}</h3><div class="options">`;
+      <h3 style="font-weight:700; margin-bottom:12px; color:#1f1f1f;">${getQuestionText(q)}</h3><div class="options">`;
 
     if (q.type === "textarea") {
       htmlStr += `<textarea onchange="recordSelection('${q.id}', this.value)" placeholder="Type response...">${savedAnswer}</textarea>`;
     } else if (q.options) {
       q.options.forEach((opt) => {
         const isSelected = savedAnswer === opt ? "selected" : "";
-        htmlStr += `<label class="option ${isSelected}"><input type="radio" name="${q.id}" value="${opt}" style="display:none;" onchange="recordSelection('${q.id}', this.value)"><span>${opt}</span></label>`;
+        htmlStr += `<label class="option ${isSelected}"><input type="radio" name="${q.id}" value="${opt}" style="display:none;" onchange="recordSelection('${q.id}', this.value)"><span>${getOptionText(opt)}</span></label>`;
       });
     }
     htmlStr += `</div></div>`;
@@ -262,9 +329,11 @@ function renderSection() {
 
   if (prevBtn) prevBtn.style.visibility = currentSection === 0 ? "hidden" : "visible";
   if (currentSection === sections.length - 1) {
-    nextBtn.classList.add("hidden"); submitClaimBtn.classList.remove("hidden");
+    if(nextBtn) nextBtn.classList.add("hidden"); 
+    if(submitClaimBtn) submitClaimBtn.classList.remove("hidden");
   } else {
-    nextBtn.classList.remove("hidden"); submitClaimBtn.classList.add("hidden");
+    if(nextBtn) nextBtn.classList.remove("hidden"); 
+    if(submitClaimBtn) submitClaimBtn.classList.add("hidden");
   }
 }
 
@@ -278,14 +347,24 @@ function handleNextSection() {
   const currentData = sections[currentSection];
   for (let q of currentData.questions) {
     if (!answers[q.id] || answers[q.id].trim === "") {
-      showToast("Please respond to all fields inside this analytical register block.", "⚠️");
+      showToast(getUIText("validationRequired"), "⚠️");
       return;
     }
   }
-  if (currentSection < sections.length - 1) { currentSection++; renderSection(); updateExcitementBanner(); }
+  if (currentSection < sections.length - 1) { 
+    currentSection++; 
+    renderSection(); 
+    updateExcitementBanner(); 
+  }
 }
 
-function handlePrevSection() { if (currentSection > 0) { currentSection--; renderSection(); updateExcitementBanner(); } }
+function handlePrevSection() { 
+  if (currentSection > 0) { 
+    currentSection--; 
+    renderSection(); 
+    updateExcitementBanner(); 
+  } 
+}
 
 function updateExcitementBanner() {
   const banner = document.getElementById("excitementBanner");
@@ -295,33 +374,33 @@ function updateExcitementBanner() {
   banner.innerHTML = `<div style='color:white; font-size:14px;'>Allocated Milestone Node: <strong>${currentSection * 8} / 48 SYNX Accumulated</strong></div>`;
 }
 
-// Fetch dashboard data
+// ================= STAGE 3: DASHBOARD LOGIC =================
+
 async function runProfileLedgerVerification(email) {
   try {
     const response = await fetchWithTimeout(`${BACKEND_URL}/api/user-status?email=${encodeURIComponent(email)}`);
     const statusResult = await response.json();
 
     if (statusResult.success) {
+      // User is verified & Survey is submitted
       if (statTotalReferrals) statTotalReferrals.innerText = statusResult.referralsCount || "0";
       if (statPendingRewards) statPendingRewards.innerText = `${statusResult.pendingRewards || 0} SYN`;
       if (statTotalEarned) statTotalEarned.innerText = `${(statusResult.pendingRewards || 0)} SYN`;
       if (referralCodeDisplay) referralCodeDisplay.value = `${window.location.origin}/?ref=${statusResult.referralCode || ""}`;
 
-      displayConsumerBadgesUI("Analyzer");
+      displayConsumerBadgesUI("Analyzer"); // Default for now
 
       // UI Switch to Dashboard
-      emailGateSection.classList.add("hidden");
-      claimForm.classList.add("hidden");
-      topProgressBox.classList.add("hidden");
-      surveyStepLinks.classList.add("hidden");
-      splashLandingGate.classList.add("hidden");
+      if (emailGateSection) emailGateSection.classList.add("hidden");
+      if (claimForm) claimForm.classList.add("hidden");
+      if (topProgressBox) topProgressBox.classList.add("hidden");
+      if (surveyStepLinks) surveyStepLinks.classList.add("hidden");
       
-      dashboardTabLinks.classList.remove("hidden");
+      if (dashboardTabLinks) dashboardTabLinks.classList.remove("hidden");
       routeDashboardTabs("hub");
     } else {
       // First Time -> Go to Survey
-      emailGateSection.classList.add("hidden");
-      splashLandingGate.classList.add("hidden");
+      if (emailGateSection) emailGateSection.classList.add("hidden");
       currentSection = 0;
       renderSection();
     }
@@ -330,12 +409,13 @@ async function runProfileLedgerVerification(email) {
   }
 }
 
-// Submit Survey
+// Submit Survey to Backend
 if (claimForm) {
   claimForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    document.getElementById("claimForm").classList.add("hidden");
-    document.getElementById("rewardAnimationOverlay").style.display = "flex";
+    claimForm.classList.add("hidden");
+    const overlay = document.getElementById("rewardAnimationOverlay");
+    if(overlay) overlay.style.display = "flex";
 
     const payload = {
       email: userEmailAddress,
@@ -353,55 +433,62 @@ if (claimForm) {
       });
       const result = await response.json();
       setTimeout(async () => {
-        document.getElementById("rewardAnimationOverlay").style.display = "none";
+        if(overlay) overlay.style.display = "none";
         if (result.success) {
           await runProfileLedgerVerification(userEmailAddress);
         } else {
-          document.getElementById("claimForm").classList.remove("hidden");
+          claimForm.classList.remove("hidden");
           showToast(result.error || "Transaction block validation failure.", "❌");
         }
       }, 3000);
     } catch (err) {
-      document.getElementById("rewardAnimationOverlay").style.display = "none";
+      if(overlay) overlay.style.display = "none";
       showToast("Submission transaction timed out.", "❌");
+      claimForm.classList.remove("hidden");
     }
   });
 }
 
-// 🚀 LOCKED WALLET ACTION TRIGGER
+// ================= LOCKED WALLET & LOGOUT ROUTERS =================
+
 if (lockedClaimGatewayBtn) {
   lockedClaimGatewayBtn.addEventListener("click", () => {
     showToast("Opening Soon... Settlement gateways will activate upon operational validation phases.", "🔒");
   });
 }
 
-// 🚀 LOGOUT FUNCTIONALITY
 if (sidebarLogoutBtn) {
   sidebarLogoutBtn.addEventListener("click", () => {
+    // Clear Local Storage Context
     localStorage.removeItem("syntrix_user_email");
     localStorage.removeItem("referralCode");
+    
+    // Clear Memory
     userEmailAddress = "";
     isOtpSent = false;
     currentSection = 0;
+    for (let prop in answers) { delete answers[prop]; }
     
-    // UI Reset
-    dashboardTabLinks.classList.add("hidden");
-    tabScreenHub.classList.add("hidden");
-    tabScreenBadge.classList.add("hidden");
-    tabScreenReferrals.classList.add("hidden");
+    // UI Hard Reset
+    if(dashboardTabLinks) dashboardTabLinks.classList.add("hidden");
+    if(tabScreenHub) tabScreenHub.classList.add("hidden");
+    if(tabScreenBadge) tabScreenBadge.classList.add("hidden");
+    if(tabScreenReferrals) tabScreenReferrals.classList.add("hidden");
+    if(surveyStepLinks) surveyStepLinks.classList.remove("hidden");
+    if(emailGateForm) emailGateForm.reset();
+    if(gateEmailInput) gateEmailInput.readOnly = false;
+    const otpSec = document.getElementById("otpSection");
+    if(otpSec) otpSec.classList.add("hidden");
+    if(startSurveyBtn) startSurveyBtn.innerHTML = "Send Verification Code &rarr;";
     
-    surveyStepLinks.classList.remove("hidden");
-    document.getElementById("emailGateForm").reset();
-    gateEmailInput.readOnly = false;
-    document.getElementById("otpSection").classList.add("hidden");
-    startSurveyBtn.innerHTML = "Send Verification Code &rarr;";
+    if(mainApplicationLayout) mainApplicationLayout.classList.add("hidden");
+    if(splashLandingGate) splashLandingGate.classList.remove("hidden");
     
-    splashLandingGate.classList.remove("hidden");
-    showToast("Account profile successfully cleared.", "✓");
+    showToast("Account profile successfully cleared from dashboard local nodes.", "✓");
   });
 }
 
-// Listeners
+// Event Bindings setup
 document.querySelectorAll(".tab-btn").forEach(btn => {
   btn.addEventListener("click", (e) => {
     const target = e.target.dataset.tab;
@@ -410,14 +497,20 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const ref = urlParams.get("ref");
+  if (ref) localStorage.setItem("referralCode", normalizeReferralCode(ref));
+
   if (nextBtn) nextBtn.onclick = () => handleNextSection();
   if (prevBtn) prevBtn.onclick = () => handlePrevSection();
   if (copyReferralBtn) {
     copyReferralBtn.onclick = () => {
-      referralCodeDisplay.select();
-      navigator.clipboard.writeText(referralCodeDisplay.value);
-      copyReferralBtn.innerText = "Copied! ✓";
-      setTimeout(() => { copyReferralBtn.innerText = "Copy Link"; }, 2000);
+      if(referralCodeDisplay) {
+        referralCodeDisplay.select();
+        navigator.clipboard.writeText(referralCodeDisplay.value);
+        copyReferralBtn.innerText = "Copied! ✓";
+        setTimeout(() => { copyReferralBtn.innerText = "Copy Link"; }, 2000);
+      }
     };
   }
 });
