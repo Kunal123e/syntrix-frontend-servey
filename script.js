@@ -17,6 +17,7 @@ let clientUserAgent = "";
 // Element Selectors
 const splashLandingGate = document.getElementById("splashLandingGate");
 const initializePlatformBtn = document.getElementById("initializePlatformBtn");
+const mainApplicationLayout = document.getElementById("mainApplicationLayout");
 const emailGateSection = document.getElementById("emailGateSection");
 const emailGateForm = document.getElementById("emailGateForm");
 const gateEmailInput = document.getElementById("gateEmail");
@@ -129,6 +130,8 @@ async function fetchWithTimeout(resource, options = {}) {
 if (initializePlatformBtn) {
   initializePlatformBtn.addEventListener("click", () => {
     splashLandingGate.classList.add("hidden");
+    if (mainApplicationLayout) mainApplicationLayout.classList.remove("hidden");
+    
     const savedEmail = localStorage.getItem("syntrix_user_email");
     if (savedEmail) {
       userEmailAddress = savedEmail;
@@ -277,7 +280,7 @@ function handleNextSection() {
   const sections = getSurveyData();
   const currentData = sections[currentSection];
   for (let q of currentData.questions) {
-    if (!answers[q.id] || answers[q.id].trim === "") {
+    if (!answers[q.id] || answers[q.id].trim() === "") {
       showToast("Please respond to all fields inside this analytical register block.", "⚠️");
       return;
     }
@@ -304,7 +307,7 @@ async function runProfileLedgerVerification(email) {
     if (statusResult.success) {
       if (statTotalReferrals) statTotalReferrals.innerText = statusResult.referralsCount || "0";
       if (statPendingRewards) statPendingRewards.innerText = `${statusResult.pendingRewards || 0} SYN`;
-      if (statTotalEarned) statTotalEarned.innerText = `${(statusResult.pendingRewards || 0)} SYN`;
+      if (statTotalEarned) statTotalEarned.innerText = `${statusResult.pendingRewards || 0} SYN`;
       if (referralCodeDisplay) referralCodeDisplay.value = `${window.location.origin}/?ref=${statusResult.referralCode || ""}`;
 
       displayConsumerBadgesUI("Analyzer");
@@ -397,6 +400,7 @@ if (sidebarLogoutBtn) {
     startSurveyBtn.innerHTML = "Send Verification Code &rarr;";
     
     splashLandingGate.classList.remove("hidden");
+    if (mainApplicationLayout) mainApplicationLayout.classList.add("hidden");
     showToast("Account profile successfully cleared.", "✓");
   });
 }
