@@ -132,7 +132,7 @@
       </div>
     </div>
 
-    <div class="steps">
+    <div class="steps" id="surveyStepLinks">
       <div class="step active" id="step-0">Welcome</div>
       <div class="step" id="step-1">Financial</div>
       <div class="step" id="step-2">Checkout</div>
@@ -140,6 +140,13 @@
       <div class="step" id="step-4">Psychology</div>
       <div class="step" id="step-5">Categories</div>
       <div class="step" id="step-6">Post-Purchase</div>
+    </div>
+
+    <div class="dashboard-tabs hidden" id="dashboardTabLinks" style="display: flex; flex-direction: column; gap: 8px; margin-top: 20px; border-top: 1px solid rgba(0,0,0,0.06); padding-top: 20px;">
+      <button class="tab-btn active" data-tab="hub">📊 Core Metrics Hub</button>
+      <button class="tab-btn" data-tab="badge">🎨 Persona Badge Profile</button>
+      <button class="tab-btn" data-tab="referrals">🎁 Viral Referrals</button>
+      <button class="tab-btn" id="sidebarLogoutBtn" style="color: #ef4444; margin-top: 30px; border: 1px dashed rgba(239, 68, 68, 0.2);">🔒 Account Logout</button>
     </div>
   </div>
 
@@ -185,7 +192,19 @@
     <div id="excitementBanner" style="display: none; background: linear-gradient(145deg, #23272f 0%, #111418 100%); border: 1px solid #3f444d; box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 12px 24px -6px rgba(0,0,0,0.6); border-radius: 12px; padding: 16px 24px; margin-bottom: 25px; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; width: 100%; box-sizing: border-box;">
     </div>
 
-    <div id="emailGateSection" class="authCard">
+    <div id="splashLandingGate" class="authCard">
+      <div style="font-size: 56px; margin-bottom: 10px;">⚡</div>
+      <h2 class="sectionTitle">Decentralized Consumer Intelligence Matrix</h2>
+      <p class="cardDescription" style="margin-bottom: 30px;">Contribute anonymized buying metrics to train commercial enterprise B2B AI models. Secure underlying off-chain SYNX nodes backed by validation parameters.</p>
+      
+      <div style="display: flex; flex-direction: column; gap: 14px; max-width: 350px; margin: 0 auto 20px;">
+        <button type="button" id="initializePlatformBtn" class="primaryActionBtn" style="margin-top: 0; background: #6366f1;">
+          Start Analytical Survey &rarr;
+        </button>
+      </div>
+    </div>
+
+    <div id="emailGateSection" class="authCard hidden">
       <h2 class="sectionTitle" id="emailSectionTitle">Enter Communication Profile</h2>
       <p class="cardDescription" id="emailSectionSub" style="margin-bottom: 20px;">Please provide your authorized email address to clear the registration gate and activate the research module matrix.</p>
       
@@ -244,45 +263,36 @@
       </div>
     </form>
 
-    <div id="rewardDashboardScreen" class="hidden rewardCard">
-      <div id="dashboardPsychologyBadgeCard" style="display: none;"></div>
-
+    <div id="tabScreenHub" class="hidden rewardCard">
       <div class="badgeRow">
-        <span class="submittedBadge" id="surveySubmittedBadge">✨ SURVEY SUBMITTED!</span>
+        <span class="submittedBadge" id="surveySubmittedBadge">✨ ACCOUNT REGISTRY SECURED!</span>
       </div>
       
-      <h2 class="rewardTitle" id="claimTitle">Secure Your 48 SYNX Allocation</h2>
+      <h2 class="rewardTitle" id="claimTitle">Core Performance Overview</h2>
       <p class="rewardSubtitle" id="rewardSubtitleDesc">
-        Your research survey has been recorded. Connect MetaMask or input your EVM wallet address to claim your high-utility SYNX tokens.
+        Your consumer matrix parameters are verified inside historical enterprise ledgers.
       </p>
 
-      <div id="dashboardActiveClaimControls">
-        <button type="button" id="connectWalletBtn" class="metaMaskBtn">
-          <span id="metaMaskLabelText">💼 🦊 Connect MetaMask Wallet</span>
+      <div style="background: #faf8f5; border: 2px dashed #e5e7eb; border-radius: 20px; padding: 30px; text-align: center; margin-bottom: 30px; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 12px; right: 12px; background: #fee2e2; color: #ef4444; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.5px;">GATED ACCESS</div>
+        <div style="font-size: 32px; margin-bottom: 10px;">🔒</div>
+        <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 6px;">EVM Token Settlement Terminal</h3>
+        <p style="font-size: 13px; color: #6b7280; max-width: 400px; margin: 0 auto 20px;">On-chain distribution runs automatically as soon as B2B market validation pools receive matching capital liquidity lines.</p>
+        
+        <button type="button" id="lockedClaimGatewayBtn" class="executeDistributionBtn" style="margin-top: 0; background: #6b7280; cursor: pointer;">
+          ⛓️ Execute Smart Contract Claims
         </button>
-
-        <p class="manualNotice" id="manualNoticeText">
-          ℹ️ MetaMask browser plugin not detected. Paste your token wallet address below manually.
-        </p>
-
-        <div class="manualWalletWrapper">
-          <div class="dividerLine"><span id="manualLabelText">OR ENTER YOUR EVM NETWORK PUBLIC ADDRESS</span></div>
-          <input 
-            type="text" 
-            id="dashboardWalletInput" 
-            placeholder="0x..." 
-            maxLength="42"
-          >
-          <button type="button" id="executeClaimBtn" class="executeDistributionBtn">
-            Execute Token Allocation
-          </button>
-        </div>
       </div>
+    </div>
 
-      <div id="dashboardClaimReceiptBlock" class="hidden" style="background: rgba(16, 185, 129, 0.04); border: 1px solid rgba(16, 185, 129, 0.2); padding: 25px; border-radius: 16px; margin: 20px 0; text-align: center;">
-      </div>
+    <div id="tabScreenBadge" class="hidden rewardCard">
+      <h2 class="rewardTitle" style="margin-bottom: 8px;">Psychographic Analytics Breakdown</h2>
+      <p class="rewardSubtitle" style="margin-bottom: 30px;">Autonomous analysis maps your inputs into a verified consumer archetype bundle.</p>
+      <div id="dashboardPsychologyBadgeCard"></div>
+    </div>
 
-      <div class="referralContainer">
+    <div id="tabScreenReferrals" class="hidden rewardCard">
+      <div class="referralContainer" style="margin-top: 0;">
         <div class="dividerLine"><span id="referralDashboardTitle">🎁 SYNTRIX REFERRAL DASHBOARD</span></div>
         <h3 class="referralTitleText" id="referralTitleText">Your Referrals & Earnings</h3>
         <p class="referralDescription" id="referralSubText">
@@ -292,7 +302,7 @@
         <div class="referralStatsGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; margin: 25px 0;">
           <div class="statBox" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 15px; text-align: center;">
             <div id="lblTotalReferrals" style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 5px; letter-spacing: 0.5px;">Total Referrals</div>
-            <div id="statTotalReferrals" style="font-size: 24px; font-weight: 900; color: #ffffff;">0</div>
+            <div id="statTotalReferrals" style="font-size: 24px; font-weight: 900; color: #111827;">0</div>
           </div>
           <div class="statBox" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 15px; text-align: center;">
             <div id="lblPendingRewards" style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 5px; letter-spacing: 0.5px;">Pending Rewards</div>
@@ -315,64 +325,104 @@
       </div>
     </div>
 
-    <div id="claimScreenSection" class="hidden rewardCard" style="text-align: center; padding: 40px;">
-      <div class="modern-spinner" id="claimLoadingGear" style="margin-bottom: 25px;"></div>
-      <div style="font-size: 44px; margin-bottom: 15px;" id="claimStaticIcon" class="hidden">🎁</div>
-      
-      <h2 class="rewardTitle" id="claimScreenTitle">Resolving Claim authorization...</h2>
-      <p class="rewardSubtitle" id="claimInfoSubtitle">Retrieving credentials block registry. Please wait.</p>
-
-      <div id="claimErrorBox" class="hidden">
-        <div style="font-size: 50px; color: #ef4444; margin-bottom: 20px;">⚠️</div>
-        <button type="button" onclick="window.location.href='/'" class="primaryActionBtn" style="max-width: 250px; margin: 0 auto;">
-          Return to Survey Hub
-        </button>
-      </div>
-
-      <div id="claimRewardDetails" class="hidden" style="background-color: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.15); padding: 20px; border-radius: 16px; margin: 25px auto; text-align: left; max-width: 450px;">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px;">
-          <span id="lblRecipientEmail" style="color: var(--text-secondary);">Recipient Email:</span>
-          <strong id="claimInfoEmail" style="color: var(--text-primary);">loading...</strong>
+    <div id="retrieveModal" class="modal-overlay hidden">
+      <div class="modal-card animate-fade-in">
+        <div class="modal-header">
+          <h2>🔍 Retrieve Pending Allocation</h2>
+          <button type="button" id="closeModalBtn" class="close-btn">&times;</button>
         </div>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px;">
-          <span id="lblRewardCategory" style="color: var(--text-secondary);">Reward Category:</span>
-          <strong id="claimInfoType" style="color: var(--text-primary); text-transform: uppercase;">loading...</strong>
-        </div>
-        <div style="display: flex; justify-content: space-between; font-size: 14px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 10px; margin-top: 10px;">
-          <span id="lblClaimableValue" style="color: var(--text-secondary); font-weight: 700;">Claimable Value:</span>
-          <strong id="claimInfoAmount" style="color: #6366f1; font-size: 16px; font-weight: 900;">48 SYNX</strong>
-        </div>
-      </div>
-
-      <div id="claimActionPanel" class="hidden">
-        <button type="button" id="claimConnectWalletBtn" class="metaMaskBtn" style="margin-bottom: 15px; width: 100%; max-width: 450px;">
-          <span id="claimMetaMaskLabelText">💼 🦊 Connect MetaMask Wallet</span>
-        </button>
-
-        <div id="claimWalletConnectedBlock" class="hidden" style="max-width: 450px; margin: 0 auto 20px;">
-          <div style="background-color: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 14px; font-family: monospace; font-size: 13px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
-            <span id="claimWalletAddressDisplay" style="color: var(--text-secondary); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 80%;">0x...</span>
-            <span id="lblConnectedBadge" style="color: #10b981; font-weight: bold; font-size: 11px;">CONNECTED</span>
+        
+        <div class="modal-body">
+          <p class="modal-subtitle">Enter your authorized communication profile to bypass the questionnaire matrix and open the Web3 settlement gateway.</p>
+          
+          <div class="extra-details-box">
+            <h4>📌 Dynamic Registry Details:</h4>
+            <ul>
+              <li>Verification searches real-time historical database blocks.</li>
+              <li>Ensure your MetaMask extension is configured to the Polygon Mainnet network.</li>
+              <li>Wallet balances are automatically evaluated by smart contract protocols.</li>
+            </ul>
           </div>
-          <button type="button" id="submitClaimRewardBtn" class="executeDistributionBtn" style="width: 100%;">
-            ✍️ Sign Message & Claim Tokens
+
+          <div class="input-wrapper">
+            <label for="modalEmailInput">Registered Email Address</label>
+            <input type="email" id="modalEmailInput" placeholder="name@example.com" autocomplete="off">
+          </div>
+          
+          <div id="modalStatus" class="modal-status"></div>
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" id="cancelModalBtn" class="btn-secondary">Cancel</button>
+          <button type="button" id="confirmRetrieveBtn" class="btn-primary">Search Ledger →</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="legalModal" class="modal-overlay hidden">
+      <div class="modal-card animate-fade-in" style="max-width: 700px; display: flex; flex-direction: column; max-height: 85vh;">
+        <div class="modal-header">
+          <h2>📜 Terms of Service & Privacy Policy</h2>
+          <button type="button" onclick="closeLegalModal()" class="close-btn">&times;</button>
+        </div>
+        
+        <div class="modal-body" style="overflow-y: auto; padding: 24px; color: #a1a1aa; font-size: 14px; line-height: 1.7; flex: 1;">
+          <p style="margin-bottom: 15px; color: #ffffff; font-weight: bold;">By participating in the Syntrix Consumer Analytics platform, you explicitly agree to the following binding terms:</p>
+          
+          <div class="extra-details-box" style="margin-bottom: 15px;">
+            <h4 style="color: #6366f1;">1. Data Commercialization & AI Training</h4>
+            <p style="margin: 0; color: #a1a1aa;">By completing the research modules, you grant Syntrix an irrevocable, permanent license to utilize your raw textual responses for B2B commercialization and AI model training. You waive all future rights to financial claims or royalties beyond the initial platform reward allocated at completion.</p>
+          </div>
+
+          <div class="extra-details-box" style="margin-bottom: 15px;">
+            <h4 style="color: #6366f1;">2. Non-Financial Utility of SYNX Token</h4>
+            <p style="margin: 0; color: #a1a1aa;">The SYNX token is an off-chain digital reward issued strictly for platform participation. Syntrix makes no guarantees that SYNX will hold monetary value, be tradable on open exchanges, or possess market liquidity. The distribution and future utility of tokens are entirely speculative and subject to the platform's operational and commercial viability.</p>
+          </div>
+
+          <div class="extra-details-box" style="margin-bottom: 15px;">
+            <h4 style="color: #6366f1;">3. Data Anonymization Firewall & Deletion Lock</h4>
+            <p style="margin: 0; color: #a1a1aa;">We collect minimal data: an email address (for ledger mapping) and your survey responses. Personal identifiers are strictly isolated from B2B clients, who only receive anonymized, alphanumeric-hashed psychographic packages. While you may delete your personal account, once your anonymized text strings are aggregated into historical datasets, they cannot be recalled or deleted.</p>
+          </div>
+
+          <div class="extra-details-box" style="margin-bottom: 15px;">
+            <h4 style="color: #6366f1;">4. Platform Integrity & Anti-Fraud</h4>
+            <p style="margin: 0; color: #a1a1aa;">Syntrix retains the absolute right to instantly terminate profiles and forfeit all accumulated ledger tokens if an entry triggers automated fraud flags, including completion speeds under 45 seconds, the use of automated scripting, or gibberish inputs.</p>
+          </div>
+
+          <div class="extra-details-box" style="margin-bottom: 0;">
+            <h4 style="color: #6366f1;">5. Governing Law & Jurisdiction</h4>
+            <p style="margin: 0; color: #a1a1aa;">Access is restricted to individuals aged 16 and older. By using this platform, you waive the right to participate in class-action lawsuits. All legal disputes shall be governed by and settled exclusively through binding individual arbitration located in Ahmedabad, Gujarat, India.</p>
+          </div>
+        </div>
+        
+        <div class="modal-footer" style="justify-content: center;">
+          <button type="button" onclick="closeLegalModal()" class="btn-primary" style="width: 100%; background: #6366f1; border-color: #6366f1; font-size: 15px; padding: 14px;">I Have Read & Accept the Terms</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="confirmRestartModal" class="modal-overlay hidden" style="backdrop-filter: blur(8px); background: rgba(10, 10, 10, 0.75);">
+      <div class="animate-fade-in" style="background: #18181c; border-radius: 24px; width: 100%; max-width: 440px; padding: 35px 30px 20px; text-align: center; box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); position: relative; margin: 20px;">
+        <div style="width: 56px; height: 56px; background: rgba(99, 102, 241, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 1px solid rgba(99, 102, 241, 0.2);">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+        </div>
+        <h2 style="font-size: 21px; font-weight: 800; color: #facc15; margin-bottom: 12px; letter-spacing: -0.5px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+          ⚠️ Potential Data Loss Ahead!
+        </h2>
+        <p style="color: #a1a1aa; font-size: 14.5px; margin-bottom: 30px; line-height: 1.6; padding: 0 5px;">
+          Are you sure you want to reset your progress? All your current answers will be permanently deleted, and you will need to start the modules from the beginning.
+        </p>
+        <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 25px;">
+          <button type="button" id="cancelRestartBtn" style="flex: 1; padding: 14px; background: #e5e7eb; color: #1f2937; border: none; border-bottom: 4px solid #9ca3af; border-radius: 14px; font-weight: 800; font-size: 15px; cursor: pointer; transition: background 0.2s;" onmousedown="this.style.transform='translateY(4px)'; this.style.borderBottomWidth='0px';" onmouseup="this.style.transform='translateY(0px)'; this.style.borderBottomWidth='4px';" onmouseleave="this.style.transform='translateY(0px)'; this.style.borderBottomWidth='4px';">
+            Keep Progress
+          </button>
+          <button type="button" id="confirmRestartBtn" style="flex: 1; padding: 14px; background: #dc2626; color: white; border: none; border-bottom: 4px solid #991b1b; border-radius: 14px; font-weight: 800; font-size: 15px; cursor: pointer; transition: background 0.2s;" onmousedown="this.style.transform='translateY(4px)'; this.style.borderBottomWidth='0px';" onmouseup="this.style.transform='translateY(0px)'; this.style.borderBottomWidth='4px';" onmouseleave="this.style.transform='translateY(0px)'; this.style.borderBottomWidth='4px';">
+            Yes, Reset
           </button>
         </div>
-      </div>
-
-      <div id="claimSuccessPanel" class="hidden">
-        <div style="width: 80px; height: 80px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background-color: rgba(16, 185, 129, 0.1); border: 2px solid #10b981; color: #10b981; font-size: 40px;">✓</div>
-        <h2 id="successTxTitle">Tokens Transferred Successfully!</h2>
-        <p id="successTxSub" style="color: var(--text-secondary); margin-top: 10px; font-size: 14px; margin-bottom: 25px;">
-          Your 48 SYNTRIX tokens have been successfully allocated via the Polygon network.
-        </p>
-        <div style="text-align: left; background-color: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 20px; max-width: 450px; margin: 0 auto 30px;">
-          <div id="lblPolygonTxHash" style="font-size: 11px; color: var(--text-secondary); margin-bottom: 5px;">POLYGON TRANSACTION HASH:</div>
-          <a id="claimTxHashLink" target="_blank" href="#" style="color: #6366f1; text-decoration: none; font-family: monospace; font-size: 13px; word-break: break-all;">0x...</a>
+        <div style="font-family: monospace; color: #52525b; font-size: 11px; letter-spacing: 0.5px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
+          Note: This action cannot be undone.
         </div>
-        <button type="button" onclick="window.location.href='/'" class="primaryActionBtn" style="max-width: 250px; margin: 0 auto;">
-          Go to Survey Hub
-        </button>
       </div>
     </div>
 
@@ -380,126 +430,9 @@
   </div>
 </div>
 
-<div id="retrieveModal" class="modal-overlay hidden">
-  <div class="modal-card animate-fade-in">
-    <div class="modal-header">
-      <h2>🔍 Retrieve Pending Allocation</h2>
-      <button type="button" id="closeModalBtn" class="close-btn">&times;</button>
-    </div>
-    
-    <div class="modal-body">
-      <p class="modal-subtitle">Enter your authorized communication profile to bypass the questionnaire matrix and open the Web3 settlement gateway.</p>
-      
-      <div class="extra-details-box">
-        <h4>📌 Dynamic Registry Details:</h4>
-        <ul>
-          <li>Verification searches real-time historical database blocks.</li>
-          <li>Ensure your MetaMask extension is configured to the Polygon Mainnet network.</li>
-          <li>Wallet balances are automatically evaluated by smart contract protocols.</li>
-        </ul>
-      </div>
-
-      <div class="input-wrapper">
-        <label for="modalEmailInput">Registered Email Address</label>
-        <input type="email" id="modalEmailInput" placeholder="name@example.com" autocomplete="off">
-      </div>
-      
-      <div id="modalStatus" class="modal-status"></div>
-    </div>
-    
-    <div class="modal-footer">
-      <button type="button" id="cancelModalBtn" class="btn-secondary">Cancel</button>
-      <button type="button" id="confirmRetrieveBtn" class="btn-primary">Search Ledger →</button>
-    </div>
-  </div>
-</div>
-
-<div id="legalModal" class="modal-overlay hidden">
-  <div class="modal-card animate-fade-in" style="max-width: 700px; display: flex; flex-direction: column; max-height: 85vh;">
-    <div class="modal-header">
-      <h2>📜 Terms of Service & Privacy Policy</h2>
-      <button type="button" onclick="closeLegalModal()" class="close-btn">&times;</button>
-    </div>
-    
-    <div class="modal-body" style="overflow-y: auto; padding: 24px; color: #a1a1aa; font-size: 14px; line-height: 1.7; flex: 1;">
-      <p style="margin-bottom: 15px; color: #ffffff; font-weight: bold;">By participating in the Syntrix Consumer Analytics platform, you explicitly agree to the following binding terms:</p>
-      
-      <div class="extra-details-box" style="margin-bottom: 15px;">
-        <h4 style="color: #6366f1;">1. Data Commercialization & AI Training</h4>
-        <p style="margin: 0; color: #a1a1aa;">By completing the research modules, you grant Syntrix an irrevocable, permanent license to utilize your raw textual responses for B2B commercialization and AI model training. You waive all future rights to financial claims or royalties beyond the initial platform reward allocated at completion.</p>
-      </div>
-
-      <div class="extra-details-box" style="margin-bottom: 15px;">
-        <h4 style="color: #6366f1;">2. Non-Financial Utility of SYNX Token</h4>
-        <p style="margin: 0; color: #a1a1aa;">The SYNX token is an off-chain digital reward issued strictly for platform participation. Syntrix makes no guarantees that SYNX will hold monetary value, be tradable on open exchanges, or possess market liquidity. The distribution and future utility of tokens are entirely speculative and subject to the platform's operational and commercial viability.</p>
-      </div>
-
-      <div class="extra-details-box" style="margin-bottom: 15px;">
-        <h4 style="color: #6366f1;">3. Data Anonymization Firewall & Deletion Lock</h4>
-        <p style="margin: 0; color: #a1a1aa;">We collect minimal data: an email address (for ledger mapping) and your survey responses. Personal identifiers are strictly isolated from B2B clients, who only receive anonymized, alphanumeric-hashed psychographic packages. While you may delete your personal account, once your anonymized text strings are aggregated into historical datasets, they cannot be recalled or deleted.</p>
-      </div>
-
-      <div class="extra-details-box" style="margin-bottom: 15px;">
-        <h4 style="color: #6366f1;">4. Platform Integrity & Anti-Fraud</h4>
-        <p style="margin: 0; color: #a1a1aa;">Syntrix retains the absolute right to instantly terminate profiles and forfeit all accumulated ledger tokens if an entry triggers automated fraud flags, including completion speeds under 45 seconds, the use of automated scripting, or gibberish inputs.</p>
-      </div>
-
-      <div class="extra-details-box" style="margin-bottom: 0;">
-        <h4 style="color: #6366f1;">5. Governing Law & Jurisdiction</h4>
-        <p style="margin: 0; color: #a1a1aa;">Access is restricted to individuals aged 16 and older. By using this platform, you waive the right to participate in class-action lawsuits. All legal disputes shall be governed by and settled exclusively through binding individual arbitration located in Ahmedabad, Gujarat, India.</p>
-      </div>
-    </div>
-    
-    <div class="modal-footer" style="justify-content: center;">
-      <button type="button" onclick="closeLegalModal()" class="btn-primary" style="width: 100%; background: #6366f1; border-color: #6366f1; font-size: 15px; padding: 14px;">I Have Read & Accept the Terms</button>
-    </div>
-  </div>
-</div>
-
-<div id="walletCreatorModal" class="modal-overlay hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter:blur(5px); display:flex; align-items:center; justify-content:center; z-index:10000;">
-  <div style="background:#ffffff; color:#1f1f1f; width:100%; max-width:400px; padding:32px; border-radius:24px; box-shadow:0 20px 40px rgba(0,0,0,0.15); border:1px solid #ece4da; text-align:center;">
-    <div style="font-size:42px; margin-bottom:12px;">🦊</div>
-    <h3 style="font-size:22px; font-weight:900; margin-bottom:8px; letter-spacing:-0.5px;">Create MetaMask Account</h3>
-    <p style="font-size:14px; color:#6b6258; line-height:1.5; margin-bottom:24px;">Create a real, secure Web3 wallet address instantly using your existing accounts. No seed phrases or extensions required.</p>
-    
-    <button id="authGoogleWalletBtn" style="width:100%; padding:14px; background:#f4efe8; border:1px solid #ddd4c8; border-radius:12px; font-size:15px; font-weight:700; color:#1f1f1f; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:12px; transition:0.2s;">
-      Continue with Web3Auth Gateway
-    </button>
-
-    <button id="closeWalletCreatorBtn" style="background:transparent; border:none; color:#999086; font-size:13px; font-weight:700; cursor:pointer; text-decoration:underline;">
-      Cancel and return
-    </button>
-  </div>
-</div>
-
-<div id="confirmRestartModal" class="modal-overlay hidden" style="backdrop-filter: blur(8px); background: rgba(10, 10, 10, 0.75);">
-  <div class="animate-fade-in" style="background: #18181c; border-radius: 24px; width: 100%; max-width: 440px; padding: 35px 30px 20px; text-align: center; box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); position: relative; margin: 20px;">
-    <div style="width: 56px; height: 56px; background: rgba(99, 102, 241, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 1px solid rgba(99, 102, 241, 0.2);">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
-    </div>
-    <h2 style="font-size: 21px; font-weight: 800; color: #facc15; margin-bottom: 12px; letter-spacing: -0.5px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-      ⚠️ Potential Data Loss Ahead!
-    </h2>
-    <p style="color: #a1a1aa; font-size: 14.5px; margin-bottom: 30px; line-height: 1.6; padding: 0 5px;">
-      Are you sure you want to reset your progress? All your current answers will be permanently deleted, and you will need to start the modules from the beginning.
-    </p>
-    <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 25px;">
-      <button type="button" id="cancelRestartBtn" style="flex: 1; padding: 14px; background: #e5e7eb; color: #1f2937; border: none; border-bottom: 4px solid #9ca3af; border-radius: 14px; font-weight: 800; font-size: 15px; cursor: pointer; transition: background 0.2s;" onmousedown="this.style.transform='translateY(4px)'; this.style.borderBottomWidth='0px';" onmouseup="this.style.transform='translateY(0px)'; this.style.borderBottomWidth='4px';" onmouseleave="this.style.transform='translateY(0px)'; this.style.borderBottomWidth='4px';">
-        Keep Progress
-      </button>
-      <button type="button" id="confirmRestartBtn" style="flex: 1; padding: 14px; background: #dc2626; color: white; border: none; border-bottom: 4px solid #991b1b; border-radius: 14px; font-weight: 800; font-size: 15px; cursor: pointer; transition: background 0.2s;" onmousedown="this.style.transform='translateY(4px)'; this.style.borderBottomWidth='0px';" onmouseup="this.style.transform='translateY(0px)'; this.style.borderBottomWidth='4px';" onmouseleave="this.style.transform='translateY(0px)'; this.style.borderBottomWidth='4px';">
-        Yes, Reset
-      </button>
-    </div>
-    <div style="font-family: monospace; color: #52525b; font-size: 11px; letter-spacing: 0.5px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
-      Note: This action cannot be undone.
-    </div>
-  </div>
-</div>
-
-<script src="data.js?v=final_launch"></script>
-<script src="translation.js?v=final_launch"></script>
-<script src="script.js?v=final_launch"></script>
+<script src="data.js?v=final_launch_v2"></script>
+<script src="translation.js?v=final_launch_v2"></script>
+<script src="script.js?v=final_launch_v2"></script>
 
 </body>
 </html>
