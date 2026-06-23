@@ -98,24 +98,24 @@ langButtons.forEach(btn => {
 });
 
 const BADGE_PROFILES = {
-  Analyzer: { title: "ANALYZER", sub: "The Mindful Shopper", desc: "You shop with brilliant clarity! For you, real value and true quality matter most.", color: "#6366f1", textColor: "#ffffff", iconHTML: `<div style='padding:20px; font-size:40px;'>📊</div>` }
+  Analyzer: { title: "ANALYZER", sub: "The Mindful Shopper", desc: "You shop with brilliant clarity! For you, real value and true quality matter most.", color: "#6366f1", textColor: "#111827", iconHTML: `<div style='padding:20px; font-size:40px;'>📊</div>` }
 };
 
 function displayConsumerBadgesUI(badgeKey) {
   const profile = BADGE_PROFILES[badgeKey] || BADGE_PROFILES.Analyzer;
   const badgeCard = document.getElementById("dashboardPsychologyBadgeCard");
   if (badgeCard) {
-    badgeCard.style.background = "#18181b";
-    badgeCard.style.border = `1px solid #27272a`;
+    badgeCard.style.background = "#ffffff";
+    badgeCard.style.border = `1px solid #e5e7eb`;
     badgeCard.style.borderRadius = "24px";
     badgeCard.style.padding = "30px";
     badgeCard.innerHTML = `
       <div style="display:flex; align-items:center; gap:20px;">
         ${profile.iconHTML}
         <div>
-          <div style="font-size: 11px; text-transform: uppercase; color: #6366f1; font-weight: 900; letter-spacing: 1px;">Unlocked Archetype</div>
+          <div style="font-size: 11px; text-transform: uppercase; color: ${profile.color}; font-weight: 900; letter-spacing: 1px;">Unlocked Archetype</div>
           <h3 style="font-size: 28px; font-weight: 900; color: ${profile.textColor}; margin: 2px 0;">${profile.title}</h3>
-          <p style="font-size: 14px; color: #a1a1aa; line-height: 1.5;">${profile.desc}</p>
+          <p style="font-size: 14px; color: #4b5563; line-height: 1.5;">${profile.desc}</p>
         </div>
       </div>`;
   }
@@ -254,19 +254,19 @@ function renderSection() {
   if (progressFill) progressFill.style.width = `${progressPercent}%`;
   if (progressText) progressText.innerText = `Progress ${currentSection + 1}/${sections.length}`;
 
-  let htmlStr = `<div class="survey-section-card"><h2 class="sectionTitle" style="font-size:24px; font-weight:800; margin-bottom:10px; color:#ffffff;">${currentData.title}</h2>`;
+  let htmlStr = `<div class="survey-section-card"><h2 class="sectionTitle">${currentData.title}</h2>`;
 
   currentData.questions.forEach((q) => {
     const savedAnswer = answers[q.id] || "";
-    htmlStr += `<div class="question" style="margin-top:24px; background:#121214; border-color:#27272a;">
-      <h3 style="font-weight:700; margin-bottom:12px; color:#ffffff;">${q.question || q.text}</h3><div class="options">`;
+    htmlStr += `<div class="question">
+      <h3>${q.question || q.text}</h3><div class="options">`;
 
     if (q.type === "textarea") {
-      htmlStr += `<textarea onchange="recordSelection('${q.id}', this.value)" style="background:#18181b; border-color:#27272a; color:#ffffff;" placeholder="Type response...">${savedAnswer}</textarea>`;
+      htmlStr += `<textarea onchange="recordSelection('${q.id}', this.value)" placeholder="Type response...">${savedAnswer}</textarea>`;
     } else if (q.options) {
       q.options.forEach((opt) => {
         const isSelected = savedAnswer === opt ? "selected" : "";
-        htmlStr += `<label class="option ${isSelected}" style="background:#18181b; border-color:#27272a; color:#a1a1aa;"><input type="radio" name="${q.id}" value="${opt}" style="display:none;" onchange="recordSelection('${q.id}', this.value)"><span>${opt}</span></label>`;
+        htmlStr += `<label class="option ${isSelected}"><input type="radio" name="${q.id}" value="${opt}" style="display:none;" onchange="recordSelection('${q.id}', this.value)"><span>${opt}</span></label>`;
       });
     }
     htmlStr += `</div></div>`;
