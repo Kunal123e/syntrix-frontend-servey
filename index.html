@@ -17,8 +17,8 @@
     .option { transition: all 0.2s ease; transform: scale(1); }
     .option:active { transform: scale(0.98); }
     .option.selected { 
-      background-color: #1f1f1f !important; 
-      border-color: #1f1f1f !important; 
+      background-color: #111827 !important; 
+      border-color: #111827 !important; 
       color: #ffffff !important; 
     }
   </style>
@@ -94,6 +94,7 @@
   <p style="font-size: 20px; color: #d1d5db; margin-top: 15px; font-weight: 600; text-align: center; max-width: 500px; line-height: 1.5;">Validating your responses...<br><span style="color: #34d399; font-size: 24px; font-weight: 800; display: inline-block; margin-top: 10px;">Your 48 SYNX reward is waiting!</span></p>
 </div>
 
+<!-- ================= 🚀 STAGE 0: PREMIUM BLACK SPLASH GATE ================= -->
 <div id="splashLandingGate">
   <nav class="landing-nav">
     <div class="nav-logo" id="navLogoHomeTrigger" style="cursor: pointer;">
@@ -109,13 +110,15 @@
   </nav>
 
   <div class="hero-container">
-    <div class="hero-content" id="viewSplashHome">
+    
+    <!-- 🟢 HOME PAGE VIEW -->
+    <div class="hero-content animate-fade" id="viewSplashHome">
       <div class="mini-badge">Your Opinion. Real Impact. Real Rewards.</div>
       <h2 class="hero-title">Share Your Opinion.<br>Earn Real Rewards.</h2>
       <p class="hero-desc">Complete surveys from top brands, influence products you love, and earn rewards instantly. Complete all 6 modules to secure your 48 SYNX token node framework.</p>
       
       <div>
-        <button type="button" id="initializePlatformBtn" class="hero-action-btn">
+        <button type="button" class="hero-action-btn" onclick="document.getElementById('navGetStartedAction').click()">
           Get Started Free <span style="font-size: 18px;">&rarr;</span>
         </button>
       </div>
@@ -127,26 +130,53 @@
       </div>
     </div>
 
-    <div class="hero-content hidden" id="viewSplashRewards">
-      <div class="mini-badge" style="border-color: rgba(16, 185, 129, 0.2); color: #10b981;">🎁 ALLOCATION PROTOCOLS</div>
-      <h2 class="hero-title" style="font-size: clamp(36px, 5vw, 54px);">The SYNX Reward Ecosystem</h2>
-      <p class="hero-desc" style="max-width: 700px;">Every module you complete feeds anonymized vector matrices directly to consumer behavior models. In return, off-chain ledger assets accumulate automatically inside your secure node matrix container.</p>
+    <!-- 🟢 REWARDS PAGE VIEW -->
+    <div class="hero-content hidden animate-fade" id="viewSplashRewards">
+      <div class="mini-badge" style="border-color: rgba(16, 185, 129, 0.2); color: #10b981; background: rgba(16, 185, 129, 0.05);">🎁 REWARD SYSTEM</div>
+      <h2 class="hero-title" style="font-size: clamp(36px, 5vw, 54px);">How Our Rewards Work</h2>
+      <p class="hero-desc" style="max-width: 700px;">We believe your data is valuable. By participating in our decentralized intelligence matrix, you earn native SYNX tokens that accumulate securely in your web3 wallet.</p>
+      
       <div class="static-info-grid">
-        <div class="info-metric-card"><h5 style="color: #ffffff; font-size: 18px; margin-bottom: 8px;">48 SYNX Base</h5><p style="color: #a1a1aa; font-size: 14px;">Allocated linearly across all 6 core analysis questionnaires.</p></div>
-        <div class="info-metric-card"><h5 style="color: #ffffff; font-size: 18px; margin-bottom: 8px;">+10 SYN Viral</h5><p style="color: #a1a1aa; font-size: 14px;">Granted instantly for every active analytics node cleared via reference tracking.</p></div>
+        <div class="info-metric-card">
+          <div style="font-size: 30px; margin-bottom: 10px;">🎯</div>
+          <h5 style="color: #ffffff; font-size: 20px; font-weight: 800; margin-bottom: 8px;">48 SYNX Base Allocation</h5>
+          <p style="color: #a1a1aa; font-size: 14px; line-height: 1.6;">Complete the initial 6 consumer research modules. Each module securely hashes your preferences and rewards you proportionally.</p>
+        </div>
+        <div class="info-metric-card">
+          <div style="font-size: 30px; margin-bottom: 10px;">🚀</div>
+          <h5 style="color: #ffffff; font-size: 20px; font-weight: 800; margin-bottom: 8px;">+10 SYN Viral Bonus</h5>
+          <p style="color: #a1a1aa; font-size: 14px; line-height: 1.6;">Use your unique referral dashboard to invite others. Every successful completion grants you a direct 10 SYN deposit.</p>
+        </div>
       </div>
-      <button type="button" class="back-to-home-btn" style="margin-top: 40px;">&larr; Return to Overview</button>
+      
+      <button type="button" class="hero-action-btn" style="margin-top: 40px; background: transparent; color: #ffffff; border: 1px solid rgba(255,255,255,0.2);" onclick="document.getElementById('navLogoHomeTrigger').click()">
+        &larr; Back to Home
+      </button>
     </div>
 
-    <div class="hero-content hidden" id="viewSplashAbout">
-      <div class="mini-badge" style="border-color: rgba(99, 102, 241, 0.2); color: #818cf8;">🏢 CORPORATE PROFILE</div>
-      <h2 class="hero-title" style="font-size: clamp(36px, 5vw, 54px);">Decentralizing Analytics</h2>
-      <p class="hero-desc" style="max-width: 680px;">Syntrix is building a secure global architecture where direct user data value is returned straight to the producer. By filtering raw text strings into secure psychographic archetype hashes, we bridge enterprise commercialization pools with authentic data ownership rules.</p>
-      <button type="button" class="back-to-home-btn" style="margin-top: 20px;">&larr; Return to Overview</button>
+    <!-- 🟢 ABOUT US PAGE VIEW -->
+    <div class="hero-content hidden animate-fade" id="viewSplashAbout">
+      <div class="mini-badge" style="border-color: rgba(99, 102, 241, 0.2); color: #818cf8; background: rgba(99, 102, 241, 0.05);">🏢 ABOUT SYNTRIX</div>
+      <h2 class="hero-title" style="font-size: clamp(36px, 5vw, 54px);">Pioneering Data Ownership</h2>
+      <p class="hero-desc" style="max-width: 680px;">Syntrix is building a secure global architecture where direct user data value is returned straight to the producer. We bridge enterprise AI commercialization pools with authentic consumer sentiment.</p>
+      
+      <div style="text-align: left; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); padding: 30px; border-radius: 20px; margin-top: 30px;">
+        <h4 style="color: #ffffff; font-size: 18px; margin-bottom: 15px;">Our Mission</h4>
+        <p style="color: #a1a1aa; font-size: 15px; line-height: 1.7; margin-bottom: 20px;">To decentralize consumer analytics by creating a direct, transparent, and rewarding link between enterprise B2B models and real-world consumers. No middlemen, just real rewards for real insights.</p>
+        
+        <h4 style="color: #ffffff; font-size: 18px; margin-bottom: 15px;">Technology</h4>
+        <p style="color: #a1a1aa; font-size: 15px; line-height: 1.7;">Powered by Polygon Mainnet and secure Web3Auth gateways to ensure your data and rewards remain mathematically protected.</p>
+      </div>
+
+      <button type="button" class="hero-action-btn" style="margin-top: 40px; background: transparent; color: #ffffff; border: 1px solid rgba(255,255,255,0.2);" onclick="document.getElementById('navLogoHomeTrigger').click()">
+        &larr; Back to Home
+      </button>
     </div>
+
   </div>
 </div>
 
+<!-- ================= 🚀 STAGE 1+: ORIGINAL LIGHT THEME SURVEY/APP ================= -->
 <div id="mainApplicationLayout" class="hidden" style="padding: 32px; min-height: 100vh;">
   <div class="app">
     <div class="sidebar">
@@ -214,6 +244,7 @@
       <div id="excitementBanner" style="display: none; background: linear-gradient(145deg, #23272f 0%, #111418 100%); border: 1px solid #3f444d; box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 12px 24px -6px rgba(0,0,0,0.6); border-radius: 12px; padding: 16px 24px; margin-bottom: 25px; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; width: 100%; box-sizing: border-box;">
       </div>
 
+      <!-- Auth Form (Light Theme) -->
       <div id="emailGateSection" class="authCard hidden">
         <h2 class="sectionTitle" id="emailSectionTitle">Enter Communication Profile</h2>
         <p class="cardDescription" id="emailSectionSub" style="margin-bottom: 20px;">Please provide your authorized email address to clear the registration gate and activate the research module matrix.</p>
@@ -252,6 +283,7 @@
         </form>
       </div>
 
+      <!-- Survey Content -->
       <form id="claimForm" class="hidden">
         <div id="surveyContainer"></div>
 
@@ -268,6 +300,7 @@
         </div>
       </form>
 
+      <!-- Dashboard Elements (Light Theme) -->
       <div id="tabScreenHub" class="hidden rewardCard">
         <div class="badgeRow">
           <span class="submittedBadge" id="surveySubmittedBadge">✨ ACCOUNT REGISTRY SECURED!</span>
