@@ -75,8 +75,10 @@
         
         window.metamaskEmbeddedInstance = web3auth;
         window.isWeb3AuthReady = true;
+        console.log("✅ Web3Auth loaded successfully.");
       } catch (err) {
-        console.error("Web3Auth error:", err);
+        // Safe catch taaki error aane par bhi niche ka click navigation crash na ho
+        console.error("⚠️ Web3Auth Engine warning (Handled safely):", err);
       }
     });
   </script>
@@ -118,7 +120,7 @@
       <p class="hero-desc">Complete surveys from top brands, influence products you love, and earn rewards instantly. Complete all 6 modules to secure your 48 SYNX token node framework.</p>
       
       <div>
-        <button type="button" class="hero-action-btn" onclick="document.getElementById('navGetStartedAction').click()">
+        <button type="button" id="initializePlatformBtn" class="hero-action-btn">
           Get Started Free <span style="font-size: 18px;">&rarr;</span>
         </button>
       </div>
@@ -149,7 +151,7 @@
         </div>
       </div>
       
-      <button type="button" class="hero-action-btn" style="margin-top: 40px; background: transparent; color: #ffffff; border: 1px solid rgba(255,255,255,0.2);" onclick="document.getElementById('navLogoHomeTrigger').click()">
+      <button type="button" class="back-to-home-btn" id="btnBackFromRewards" style="margin-top: 40px; background: transparent; color: #ffffff; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 12px 24px; cursor: pointer;">
         &larr; Back to Home
       </button>
     </div>
@@ -168,7 +170,7 @@
         <p style="color: #a1a1aa; font-size: 15px; line-height: 1.7;">Powered by Polygon Mainnet and secure Web3Auth gateways to ensure your data and rewards remain mathematically protected.</p>
       </div>
 
-      <button type="button" class="hero-action-btn" style="margin-top: 40px; background: transparent; color: #ffffff; border: 1px solid rgba(255,255,255,0.2);" onclick="document.getElementById('navLogoHomeTrigger').click()">
+      <button type="button" class="back-to-home-btn" id="btnBackFromAbout" style="margin-top: 40px; background: transparent; color: #ffffff; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 12px 24px; cursor: pointer;">
         &larr; Back to Home
       </button>
     </div>
