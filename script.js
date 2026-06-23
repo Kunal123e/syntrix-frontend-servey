@@ -26,6 +26,14 @@ const referredByCodeInput = document.getElementById("referredByCode");
 const surveyStepLinks = document.getElementById("surveyStepLinks");
 const dashboardTabLinks = document.getElementById("dashboardTabLinks");
 
+// Splash Sub-Views Control Points
+const viewSplashHome = document.getElementById("viewSplashHome");
+const viewSplashRewards = document.getElementById("viewSplashRewards");
+const viewSplashAbout = document.getElementById("viewSplashAbout");
+const linkHomeTab = document.getElementById("linkHomeTab");
+const linkRewardsTab = document.getElementById("linkRewardsTab");
+const linkAboutTab = document.getElementById("linkAboutTab");
+
 // Tab Screens
 const tabScreenHub = document.getElementById("tabScreenHub");
 const tabScreenBadge = document.getElementById("tabScreenBadge");
@@ -44,7 +52,6 @@ const statPendingRewards = document.getElementById("statPendingRewards");
 const statTotalEarned = document.getElementById("statTotalEarned");
 const referralCodeDisplay = document.getElementById("referralCodeDisplay");
 const copyReferralBtn = document.getElementById("copyReferralBtn");
-const statusDiv = document.getElementById("status");
 const progressFill = document.querySelector(".progressFill");
 const progressText = document.querySelector(".progressText");
 
@@ -61,55 +68,68 @@ function showToast(message, icon = "⚠️") {
 function openLegalModal() { document.getElementById("legalModal").classList.remove("hidden"); }
 function closeLegalModal() { document.getElementById("legalModal").classList.add("hidden"); }
 
-// Language Translation
+// Navigation Layout Router for Splash Gated Tabs
+function routeSplashNavViews(targetView) {
+  [viewSplashHome, viewSplashRewards, viewSplashAbout].forEach(view => { if(view) view.classList.add("hidden"); });
+  document.querySelectorAll(".nav-splash-tab").forEach(link => link.classList.remove("active"));
+  
+  if (targetView === "home" && viewSplashHome) { viewSplashHome.classList.remove("hidden"); linkHomeTab.classList.add("active"); }
+  if (targetView === "rewards" && viewSplashRewards) { viewSplashRewards.classList.remove("hidden"); linkRewardsTab.classList.add("active"); }
+  if (targetView === "about" && viewSplashAbout) { viewSplashAbout.classList.remove("hidden"); linkAboutTab.classList.add("active"); }
+}
+
+// Attach listeners cleanly
+if (linkHomeTab) linkHomeTab.addEventListener("click", (e) => { e.preventDefault(); routeSplashNavViews("home"); });
+if (linkRewardsTab) linkRewardsTab.addEventListener("click", (e) => { e.preventDefault(); routeSplashNavViews("rewards"); });
+if (linkAboutTab) linkAboutTab.addEventListener("click", (e) => { e.preventDefault(); routeSplashNavViews("about"); });
+document.getElementById("navLogoHomeTrigger").addEventListener("click", () => routeSplashNavViews("home"));
+document.getElementById("navGetStartedAction").addEventListener("click", () => { if(initializePlatformBtn) initializePlatformBtn.click(); });
+document.querySelectorAll(".back-to-home-btn").forEach(btn => btn.addEventListener("click", () => routeSplashNavViews("home")));
+
+// Language Translation hooks
 const langButtons = document.querySelectorAll(".langBtn");
 langButtons.forEach(btn => {
   btn.addEventListener("click", (e) => {
     langButtons.forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     currentLanguage = btn.dataset.lang;
-    if (claimForm.classList.contains("hidden") === false) { renderSection(); }
+    if (claimForm && claimForm.classList.contains("hidden") === false) { renderSection(); }
   });
 });
 
 const BADGE_PROFILES = {
-  Analyzer: { title: "ANALYZER", sub: "The Mindful Shopper", desc: "You shop with brilliant clarity! For you, real value and true quality matter most.", color: "#2563eb", textColor: "#0f172a", iconHTML: `<div style='padding:20px; font-size:40px;'>📊</div>` },
-  Stylist: { title: "STYLIST", sub: "The Tasteful Explorer", desc: "You have a beautiful eye for design! Shopping is about joy and artistry.", color: "#8b5cf6", textColor: "#0f172a", iconHTML: `<div style='padding:20px; font-size:40px;'>🎨</div>` },
-  Hedger: { title: "HEDGER", sub: "The Thoughtful Planner", desc: "You value peace of mind and total reliability! You love metrics and protection rules.", color: "#ea580c", textColor: "#0f172a", iconHTML: `<div style='padding:20px; font-size:40px;'>🛡️</div>` },
-  Native: { title: "NATIVE", sub: "The Connected Heart", desc: "You deeply value genuine social connections and direct crowd trust profiles.", color: "#eab308", textColor: "#0f172a", iconHTML: `<div style='padding:20px; font-size:40px;'>🤝</div>` }
+  Analyzer: { title: "ANALYZER", sub: "The Mindful Shopper", desc: "You shop with brilliant clarity! For you, real value and true quality matter most.", color: "#6366f1", textColor: "#ffffff", iconHTML: `<div style='padding:20px; font-size:40px;'>📊</div>` }
 };
 
 function displayConsumerBadgesUI(badgeKey) {
   const profile = BADGE_PROFILES[badgeKey] || BADGE_PROFILES.Analyzer;
   const badgeCard = document.getElementById("dashboardPsychologyBadgeCard");
   if (badgeCard) {
-    badgeCard.style.background = "#ffffff";
-    badgeCard.style.border = `2px solid ${profile.color}30`;
+    badgeCard.style.background = "#18181b";
+    badgeCard.style.border = `1px solid #27272a`;
     badgeCard.style.borderRadius = "24px";
     badgeCard.style.padding = "30px";
     badgeCard.innerHTML = `
       <div style="display:flex; align-items:center; gap:20px;">
         ${profile.iconHTML}
         <div>
-          <div style="font-size: 11px; text-transform: uppercase; color: ${profile.color}; font-weight: 900; letter-spacing: 1px;">Unlocked Archetype</div>
+          <div style="font-size: 11px; text-transform: uppercase; color: #6366f1; font-weight: 900; letter-spacing: 1px;">Unlocked Archetype</div>
           <h3 style="font-size: 28px; font-weight: 900; color: ${profile.textColor}; margin: 2px 0;">${profile.title}</h3>
-          <p style="font-size: 14px; color: #64748b; line-height: 1.5;">${profile.desc}</p>
+          <p style="font-size: 14px; color: #a1a1aa; line-height: 1.5;">${profile.desc}</p>
         </div>
       </div>`;
   }
 }
 
-// Navigation Tab Routing
 function routeDashboardTabs(targetTab) {
-  [tabScreenHub, tabScreenBadge, tabScreenReferrals].forEach(screen => screen.classList.add("hidden"));
+  [tabScreenHub, tabScreenBadge, tabScreenReferrals].forEach(screen => { if(screen) screen.classList.add("hidden"); });
   document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
-  
   const clickedBtn = document.querySelector(`[data-tab="${targetTab}"]`);
   if (clickedBtn) clickedBtn.classList.add("active");
 
-  if (targetTab === "hub") tabScreenHub.classList.remove("hidden");
-  if (targetTab === "badge") tabScreenBadge.classList.remove("hidden");
-  if (targetTab === "referrals") tabScreenReferrals.classList.remove("hidden");
+  if (targetTab === "hub" && tabScreenHub) tabScreenHub.classList.remove("hidden");
+  if (targetTab === "badge" && tabScreenBadge) tabScreenBadge.classList.remove("hidden");
+  if (targetTab === "referrals" && tabScreenReferrals) tabScreenReferrals.classList.remove("hidden");
 }
 
 async function fetchWithTimeout(resource, options = {}) {
@@ -126,23 +146,21 @@ async function fetchWithTimeout(resource, options = {}) {
   }
 }
 
-// Stage 0: Splash -> Check LocalStorage Auto Login
+// Session Flow Initiation Router
 if (initializePlatformBtn) {
   initializePlatformBtn.addEventListener("click", () => {
-    splashLandingGate.classList.add("hidden");
-    if (mainApplicationLayout) mainApplicationLayout.classList.remove("hidden");
-    
+    if(splashLandingGate) splashLandingGate.style.display = "none";
+    if(mainApplicationLayout) mainApplicationLayout.classList.remove("hidden");
     const savedEmail = localStorage.getItem("syntrix_user_email");
     if (savedEmail) {
       userEmailAddress = savedEmail;
-      runProfileLedgerVerification(userEmailAddress); // Bypass email, go to dash
+      runProfileLedgerVerification(userEmailAddress);
     } else {
-      emailGateSection.classList.remove("hidden");
+      if(emailGateSection) emailGateSection.classList.remove("hidden");
     }
   });
 }
 
-// Stage 1: Email Form
 if (emailGateForm) {
   emailGateForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -152,14 +170,11 @@ if (emailGateForm) {
       return;
     }
     
-    if (!legalConsentTimestamp) {
-      legalConsentTimestamp = new Date().toISOString();
-      clientUserAgent = navigator.userAgent;
-    }
-    
+    legalConsentTimestamp = new Date().toISOString();
+    clientUserAgent = navigator.userAgent;
     const emailVal = gateEmailInput.value.trim().toLowerCase();
     if (!emailVal || !EMAIL_REGEX.test(emailVal)) {
-      showToast("Please enter a valid authorized email coordinate.", "❌");
+      showToast("Please enter a valid authorized email address.", "❌");
       return;
     }
 
@@ -192,10 +207,7 @@ if (emailGateForm) {
     }
 
     const otpVal = document.getElementById("gateOtp").value.replace(/[\s-]/g, "");
-    if (otpVal.length !== 6) {
-      showToast("Verification format requires exactly 6 characters.", "❌");
-      return;
-    }
+    if (otpVal.length !== 6) { showToast("Verification format requires exactly 6 characters.", "❌"); return; }
 
     startSurveyBtn.disabled = true;
     startSurveyBtn.innerHTML = "⏳ Verifying...";
@@ -210,7 +222,7 @@ if (emailGateForm) {
         localStorage.setItem("syntrix_user_email", emailVal);
         await runProfileLedgerVerification(emailVal);
       } else {
-        showToast(result.error || "Cryptographic matching key match failure.", "❌");
+        showToast(result.error || "Cryptographic key failure.", "❌");
         startSurveyBtn.disabled = false;
         startSurveyBtn.innerHTML = "Verify Credentials &rarr;";
       }
@@ -229,9 +241,9 @@ function renderSection() {
   if (!sections || sections.length === 0 || !surveyContainer) return;
   const currentData = sections[currentSection];
   
-  if (topProgressBox) topProgressBox.classList.remove("hidden");
-  if (claimForm) claimForm.classList.remove("hidden");
-  if (emailGateSection) emailGateSection.classList.add("hidden");
+  if(topProgressBox) topProgressBox.classList.remove("hidden");
+  if(claimForm) claimForm.classList.remove("hidden");
+  if(emailGateSection) emailGateSection.classList.add("hidden");
 
   document.querySelectorAll(".sidebar .step").forEach((st, idx) => {
     if (idx === currentSection) st.classList.add("active");
@@ -242,19 +254,19 @@ function renderSection() {
   if (progressFill) progressFill.style.width = `${progressPercent}%`;
   if (progressText) progressText.innerText = `Progress ${currentSection + 1}/${sections.length}`;
 
-  let htmlStr = `<div class="survey-section-card"><h2 class="sectionTitle" style="font-size:24px; font-weight:800; margin-bottom:10px;">${currentData.title}</h2>`;
+  let htmlStr = `<div class="survey-section-card"><h2 class="sectionTitle" style="font-size:24px; font-weight:800; margin-bottom:10px; color:#ffffff;">${currentData.title}</h2>`;
 
   currentData.questions.forEach((q) => {
     const savedAnswer = answers[q.id] || "";
-    htmlStr += `<div class="question" style="margin-top:24px;">
-      <h3 style="font-weight:700; margin-bottom:12px; color:#1f1f1f;">${q.question || q.text}</h3><div class="options">`;
+    htmlStr += `<div class="question" style="margin-top:24px; background:#121214; border-color:#27272a;">
+      <h3 style="font-weight:700; margin-bottom:12px; color:#ffffff;">${q.question || q.text}</h3><div class="options">`;
 
     if (q.type === "textarea") {
-      htmlStr += `<textarea onchange="recordSelection('${q.id}', this.value)" placeholder="Type response...">${savedAnswer}</textarea>`;
+      htmlStr += `<textarea onchange="recordSelection('${q.id}', this.value)" style="background:#18181b; border-color:#27272a; color:#ffffff;" placeholder="Type response...">${savedAnswer}</textarea>`;
     } else if (q.options) {
       q.options.forEach((opt) => {
         const isSelected = savedAnswer === opt ? "selected" : "";
-        htmlStr += `<label class="option ${isSelected}"><input type="radio" name="${q.id}" value="${opt}" style="display:none;" onchange="recordSelection('${q.id}', this.value)"><span>${opt}</span></label>`;
+        htmlStr += `<label class="option ${isSelected}" style="background:#18181b; border-color:#27272a; color:#a1a1aa;"><input type="radio" name="${q.id}" value="${opt}" style="display:none;" onchange="recordSelection('${q.id}', this.value)"><span>${opt}</span></label>`;
       });
     }
     htmlStr += `</div></div>`;
@@ -265,23 +277,22 @@ function renderSection() {
 
   if (prevBtn) prevBtn.style.visibility = currentSection === 0 ? "hidden" : "visible";
   if (currentSection === sections.length - 1) {
-    nextBtn.classList.add("hidden"); submitClaimBtn.classList.remove("hidden");
+    if(nextBtn) nextBtn.classList.add("hidden"); 
+    if(submitClaimBtn) submitClaimBtn.classList.remove("hidden");
   } else {
-    nextBtn.classList.remove("hidden"); submitClaimBtn.classList.add("hidden");
+    if(nextBtn) nextBtn.classList.remove("hidden"); 
+    if(submitClaimBtn) submitClaimBtn.classList.add("hidden");
   }
 }
 
-window.recordSelection = function(questionId, selectedValue) {
-  answers[questionId] = selectedValue;
-  renderSection();
-};
+window.recordSelection = function(questionId, selectedValue) { answers[questionId] = selectedValue; renderSection(); };
 
 function handleNextSection() {
   const sections = getSurveyData();
   const currentData = sections[currentSection];
   for (let q of currentData.questions) {
     if (!answers[q.id] || answers[q.id].trim() === "") {
-      showToast("Please respond to all fields inside this analytical register block.", "⚠️");
+      showToast("Please respond to all fields inside this analytical block.", "⚠️");
       return;
     }
   }
@@ -298,7 +309,6 @@ function updateExcitementBanner() {
   banner.innerHTML = `<div style='color:white; font-size:14px;'>Allocated Milestone Node: <strong>${currentSection * 8} / 48 SYNX Accumulated</strong></div>`;
 }
 
-// Fetch dashboard data
 async function runProfileLedgerVerification(email) {
   try {
     const response = await fetchWithTimeout(`${BACKEND_URL}/api/user-status?email=${encodeURIComponent(email)}`);
@@ -312,40 +322,35 @@ async function runProfileLedgerVerification(email) {
 
       displayConsumerBadgesUI("Analyzer");
 
-      // UI Switch to Dashboard
-      emailGateSection.classList.add("hidden");
-      claimForm.classList.add("hidden");
-      topProgressBox.classList.add("hidden");
-      surveyStepLinks.classList.add("hidden");
-      splashLandingGate.classList.add("hidden");
+      if(emailGateSection) emailGateSection.classList.add("hidden");
+      if(claimForm) claimForm.classList.add("hidden");
+      if(topProgressBox) topProgressBox.classList.add("hidden");
+      if(surveyStepLinks) surveyStepLinks.classList.add("hidden");
+      if(splashLandingGate) splashLandingGate.style.display = "none";
       
-      dashboardTabLinks.classList.remove("hidden");
+      if(dashboardTabLinks) dashboardTabLinks.classList.remove("hidden");
       routeDashboardTabs("hub");
     } else {
-      // First Time -> Go to Survey
-      emailGateSection.classList.add("hidden");
-      splashLandingGate.classList.add("hidden");
+      if(emailGateSection) emailGateSection.classList.remove("hidden");
       currentSection = 0;
       renderSection();
     }
   } catch (err) {
-    showToast("Ledger interface pipeline authentication error.", "❌");
+    showToast("Ledger verification mapping error.", "❌");
   }
 }
 
-// Submit Survey
 if (claimForm) {
   claimForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    document.getElementById("claimForm").classList.add("hidden");
-    document.getElementById("rewardAnimationOverlay").style.display = "flex";
+    claimForm.classList.add("hidden");
+    const overlay = document.getElementById("rewardAnimationOverlay");
+    if(overlay) overlay.style.display = "flex";
 
     const payload = {
-      email: userEmailAddress,
-      answers: answers,
+      email: userEmailAddress, answers: answers,
       referredBy: localStorage.getItem("referralCode") || "",
-      legal_consent: true,
-      consent_timestamp: legalConsentTimestamp || new Date().toISOString(),
+      legal_consent: true, consent_timestamp: legalConsentTimestamp || new Date().toISOString(),
       user_agent: clientUserAgent || navigator.userAgent
     };
 
@@ -356,56 +361,48 @@ if (claimForm) {
       });
       const result = await response.json();
       setTimeout(async () => {
-        document.getElementById("rewardAnimationOverlay").style.display = "none";
-        if (result.success) {
-          await runProfileLedgerVerification(userEmailAddress);
-        } else {
-          document.getElementById("claimForm").classList.remove("hidden");
-          showToast(result.error || "Transaction block validation failure.", "❌");
-        }
+        if(overlay) overlay.style.display = "none";
+        if (result.success) { await runProfileLedgerVerification(userEmailAddress); } 
+        else { claimForm.classList.remove("hidden"); showToast(result.error || "Submission failure.", "❌"); }
       }, 3000);
     } catch (err) {
-      document.getElementById("rewardAnimationOverlay").style.display = "none";
+      if(overlay) overlay.style.display = "none";
       showToast("Submission transaction timed out.", "❌");
     }
   });
 }
 
-// 🚀 LOCKED WALLET ACTION TRIGGER
 if (lockedClaimGatewayBtn) {
   lockedClaimGatewayBtn.addEventListener("click", () => {
     showToast("Opening Soon... Settlement gateways will activate upon operational validation phases.", "🔒");
   });
 }
 
-// 🚀 LOGOUT FUNCTIONALITY
 if (sidebarLogoutBtn) {
   sidebarLogoutBtn.addEventListener("click", () => {
     localStorage.removeItem("syntrix_user_email");
     localStorage.removeItem("referralCode");
-    userEmailAddress = "";
-    isOtpSent = false;
-    currentSection = 0;
+    userEmailAddress = ""; isOtpSent = false; currentSection = 0;
     
-    // UI Reset
-    dashboardTabLinks.classList.add("hidden");
-    tabScreenHub.classList.add("hidden");
-    tabScreenBadge.classList.add("hidden");
-    tabScreenReferrals.classList.add("hidden");
+    if(dashboardTabLinks) dashboardTabLinks.classList.add("hidden");
+    if(tabScreenHub) tabScreenHub.classList.add("hidden");
+    if(tabScreenBadge) tabScreenBadge.classList.add("hidden");
+    if(tabScreenReferrals) tabScreenReferrals.classList.add("hidden");
     
-    surveyStepLinks.classList.remove("hidden");
-    document.getElementById("emailGateForm").reset();
-    gateEmailInput.readOnly = false;
-    document.getElementById("otpSection").classList.add("hidden");
-    startSurveyBtn.innerHTML = "Send Verification Code &rarr;";
+    if(surveyStepLinks) surveyStepLinks.classList.remove("hidden");
+    if(emailGateForm) emailGateForm.reset();
+    if(gateEmailInput) gateEmailInput.readOnly = false;
+    const otpSec = document.getElementById("otpSection");
+    if(otpSec) otpSec.classList.add("hidden");
+    if(startSurveyBtn) startSurveyBtn.innerHTML = "Send Verification Code &rarr;";
     
-    splashLandingGate.classList.remove("hidden");
-    if (mainApplicationLayout) mainApplicationLayout.classList.add("hidden");
-    showToast("Account profile successfully cleared.", "✓");
+    if(mainApplicationLayout) mainApplicationLayout.classList.add("hidden");
+    if(splashLandingGate) splashLandingGate.style.display = "flex";
+    routeSplashNavViews("home");
+    showToast("Account profiles successfully signed out.", "✓");
   });
 }
 
-// Listeners
 document.querySelectorAll(".tab-btn").forEach(btn => {
   btn.addEventListener("click", (e) => {
     const target = e.target.dataset.tab;
@@ -418,10 +415,12 @@ document.addEventListener("DOMContentLoaded", () => {
   if (prevBtn) prevBtn.onclick = () => handlePrevSection();
   if (copyReferralBtn) {
     copyReferralBtn.onclick = () => {
-      referralCodeDisplay.select();
-      navigator.clipboard.writeText(referralCodeDisplay.value);
-      copyReferralBtn.innerText = "Copied! ✓";
-      setTimeout(() => { copyReferralBtn.innerText = "Copy Link"; }, 2000);
+      if(referralCodeDisplay) {
+        referralCodeDisplay.select();
+        navigator.clipboard.writeText(referralCodeDisplay.value);
+        copyReferralBtn.innerText = "Copied! ✓";
+        setTimeout(() => { copyReferralBtn.innerText = "Copy Link"; }, 2000);
+      }
     };
   }
 });
