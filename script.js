@@ -2,12 +2,8 @@
 // SYNTRIX CORE PLATFORM APPLICATION LOGIC ENGINE
 // =========================================================================
 
-const BACKEND_URL = window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1")
-  ? "http://localhost:5000"
-  : "https://syntrix-airdrop.onrender.com";
-
+const BACKEND_URL = "https://syntrix-airdrop.onrender.com";
 const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-const WALLET_REGEX = /^0x[a-fA-F0-9]{40}$/;
 const DEFAULT_TIMEOUT_MS = 60000;
 
 let userEmailAddress = "";
@@ -19,7 +15,20 @@ let userConnectedWalletAddress = "";
 let legalConsentTimestamp = "";
 let clientUserAgent = "";
 
-// Element Selectors
+// Dom Connectors - Application Main Shells
+const splashLandingGate = document.getElementById("splashLandingGate");
+const mainApplicationLayout = document.getElementById("mainApplicationLayout");
+
+// Splash Sub-Views Selectors
+const viewSplashHome = document.getElementById("viewSplashHome");
+const viewSplashRewards = document.getElementById("viewSplashRewards");
+const viewSplashAbout = document.getElementById("viewSplashAbout");
+const linkHomeTab = document.getElementById("linkHomeTab");
+const linkRewardsTab = document.getElementById("linkRewardsTab");
+const linkAboutTab = document.getElementById("linkAboutTab");
+const navGetStartedAction = document.getElementById("navGetStartedAction");
+
+// App Survey & Core Selectors
 const emailGateSection = document.getElementById("emailGateSection");
 const emailGateForm = document.getElementById("emailGateForm");
 const gateEmailInput = document.getElementById("gateEmail");
@@ -29,30 +38,31 @@ const menuToggleBtn = document.getElementById("menuToggleBtn");
 const optionsPopover = document.getElementById("optionsPopover");
 const menuRestartBtn = document.getElementById("menuRestartBtn");
 const menuRecoverBtn = document.getElementById("menuRecoverBtn");
+
 const retrieveModal = document.getElementById("retrieveModal");
 const closeModalBtn = document.getElementById("closeModalBtn");
 const cancelModalBtn = document.getElementById("cancelModalBtn");
 const confirmRetrieveBtn = document.getElementById("confirmRetrieveBtn");
 const modalEmailInput = document.getElementById("modalEmailInput");
 const modalStatus = document.getElementById("modalStatus");
+
 const topProgressBox = document.getElementById("topProgressBox");
 const claimForm = document.getElementById("claimForm");
 const surveyContainer = document.getElementById("surveyContainer");
 const nextBtn = document.getElementById("nextBtn");
 const prevBtn = document.getElementById("prevBtn");
 const submitClaimBtn = document.getElementById("submitClaimBtn");
-const rewardDashboardScreen = document.getElementById("rewardDashboardScreen");
-const dashboardWalletInput = document.getElementById("dashboardWalletInput");
-const executeClaimBtn = document.getElementById("executeClaimBtn");
-const connectWalletBtn = document.getElementById("connectWalletBtn");
-const claimScreenSection = document.getElementById("claimScreenSection");
-const claimConnectWalletBtn = document.getElementById("claimConnectWalletBtn");
-const claimWalletConnectedBlock = document.getElementById("claimWalletConnectedBlock");
-const claimWalletAddressDisplay = document.getElementById("claimWalletAddressDisplay");
-const submitClaimRewardBtn = document.getElementById("submitClaimRewardBtn");
+
+// Dashboards Selectors
+const dashboardTabLinks = document.getElementById("dashboardTabLinks");
+const tabScreenHub = document.getElementById("rewardDashboardScreen");
+const tabScreenBadge = document.getElementById("tabScreenBadge");
+const tabScreenReferrals = document.getElementById("tabScreenReferrals");
+const lockedClaimGatewayBtn = document.getElementById("lockedClaimGatewayBtn");
+const sidebarLogoutBtn = document.getElementById("sidebarLogoutBtn");
+
 const statTotalReferrals = document.getElementById("statTotalReferrals");
 const statPendingRewards = document.getElementById("statPendingRewards");
-const statClaimedRewards = document.getElementById("statClaimedRewards");
 const statTotalEarned = document.getElementById("statTotalEarned");
 const referralCodeDisplay = document.getElementById("referralCodeDisplay");
 const copyReferralBtn = document.getElementById("copyReferralBtn");
@@ -64,61 +74,39 @@ const confirmRestartModal = document.getElementById("confirmRestartModal");
 const cancelRestartBtn = document.getElementById("cancelRestartBtn");
 const confirmRestartBtn = document.getElementById("confirmRestartBtn");
 
-const splashLandingGate = document.getElementById("splashLandingGate");
-const mainApplicationLayout = document.getElementById("mainApplicationLayout");
-const navGetStartedAction = document.getElementById("navGetStartedAction");
-
-// Splash Sub-Views Control Points
-const viewSplashHome = document.getElementById("viewSplashHome");
-const viewSplashRewards = document.getElementById("viewSplashRewards");
-const viewSplashAbout = document.getElementById("viewSplashAbout");
-const linkHomeTab = document.getElementById("linkHomeTab");
-const linkRewardsTab = document.getElementById("linkRewardsTab");
-const linkAboutTab = document.getElementById("linkAboutTab");
-
 function showToast(message, icon = "⚠️") {
   let toast = document.getElementById("customToast");
   let toastMsg = document.getElementById("toastMessage");
-  let toastIcon = document.querySelector(".toast-icon");
-  
-  if (!toast) {
-    toast = document.createElement("div");
-    toast.id = "customToast";
-    toast.className = "custom-toast";
-    toast.innerHTML = `<span class="toast-icon">${icon}</span><span id="toastMessage">${message}</span>`;
-    document.body.appendChild(toast);
-    toastMsg = document.getElementById("toastMessage");
-    toastIcon = document.querySelector(".toast-icon");
-  }
-
+  if (!toast) return;
   toastMsg.innerText = message;
-  if(toastIcon) toastIcon.innerText = icon;
-  void toast.offsetWidth;
+  toast.style.display = "flex";
   toast.classList.add("show");
-  setTimeout(() => { toast.classList.remove("show"); }, 3500);
+  setTimeout(() => { toast.classList.remove("show"); setTimeout(()=>toast.style.display="none", 500); }, 3500);
 }
 
-// 🚀 MODAL TOGGLE FIX: Guarantee display:flex/none is injected
+// ================= MODAL DISPLAY LOGIC =================
 function openLegalModal() { 
   const modal = document.getElementById("legalModal");
-  if(modal) { modal.classList.remove("hidden"); modal.style.display = "flex"; }
+  if(modal) { modal.style.display = "flex"; }
 }
 function closeLegalModal() { 
   const modal = document.getElementById("legalModal");
-  if(modal) { modal.classList.add("hidden"); modal.style.display = "none"; }
+  if(modal) { modal.style.display = "none"; }
 }
-const dismissModal = () => { 
-  if (retrieveModal) { retrieveModal.classList.add("hidden"); retrieveModal.style.display = "none"; } 
-};
 
-// ================= SPLASH PAGE ROUTING =================
+// ================= 🚀 SPLASH PAGE ISOLATED ROUTING (FIXED STACKING) =================
 function routeSplashNavViews(targetView) {
-  [viewSplashHome, viewSplashRewards, viewSplashAbout].forEach(view => { if(view) view.classList.add("hidden"); });
+  // Hide everything first using hard inline CSS
+  if (viewSplashHome) viewSplashHome.style.display = "none";
+  if (viewSplashRewards) viewSplashRewards.style.display = "none";
+  if (viewSplashAbout) viewSplashAbout.style.display = "none";
+  
   document.querySelectorAll(".nav-splash-tab").forEach(link => link.classList.remove("active"));
   
-  if (targetView === "home" && viewSplashHome) { viewSplashHome.classList.remove("hidden"); if(linkHomeTab) linkHomeTab.classList.add("active"); }
-  if (targetView === "rewards" && viewSplashRewards) { viewSplashRewards.classList.remove("hidden"); if(linkRewardsTab) linkRewardsTab.classList.add("active"); }
-  if (targetView === "about" && viewSplashAbout) { viewSplashAbout.classList.remove("hidden"); if(linkAboutTab) linkAboutTab.classList.add("active"); }
+  // Show target page only
+  if (targetView === "home" && viewSplashHome) { viewSplashHome.style.display = "block"; if(linkHomeTab) linkHomeTab.classList.add("active"); }
+  if (targetView === "rewards" && viewSplashRewards) { viewSplashRewards.style.display = "block"; if(linkRewardsTab) linkRewardsTab.classList.add("active"); }
+  if (targetView === "about" && viewSplashAbout) { viewSplashAbout.style.display = "block"; if(linkAboutTab) linkAboutTab.classList.add("active"); }
 }
 
 if (linkHomeTab) linkHomeTab.addEventListener("click", (e) => { e.preventDefault(); routeSplashNavViews("home"); });
@@ -136,66 +124,59 @@ if (navGetStartedAction) {
 if (document.getElementById("initializePlatformBtn")) {
   document.getElementById("initializePlatformBtn").addEventListener("click", () => {
     splashLandingGate.style.display = "none"; 
-    mainApplicationLayout.classList.remove("hidden"); 
+    mainApplicationLayout.style.display = "flex"; 
     
     const savedEmail = localStorage.getItem("syntrix_user_email");
     if (savedEmail) {
       userEmailAddress = savedEmail;
       runProfileLedgerVerification(userEmailAddress, false);
     } else {
-      if (emailGateSection) emailGateSection.classList.remove("hidden");
+      if (emailGateSection) emailGateSection.style.display = "block";
     }
   });
 }
 
+// ================= DASHBOARD APP TABS (FIXED STACKING) =================
+function routeDashboardTabs(targetTab) {
+  if (tabScreenHub) tabScreenHub.style.display = "none";
+  if (tabScreenBadge) tabScreenBadge.style.display = "none";
+  if (tabScreenReferrals) tabScreenReferrals.style.display = "none";
+  
+  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+  const clickedBtn = document.querySelector(`[data-tab="${targetTab}"]`);
+  if (clickedBtn) clickedBtn.classList.add("active");
+
+  if (targetTab === "hub" && tabScreenHub) tabScreenHub.style.display = "block";
+  if (targetTab === "badge" && tabScreenBadge) tabScreenBadge.style.display = "block";
+  if (targetTab === "referrals" && tabScreenReferrals) tabScreenReferrals.style.display = "block";
+}
+
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", (e) => {
+    const target = e.target.dataset.tab;
+    if (target) routeDashboardTabs(target);
+  });
+});
+
+// ================= REGULAR FUNCTIONS =================
 const BADGE_PROFILES = {
-  Analyzer: { 
-    title: "ANALYZER", sub: "The Mindful Shopper",
-    desc: "You shop with brilliant clarity! For you, real value and true quality matter most.", 
-    iconHTML: `<img src="BADGES%20PNG/badge%201%20analyzer.jpeg" alt="Analyzer" style="width: 100%; height: 100%; object-fit: cover;">`, 
-    menuIcon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`,
-    color: "#2563eb", textColor: "#0f172a"
-  }
+  Analyzer: { title: "ANALYZER", sub: "The Mindful Shopper", desc: "You shop with brilliant clarity! For you, real value and true quality matter most.", color: "#2563eb", textColor: "#0f172a", iconHTML: `📊` }
 };
 
 function displayConsumerBadgesUI(badgeKey) {
   const profile = BADGE_PROFILES[badgeKey] || BADGE_PROFILES.Analyzer;
   const badgeCard = document.getElementById("dashboardPsychologyBadgeCard");
-
   if (badgeCard) {
     badgeCard.style.display = "flex";
     badgeCard.style.background = "#ffffff";
     badgeCard.style.border = `2px solid ${profile.color}30`;
-    badgeCard.style.boxShadow = `0 15px 35px -5px rgba(0, 0, 0, 0.05), 0 0 20px ${profile.color}15`;
     badgeCard.style.borderRadius = "24px";
     badgeCard.style.padding = "30px";
     badgeCard.style.marginBottom = "35px";
     badgeCard.style.alignItems = "center";
     badgeCard.style.gap = "30px";
     badgeCard.style.textAlign = "left";
-
-    badgeCard.innerHTML = `
-      <div style="position: relative; flex-shrink: 0; width: 100px; height: 100px; border-radius: 50%; background: #ffffff; border: 3px solid ${profile.color}60; display: block; box-shadow: 0 0 30px ${profile.color}30; overflow: hidden;">
-         ${profile.iconHTML}
-      </div>
-      <div>
-        <div style="font-size: 11px; text-transform: uppercase; color: ${profile.color}; font-weight: 900; letter-spacing: 2px; margin-bottom: 8px;">Consumer Persona Unlocked</div>
-        <h3 style="font-size: 32px; font-weight: 900; color: ${profile.textColor}; margin: 0 0 8px 0; letter-spacing: -1px;">${profile.title}</h3>
-        <div style="font-size: 16px; font-weight: 800; color: #475569; margin-bottom: 12px;">${profile.sub}</div>
-        <p style="font-size: 15px; color: #64748b; line-height: 1.7; margin: 0; font-weight: 500;">${profile.desc}</p>
-      </div>
-    `;
-  }
-
-  const dropdownBadgeWrapper = document.getElementById("menuPsychologyBadgeWrapper");
-  const dropdownBadgeText = document.getElementById("menuPsychologyBadgeText");
-  const dropdownBadgeIcon = document.getElementById("menuBadgeIcon");
-  
-  if (dropdownBadgeWrapper && dropdownBadgeText && dropdownBadgeIcon) {
-    dropdownBadgeWrapper.style.display = "flex";
-    dropdownBadgeIcon.innerHTML = profile.menuIcon;
-    dropdownBadgeText.innerText = profile.title;
-    dropdownBadgeText.style.color = profile.color;
+    badgeCard.innerHTML = `<div style="font-size: 50px;">${profile.iconHTML}</div><div><div style="font-size: 11px; text-transform: uppercase; color: ${profile.color}; font-weight: 900;">Persona Unlocked</div><h3 style="font-size: 32px; font-weight: 900; color: ${profile.textColor};">${profile.title}</h3><p style="font-size: 15px; color: #64748b;">${profile.desc}</p></div>`;
   }
 }
 
@@ -221,33 +202,12 @@ async function fetchWithTimeout(resource, options = {}) {
 }
 
 function getUIText(key) {
-  const fallbacks = {
-    validationRequired: "Please answer all questions before continuing.",
-    checkingLedger: "🔍 Authenticating communication profile ledger status..."
-  };
-  if (typeof translations !== "undefined" && translations[currentLanguage] && translations[currentLanguage][key]) {
-    return translations[currentLanguage][key];
-  }
+  const fallbacks = { validationRequired: "Please answer all questions before continuing.", checkingLedger: "🔍 Authenticating communication profile ledger status..." };
+  if (typeof translations !== "undefined" && translations[currentLanguage] && translations[currentLanguage][key]) { return translations[currentLanguage][key]; }
   return fallbacks[key] || key;
 }
 
-// Dashboard Tabs Engine
-function routeDashboardTabs(targetTab) {
-  const tabScreenBadge = document.getElementById("tabScreenBadge");
-  const tabScreenReferrals = document.getElementById("tabScreenReferrals");
-  
-  [rewardDashboardScreen, tabScreenBadge, tabScreenReferrals].forEach(screen => { if(screen) screen.classList.add("hidden"); });
-  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
-  
-  const clickedBtn = document.querySelector(`[data-tab="${targetTab}"]`);
-  if (clickedBtn) clickedBtn.classList.add("active");
-
-  if (targetTab === "hub" && rewardDashboardScreen) rewardDashboardScreen.classList.remove("hidden");
-  if (targetTab === "badge" && tabScreenBadge) tabScreenBadge.classList.remove("hidden");
-  if (targetTab === "referrals" && tabScreenReferrals) tabScreenReferrals.classList.remove("hidden");
-}
-
-// ================= STAGE 1: EMAIL VERIFICATION GATE =================
+// ================= STAGE 1: EMAIL VERIFICATION =================
 if (emailGateForm) {
   emailGateForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -282,7 +242,7 @@ if (emailGateForm) {
         if (result.success) {
           isOtpSent = true;
           const otpSection = document.getElementById("otpSection");
-          if (otpSection) otpSection.classList.remove("hidden");
+          if (otpSection) otpSection.style.display = "block";
           startSurveyBtn.innerHTML = "Verify & Enter &rarr;";
           startSurveyBtn.disabled = false;
           gateEmailInput.readOnly = true; 
@@ -334,39 +294,16 @@ if (emailGateForm) {
 }
 
 function getSurveyData() { return typeof surveySections !== "undefined" ? surveySections : []; }
-
-function getSectionTitle(section) {
-  if (typeof sectionTranslations !== "undefined" && sectionTranslations[currentLanguage]) {
-    return sectionTranslations[currentLanguage][section.title] || section.title;
-  }
-  return section.title || "";
-}
-
-function getQuestionText(q) {
-  if (typeof questionTranslations !== "undefined" && questionTranslations[currentLanguage]) {
-    return questionTranslations[currentLanguage][q.id] || q.text || q.id;
-  }
-  return q.question || q.id;
-}
-
-function getOptionText(opt) {
-  if (typeof optionTranslations !== "undefined" && optionTranslations[currentLanguage]) {
-    return optionTranslations[currentLanguage][opt] || opt;
-  }
-  return opt;
-}
+function getSectionTitle(section) { if (typeof sectionTranslations !== "undefined" && sectionTranslations[currentLanguage]) { return sectionTranslations[currentLanguage][section.title] || section.title; } return section.title || ""; }
+function getQuestionText(q) { if (typeof questionTranslations !== "undefined" && questionTranslations[currentLanguage]) { return questionTranslations[currentLanguage][q.id] || q.text || q.id; } return q.question || q.id; }
+function getOptionText(opt) { if (typeof optionTranslations !== "undefined" && optionTranslations[currentLanguage]) { return optionTranslations[currentLanguage][opt] || opt; } return opt; }
 
 function validateCurrentSectionAnswers() {
   const sections = getSurveyData();
   const currentData = sections[currentSection];
   if (!currentData) return false;
-  
   for (let q of currentData.questions) { 
-    if (q.type === "textarea") {
-      if (!answers[q.id] || answers[q.id].trim() === "") return false;
-    } else {
-      if (!answers[q.id]) return false; 
-    }
+    if (q.type === "textarea") { if (!answers[q.id] || answers[q.id].trim() === "") return false; } else { if (!answers[q.id]) return false; }
   }
   return true;
 }
@@ -376,67 +313,48 @@ function renderSection() {
   if (!sections || sections.length === 0 || !surveyContainer) return;
   const currentData = sections[currentSection];
   
-  try {
-    if (topProgressBox) topProgressBox.classList.remove("hidden");
-    if (claimForm) claimForm.classList.remove("hidden");
-    if (emailGateSection) emailGateSection.classList.add("hidden");
+  if (topProgressBox) topProgressBox.style.display = "block";
+  if (claimForm) claimForm.style.display = "block";
+  if (emailGateSection) emailGateSection.style.display = "none";
 
-    const sidebarSteps = document.querySelectorAll(".sidebar .step");
-    sidebarSteps.forEach((st, idx) => {
-      if (idx === currentSection) st.classList.add("active");
-      else st.classList.remove("active");
-      if (sections[idx]) {
-        const titleText = sections[idx].title.split(".")[1] || sections[idx].title;
-        const stepLabel = st.querySelector(".stepLabel") || st;
-        if (stepLabel) stepLabel.innerText = titleText.trim();
-      }
-    });
+  document.querySelectorAll(".sidebar .step").forEach((st, idx) => {
+    if (idx === currentSection) st.classList.add("active"); else st.classList.remove("active");
+  });
 
-    const progressPercent = ((currentSection + 1) / sections.length) * 100;
-    if (progressFill) progressFill.style.width = `${progressPercent}%`;
-    if (progressText) progressText.innerText = `Progress ${currentSection + 1}/${sections.length}`;
+  const progressPercent = ((currentSection + 1) / sections.length) * 100;
+  if (progressFill) progressFill.style.width = `${progressPercent}%`;
+  if (progressText) progressText.innerText = `Progress ${currentSection + 1}/${sections.length}`;
 
-    let htmlStr = `<div class="survey-section-card animate-fade-in">
-      <h2 class="surveySectionTitle" style="font-size: 26px; font-weight: 800; color: #111827; margin-bottom: 5px;">${getSectionTitle(currentData)}</h2>`;
+  let htmlStr = `<div class="survey-section-card animate-fade-in"><h2 class="sectionTitle" style="font-size: 26px; font-weight: 800; color: #111827; margin-bottom: 5px;">${getSectionTitle(currentData)}</h2>`;
 
-    if (currentData && currentData.questions) {
-        currentData.questions.forEach((q) => {
-          const savedAnswer = answers[q.id] || "";
-          htmlStr += `<div class="question-block" style="margin-top:30px; text-align:left;">
-            <p class="questionText" style="font-weight:800; margin-bottom:16px; font-size:17px; color:#1f1f1f;">${getQuestionText(q)}</p>
-            <div class="options">`; 
+  if (currentData && currentData.questions) {
+      currentData.questions.forEach((q) => {
+        const savedAnswer = answers[q.id] || "";
+        htmlStr += `<div class="question-block" style="margin-top:30px; text-align:left;"><p class="questionText" style="font-weight:800; margin-bottom:16px; font-size:17px; color:#1f1f1f;">${getQuestionText(q)}</p><div class="options">`; 
 
-          if (q.type === "textarea") {
-               htmlStr += `<textarea id="${q.id}" placeholder="Type your answer here..." onchange="recordSelection('${q.id}', this.value)" style="width:100%; border:2px solid #e2e8f0; border-radius:14px; padding:16px; font-size:15px; font-family:inherit;">${savedAnswer}</textarea>`;
-          } 
-          else if (q.options && Array.isArray(q.options)) {
-              q.options.forEach((opt) => {
-                const isChecked = savedAnswer === opt ? "checked" : "";
-                const isSelectedClass = savedAnswer === opt ? "selected" : ""; 
-                htmlStr += `
-                  <label class="option ${isSelectedClass}" style="display:inline-block; user-select:none; font-weight: 600;">
-                    <input type="radio" name="${q.id}" value="${opt}" ${isChecked} style="display:none;" onchange="recordSelection('${q.id}', this.value)">
-                    <span class="optionText">${getOptionText(opt)}</span>
-                  </label>`;
-              });
-          }
-          htmlStr += `</div></div>`;
-        });
-    }
+        if (q.type === "textarea") {
+             htmlStr += `<textarea id="${q.id}" placeholder="Type your answer here..." onchange="recordSelection('${q.id}', this.value)" style="width:100%; border:2px solid #e2e8f0; border-radius:14px; padding:16px; font-size:15px; font-family:inherit;">${savedAnswer}</textarea>`;
+        } else if (q.options && Array.isArray(q.options)) {
+            q.options.forEach((opt) => {
+              const isChecked = savedAnswer === opt ? "checked" : "";
+              const isSelectedClass = savedAnswer === opt ? "selected" : ""; 
+              htmlStr += `<label class="option ${isSelectedClass}" style="display:inline-block; user-select:none; font-weight: 600;"><input type="radio" name="${q.id}" value="${opt}" ${isChecked} style="display:none;" onchange="recordSelection('${q.id}', this.value)"><span class="optionText">${getOptionText(opt)}</span></label>`;
+            });
+        }
+        htmlStr += `</div></div>`;
+      });
+  }
 
-    htmlStr += `</div>`;
-    surveyContainer.innerHTML = htmlStr;
+  htmlStr += `</div>`;
+  surveyContainer.innerHTML = htmlStr;
 
-    if (prevBtn) prevBtn.style.visibility = currentSection === 0 ? "hidden" : "visible";
-    if (currentSection === sections.length - 1) {
-      if (nextBtn) nextBtn.classList.add("hidden");
-      if (submitClaimBtn) submitClaimBtn.classList.remove("hidden");
-    } else {
-      if (nextBtn) nextBtn.classList.remove("hidden");
-      if (submitClaimBtn) submitClaimBtn.classList.add("hidden");
-    }
-  } catch (err) {
-    surveyContainer.innerHTML = `<div style="background:#fee2e2; border: 2px solid #ef4444; color:#991b1b; padding: 20px; border-radius: 12px; font-weight:bold; margin-top:20px;">🚨 System Error: ${err.message}</div>`;
+  if (prevBtn) prevBtn.style.display = currentSection === 0 ? "none" : "block";
+  if (currentSection === sections.length - 1) {
+    if (nextBtn) nextBtn.style.display = "none";
+    if (submitClaimBtn) submitClaimBtn.style.display = "block";
+  } else {
+    if (nextBtn) nextBtn.style.display = "block";
+    if (submitClaimBtn) submitClaimBtn.style.display = "none";
   }
 }
 
@@ -458,13 +376,8 @@ function updateExcitementBanner(sectionIndex) {
   const banner = document.getElementById("excitementBanner");
   if (!banner) return;
   if (sectionIndex === 0) { banner.style.display = "none"; return; }
-
-  const unlockedTokens = sectionIndex * 8;
-  const totalTokens = 48;
-  
+  const unlockedTokens = sectionIndex * 8; const totalTokens = 48;
   banner.style.display = "flex";
-  banner.style.animation = 'none'; banner.offsetHeight; banner.style.animation = 'slideDown 0.5s ease-out';
-
   banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! You've secured <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> so far!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Complete the next module to claim <strong style="color: #fbbf24;">8 more!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px;">[ ${unlockedTokens} / ${totalTokens} ]</div></div>`;
 }
 
@@ -478,7 +391,7 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
   try {
     const response = await fetchWithTimeout(`${BACKEND_URL}/api/user-status?email=${encodeURIComponent(email)}`);
     const statusResult = await response.json();
-    if (isFromModal) dismissModal();
+    if (isFromModal && retrieveModal) retrieveModal.style.display = "none";
 
     if (statusResult.success) {
       userEmailAddress = email;
@@ -486,28 +399,29 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
       
       if (statTotalReferrals) statTotalReferrals.innerText = statusResult.referralsCount || "0";
       if (statPendingRewards) statPendingRewards.innerText = `${statusResult.pendingRewards || 0} SYN`;
-      if (statClaimedRewards) statClaimedRewards.innerText = `${statusResult.claimedRewards || 0} SYN`;
-      if (statTotalEarned) statTotalEarned.innerText = `${(statusResult.pendingRewards || 0) + (statusResult.claimedRewards || 0)} SYN`;
+      if (statTotalEarned) statTotalEarned.innerText = `${statusResult.pendingRewards || 0} SYN`;
       if (referralCodeDisplay) referralCodeDisplay.value = `${window.location.origin}/?ref=${statusResult.referralCode || ""}`;
 
       displayConsumerBadgesUI("Analyzer");
 
       if (statusResult.exists === true) {
-        if (emailGateSection) emailGateSection.classList.add("hidden");
-        if (claimForm) claimForm.classList.add("hidden");
-        if (topProgressBox) topProgressBox.classList.add("hidden");
-        if (surveyStepLinks) surveyStepLinks.classList.add("hidden");
+        if (emailGateSection) emailGateSection.style.display = "none";
+        if (claimForm) claimForm.style.display = "none";
+        if (topProgressBox) topProgressBox.style.display = "none";
         
-        if (dashboardTabLinks) dashboardTabLinks.classList.remove("hidden");
+        const surveyStepLinks = document.getElementById("surveyStepLinks");
+        if (surveyStepLinks) surveyStepLinks.style.display = "none";
+        
+        if (dashboardTabLinks) dashboardTabLinks.style.display = "flex";
         routeDashboardTabs("hub");
         outputTarget.innerHTML = "";
       } else {
-        if (emailGateSection) emailGateSection.classList.add("hidden");
+        if (emailGateSection) emailGateSection.style.display = "none";
         currentSection = 0; renderSection(); outputTarget.innerHTML = "";
       }
     } else {
       if (!isFromModal) {
-        if (emailGateSection) emailGateSection.classList.add("hidden");
+        if (emailGateSection) emailGateSection.style.display = "block";
         currentSection = 0; renderSection(); outputTarget.innerHTML = "";
       } else { showToast("Profile ledger entry not found.", "❌"); }
     }
@@ -520,7 +434,7 @@ async function handleSurveySubmission(e) {
   if (e) e.preventDefault();
   if (!validateCurrentSectionAnswers()) { showToast(getUIText("validationRequired"), "⚠️"); return; }
 
-  document.getElementById("claimForm").classList.add("hidden");
+  if(claimForm) claimForm.style.display = "none";
   const excitementBanner = document.getElementById("excitementBanner");
   if(excitementBanner) excitementBanner.style.display = "none";
 
@@ -547,16 +461,18 @@ async function handleSurveySubmission(e) {
         if (statusDiv) statusDiv.innerHTML = "";
         await runProfileLedgerVerification(userEmailAddress, false);
       } else {
-        document.getElementById("claimForm").classList.remove("hidden"); 
-        showToast(`${result.error || "Submission rejected by registry backend."}`, "❌");
+        if(claimForm) claimForm.style.display = "block";
+        showToast(`${result.error || "Submission rejected."}`, "❌");
       }
     }, 3500);
   } catch (err) {
     if (animOverlay) animOverlay.style.display = "none";
-    document.getElementById("claimForm").classList.remove("hidden");
+    if(claimForm) claimForm.style.display = "block";
     showToast("Network transaction failed.", "❌");
   }
 }
+
+if (lockedClaimGatewayBtn) lockedClaimGatewayBtn.addEventListener("click", () => { showToast("Opening Soon... Settlement gateways will activate upon validation.", "🔒"); });
 
 function resetApplicationFlowState() {
   if (emailGateForm) emailGateForm.reset();
@@ -564,31 +480,26 @@ function resetApplicationFlowState() {
   if (statusDiv) statusDiv.innerHTML = "";
   userEmailAddress = ""; currentSection = 0; isOtpSent = false;
   legalConsentTimestamp = ""; clientUserAgent = ""; 
-  const otpSection = document.getElementById("otpSection"); if (otpSection) otpSection.classList.add("hidden");
+  const otpSection = document.getElementById("otpSection"); if (otpSection) otpSection.style.display = "none";
   if (startSurveyBtn) startSurveyBtn.innerHTML = "Send Verification Code &rarr;";
   if (gateEmailInput) gateEmailInput.readOnly = false;
   for (const prop in answers) { if (Object.prototype.hasOwnProperty.call(answers, prop)) delete answers[prop]; }
   
-  if (dashboardTabLinks) dashboardTabLinks.classList.add("hidden");
-  if (rewardDashboardScreen) rewardDashboardScreen.classList.add("hidden");
+  if (dashboardTabLinks) dashboardTabLinks.style.display = "none";
+  if (tabScreenHub) tabScreenHub.style.display = "none";
+  if (tabScreenBadge) tabScreenBadge.style.display = "none";
+  if (tabScreenReferrals) tabScreenReferrals.style.display = "none";
   
-  if (surveyStepLinks) surveyStepLinks.classList.remove("hidden");
-  if (mainApplicationLayout) mainApplicationLayout.classList.add("hidden");
+  const surveyStepLinks = document.getElementById("surveyStepLinks");
+  if (surveyStepLinks) surveyStepLinks.style.display = "flex";
+  
+  if (mainApplicationLayout) mainApplicationLayout.style.display = "none";
   if (splashLandingGate) splashLandingGate.style.display = "flex";
   routeSplashNavViews("home");
-  showToast("Account profiles successfully signed out.", "✓");
+  showToast("Account successfully signed out.", "✓");
 }
 
-if (sidebarLogoutBtn) sidebarLogoutBtn.addEventListener("click", () => resetApplicationFlowState());
-
-document.querySelectorAll(".tab-btn").forEach(btn => {
-  btn.addEventListener("click", (e) => {
-    const target = e.target.dataset.tab;
-    if (target) routeDashboardTabs(target);
-  });
-});
-
-// ================= MODAL TRIGGERS AND DOM BINDINGS =================
+// ================= LIFE CYCLE EVENT ROUTERS =================
 document.addEventListener("DOMContentLoaded", async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const refParam = urlParams.get("ref");
@@ -614,41 +525,25 @@ document.addEventListener("DOMContentLoaded", async () => {
         navigator.clipboard.writeText(referralCodeDisplay.value);
         const originalText = copyReferralBtn.innerText; copyReferralBtn.innerText = "Copied! ✓";
         setTimeout(() => { copyReferralBtn.innerText = originalText; }, 2000);
-      } catch (err) { showToast("Failed to access system registers.", "❌"); }
+      } catch (err) { showToast("Failed to copy link.", "❌"); }
     }
   }
 
   if (menuToggleBtn && optionsPopover) {
-    menuToggleBtn.onclick = (e) => { e.stopPropagation(); optionsPopover.classList.toggle("hidden"); };
-    document.addEventListener("click", () => optionsPopover.classList.add("hidden"));
+    menuToggleBtn.onclick = (e) => { 
+      e.stopPropagation(); 
+      if(optionsPopover.style.display === "none") { optionsPopover.style.display = "block"; } 
+      else { optionsPopover.style.display = "none"; }
+    };
+    document.addEventListener("click", () => optionsPopover.style.display = "none");
   }
 
-  // 🚀 FIXED: Restart Modal Explicit Display Toggling
-  if (menuRestartBtn && confirmRestartModal) {
-    menuRestartBtn.onclick = () => { 
-      optionsPopover.classList.add("hidden"); 
-      confirmRestartModal.classList.remove("hidden"); 
-      confirmRestartModal.style.display = "flex"; 
-    };
-  }
-  if (cancelRestartBtn && confirmRestartModal) {
-    cancelRestartBtn.onclick = () => { 
-      confirmRestartModal.classList.add("hidden"); 
-      confirmRestartModal.style.display = "none"; 
-    };
-  }
-  if (confirmRestartBtn && confirmRestartModal) {
-    confirmRestartBtn.onclick = () => { 
-      confirmRestartModal.classList.add("hidden"); 
-      confirmRestartModal.style.display = "none"; 
-      resetApplicationFlowState(); 
-    };
-  }
+  if (menuRestartBtn && confirmRestartModal) menuRestartBtn.onclick = () => { optionsPopover.style.display = "none"; confirmRestartModal.style.display = "flex"; };
+  if (cancelRestartBtn && confirmRestartModal) cancelRestartBtn.onclick = () => confirmRestartModal.style.display = "none";
+  if (confirmRestartBtn && confirmRestartModal) confirmRestartBtn.onclick = () => { confirmRestartModal.style.display = "none"; resetApplicationFlowState(); };
 
-  // 🚀 FIXED: Recover Modal Explicit Display Toggling
   if (menuRecoverBtn && retrieveModal) {
     menuRecoverBtn.onclick = () => {
-      retrieveModal.classList.remove("hidden");
       retrieveModal.style.display = "flex";
       if (modalEmailInput) modalEmailInput.value = "";
       if (modalStatus) modalStatus.innerHTML = "";
@@ -656,38 +551,27 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (confirmRetrieveBtn) {
         confirmRetrieveBtn.onclick = async () => {
           const searchEmail = modalEmailInput ? modalEmailInput.value.trim().toLowerCase() : "";
-          if (!searchEmail || !EMAIL_REGEX.test(searchEmail)) { showToast("Please provide a valid email structure.", "❌"); return; }
+          if (!searchEmail || !EMAIL_REGEX.test(searchEmail)) { showToast("Please provide a valid email.", "❌"); return; }
+          // Trigger splash to hide and App body to open directly on recovery
           splashLandingGate.style.display = "none";
-          mainApplicationLayout.classList.remove("hidden");
+          mainApplicationLayout.style.display = "flex";
           await runProfileLedgerVerification(searchEmail, true);
         };
       }
     };
   }
 
-  if (closeModalBtn) closeModalBtn.onclick = () => dismissModal();
-  if (cancelModalBtn) cancelModalBtn.onclick = () => dismissModal();
+  if (closeModalBtn) closeModalBtn.onclick = () => { if(retrieveModal) retrieveModal.style.display = "none"; };
+  if (cancelModalBtn) cancelModalBtn.onclick = () => { if(retrieveModal) retrieveModal.style.display = "none"; };
 
-  // 🚀 FIXED: Wallet Creator Modal Explicit Display Toggling (if used)
-  const creatorModal = document.getElementById("walletCreatorModal");
-  const closeWalletBtn = document.getElementById("closeWalletCreatorBtn");
-  if (closeWalletBtn && creatorModal) {
-    closeWalletBtn.onclick = () => {
-      creatorModal.classList.add("hidden");
-      creatorModal.style.display = "none";
-    };
-  }
-  
-  if (connectWalletBtn) {
-    connectWalletBtn.onclick = () => {
-      if (typeof window.ethereum === "undefined") {
-        if (creatorModal) {
-          creatorModal.classList.remove("hidden");
-          creatorModal.style.display = "flex";
-        }
-      } else {
-        // metamask interaction...
-      }
-    };
-  }
+  const langButtons = document.querySelectorAll(".langBtn");
+  langButtons.forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      langButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active"); currentLanguage = btn.dataset.lang;
+      // Handle Translations here if needed
+      updateExcitementBanner(currentSection); 
+      if (claimForm && claimForm.style.display !== "none") renderSection();
+    });
+  });
 });
