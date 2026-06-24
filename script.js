@@ -19,20 +19,7 @@ let userConnectedWalletAddress = "";
 let legalConsentTimestamp = "";
 let clientUserAgent = "";
 
-// Dom Connectors - Application Main Shells
-const splashLandingGate = document.getElementById("splashLandingGate");
-const mainApplicationLayout = document.getElementById("mainApplicationLayout");
-
-// Splash Sub-Views Selectors
-const viewSplashHome = document.getElementById("viewSplashHome");
-const viewSplashRewards = document.getElementById("viewSplashRewards");
-const viewSplashAbout = document.getElementById("viewSplashAbout");
-const linkHomeTab = document.getElementById("linkHomeTab");
-const linkRewardsTab = document.getElementById("linkRewardsTab");
-const linkAboutTab = document.getElementById("linkAboutTab");
-const navGetStartedAction = document.getElementById("navGetStartedAction");
-
-// App Survey & Core Selectors
+// Element Selectors
 const emailGateSection = document.getElementById("emailGateSection");
 const emailGateForm = document.getElementById("emailGateForm");
 const gateEmailInput = document.getElementById("gateEmail");
@@ -42,29 +29,19 @@ const menuToggleBtn = document.getElementById("menuToggleBtn");
 const optionsPopover = document.getElementById("optionsPopover");
 const menuRestartBtn = document.getElementById("menuRestartBtn");
 const menuRecoverBtn = document.getElementById("menuRecoverBtn");
-
 const retrieveModal = document.getElementById("retrieveModal");
 const closeModalBtn = document.getElementById("closeModalBtn");
 const cancelModalBtn = document.getElementById("cancelModalBtn");
 const confirmRetrieveBtn = document.getElementById("confirmRetrieveBtn");
 const modalEmailInput = document.getElementById("modalEmailInput");
 const modalStatus = document.getElementById("modalStatus");
-
 const topProgressBox = document.getElementById("topProgressBox");
 const claimForm = document.getElementById("claimForm");
 const surveyContainer = document.getElementById("surveyContainer");
 const nextBtn = document.getElementById("nextBtn");
 const prevBtn = document.getElementById("prevBtn");
 const submitClaimBtn = document.getElementById("submitClaimBtn");
-
-// Dashboards Selectors
-const dashboardTabLinks = document.getElementById("dashboardTabLinks");
-const tabScreenHub = document.getElementById("rewardDashboardScreen");
-const tabScreenBadge = document.getElementById("tabScreenBadge");
-const tabScreenReferrals = document.getElementById("tabScreenReferrals");
-const lockedClaimGatewayBtn = document.getElementById("lockedClaimGatewayBtn");
-const sidebarLogoutBtn = document.getElementById("sidebarLogoutBtn");
-
+const rewardDashboardScreen = document.getElementById("rewardDashboardScreen");
 const dashboardWalletInput = document.getElementById("dashboardWalletInput");
 const executeClaimBtn = document.getElementById("executeClaimBtn");
 const connectWalletBtn = document.getElementById("connectWalletBtn");
@@ -73,7 +50,6 @@ const claimConnectWalletBtn = document.getElementById("claimConnectWalletBtn");
 const claimWalletConnectedBlock = document.getElementById("claimWalletConnectedBlock");
 const claimWalletAddressDisplay = document.getElementById("claimWalletAddressDisplay");
 const submitClaimRewardBtn = document.getElementById("submitClaimRewardBtn");
-
 const statTotalReferrals = document.getElementById("statTotalReferrals");
 const statPendingRewards = document.getElementById("statPendingRewards");
 const statClaimedRewards = document.getElementById("statClaimedRewards");
@@ -87,6 +63,18 @@ const progressText = document.querySelector(".progressText");
 const confirmRestartModal = document.getElementById("confirmRestartModal");
 const cancelRestartBtn = document.getElementById("cancelRestartBtn");
 const confirmRestartBtn = document.getElementById("confirmRestartBtn");
+
+const splashLandingGate = document.getElementById("splashLandingGate");
+const mainApplicationLayout = document.getElementById("mainApplicationLayout");
+const navGetStartedAction = document.getElementById("navGetStartedAction");
+
+// Splash Sub-Views Control Points
+const viewSplashHome = document.getElementById("viewSplashHome");
+const viewSplashRewards = document.getElementById("viewSplashRewards");
+const viewSplashAbout = document.getElementById("viewSplashAbout");
+const linkHomeTab = document.getElementById("linkHomeTab");
+const linkRewardsTab = document.getElementById("linkRewardsTab");
+const linkAboutTab = document.getElementById("linkAboutTab");
 
 function showToast(message, icon = "⚠️") {
   let toast = document.getElementById("customToast");
@@ -110,6 +98,7 @@ function showToast(message, icon = "⚠️") {
   setTimeout(() => { toast.classList.remove("show"); }, 3500);
 }
 
+// 🚀 MODAL TOGGLE FIX: Guarantee display:flex/none is injected
 function openLegalModal() { 
   const modal = document.getElementById("legalModal");
   if(modal) { modal.classList.remove("hidden"); modal.style.display = "flex"; }
@@ -118,6 +107,9 @@ function closeLegalModal() {
   const modal = document.getElementById("legalModal");
   if(modal) { modal.classList.add("hidden"); modal.style.display = "none"; }
 }
+const dismissModal = () => { 
+  if (retrieveModal) { retrieveModal.classList.add("hidden"); retrieveModal.style.display = "none"; } 
+};
 
 // ================= SPLASH PAGE ROUTING =================
 function routeSplashNavViews(targetView) {
@@ -135,7 +127,6 @@ if (linkAboutTab) linkAboutTab.addEventListener("click", (e) => { e.preventDefau
 document.getElementById("navLogoHomeTrigger").addEventListener("click", () => routeSplashNavViews("home"));
 document.querySelectorAll(".back-to-home-btn").forEach(btn => btn.addEventListener("click", () => routeSplashNavViews("home")));
 
-// Master Engine Hook: "Get Started" moves from Dark Splash to Light Survey App
 if (navGetStartedAction) {
   navGetStartedAction.addEventListener("click", () => {
     document.getElementById("initializePlatformBtn").click();
@@ -144,10 +135,9 @@ if (navGetStartedAction) {
 
 if (document.getElementById("initializePlatformBtn")) {
   document.getElementById("initializePlatformBtn").addEventListener("click", () => {
-    splashLandingGate.style.display = "none"; // Shut down dark matrix overlay
-    mainApplicationLayout.classList.remove("hidden"); // Open standard app body
+    splashLandingGate.style.display = "none"; 
+    mainApplicationLayout.classList.remove("hidden"); 
     
-    // Check saved token logic
     const savedEmail = localStorage.getItem("syntrix_user_email");
     if (savedEmail) {
       userEmailAddress = savedEmail;
@@ -158,7 +148,6 @@ if (document.getElementById("initializePlatformBtn")) {
   });
 }
 
-// ================= BADGE INTEGRATIONS =================
 const BADGE_PROFILES = {
   Analyzer: { 
     title: "ANALYZER", sub: "The Mindful Shopper",
@@ -166,27 +155,6 @@ const BADGE_PROFILES = {
     iconHTML: `<img src="BADGES%20PNG/badge%201%20analyzer.jpeg" alt="Analyzer" style="width: 100%; height: 100%; object-fit: cover;">`, 
     menuIcon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`,
     color: "#2563eb", textColor: "#0f172a"
-  },
-  Stylist: { 
-    title: "STYLIST", sub: "The Tasteful Explorer",
-    desc: "You have a beautiful eye for design! For you, shopping is about joy, artistry, and wonderful experiences.", 
-    iconHTML: `<img src="BADGES%20PNG/badge%203.jpeg" alt="Stylist" style="width: 100%; height: 100%; object-fit: cover;">`, 
-    menuIcon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L15 9L22 12L15 15L12 22L9 15L2 12L9 9Z"></path></svg>`,
-    color: "#8b5cf6", textColor: "#0f172a"
-  },
-  Hedger: { 
-    title: "HEDGER", sub: "The Thoughtful Planner",
-    desc: "You value peace of mind and total reliability! You love knowing your purchases are safe and backed by guarantees.", 
-    iconHTML: `<img src="BADGES%20PNG/badge%202.jpeg" alt="Hedger" style="width: 100%; height: 100%; object-fit: cover;">`, 
-    menuIcon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>`,
-    color: "#ea580c", textColor: "#0f172a"
-  },
-  Native: { 
-    title: "NATIVE", sub: "The Connected Heart",
-    desc: "You deeply value genuine connections! Your best shopping moments come from trusted recommendations.", 
-    iconHTML: `<img src="BADGES%20PNG/badge%204.jpeg" alt="Native" style="width: 100%; height: 100%; object-fit: cover;">`, 
-    menuIcon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`,
-    color: "#eab308", textColor: "#0f172a"
   }
 };
 
@@ -265,13 +233,16 @@ function getUIText(key) {
 
 // Dashboard Tabs Engine
 function routeDashboardTabs(targetTab) {
-  [tabScreenHub, tabScreenBadge, tabScreenReferrals].forEach(screen => { if(screen) screen.classList.add("hidden"); });
+  const tabScreenBadge = document.getElementById("tabScreenBadge");
+  const tabScreenReferrals = document.getElementById("tabScreenReferrals");
+  
+  [rewardDashboardScreen, tabScreenBadge, tabScreenReferrals].forEach(screen => { if(screen) screen.classList.add("hidden"); });
   document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
   
   const clickedBtn = document.querySelector(`[data-tab="${targetTab}"]`);
   if (clickedBtn) clickedBtn.classList.add("active");
 
-  if (targetTab === "hub" && tabScreenHub) tabScreenHub.classList.remove("hidden");
+  if (targetTab === "hub" && rewardDashboardScreen) rewardDashboardScreen.classList.remove("hidden");
   if (targetTab === "badge" && tabScreenBadge) tabScreenBadge.classList.remove("hidden");
   if (targetTab === "referrals" && tabScreenReferrals) tabScreenReferrals.classList.remove("hidden");
 }
@@ -494,22 +465,8 @@ function updateExcitementBanner(sectionIndex) {
   banner.style.display = "flex";
   banner.style.animation = 'none'; banner.offsetHeight; banner.style.animation = 'slideDown 0.5s ease-out';
 
-  if (currentLanguage === "hi") {
-      if (sectionIndex < 5) {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">शानदार! आपने अब तक <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> सुरक्षित कर लिए हैं!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">अगला मॉड्यूल पूरा करें Aur <strong style="color: #fbbf24;">8 Aur Paayein!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px;">[ ${unlockedTokens} / ${totalTokens} ]</div></div>`;
-      } else {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">अविश्वसनीय! आपने सभी <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span> सुरक्षित कर लिए हैं!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">दावा करने के लिए नीचे सबमिट पर क्लिक करें!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px;">[ 48 / 48 ]</div></div>`;
-      }
-  } else {
-      if (sectionIndex < 5) {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! You've secured <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> so far!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Complete the next module to claim <strong style="color: #fbbf24;">8 more!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px;">[ ${unlockedTokens} / ${totalTokens} ]</div></div>`;
-      } else {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! You've secured all <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span>!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Hit Submit below to transfer them to your wallet!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px;">[ 48 / 48 ]</div></div>`;
-      }
-  }
+  banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! You've secured <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> so far!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Complete the next module to claim <strong style="color: #fbbf24;">8 more!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px;">[ ${unlockedTokens} / ${totalTokens} ]</div></div>`;
 }
-
-const dismissModal = () => { if (retrieveModal) retrieveModal.classList.add("hidden"); };
 
 async function runProfileLedgerVerification(email, isFromModal = false) {
   const outputTarget = isFromModal ? modalStatus : statusDiv;
@@ -533,7 +490,7 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
       if (statTotalEarned) statTotalEarned.innerText = `${(statusResult.pendingRewards || 0) + (statusResult.claimedRewards || 0)} SYN`;
       if (referralCodeDisplay) referralCodeDisplay.value = `${window.location.origin}/?ref=${statusResult.referralCode || ""}`;
 
-      displayConsumerBadgesUI("Analyzer"); // Can implement badge dynamic fetch logic here later
+      displayConsumerBadgesUI("Analyzer");
 
       if (statusResult.exists === true) {
         if (emailGateSection) emailGateSection.classList.add("hidden");
@@ -601,8 +558,6 @@ async function handleSurveySubmission(e) {
   }
 }
 
-if (lockedClaimGatewayBtn) lockedClaimGatewayBtn.addEventListener("click", () => { showToast("Opening Soon... Settlement gateways will activate upon operational validation phases.", "🔒"); });
-
 function resetApplicationFlowState() {
   if (emailGateForm) emailGateForm.reset();
   localStorage.removeItem("syntrix_user_email"); localStorage.removeItem("referralCode");
@@ -615,9 +570,7 @@ function resetApplicationFlowState() {
   for (const prop in answers) { if (Object.prototype.hasOwnProperty.call(answers, prop)) delete answers[prop]; }
   
   if (dashboardTabLinks) dashboardTabLinks.classList.add("hidden");
-  if (tabScreenHub) tabScreenHub.classList.add("hidden");
-  if (tabScreenBadge) tabScreenBadge.classList.add("hidden");
-  if (tabScreenReferrals) tabScreenReferrals.classList.add("hidden");
+  if (rewardDashboardScreen) rewardDashboardScreen.classList.add("hidden");
   
   if (surveyStepLinks) surveyStepLinks.classList.remove("hidden");
   if (mainApplicationLayout) mainApplicationLayout.classList.add("hidden");
@@ -635,7 +588,7 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
   });
 });
 
-// ================= LIFE CYCLE REGISTRATION RUNNERS & EVENT ROUTERS =================
+// ================= MODAL TRIGGERS AND DOM BINDINGS =================
 document.addEventListener("DOMContentLoaded", async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const refParam = urlParams.get("ref");
@@ -670,13 +623,33 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.addEventListener("click", () => optionsPopover.classList.add("hidden"));
   }
 
-  if (menuRestartBtn && confirmRestartModal) menuRestartBtn.onclick = () => { optionsPopover.classList.add("hidden"); confirmRestartModal.classList.remove("hidden"); };
-  if (cancelRestartBtn && confirmRestartModal) cancelRestartBtn.onclick = () => confirmRestartModal.classList.add("hidden");
-  if (confirmRestartBtn && confirmRestartModal) confirmRestartBtn.onclick = () => { confirmRestartModal.classList.add("hidden"); resetApplicationFlowState(); };
+  // 🚀 FIXED: Restart Modal Explicit Display Toggling
+  if (menuRestartBtn && confirmRestartModal) {
+    menuRestartBtn.onclick = () => { 
+      optionsPopover.classList.add("hidden"); 
+      confirmRestartModal.classList.remove("hidden"); 
+      confirmRestartModal.style.display = "flex"; 
+    };
+  }
+  if (cancelRestartBtn && confirmRestartModal) {
+    cancelRestartBtn.onclick = () => { 
+      confirmRestartModal.classList.add("hidden"); 
+      confirmRestartModal.style.display = "none"; 
+    };
+  }
+  if (confirmRestartBtn && confirmRestartModal) {
+    confirmRestartBtn.onclick = () => { 
+      confirmRestartModal.classList.add("hidden"); 
+      confirmRestartModal.style.display = "none"; 
+      resetApplicationFlowState(); 
+    };
+  }
 
+  // 🚀 FIXED: Recover Modal Explicit Display Toggling
   if (menuRecoverBtn && retrieveModal) {
     menuRecoverBtn.onclick = () => {
       retrieveModal.classList.remove("hidden");
+      retrieveModal.style.display = "flex";
       if (modalEmailInput) modalEmailInput.value = "";
       if (modalStatus) modalStatus.innerHTML = "";
       
@@ -684,7 +657,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         confirmRetrieveBtn.onclick = async () => {
           const searchEmail = modalEmailInput ? modalEmailInput.value.trim().toLowerCase() : "";
           if (!searchEmail || !EMAIL_REGEX.test(searchEmail)) { showToast("Please provide a valid email structure.", "❌"); return; }
-          // Trigger splash to hide and App body to open directly on recovery
           splashLandingGate.style.display = "none";
           mainApplicationLayout.classList.remove("hidden");
           await runProfileLedgerVerification(searchEmail, true);
@@ -695,4 +667,27 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (closeModalBtn) closeModalBtn.onclick = () => dismissModal();
   if (cancelModalBtn) cancelModalBtn.onclick = () => dismissModal();
+
+  // 🚀 FIXED: Wallet Creator Modal Explicit Display Toggling (if used)
+  const creatorModal = document.getElementById("walletCreatorModal");
+  const closeWalletBtn = document.getElementById("closeWalletCreatorBtn");
+  if (closeWalletBtn && creatorModal) {
+    closeWalletBtn.onclick = () => {
+      creatorModal.classList.add("hidden");
+      creatorModal.style.display = "none";
+    };
+  }
+  
+  if (connectWalletBtn) {
+    connectWalletBtn.onclick = () => {
+      if (typeof window.ethereum === "undefined") {
+        if (creatorModal) {
+          creatorModal.classList.remove("hidden");
+          creatorModal.style.display = "flex";
+        }
+      } else {
+        // metamask interaction...
+      }
+    };
+  }
 });
