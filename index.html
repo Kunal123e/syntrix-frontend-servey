@@ -17,8 +17,8 @@
     .option { transition: all 0.2s ease; transform: scale(1); }
     .option:active { transform: scale(0.98); }
     .option.selected { 
-      background-color: #111827 !important; 
-      border-color: #111827 !important; 
+      background-color: #6366f1 !important; 
+      border-color: #6366f1 !important; 
       color: #ffffff !important; 
     }
   </style>
@@ -31,7 +31,6 @@
       try {
         const Web3AuthSDK = window.Modal || window.ModalSdk || window.Web3Auth;
         const EthProviderSDK = window.EthereumProvider;
-        
         if (!Web3AuthSDK || !EthProviderSDK) return;
 
         const chainConfig = {
@@ -50,7 +49,7 @@
 
         const web3auth = new Web3AuthSDK.Web3Auth({
           clientId: "BLTKOOeFj7P8fVIGNIwqX3lhHeA948YDtXgKO_ClNELkI06hZ17XKvfpiAWA0AujfpBMAs75-LivYTtCeRWg2Lo", 
-          web3AuthNetwork: "sapphire_mainnet", 
+          web3AuthNetwork: "sapphire_devnet", // 🚀 FIXED: Reverted to Devnet to stop the 400 Bad Request error
           privateKeyProvider: privateKeyProvider,
           enableLogging: false,
           buildEnv: "production",
@@ -75,33 +74,30 @@
         
         window.metamaskEmbeddedInstance = web3auth;
         window.isWeb3AuthReady = true;
-        console.log("✅ Web3Auth loaded successfully.");
       } catch (err) {
-        // Safe catch taaki error aane par bhi niche ka click navigation crash na ho
-        console.error("⚠️ Web3Auth Engine warning (Handled safely):", err);
+        console.error("Web3Auth error:", err);
       }
     });
   </script>
 </head>
-<body>
+<body class="dark-theme">
 
 <div id="customToast" class="custom-toast">
   <span class="toast-icon">⚠️</span>
   <span id="toastMessage"></span>
 </div>
 
-<div id="rewardAnimationOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.95); z-index: 99999; flex-direction: column; align-items: center; justify-content: center; color: white; backdrop-filter: blur(10px);">
+<div id="rewardAnimationOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(9, 9, 11, 0.95); z-index: 99999; flex-direction: column; align-items: center; justify-content: center; color: white; backdrop-filter: blur(10px);">
   <div class="modern-spinner" style="width: 72px; height: 72px; border-width: 6px; margin-bottom: 20px;"></div>
-  <h2 style="font-size: 42px; font-weight: 900; margin-top: 20px; text-align: center; background: linear-gradient(to right, #10b981, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Processing Securely...</h2>
-  <p style="font-size: 20px; color: #d1d5db; margin-top: 15px; font-weight: 600; text-align: center; max-width: 500px; line-height: 1.5;">Validating your responses...<br><span style="color: #34d399; font-size: 24px; font-weight: 800; display: inline-block; margin-top: 10px;">Your 48 SYNX reward is waiting!</span></p>
+  <h2 style="font-size: 32px; font-weight: 900; text-align: center; background: linear-gradient(to right, #10b981, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Processing Securely...</h2>
+  <p style="font-size: 16px; color: #a1a1aa; margin-top: 10px; text-align: center;">Encrypting parameters for ledger verification...</p>
 </div>
 
-<!-- ================= 🚀 STAGE 0: PREMIUM BLACK SPLASH GATE ================= -->
 <div id="splashLandingGate">
   <nav class="landing-nav">
     <div class="nav-logo" id="navLogoHomeTrigger" style="cursor: pointer;">
-      <img src="syntrix-logo.png" alt="Logo" style="width: 32px; height: 32px; object-fit: contain;">
-      <span>SYN<span style="font-weight: 500; color: #a1a1aa;">TRIX</span></span>
+      <img src="syntrix-logo.png" alt="Logo">
+      <span>SYN<span style="font-weight: 500; color: #71717a;">TRIX</span></span>
     </div>
     <div class="nav-links">
       <a href="#" id="linkHomeTab" class="nav-splash-tab active">Home</a>
@@ -112,242 +108,182 @@
   </nav>
 
   <div class="hero-container">
-    
-    <!-- 🟢 HOME PAGE VIEW -->
-    <div class="hero-content animate-fade" id="viewSplashHome">
+    <div class="hero-content" id="viewSplashHome">
       <div class="mini-badge">Your Opinion. Real Impact. Real Rewards.</div>
       <h2 class="hero-title">Share Your Opinion.<br>Earn Real Rewards.</h2>
       <p class="hero-desc">Complete surveys from top brands, influence products you love, and earn rewards instantly. Complete all 6 modules to secure your 48 SYNX token node framework.</p>
-      
       <div>
         <button type="button" id="initializePlatformBtn" class="hero-action-btn">
-          Get Started Free <span style="font-size: 18px;">&rarr;</span>
+          Get Started Free &rarr;
         </button>
       </div>
-
       <div class="bottom-features">
-        <span class="feature-item"><span style="color: #10b981;">✓</span> 100% Secure</span>
-        <span class="feature-item"><span style="color: #10b981;">✓</span> Verified Surveys</span>
-        <span class="feature-item"><span style="color: #10b981;">✓</span> Instant Rewards</span>
+        <span class="feature-item">🛡️ 100% Secure</span>
+        <span class="feature-item">✓ Verified Surveys</span>
+        <span class="feature-item">🎁 Instant Rewards</span>
       </div>
     </div>
 
-    <!-- 🟢 REWARDS PAGE VIEW -->
-    <div class="hero-content hidden animate-fade" id="viewSplashRewards">
-      <div class="mini-badge" style="border-color: rgba(16, 185, 129, 0.2); color: #10b981; background: rgba(16, 185, 129, 0.05);">🎁 REWARD SYSTEM</div>
-      <h2 class="hero-title" style="font-size: clamp(36px, 5vw, 54px);">How Our Rewards Work</h2>
-      <p class="hero-desc" style="max-width: 700px;">We believe your data is valuable. By participating in our decentralized intelligence matrix, you earn native SYNX tokens that accumulate securely in your web3 wallet.</p>
-      
+    <div class="hero-content hidden" id="viewSplashRewards">
+      <div class="mini-badge" style="border-color: rgba(16, 185, 129, 0.2); color: #10b981;">🎁 ALLOCATION PROTOCOLS</div>
+      <h2 class="hero-title" style="font-size: clamp(36px, 5vw, 54px);">The SYNX Reward Ecosystem</h2>
+      <p class="hero-desc" style="max-width: 700px;">Every module you complete feeds anonymized vector matrices directly to consumer behavior models. In return, off-chain ledger assets accumulate automatically inside your secure node matrix container.</p>
       <div class="static-info-grid">
-        <div class="info-metric-card">
-          <div style="font-size: 30px; margin-bottom: 10px;">🎯</div>
-          <h5 style="color: #ffffff; font-size: 20px; font-weight: 800; margin-bottom: 8px;">48 SYNX Base Allocation</h5>
-          <p style="color: #a1a1aa; font-size: 14px; line-height: 1.6;">Complete the initial 6 consumer research modules. Each module securely hashes your preferences and rewards you proportionally.</p>
-        </div>
-        <div class="info-metric-card">
-          <div style="font-size: 30px; margin-bottom: 10px;">🚀</div>
-          <h5 style="color: #ffffff; font-size: 20px; font-weight: 800; margin-bottom: 8px;">+10 SYN Viral Bonus</h5>
-          <p style="color: #a1a1aa; font-size: 14px; line-height: 1.6;">Use your unique referral dashboard to invite others. Every successful completion grants you a direct 10 SYN deposit.</p>
-        </div>
+        <div class="info-metric-card"><h5>48 SYNX Base</h5><p>Allocated linearly across all 6 core analysis questionnaires.</p></div>
+        <div class="info-metric-card"><h5>+10 SYN Viral</h5><p>Granted instantly for every active analytics node cleared via reference tracking.</p></div>
       </div>
-      
-      <button type="button" class="back-to-home-btn" id="btnBackFromRewards" style="margin-top: 40px; background: transparent; color: #ffffff; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 12px 24px; cursor: pointer;">
-        &larr; Back to Home
-      </button>
+      <button type="button" class="back-to-home-btn" style="margin-top: 40px;">&larr; Return to Overview</button>
     </div>
 
-    <!-- 🟢 ABOUT US PAGE VIEW -->
-    <div class="hero-content hidden animate-fade" id="viewSplashAbout">
-      <div class="mini-badge" style="border-color: rgba(99, 102, 241, 0.2); color: #818cf8; background: rgba(99, 102, 241, 0.05);">🏢 ABOUT SYNTRIX</div>
-      <h2 class="hero-title" style="font-size: clamp(36px, 5vw, 54px);">Pioneering Data Ownership</h2>
-      <p class="hero-desc" style="max-width: 680px;">Syntrix is building a secure global architecture where direct user data value is returned straight to the producer. We bridge enterprise AI commercialization pools with authentic consumer sentiment.</p>
-      
-      <div style="text-align: left; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); padding: 30px; border-radius: 20px; margin-top: 30px;">
-        <h4 style="color: #ffffff; font-size: 18px; margin-bottom: 15px;">Our Mission</h4>
-        <p style="color: #a1a1aa; font-size: 15px; line-height: 1.7; margin-bottom: 20px;">To decentralize consumer analytics by creating a direct, transparent, and rewarding link between enterprise B2B models and real-world consumers. No middlemen, just real rewards for real insights.</p>
-        
-        <h4 style="color: #ffffff; font-size: 18px; margin-bottom: 15px;">Technology</h4>
-        <p style="color: #a1a1aa; font-size: 15px; line-height: 1.7;">Powered by Polygon Mainnet and secure Web3Auth gateways to ensure your data and rewards remain mathematically protected.</p>
-      </div>
-
-      <button type="button" class="back-to-home-btn" id="btnBackFromAbout" style="margin-top: 40px; background: transparent; color: #ffffff; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 12px 24px; cursor: pointer;">
-        &larr; Back to Home
-      </button>
+    <div class="hero-content hidden" id="viewSplashAbout">
+      <div class="mini-badge" style="border-color: rgba(99, 102, 241, 0.2); color: #818cf8;">🏢 CORPORATE PROFILE</div>
+      <h2 class="hero-title" style="font-size: clamp(36px, 5vw, 54px);">Decentralizing Analytics</h2>
+      <p class="hero-desc" style="max-width: 680px;">Syntrix is building a secure global architecture where direct user data value is returned straight to the producer. By filtering raw text strings into secure psychographic archetype hashes, we bridge enterprise commercialization pools with authentic data ownership rules.</p>
+      <button type="button" class="back-to-home-btn" style="margin-top: 20px;">&larr; Return to Overview</button>
     </div>
-
   </div>
 </div>
 
-<!-- ================= 🚀 STAGE 1+: ORIGINAL LIGHT THEME SURVEY/APP ================= -->
-<div id="mainApplicationLayout" class="hidden" style="padding: 32px; min-height: 100vh;">
-  <div class="app">
-    <div class="sidebar">
-      <div class="logo-container">
-        <div class="logo-mark"><img src="syntrix-logo.png" alt="Syntrix Logo"></div>
-        <div class="logo-text"><span class="logo-bold">SYN</span><span class="logo-light">TRIX</span></div>
+<div class="app hidden" id="mainApplicationLayout">
+  <div class="sidebar">
+    <div class="logo-container">
+      <div class="logo-mark"><img src="syntrix-logo.png" alt="Syntrix Logo"></div>
+      <div class="logo-text"><span class="logo-bold">SYN</span><span class="logo-light">TRIX</span></div>
+    </div>
+
+    <div class="steps" id="surveyStepLinks">
+      <div class="step active" id="step-0">Welcome</div>
+      <div class="step" id="step-1">Financial</div>
+      <div class="step" id="step-2">Checkout</div>
+      <div class="step" id="step-3">Discovery</div>
+      <div class="step" id="step-4">Psychology</div>
+      <div class="step" id="step-5">Categories</div>
+      <div class="step" id="step-6">Post-Purchase</div>
+    </div>
+
+    <div class="dashboard-tabs hidden" id="dashboardTabLinks">
+      <button class="tab-btn active" data-tab="hub">📊 Core Metrics Hub</button>
+      <button class="tab-btn" data-tab="badge">🎨 Persona Badge Profile</button>
+      <button class="tab-btn" data-tab="referrals">🎁 Viral Referrals</button>
+      <button class="tab-btn" id="sidebarLogoutBtn" style="color: #ef4444; margin-top: 30px; border: 1px dashed rgba(239, 68, 68, 0.2);">🔒 Account Logout</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="topbar">
+      <div>
+        <h1 id="mainTitle">Syntrix Consumer Analytics Hub</h1>
+        <p class="subtitle" id="mainSubtitle">Complete all 6 consumer research modules to secure your 48 SYNX token allocation.</p>
       </div>
 
-      <div class="steps" id="surveyStepLinks">
-        <div class="step active" id="step-0">Welcome</div>
-        <div class="step" id="step-1">Financial</div>
-        <div class="step" id="step-2">Checkout</div>
-        <div class="step" id="step-3">Discovery</div>
-        <div class="step" id="step-4">Psychology</div>
-        <div class="step" id="step-5">Categories</div>
-        <div class="step" id="step-6">Post-Purchase</div>
+      <div class="header-controls-group">
+        <div class="languageGroupWrapper">
+          <div class="languageGroup">
+            <button type="button" class="langBtn" data-lang="hinglish">Hinglish</button>
+            <button type="button" class="langBtn" data-lang="hi">हिंदी</button>
+            <button type="button" class="langBtn active" data-lang="en">English</button>
+          </div>
+        </div>
       </div>
 
-      <div class="dashboard-tabs hidden" id="dashboardTabLinks" style="display: flex; flex-direction: column; gap: 8px; margin-top: 20px; border-top: 1px solid rgba(0,0,0,0.06); padding-top: 20px;">
-        <button class="tab-btn active" data-tab="hub">📊 Core Metrics Hub</button>
-        <button class="tab-btn" data-tab="badge">🎨 Persona Badge Profile</button>
-        <button class="tab-btn" data-tab="referrals">🎁 Viral Referrals</button>
-        <button class="tab-btn" id="sidebarLogoutBtn" style="color: #ef4444; margin-top: 30px; border: 1px dashed rgba(239, 68, 68, 0.2);">🔒 Account Logout</button>
+      <div class="progressBox hidden" id="topProgressBox">
+        <div class="progressText">Progress 1/6</div>
+        <div class="progressBar"><div class="progressFill" style="width: 16.66%;"></div></div>
       </div>
     </div>
 
-    <div class="content">
-      <div class="topbar">
-        <div>
-          <h1 id="mainTitle" style="font-size: 44px; font-weight: 900; letter-spacing: -1.5px; color: #111827; line-height: 1.1; margin-bottom: 12px;">Syntrix Consumer Analytics Hub</h1>
-          <p class="subtitle" id="mainSubtitle" style="font-size: 16px; font-weight: 500; color: #4b5563; max-width: 550px; line-height: 1.6;">
-            Complete all 6 consumer research modules to secure your <span style="font-weight: 800; color: #111827; background: #e0e7ff; padding: 2px 8px; border-radius: 6px;">48 SYNX</span> token allocation.
-          </p>
-        </div>
+    <div id="excitementBanner" style="display: none; background: #1e1e24; border: 1px solid #2e2e38; border-radius: 12px; padding: 16px 24px; margin-bottom: 25px; align-items: center; justify-content: space-between; gap: 15px; width: 100%; box-sizing: border-box;"></div>
 
-        <div class="header-controls-group">
-          <div class="languageGroupWrapper">
-            <div class="languageGroup">
-              <button type="button" class="langBtn" data-lang="hinglish">Hinglish</button>
-              <button type="button" class="langBtn" data-lang="hi">हिंदी</button>
-              <button type="button" class="langBtn active" data-lang="en">English</button>
-            </div>
-          </div>
-
-          <div class="options-menu-container">
-            <button type="button" id="menuToggleBtn" class="icon-menu-btn" aria-label="More Options">⋮</button>
-            <div id="optionsPopover" class="options-popover hidden">
-              <div id="menuPsychologyBadgeWrapper" style="padding: 10px 14px; font-size: 13px; font-weight: 700; border-bottom: 1px solid #ece4da; color: #6b6258; display: none; align-items: center; gap: 6px;">
-                <span id="menuBadgeIcon" style="display: flex; align-items: center;"></span> Profile: <span id="menuPsychologyBadgeText">None</span>
-              </div>
-              <button type="button" id="menuRestartBtn">✨ New Survey Registration</button>
-              <button type="button" id="menuRecoverBtn">🔍 Retrieve Pending Allocation</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="progressBox hidden" id="topProgressBox">
-          <div class="progressText">Progress 1/6</div>
-          <div class="progressBar">
-            <div class="progressFill" style="width: 16.66%;"></div>
-          </div>
-        </div>
+    <div id="emailGateSection" class="authCard hidden">
+      <h2 class="sectionTitle">Enter Communication Profile</h2>
+      <p class="cardDescription" style="margin-bottom: 20px;">Please provide your authorized email address to clear the registration gate and activate the research module matrix.</p>
+      
+      <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.2); color: #818cf8; padding: 10px 24px; border-radius: 999px; font-size: 14px; font-weight: 600; margin-bottom: 30px;">
+        ⏰ Takes ~3 Minutes to Complete
       </div>
 
-      <div id="excitementBanner" style="display: none; background: linear-gradient(145deg, #23272f 0%, #111418 100%); border: 1px solid #3f444d; box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 12px 24px -6px rgba(0,0,0,0.6); border-radius: 12px; padding: 16px 24px; margin-bottom: 25px; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; width: 100%; box-sizing: border-box;">
-      </div>
-
-      <!-- Auth Form (Light Theme) -->
-      <div id="emailGateSection" class="authCard hidden">
-        <h2 class="sectionTitle" id="emailSectionTitle">Enter Communication Profile</h2>
-        <p class="cardDescription" id="emailSectionSub" style="margin-bottom: 20px;">Please provide your authorized email address to clear the registration gate and activate the research module matrix.</p>
-        
-        <div style="display: inline-flex; align-items: center; gap: 8px; background: #d0ded3; color: #111827; padding: 10px 24px; border-radius: 999px; font-size: 15px; font-weight: 500; margin-bottom: 30px;">
-          ⏰ Takes ~3 Minutes to Complete
+      <form id="emailGateForm">
+        <div class="form-group" style="margin-bottom: 20px;">
+          <input type="email" id="gateEmail" placeholder="User Communication Profile (Email Address)" style="width: 100%;">
         </div>
-
-        <form id="emailGateForm">
-          <div class="form-group" style="margin-bottom: 20px;">
-            <input type="email" id="gateEmail" placeholder="User Communication Profile (Email Address)" style="width: 100%;">
-          </div>
-
-          <div id="otpSection" class="form-group hidden" style="margin-bottom: 20px;">
-            <p style="color:#10b981; font-size:13px; margin-bottom:8px; text-align: left; padding-left: 5px;">✅ Code sent! Check your email inbox.</p>
-            <input type="text" id="gateOtp" placeholder="Enter 6-Digit Code" maxlength="12" style="width: 100%; text-align: center; letter-spacing: 5px; font-weight: bold; font-size: 18px; background: rgba(255,255,255,0.02);">
-          </div>
-
-          <div class="form-group" style="margin-bottom: 20px; text-align: left;">
-            <label for="referredByCode" id="referralInputLabel" style="font-size: 13px; font-weight: bold; color: #6b7280; display: block; margin-bottom: 8px; letter-spacing: 0.5px;">
-              Referral Code (Optional)
-            </label>
-            <input type="text" id="referredByCode" placeholder="Enter Referral Code (e.g. SYN-AB1234)" style="width: 100%; border-color: rgba(99, 102, 241, 0.2);">
-          </div>
-
-          <div class="form-group" style="margin-bottom: 20px; text-align: left; display: flex; align-items: flex-start; gap: 12px; background: #faf7f2; padding: 15px; border-radius: 12px; border: 1px solid #ece4da;">
-            <input type="checkbox" id="legalConsent" style="width: 20px; height: 20px; margin-top: 3px; cursor: pointer; accent-color: #1f1f1f;">
-            <label for="legalConsent" style="font-size: 13px; color: #5c544c; line-height: 1.5; cursor: pointer; user-select: none;">
-              I confirm that I have read and agree to the <a href="#" onclick="openLegalModal(); return false;" style="color: #6366f1; text-decoration: underline; font-weight: bold;">Terms of Research & Privacy Policy</a>. I understand token rewards are subject to internal data validation and institutional approvals.
-            </label>
-          </div>
-
-          <button type="submit" id="startSurveyBtn" class="primaryActionBtn">
-            Send Verification Code &rarr;
-          </button>
-        </form>
-      </div>
-
-      <!-- Survey Content -->
-      <form id="claimForm" class="hidden">
-        <div id="surveyContainer"></div>
-
-        <div class="navButtons">
-          <button type="button" id="prevBtn" class="navBtn">
-            &lt; Previous
-          </button>
-          <button type="button" id="nextBtn" class="navBtn">
-            Next
-          </button>
-          <button type="submit" id="submitClaimBtn" class="submitClaimBtn hidden">
-            Submit Survey & Claim ✨
-          </button>
+        <div id="otpSection" class="form-group hidden" style="margin-bottom: 20px;">
+          <p style="color:#10b981; font-size:13px; margin-bottom:8px; text-align: left;">✅ Code sent! Check your email inbox.</p>
+          <input type="text" id="gateOtp" placeholder="Enter 6-Digit Code" maxlength="6" style="width: 100%; text-align: center; letter-spacing: 5px; font-weight: bold; font-size: 18px; background: #18181b;">
         </div>
+        <div class="form-group" style="margin-bottom: 20px;">
+          <input type="text" id="referredByCode" placeholder="Enter Referral Code (Optional)" style="width: 100%;">
+        </div>
+        <div class="form-group" style="margin-bottom: 20px; display: flex; align-items: flex-start; gap: 12px; background: #18181b; padding: 15px; border-radius: 12px; border: 1px solid #27272a;">
+          <input type="checkbox" id="legalConsent" style="width: 20px; height: 20px; cursor: pointer; accent-color: #6366f1;">
+          <label for="legalConsent" style="font-size: 13px; color: #a1a1aa; line-height: 1.5; text-align: left; cursor: pointer;">
+            I confirm that I agree to the <a href="#" onclick="openLegalModal(); return false;" style="color: #6366f1; text-decoration: underline; font-weight: bold;">Terms of Research & Privacy Policy</a>. I understand tokens are subject to future enterprise revenue allocations.
+          </label>
+        </div>
+        <button type="submit" id="startSurveyBtn" class="primaryActionBtn">Send Verification Code &rarr;</button>
       </form>
-
-      <!-- Dashboard Elements (Light Theme) -->
-      <div id="tabScreenHub" class="hidden rewardCard">
-        <div class="badgeRow">
-          <span class="submittedBadge" id="surveySubmittedBadge">✨ ACCOUNT REGISTRY SECURED!</span>
-        </div>
-        <h2 class="rewardTitle" id="claimTitle">Core Performance Overview</h2>
-        <p class="rewardSubtitle" id="rewardSubtitleDesc">Your consumer matrix parameters are verified inside historical enterprise ledgers.</p>
-        <div style="background: #faf8f5; border: 2px dashed #e5e7eb; border-radius: 20px; padding: 30px; text-align: center; margin-bottom: 30px; position: relative; overflow: hidden;">
-          <div style="position: absolute; top: 12px; right: 12px; background: #fee2e2; color: #ef4444; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.5px;">GATED ACCESS</div>
-          <div style="font-size: 32px; margin-bottom: 10px;">🔒</div>
-          <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 6px;">EVM Token Settlement Terminal</h3>
-          <p style="font-size: 13px; color: #6b7280; max-width: 400px; margin: 0 auto 20px;">On-chain distribution runs automatically as soon as B2B market validation pools receive matching capital liquidity lines.</p>
-          <button type="button" id="lockedClaimGatewayBtn" class="executeDistributionBtn" style="margin-top: 0; background: #6b7280; cursor: pointer;">⛓️ Execute Smart Contract Claims</button>
-        </div>
-      </div>
-
-      <div id="tabScreenBadge" class="hidden rewardCard">
-        <h2 class="rewardTitle" style="margin-bottom: 8px;">Psychographic Analytics Breakdown</h2>
-        <p class="rewardSubtitle" style="margin-bottom: 30px;">Autonomous analysis maps your inputs into a verified consumer archetype bundle.</p>
-        <div id="dashboardPsychologyBadgeCard"></div>
-      </div>
-
-      <div id="tabScreenReferrals" class="hidden rewardCard">
-        <div class="referralContainer" style="margin-top: 0;">
-          <div class="dividerLine"><span id="referralDashboardTitle">🎁 SYNTRIX REFERRAL DASHBOARD</span></div>
-          <h3 class="referralTitleText" id="referralTitleText">Your Referrals & Earnings</h3>
-          <p class="referralDescription" id="referralSubText">Invite friends using your unique referral code. For each colleague who registers and completes the modules, you earn an additional 10 SYN tokens!</p>
-          <div class="referralStatsGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; margin: 25px 0;">
-            <div class="statBox"><div style="font-size: 11px; text-transform: uppercase; color: #6b7280; margin-bottom: 5px;">Total Referrals</div><div id="statTotalReferrals" style="font-size: 24px; font-weight: 900; color: #111827;">0</div></div>
-            <div class="statBox"><div style="font-size: 11px; text-transform: uppercase; color: #6b7280; margin-bottom: 5px;">Pending Rewards</div><div id="statPendingRewards" style="font-size: 24px; font-weight: 900; color: #6366f1;">0 SYN</div></div>
-            <div class="statBox"><div style="font-size: 11px; text-transform: uppercase; color: #6b7280; margin-bottom: 5px;">Claimed Rewards</div><div id="statClaimedRewards" style="font-size: 24px; font-weight: 900; color: #10b981;">0 SYN</div></div>
-            <div class="statBox"><div style="font-size: 11px; text-transform: uppercase; color: #6b7280; margin-bottom: 5px;">Total Earned</div><div id="statTotalEarned" style="font-size: 24px; font-weight: 900; color: #a855f7;">0 SYN</div></div>
-          </div>
-          <div class="referralLinkBlock">
-            <input type="text" id="referralCodeDisplay" readonly>
-            <button type="button" id="copyReferralBtn" class="copyBtn">Copy Link</button>
-          </div>
-        </div>
-      </div>
-
-      <div id="status"></div>
     </div>
+
+    <form id="claimForm" class="hidden">
+      <div id="surveyContainer"></div>
+      <div class="navButtons">
+        <button type="button" id="prevBtn" class="navBtn">&lt; Previous</button>
+        <button type="button" id="nextBtn" class="navBtn">Next</button>
+        <button type="submit" id="submitClaimBtn" class="submitClaimBtn hidden">Submit Survey Modules ✨</button>
+      </div>
+    </form>
+
+    <div id="tabScreenHub" class="hidden rewardCard">
+      <div class="badgeRow"><span class="submittedBadge">✓ ACCOUNT REGISTRY SECURED</span></div>
+      <h2 class="rewardTitle">Core Performance Overview</h2>
+      <p class="rewardSubtitle">Your consumer matrix parameters are verified inside historical enterprise ledgers.</p>
+
+      <div style="background: #18181b; border: 2px dashed #27272a; border-radius: 20px; padding: 30px; text-align: center; margin-bottom: 30px; position: relative;">
+        <div style="position: absolute; top: 12px; right: 12px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 999px;">GATED ACCESS</div>
+        <div style="font-size: 32px; margin-bottom: 10px;">🔒</div>
+        <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 6px; color: #ffffff;">EVM Token Settlement Terminal</h3>
+        <p style="font-size: 13px; color: #a1a1aa; max-width: 400px; margin: 0 auto 20px;">On-chain distribution runs automatically as soon as B2B market validation pools receive matching capital liquidity lines.</p>
+        <button type="button" id="lockedClaimGatewayBtn" class="executeDistributionBtn" style="margin-top: 0; background: #27272a; color: #71717a; cursor: pointer;">⛓️ Execute Smart Contract Claims</button>
+      </div>
+    </div>
+
+    <div id="tabScreenBadge" class="hidden rewardCard">
+      <h2 class="rewardTitle" style="margin-bottom: 8px;">Psychographic Analytics Breakdown</h2>
+      <p class="rewardSubtitle" style="margin-bottom: 30px;">Autonomous analysis maps your inputs into a verified consumer archetype bundle.</p>
+      <div id="dashboardPsychologyBadgeCard"></div>
+    </div>
+
+    <div id="tabScreenReferrals" class="hidden rewardCard">
+      <div class="referralContainer" style="margin-top: 0;">
+        <div class="dividerLine"><span>🎁 SYNTRIX REFERRAL DASHBOARD</span></div>
+        <h3 class="referralTitleText" style="color: #ffffff;">Your Referrals & Earnings</h3>
+        <p class="referralDescription">Invite friends using your unique referral code. For each colleague who registers and completes the modules, you earn an additional 10 SYN tokens!</p>
+        
+        <div class="referralStatsGrid">
+          <div class="statBox" style="background: #18181b; border: 1px solid #27272a;">
+            <div style="font-size: 11px; text-transform: uppercase; color: #a1a1aa; margin-bottom: 5px;">Total Referrals</div>
+            <div id="statTotalReferrals" style="font-size: 24px; font-weight: 900; color: #ffffff;">0</div>
+          </div>
+          <div class="statBox" style="background: #18181b; border: 1px solid #27272a;">
+            <div style="font-size: 11px; text-transform: uppercase; color: #a1a1aa; margin-bottom: 5px;">Pending Balance</div>
+            <div id="statPendingRewards" style="font-size: 24px; font-weight: 900; color: #6366f1;">0 SYN</div>
+          </div>
+          <div class="statBox" style="background: #18181b; border: 1px solid #27272a;">
+            <div style="font-size: 11px; text-transform: uppercase; color: #a1a1aa; margin-bottom: 5px;">Total Earned</div>
+            <div id="statTotalEarned" style="font-size: 24px; font-weight: 900; color: #a855f7;">0 SYN</div>
+          </div>
+        </div>
+        <div class="referralLinkBlock">
+          <input type="text" id="referralCodeDisplay" style="background: #18181b; border: 1px solid #27272a; color: #ffffff;" readonly>
+          <button type="button" id="copyReferralBtn" class="copyBtn">Copy Link</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="status"></div>
   </div>
 </div>
 
-<div id="legalModal" class="modal-overlay hidden">
+<div id="legalModal" class="modal-overlay hidden" style="display: none;">
   <div class="modal-card animate-fade-in" style="max-width: 700px; display: flex; flex-direction: column; max-height: 85vh;">
     <div class="modal-header">
       <h2>📜 Terms of Service & Privacy Policy</h2>
@@ -355,16 +291,15 @@
     </div>
     <div class="modal-body" style="overflow-y: auto; padding: 24px; color: #a1a1aa; font-size: 14px; line-height: 1.7; flex: 1;">
       <p style="margin-bottom: 15px; color: #ffffff; font-weight: bold;">By participating in the Syntrix Consumer Analytics platform, you explicitly agree to the following binding terms:</p>
-      <div class="extra-details-box"><h4 style="color: #6366f1;">1. Data Commercialization & AI Training</h4><p style="margin: 0; color: #a1a1aa;">By completing the research modules, you grant Syntrix an irrevocable, permanent license to utilize your raw textual responses for B2B AI validation training.</p></div>
-      <div class="extra-details-box"><h4 style="color: #6366f1;">2. Non-Financial Utility of SYNX Token</h4><p style="margin: 0; color: #a1a1aa;">The SYNX token is an off-chain digital reward issued strictly for platform participation. Syntrix makes no guarantees that SYNX will hold monetary value, be tradable on open exchanges, or possess market liquidity.</p></div>
+      <div class="extra-details-box"><h4 style="color: #6366f1;">1. Data Commercialization & AI Training</h4><p style="margin: 0;">By completing the research modules, you grant Syntrix an irrevocable, permanent license to utilize your raw textual responses for B2B AI validation training.</p></div>
     </div>
-    <div class="modal-footer"><button type="button" onclick="closeLegalModal()" class="btn-primary" style="width: 100%; background: #6366f1; border: none;">I Accept the Framework Terms</button></div>
+    <div class="modal-footer"><button type="button" onclick="closeLegalModal()" class="btn-primary" style="width: 100%; background: #6366f1;">I Accept the Framework Terms</button></div>
   </div>
 </div>
 
-<script src="data.js?v=launch_final_hybrid"></script>
-<script src="translation.js?v=launch_final_hybrid"></script>
-<script src="script.js?v=launch_final_hybrid"></script>
+<script src="data.js?v=revamp_v4"></script>
+<script src="translation.js?v=revamp_v4"></script>
+<script src="script.js?v=revamp_v4"></script>
 
 </body>
 </html>
