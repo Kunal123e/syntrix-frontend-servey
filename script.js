@@ -161,14 +161,20 @@ if (navGetStartedAction) {
 if (initializePlatformBtn) {
   initializePlatformBtn.addEventListener("click", () => {
     if(splashLandingGate) splashLandingGate.style.display = "none"; 
-    if(mainApplicationLayout) mainApplicationLayout.style.display = "flex"; 
+    if(mainApplicationLayout) {
+        mainApplicationLayout.classList.remove("hidden");
+        mainApplicationLayout.style.display = "flex"; 
+    }
     
     const savedEmail = localStorage.getItem("syntrix_user_email");
     if (savedEmail) {
       userEmailAddress = savedEmail;
       runProfileLedgerVerification(userEmailAddress, false);
     } else {
-      if (emailGateSection) emailGateSection.style.display = "block";
+      if (emailGateSection) {
+          emailGateSection.classList.remove("hidden");
+          emailGateSection.style.display = "block";
+      }
     }
   });
 }
@@ -283,6 +289,21 @@ function getUIText(key) {
   return fallbacks[key] || key;
 }
 
+// ================= DASHBOARD APP TABS =================
+function routeDashboardTabs(targetTab) {
+  if (tabScreenHub) { tabScreenHub.classList.add("hidden"); tabScreenHub.style.display = "none"; }
+  if (tabScreenBadge) { tabScreenBadge.classList.add("hidden"); tabScreenBadge.style.display = "none"; }
+  if (tabScreenReferrals) { tabScreenReferrals.classList.add("hidden"); tabScreenReferrals.style.display = "none"; }
+  
+  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+  const clickedBtn = document.querySelector(`[data-tab="${targetTab}"]`);
+  if (clickedBtn) clickedBtn.classList.add("active");
+
+  if (targetTab === "hub" && tabScreenHub) { tabScreenHub.classList.remove("hidden"); tabScreenHub.style.display = "block"; }
+  if (targetTab === "badge" && tabScreenBadge) { tabScreenBadge.classList.remove("hidden"); tabScreenBadge.style.display = "block"; }
+  if (targetTab === "referrals" && tabScreenReferrals) { tabScreenReferrals.classList.remove("hidden"); tabScreenReferrals.style.display = "block"; }
+}
+
 // ================= STAGE 1: EMAIL VERIFICATION GATE =================
 if (emailGateForm) {
   emailGateForm.addEventListener("submit", async (e) => {
@@ -295,7 +316,6 @@ if (emailGateForm) {
       return;
     }
     
-    // 🚀 NEW: Capture Digital Signature / Consent Proof
     if (legalConsent && legalConsent.checked && !legalConsentTimestamp) {
       legalConsentTimestamp = new Date().toISOString();
       clientUserAgent = navigator.userAgent;
@@ -588,20 +608,6 @@ function updateExcitementBanner(sectionIndex) {
   }
 }
 
-function routeDashboardTabs(targetTab) {
-  if (tabScreenHub) tabScreenHub.style.display = "none";
-  if (tabScreenBadge) tabScreenBadge.style.display = "none";
-  if (tabScreenReferrals) tabScreenReferrals.style.display = "none";
-  
-  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
-  const clickedBtn = document.querySelector(`[data-tab="${targetTab}"]`);
-  if (clickedBtn) clickedBtn.classList.add("active");
-
-  if (targetTab === "hub" && tabScreenHub) tabScreenHub.style.display = "block";
-  if (targetTab === "badge" && tabScreenBadge) tabScreenBadge.style.display = "block";
-  if (targetTab === "referrals" && tabScreenReferrals) tabScreenReferrals.style.display = "block";
-}
-
 async function runProfileLedgerVerification(email, isFromModal = false) {
   const outputTarget = isFromModal ? modalStatus : statusDiv;
   if (!outputTarget) return;
@@ -633,6 +639,7 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
         if (topProgressBox) { topProgressBox.classList.add("hidden"); topProgressBox.style.display = "none"; }
         
         if (surveyStepLinks) { surveyStepLinks.classList.add("hidden"); surveyStepLinks.style.display = "none"; }
+        
         if (dashboardTabLinks) { dashboardTabLinks.classList.remove("hidden"); dashboardTabLinks.style.display = "flex"; }
         
         if (rewardDashboardScreen) { rewardDashboardScreen.classList.remove("hidden"); rewardDashboardScreen.style.display = "block"; }
@@ -883,18 +890,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (claimForm) { claimForm.classList.add("hidden"); claimForm.style.display = "none"; }
     if (topProgressBox) { topProgressBox.classList.add("hidden"); topProgressBox.style.display = "none"; }
     if (rewardDashboardScreen) { rewardDashboardScreen.classList.add("hidden"); rewardDashboardScreen.style.display = "none"; }
-    // Note: initializeClaimSection missing from provided logic, skipping
   } else {
-    const localSavedEmail = localStorage.getItem("syntrix_user_email");
-    if (localSavedEmail) { 
-        userEmailAddress = localSavedEmail; 
-        if(splashLandingGate) splashLandingGate.style.display = "none";
-        if(mainApplicationLayout) {
-            mainApplicationLayout.classList.remove("hidden");
-            mainApplicationLayout.style.display = "flex";
-        }
-        await runProfileLedgerVerification(userEmailAddress, false); 
+    // 🚀 FIXED: Always display splash first. No auto-bypass on initial page load.
+    if (splashLandingGate) {
+        splashLandingGate.style.display = "flex";
     }
+    if (mainApplicationLayout) {
+        mainApplicationLayout.style.display = "none";
+        mainApplicationLayout.classList.add("hidden");
+    }
+    routeSplashNavViews("home");
   }
 
   if (nextBtn) nextBtn.onclick = () => handleNextSection();
@@ -933,8 +938,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     };
     document.addEventListener("click", () => {
-        optionsPopover.classList.add("hidden");
-        optionsPopover.style.display = "none";
+        if(optionsPopover) {
+          optionsPopover.classList.add("hidden");
+          optionsPopover.style.display = "none";
+        }
     });
   }
 
@@ -1003,7 +1010,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       btn.classList.add("active"); currentLanguage = btn.dataset.lang;
       if (typeof translatePage === "function") translatePage();
       updateExcitementBanner(currentSection); 
-      if (claimForm && !claimForm.classList.contains("hidden")) renderSection();
+      if (claimForm && claimForm.style.display !== "none") renderSection();
     });
   });
 });
