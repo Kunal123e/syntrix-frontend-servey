@@ -55,7 +55,13 @@ const surveyContainer = document.getElementById("surveyContainer");
 const nextBtn = document.getElementById("nextBtn");
 const prevBtn = document.getElementById("prevBtn");
 const submitClaimBtn = document.getElementById("submitClaimBtn");
+
+// 🚀 FIXED: Added previously missing dashboard selectors
 const rewardDashboardScreen = document.getElementById("rewardDashboardScreen");
+const tabScreenHub = document.getElementById("rewardDashboardScreen"); 
+const tabScreenBadge = document.getElementById("tabScreenBadge");
+const tabScreenReferrals = document.getElementById("tabScreenReferrals");
+
 const dashboardWalletInput = document.getElementById("dashboardWalletInput");
 const executeClaimBtn = document.getElementById("executeClaimBtn");
 const connectWalletBtn = document.getElementById("connectWalletBtn");
@@ -75,15 +81,12 @@ const progressFill = document.querySelector(".progressFill");
 const progressText = document.querySelector(".progressText");
 const surveyStepLinks = document.getElementById("surveyStepLinks");
 const dashboardTabLinks = document.getElementById("dashboardTabLinks");
-const tabScreenBadge = document.getElementById("tabScreenBadge");
-const tabScreenReferrals = document.getElementById("tabScreenReferrals");
 const sidebarLogoutBtn = document.getElementById("sidebarLogoutBtn");
 const lockedClaimGatewayBtn = document.getElementById("lockedClaimGatewayBtn");
 
 const confirmRestartModal = document.getElementById("confirmRestartModal");
 const cancelRestartBtn = document.getElementById("cancelRestartBtn");
 const confirmRestartBtn = document.getElementById("confirmRestartBtn");
-const tabScreenHub = document.getElementById("rewardDashboardScreen"); // ADDED THIS LINE to fix missing variable error
 
 function showToast(message, icon = "⚠️") {
   let toast = document.getElementById("customToast");
@@ -240,15 +243,16 @@ function displayConsumerBadgesUI(badgeKey) {
     `;
   }
 
-  const dropdownBadgeWrapper = document.getElementById("menuPsychologyBadgeWrapper");
-  const dropdownBadgeText = document.getElementById("menuPsychologyBadgeText");
-  const dropdownBadgeIcon = document.getElementById("menuBadgeIcon");
+  // 🚀 FIXED: Populate the topbar badge display (left of 3-dots)
+  const topbarBadgeDisplay = document.getElementById("topbarBadgeDisplay");
+  const topbarBadgeText = document.getElementById("topbarBadgeText");
+  const topbarBadgeIcon = document.getElementById("topbarBadgeIcon");
   
-  if (dropdownBadgeWrapper && dropdownBadgeText && dropdownBadgeIcon) {
-    dropdownBadgeWrapper.style.display = "flex";
-    dropdownBadgeIcon.innerHTML = profile.menuIcon;
-    dropdownBadgeText.innerText = profile.title;
-    dropdownBadgeText.style.color = profile.color;
+  if (topbarBadgeDisplay && topbarBadgeText && topbarBadgeIcon) {
+    topbarBadgeDisplay.style.display = "flex";
+    topbarBadgeIcon.innerHTML = profile.menuIcon;
+    topbarBadgeText.innerText = profile.title;
+    topbarBadgeText.style.color = profile.color;
   }
 }
 
@@ -892,6 +896,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (topProgressBox) { topProgressBox.classList.add("hidden"); topProgressBox.style.display = "none"; }
     if (rewardDashboardScreen) { rewardDashboardScreen.classList.add("hidden"); rewardDashboardScreen.style.display = "none"; }
   } else {
+    // 🚀 FIXED: Always display splash first. No auto-bypass on initial page load.
     if (splashLandingGate) {
         splashLandingGate.style.display = "flex";
     }
@@ -1010,7 +1015,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       btn.classList.add("active"); currentLanguage = btn.dataset.lang;
       if (typeof translatePage === "function") translatePage();
       updateExcitementBanner(currentSection); 
-      if (claimForm && claimForm.style.display !== "none") renderSection();
+      if (claimForm && !claimForm.classList.contains("hidden")) renderSection();
     });
   });
 });
