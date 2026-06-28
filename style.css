@@ -53,6 +53,12 @@ body {
   transition: transform 0.3s ease;
 }
 
+.logo-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 .logo-container:hover .logo-mark {
   transform: scale(1.08) rotate(6deg);
 }
@@ -116,6 +122,42 @@ body {
   color: #ffffff; 
   box-shadow: 0 8px 20px -6px rgba(17, 24, 39, 0.3); /* Floating effect */
   transform: translateY(-1px);
+}
+
+/* ================= DASHBOARD NAVIGATION TABS CLUSTERS ================= */
+.dashboard-tabs {
+  margin-top: 25px;
+  width: 100%;
+}
+
+.tab-btn {
+  width: 100%;
+  padding: 14px 18px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  color: #5c6470;
+  font-size: 14.5px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tab-btn:hover {
+  background: rgba(0, 0, 0, 0.03);
+  color: #111827;
+}
+
+.tab-btn.active {
+  background: #ffffff;
+  color: #6366f1;
+  border-color: rgba(99, 102, 241, 0.12);
+  box-shadow: 0 10px 25px -8px rgba(99, 102, 241, 0.15), 0 4px 6px -4px rgba(99, 102, 241, 0.05);
+  transform: translateX(2px);
 }
 
 /* ================= CONTENT CORE ================= */
@@ -304,6 +346,10 @@ body {
   box-shadow: 0 10px 20px -5px rgba(17, 24, 39, 0.2);
 }
 
+.primaryActionBtn:active, .executeDistributionBtn:active {
+  transform: scale(0.99);
+}
+
 .primaryActionBtn:hover, .executeDistributionBtn:hover { 
   background: #000000; 
   transform: translateY(-2px);
@@ -410,6 +456,15 @@ input::placeholder, textarea::placeholder {
 
 input[type="radio"] {
   accent-color: #111827 !important;
+}
+
+.form-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #6366f1;
+  border-radius: 6px;
+  margin-top: 2px;
+  flex-shrink: 0;
 }
 
 /* ================= NAVIGATION CONTROLS ================= */
