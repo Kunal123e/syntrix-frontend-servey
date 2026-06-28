@@ -58,6 +58,7 @@ const submitClaimBtn = document.getElementById("submitClaimBtn");
 
 // Dashboard Selectors
 const rewardDashboardScreen = document.getElementById("rewardDashboardScreen");
+const tabScreenHub = document.getElementById("rewardDashboardScreen"); 
 const tabScreenBadge = document.getElementById("tabScreenBadge");
 const tabScreenReferrals = document.getElementById("tabScreenReferrals");
 const claimScreenSection = document.getElementById("claimScreenSection");
@@ -161,6 +162,7 @@ if (navGetStartedAction) {
   });
 }
 
+// 🚀 FIXED: Improved Logic to handle immediate dashboard access if previously logged in
 if (initializePlatformBtn) {
   initializePlatformBtn.addEventListener("click", () => {
     if(splashLandingGate) splashLandingGate.style.display = "none"; 
@@ -172,7 +174,6 @@ if (initializePlatformBtn) {
     const savedEmail = localStorage.getItem("syntrix_user_email");
     if (savedEmail) {
       userEmailAddress = savedEmail;
-      // 🚀 FIXED: Instantly hide the email gate before the API check to prevent flickering
       if (emailGateSection) {
           emailGateSection.style.display = "none";
           emailGateSection.classList.add("hidden");
@@ -247,7 +248,7 @@ function displayConsumerBadgesUI(badgeKey) {
     `;
   }
 
-  // Populate Dropdown Badge
+  // Populate Dropdown Badge (inside 3-dots)
   const dropdownBadgeWrapper = document.getElementById("menuPsychologyBadgeWrapper");
   const dropdownBadgeText = document.getElementById("menuPsychologyBadgeText");
   const dropdownBadgeIcon = document.getElementById("menuBadgeIcon");
@@ -258,7 +259,7 @@ function displayConsumerBadgesUI(badgeKey) {
     dropdownBadgeText.style.color = profile.color;
   }
 
-  // 🚀 FIXED: Populate Topbar Badge (Left of 3 Dots)
+  // Populate Topbar Badge (Left of 3 Dots)
   const topbarBadgeDisplay = document.getElementById("topbarBadgeDisplay");
   const topbarBadgeText = document.getElementById("topbarBadgeText");
   const topbarBadgeIcon = document.getElementById("topbarBadgeIcon");
@@ -308,9 +309,9 @@ function getUIText(key) {
   return fallbacks[key] || key;
 }
 
-// ================= DASHBOARD APP TABS =================
+// ================= 🚀 FIXED: DASHBOARD APP TABS ROUTER =================
 function routeDashboardTabs(targetTab) {
-  // 🚀 FIXED: Ensure ALL dashboard sections hide explicitly
+  // 1. Hide all dashboard sections explicitly
   const cards = [
     document.getElementById("rewardDashboardScreen"),
     document.getElementById("tabScreenBadge"),
@@ -325,11 +326,14 @@ function routeDashboardTabs(targetTab) {
     }
   });
   
+  // 2. Remove active class from all buttons
   document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+  
+  // 3. Highlight the clicked button
   const clickedBtn = document.querySelector(`[data-tab="${targetTab}"]`);
   if (clickedBtn) clickedBtn.classList.add("active");
 
-  // Show only the target
+  // 4. Show only the target section
   let targetCard = null;
   if (targetTab === "hub") targetCard = document.getElementById("rewardDashboardScreen");
   if (targetTab === "badge") targetCard = document.getElementById("tabScreenBadge");
@@ -676,20 +680,25 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
         if (topProgressBox) { topProgressBox.classList.add("hidden"); topProgressBox.style.display = "none"; }
         
         if (surveyStepLinks) { surveyStepLinks.classList.add("hidden"); surveyStepLinks.style.display = "none"; }
-        if (dashboardTabLinks) { dashboardTabLinks.classList.remove("hidden"); dashboardTabLinks.style.display = "flex"; }
+        
+        // Ensure popover buttons show correctly 
+        const tabLinksContainer = document.getElementById("dashboardTabLinks");
+        if (tabLinksContainer) { tabLinksContainer.classList.remove("hidden"); tabLinksContainer.style.display = "flex"; }
         
         routeDashboardTabs("hub");
         outputTarget.innerHTML = "";
       } else {
         if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
         
-        // 🚀 FIXED: Ensure all dashboard tabs are strictly hidden if user is sent back to survey
+        // Force hide all dashboard pages if user sent back to survey
         const cards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "claimScreenSection"];
         cards.forEach(id => {
           const el = document.getElementById(id);
           if (el) { el.classList.add("hidden"); el.style.display = "none"; }
         });
-        if (dashboardTabLinks) { dashboardTabLinks.classList.add("hidden"); dashboardTabLinks.style.display = "none"; }
+        
+        const tabLinksContainer = document.getElementById("dashboardTabLinks");
+        if (tabLinksContainer) { tabLinksContainer.classList.add("hidden"); tabLinksContainer.style.display = "none"; }
         if (surveyStepLinks) { surveyStepLinks.classList.remove("hidden"); surveyStepLinks.style.display = "flex"; }
 
         currentSection = 0;
@@ -881,9 +890,10 @@ function resetApplicationFlowState() {
       rewardDashboardScreen.style.display = "none";
   }
   
-  if (dashboardTabLinks) {
-      dashboardTabLinks.classList.add("hidden");
-      dashboardTabLinks.style.display = "none";
+  const tabLinksContainer = document.getElementById("dashboardTabLinks");
+  if (tabLinksContainer) {
+      tabLinksContainer.classList.add("hidden");
+      tabLinksContainer.style.display = "none";
   }
   
   if (surveyStepLinks) {
@@ -920,11 +930,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   const savedRefCode = localStorage.getItem("referralCode");
   if (savedRefCode && referredByCodeInput) referredByCodeInput.value = savedRefCode;
 
-  // Initialize Routing for Dashboard Tabs
+  // Initialize Routing for Dashboard Tabs from inside Popover
   document.querySelectorAll(".tab-btn").forEach(btn => {
     btn.addEventListener("click", (e) => {
       const target = e.target.dataset.tab;
-      if (target) routeDashboardTabs(target);
+      if (target) {
+        routeDashboardTabs(target);
+        // 🚀 FIXED: Auto-close the popover when a user selects an option
+        if(optionsPopover) {
+          optionsPopover.classList.add("hidden");
+          optionsPopover.style.display = "none";
+        }
+      }
     });
   });
 
@@ -969,7 +986,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
   }
 
-  // 🚀 FIXED: Referral link button inside 3-dot menu
+  // Referral link button inside 3-dot menu
   const menuCopyReferralBtn = document.getElementById("menuCopyReferralBtn");
   if (menuCopyReferralBtn) {
     menuCopyReferralBtn.onclick = (e) => {
