@@ -892,7 +892,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (topProgressBox) { topProgressBox.classList.add("hidden"); topProgressBox.style.display = "none"; }
     if (rewardDashboardScreen) { rewardDashboardScreen.classList.add("hidden"); rewardDashboardScreen.style.display = "none"; }
   } else {
-    // 🚀 FIXED: Always display splash first. No auto-bypass on initial page load.
     if (splashLandingGate) {
         splashLandingGate.style.display = "flex";
     }
