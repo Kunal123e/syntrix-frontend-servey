@@ -56,16 +56,15 @@ const nextBtn = document.getElementById("nextBtn");
 const prevBtn = document.getElementById("prevBtn");
 const submitClaimBtn = document.getElementById("submitClaimBtn");
 
-// 🚀 FIXED: Added previously missing dashboard selectors
+// Dashboard Selectors
 const rewardDashboardScreen = document.getElementById("rewardDashboardScreen");
-const tabScreenHub = document.getElementById("rewardDashboardScreen"); 
 const tabScreenBadge = document.getElementById("tabScreenBadge");
 const tabScreenReferrals = document.getElementById("tabScreenReferrals");
+const claimScreenSection = document.getElementById("claimScreenSection");
 
 const dashboardWalletInput = document.getElementById("dashboardWalletInput");
 const executeClaimBtn = document.getElementById("executeClaimBtn");
 const connectWalletBtn = document.getElementById("connectWalletBtn");
-const claimScreenSection = document.getElementById("claimScreenSection");
 const claimConnectWalletBtn = document.getElementById("claimConnectWalletBtn");
 const claimWalletConnectedBlock = document.getElementById("claimWalletConnectedBlock");
 const claimWalletAddressDisplay = document.getElementById("claimWalletAddressDisplay");
@@ -173,6 +172,11 @@ if (initializePlatformBtn) {
     const savedEmail = localStorage.getItem("syntrix_user_email");
     if (savedEmail) {
       userEmailAddress = savedEmail;
+      // 🚀 FIXED: Instantly hide the email gate before the API check to prevent flickering
+      if (emailGateSection) {
+          emailGateSection.style.display = "none";
+          emailGateSection.classList.add("hidden");
+      }
       runProfileLedgerVerification(userEmailAddress, false);
     } else {
       if (emailGateSection) {
@@ -243,11 +247,21 @@ function displayConsumerBadgesUI(badgeKey) {
     `;
   }
 
-  // 🚀 FIXED: Populate the topbar badge display (left of 3-dots)
+  // Populate Dropdown Badge
+  const dropdownBadgeWrapper = document.getElementById("menuPsychologyBadgeWrapper");
+  const dropdownBadgeText = document.getElementById("menuPsychologyBadgeText");
+  const dropdownBadgeIcon = document.getElementById("menuBadgeIcon");
+  if (dropdownBadgeWrapper && dropdownBadgeText && dropdownBadgeIcon) {
+    dropdownBadgeWrapper.style.display = "flex";
+    dropdownBadgeIcon.innerHTML = profile.menuIcon;
+    dropdownBadgeText.innerText = profile.title;
+    dropdownBadgeText.style.color = profile.color;
+  }
+
+  // 🚀 FIXED: Populate Topbar Badge (Left of 3 Dots)
   const topbarBadgeDisplay = document.getElementById("topbarBadgeDisplay");
   const topbarBadgeText = document.getElementById("topbarBadgeText");
   const topbarBadgeIcon = document.getElementById("topbarBadgeIcon");
-  
   if (topbarBadgeDisplay && topbarBadgeText && topbarBadgeIcon) {
     topbarBadgeDisplay.style.display = "flex";
     topbarBadgeIcon.innerHTML = profile.menuIcon;
@@ -296,17 +310,35 @@ function getUIText(key) {
 
 // ================= DASHBOARD APP TABS =================
 function routeDashboardTabs(targetTab) {
-  if (tabScreenHub) { tabScreenHub.classList.add("hidden"); tabScreenHub.style.display = "none"; }
-  if (tabScreenBadge) { tabScreenBadge.classList.add("hidden"); tabScreenBadge.style.display = "none"; }
-  if (tabScreenReferrals) { tabScreenReferrals.classList.add("hidden"); tabScreenReferrals.style.display = "none"; }
+  // 🚀 FIXED: Ensure ALL dashboard sections hide explicitly
+  const cards = [
+    document.getElementById("rewardDashboardScreen"),
+    document.getElementById("tabScreenBadge"),
+    document.getElementById("tabScreenReferrals"),
+    document.getElementById("claimScreenSection")
+  ];
+  
+  cards.forEach(card => {
+    if (card) {
+      card.classList.add("hidden");
+      card.style.display = "none";
+    }
+  });
   
   document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
   const clickedBtn = document.querySelector(`[data-tab="${targetTab}"]`);
   if (clickedBtn) clickedBtn.classList.add("active");
 
-  if (targetTab === "hub" && tabScreenHub) { tabScreenHub.classList.remove("hidden"); tabScreenHub.style.display = "block"; }
-  if (targetTab === "badge" && tabScreenBadge) { tabScreenBadge.classList.remove("hidden"); tabScreenBadge.style.display = "block"; }
-  if (targetTab === "referrals" && tabScreenReferrals) { tabScreenReferrals.classList.remove("hidden"); tabScreenReferrals.style.display = "block"; }
+  // Show only the target
+  let targetCard = null;
+  if (targetTab === "hub") targetCard = document.getElementById("rewardDashboardScreen");
+  if (targetTab === "badge") targetCard = document.getElementById("tabScreenBadge");
+  if (targetTab === "referrals") targetCard = document.getElementById("tabScreenReferrals");
+  
+  if (targetCard) {
+    targetCard.classList.remove("hidden");
+    targetCard.style.display = "block";
+  }
 }
 
 // ================= STAGE 1: EMAIL VERIFICATION GATE =================
@@ -321,7 +353,6 @@ if (emailGateForm) {
       return;
     }
     
-    // 🚀 NEW: Capture Digital Signature / Consent Proof
     if (legalConsent && legalConsent.checked && !legalConsentTimestamp) {
       legalConsentTimestamp = new Date().toISOString();
       clientUserAgent = navigator.userAgent;
@@ -647,12 +678,20 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
         if (surveyStepLinks) { surveyStepLinks.classList.add("hidden"); surveyStepLinks.style.display = "none"; }
         if (dashboardTabLinks) { dashboardTabLinks.classList.remove("hidden"); dashboardTabLinks.style.display = "flex"; }
         
-        if (rewardDashboardScreen) { rewardDashboardScreen.classList.remove("hidden"); rewardDashboardScreen.style.display = "block"; }
-        
         routeDashboardTabs("hub");
         outputTarget.innerHTML = "";
       } else {
         if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
+        
+        // 🚀 FIXED: Ensure all dashboard tabs are strictly hidden if user is sent back to survey
+        const cards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "claimScreenSection"];
+        cards.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) { el.classList.add("hidden"); el.style.display = "none"; }
+        });
+        if (dashboardTabLinks) { dashboardTabLinks.classList.add("hidden"); dashboardTabLinks.style.display = "none"; }
+        if (surveyStepLinks) { surveyStepLinks.classList.remove("hidden"); surveyStepLinks.style.display = "flex"; }
+
         currentSection = 0;
         renderSection();
         outputTarget.innerHTML = "";
@@ -689,7 +728,6 @@ async function handleSurveySubmission(e) {
 
   const referralCodeUsed = localStorage.getItem("referralCode") || "";
 
-  // 🚀 NEW: Preparing Payload with Legal Signature
   const finalPayload = {
     email: userEmailAddress,
     answers: answers,
@@ -896,7 +934,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (topProgressBox) { topProgressBox.classList.add("hidden"); topProgressBox.style.display = "none"; }
     if (rewardDashboardScreen) { rewardDashboardScreen.classList.add("hidden"); rewardDashboardScreen.style.display = "none"; }
   } else {
-    // 🚀 FIXED: Always display splash first. No auto-bypass on initial page load.
     if (splashLandingGate) {
         splashLandingGate.style.display = "flex";
     }
@@ -930,6 +967,20 @@ document.addEventListener("DOMContentLoaded", async () => {
           setTimeout(() => { copyReferralBtn.innerText = originalText; }, 2000);
         } catch (err) { showToast("Failed to access system registers.", "❌"); }
       }
+  }
+
+  // 🚀 FIXED: Referral link button inside 3-dot menu
+  const menuCopyReferralBtn = document.getElementById("menuCopyReferralBtn");
+  if (menuCopyReferralBtn) {
+    menuCopyReferralBtn.onclick = (e) => {
+      e.stopPropagation();
+      const refLink = referralCodeDisplay ? referralCodeDisplay.value : "";
+      if (refLink) {
+        navigator.clipboard.writeText(refLink);
+        menuCopyReferralBtn.innerText = "Copied!";
+        setTimeout(() => { menuCopyReferralBtn.innerText = "Copy"; }, 2000);
+      }
+    };
   }
 
   if (menuToggleBtn && optionsPopover) {
@@ -1015,7 +1066,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       btn.classList.add("active"); currentLanguage = btn.dataset.lang;
       if (typeof translatePage === "function") translatePage();
       updateExcitementBanner(currentSection); 
-      if (claimForm && !claimForm.classList.contains("hidden")) renderSection();
+      if (claimForm && claimForm.style.display !== "none") renderSection();
     });
   });
 });
