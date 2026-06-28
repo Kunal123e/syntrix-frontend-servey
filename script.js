@@ -83,6 +83,7 @@ const lockedClaimGatewayBtn = document.getElementById("lockedClaimGatewayBtn");
 const confirmRestartModal = document.getElementById("confirmRestartModal");
 const cancelRestartBtn = document.getElementById("cancelRestartBtn");
 const confirmRestartBtn = document.getElementById("confirmRestartBtn");
+const tabScreenHub = document.getElementById("rewardDashboardScreen"); // ADDED THIS LINE to fix missing variable error
 
 function showToast(message, icon = "⚠️") {
   let toast = document.getElementById("customToast");
@@ -316,6 +317,7 @@ if (emailGateForm) {
       return;
     }
     
+    // 🚀 NEW: Capture Digital Signature / Consent Proof
     if (legalConsent && legalConsent.checked && !legalConsentTimestamp) {
       legalConsentTimestamp = new Date().toISOString();
       clientUserAgent = navigator.userAgent;
@@ -639,7 +641,6 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
         if (topProgressBox) { topProgressBox.classList.add("hidden"); topProgressBox.style.display = "none"; }
         
         if (surveyStepLinks) { surveyStepLinks.classList.add("hidden"); surveyStepLinks.style.display = "none"; }
-        
         if (dashboardTabLinks) { dashboardTabLinks.classList.remove("hidden"); dashboardTabLinks.style.display = "flex"; }
         
         if (rewardDashboardScreen) { rewardDashboardScreen.classList.remove("hidden"); rewardDashboardScreen.style.display = "block"; }
