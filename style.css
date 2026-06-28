@@ -132,12 +132,9 @@ body {
 
 .tab-btn {
   width: 100%;
-  padding: 14px 18px;
   background: transparent;
   border: 1px solid transparent;
-  border-radius: 14px;
   color: #5c6470;
-  font-size: 14.5px;
   font-weight: 700;
   text-align: left;
   cursor: pointer;
@@ -993,9 +990,6 @@ input[type="radio"] {
 .back-to-home-btn { background: transparent; border: 1px solid rgba(255,255,255,0.15); color: #ffffff; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
 .back-to-home-btn:hover { background: rgba(255,255,255,0.05); }
 
-/* Dashboard visibility toggle */
-.dashboard-tabs { flex-direction: column; gap: 8px; margin-top: 20px; border-top: 1px solid rgba(0,0,0,0.06); padding-top: 20px; }
-
 /* ================= RESPONSIVE FIXES ================= */
 @media(max-width: 900px) {
   body { padding: 12px; }
@@ -1024,9 +1018,6 @@ input[type="radio"] {
   .modal-footer { padding: 12px 16px; flex-direction: column; }
   .modal-footer button { width: 100%; text-align: center; }
   
-  .dashboard-tabs { flex-direction: row !important; flex-wrap: wrap; padding-top: 15px; margin-top: 15px; gap: 6px; }
-  .tab-btn { flex: 1; min-width: 130px; padding: 10px 12px; font-size: 13px; justify-content: center; }
-  #sidebarLogoutBtn { margin-top: 0 !important; width: 100%; }
   .static-info-grid { grid-template-columns: 1fr; }
   .landing-nav .nav-links { display: none; }
 }
