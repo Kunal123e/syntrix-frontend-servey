@@ -990,6 +990,9 @@ input[type="radio"] {
 .back-to-home-btn { background: transparent; border: 1px solid rgba(255,255,255,0.15); color: #ffffff; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
 .back-to-home-btn:hover { background: rgba(255,255,255,0.05); }
 
+/* Dashboard visibility toggle */
+.dashboard-tabs { flex-direction: column; gap: 8px; margin-top: 20px; border-top: 1px solid rgba(0,0,0,0.06); padding-top: 20px; }
+
 /* ================= RESPONSIVE FIXES ================= */
 @media(max-width: 900px) {
   body { padding: 12px; }
