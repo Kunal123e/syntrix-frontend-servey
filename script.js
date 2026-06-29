@@ -80,7 +80,6 @@ const statusDiv = document.getElementById("status");
 const progressFill = document.querySelector(".progressFill");
 const progressText = document.querySelector(".progressText");
 
-// 🚀 FIXED: surveyStepLinks definition removed to match HTML
 const dashboardTabLinks = document.getElementById("dashboardTabLinks");
 const sidebarLogoutBtn = document.getElementById("sidebarLogoutBtn");
 const lockedClaimGatewayBtn = document.getElementById("lockedClaimGatewayBtn");
@@ -539,8 +538,6 @@ function renderSection() {
       emailGateSection.style.display = "none";
     }
 
-    // 🚀 FIXED: Removed the sidebarSteps loop since the sidebar doesn't exist anymore
-
     const progressPercent = ((currentSection + 1) / sections.length) * 100;
     if (progressFill) progressFill.style.width = `${progressPercent}%`;
     if (progressText) progressText.innerText = `Progress ${currentSection + 1}/${sections.length}`;
@@ -653,10 +650,11 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
       userEmailAddress = email;
       localStorage.setItem("syntrix_user_email", email);
       
+      // 🚀 FIXED: Append SYNX to the updated dashboard variables
       if (statTotalReferrals) statTotalReferrals.innerText = statusResult.referralsCount || "0";
-      if (statPendingRewards) statPendingRewards.innerText = `${statusResult.pendingRewards || 0} SYN`;
-      if (statClaimedRewards) statClaimedRewards.innerText = `${statusResult.claimedRewards || 0} SYN`;
-      if (statTotalEarned) statTotalEarned.innerText = `${(statusResult.pendingRewards || 0) + (statusResult.claimedRewards || 0)} SYN`;
+      if (statPendingRewards) statPendingRewards.innerText = `${statusResult.pendingRewards || 0} SYNX`;
+      if (statClaimedRewards) statClaimedRewards.innerText = `${statusResult.claimedRewards || 0} SYNX`;
+      if (statTotalEarned) statTotalEarned.innerText = `${(statusResult.pendingRewards || 0) + (statusResult.claimedRewards || 0)} SYNX`;
       
       // Update Original Display
       if (referralCodeDisplay) referralCodeDisplay.value = `${window.location.origin}/?ref=${statusResult.referralCode || ""}`;
@@ -886,8 +884,6 @@ function resetApplicationFlowState() {
       tabLinksContainer.classList.add("hidden");
       tabLinksContainer.style.display = "none";
   }
-  
-  // 🚀 FIXED: Removed the surveyStepLinks reset logic since it doesn't exist
   
   const menuReferralWrapper = document.getElementById("menuReferralWrapper");
   if (menuReferralWrapper) menuReferralWrapper.style.display = "none";
