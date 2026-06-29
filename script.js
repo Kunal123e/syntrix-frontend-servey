@@ -79,7 +79,8 @@ const copyReferralBtn = document.getElementById("copyReferralBtn");
 const statusDiv = document.getElementById("status");
 const progressFill = document.querySelector(".progressFill");
 const progressText = document.querySelector(".progressText");
-const surveyStepLinks = document.getElementById("surveyStepLinks");
+
+// 🚀 FIXED: surveyStepLinks definition removed to match HTML
 const dashboardTabLinks = document.getElementById("dashboardTabLinks");
 const sidebarLogoutBtn = document.getElementById("sidebarLogoutBtn");
 const lockedClaimGatewayBtn = document.getElementById("lockedClaimGatewayBtn");
@@ -162,7 +163,7 @@ if (navGetStartedAction) {
   });
 }
 
-// 🚀 FIXED: Improved Logic to handle immediate dashboard access if previously logged in
+// Improved Logic to handle immediate dashboard access if previously logged in
 if (initializePlatformBtn) {
   initializePlatformBtn.addEventListener("click", () => {
     if(splashLandingGate) splashLandingGate.style.display = "none"; 
@@ -538,16 +539,7 @@ function renderSection() {
       emailGateSection.style.display = "none";
     }
 
-    const sidebarSteps = document.querySelectorAll(".sidebar .step");
-    sidebarSteps.forEach((st, idx) => {
-      if (idx === currentSection) st.classList.add("active");
-      else st.classList.remove("active");
-      if (sections[idx]) {
-        const titleText = sections[idx].title.split(".")[1] || sections[idx].title;
-        const stepLabel = st.querySelector(".stepLabel") || st;
-        if (stepLabel) stepLabel.innerText = titleText.trim();
-      }
-    });
+    // 🚀 FIXED: Removed the sidebarSteps loop since the sidebar doesn't exist anymore
 
     const progressPercent = ((currentSection + 1) / sections.length) * 100;
     if (progressFill) progressFill.style.width = `${progressPercent}%`;
@@ -669,7 +661,7 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
       // Update Original Display
       if (referralCodeDisplay) referralCodeDisplay.value = `${window.location.origin}/?ref=${statusResult.referralCode || ""}`;
       
-      // 🚀 NEW: Update Dropdown Popover Display specifically
+      // Update Dropdown Popover Display specifically
       const menuReferralInput = document.getElementById("menuReferralInputDisplay");
       if (menuReferralInput) menuReferralInput.value = `${window.location.origin}/?ref=${statusResult.referralCode || ""}`;
       
@@ -682,8 +674,6 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
         if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
         if (claimForm) { claimForm.classList.add("hidden"); claimForm.style.display = "none"; }
         if (topProgressBox) { topProgressBox.classList.add("hidden"); topProgressBox.style.display = "none"; }
-        
-        if (surveyStepLinks) { surveyStepLinks.classList.add("hidden"); surveyStepLinks.style.display = "none"; }
         
         const tabLinksContainer = document.getElementById("dashboardTabLinks");
         if (tabLinksContainer) { tabLinksContainer.classList.remove("hidden"); tabLinksContainer.style.display = "flex"; }
@@ -701,7 +691,6 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
         
         const tabLinksContainer = document.getElementById("dashboardTabLinks");
         if (tabLinksContainer) { tabLinksContainer.classList.add("hidden"); tabLinksContainer.style.display = "none"; }
-        if (surveyStepLinks) { surveyStepLinks.classList.remove("hidden"); surveyStepLinks.style.display = "flex"; }
 
         currentSection = 0;
         renderSection();
@@ -898,18 +887,10 @@ function resetApplicationFlowState() {
       tabLinksContainer.style.display = "none";
   }
   
-  if (surveyStepLinks) {
-      surveyStepLinks.classList.remove("hidden");
-      surveyStepLinks.style.display = "flex";
-  }
+  // 🚀 FIXED: Removed the surveyStepLinks reset logic since it doesn't exist
   
   const menuReferralWrapper = document.getElementById("menuReferralWrapper");
   if (menuReferralWrapper) menuReferralWrapper.style.display = "none";
-  
-  document.querySelectorAll(".step").forEach((st, idx) => {
-      if (idx === 0) st.classList.add("active");
-      else st.classList.remove("active");
-  });
   
   if (mainApplicationLayout) {
       mainApplicationLayout.classList.add("hidden");
@@ -990,7 +971,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
   }
 
-  // 🚀 FIXED: Inner Menu Referral Copy Button
   const menuCopyReferralBtn = document.getElementById("menuCopyReferralBtn");
   const menuReferralInputDisplay = document.getElementById("menuReferralInputDisplay");
   if (menuCopyReferralBtn && menuReferralInputDisplay) {
