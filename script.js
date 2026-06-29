@@ -309,9 +309,8 @@ function getUIText(key) {
   return fallbacks[key] || key;
 }
 
-// ================= 🚀 FIXED: DASHBOARD APP TABS ROUTER =================
+// ================= DASHBOARD APP TABS ROUTER =================
 function routeDashboardTabs(targetTab) {
-  // 1. Hide all dashboard sections explicitly
   const cards = [
     document.getElementById("rewardDashboardScreen"),
     document.getElementById("tabScreenBadge"),
@@ -326,14 +325,10 @@ function routeDashboardTabs(targetTab) {
     }
   });
   
-  // 2. Remove active class from all buttons
   document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
-  
-  // 3. Highlight the clicked button
   const clickedBtn = document.querySelector(`[data-tab="${targetTab}"]`);
   if (clickedBtn) clickedBtn.classList.add("active");
 
-  // 4. Show only the target section
   let targetCard = null;
   if (targetTab === "hub") targetCard = document.getElementById("rewardDashboardScreen");
   if (targetTab === "badge") targetCard = document.getElementById("tabScreenBadge");
@@ -670,7 +665,16 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
       if (statPendingRewards) statPendingRewards.innerText = `${statusResult.pendingRewards || 0} SYN`;
       if (statClaimedRewards) statClaimedRewards.innerText = `${statusResult.claimedRewards || 0} SYN`;
       if (statTotalEarned) statTotalEarned.innerText = `${(statusResult.pendingRewards || 0) + (statusResult.claimedRewards || 0)} SYN`;
+      
+      // Update Original Display
       if (referralCodeDisplay) referralCodeDisplay.value = `${window.location.origin}/?ref=${statusResult.referralCode || ""}`;
+      
+      // 🚀 NEW: Update Dropdown Popover Display specifically
+      const menuReferralInput = document.getElementById("menuReferralInputDisplay");
+      if (menuReferralInput) menuReferralInput.value = `${window.location.origin}/?ref=${statusResult.referralCode || ""}`;
+      
+      const menuReferralWrapper = document.getElementById("menuReferralWrapper");
+      if (menuReferralWrapper) menuReferralWrapper.style.display = "flex";
 
       displayConsumerBadgesUI("Analyzer");
 
@@ -681,7 +685,6 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
         
         if (surveyStepLinks) { surveyStepLinks.classList.add("hidden"); surveyStepLinks.style.display = "none"; }
         
-        // Ensure popover buttons show correctly 
         const tabLinksContainer = document.getElementById("dashboardTabLinks");
         if (tabLinksContainer) { tabLinksContainer.classList.remove("hidden"); tabLinksContainer.style.display = "flex"; }
         
@@ -690,7 +693,6 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
       } else {
         if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
         
-        // Force hide all dashboard pages if user sent back to survey
         const cards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "claimScreenSection"];
         cards.forEach(id => {
           const el = document.getElementById(id);
@@ -901,6 +903,9 @@ function resetApplicationFlowState() {
       surveyStepLinks.style.display = "flex";
   }
   
+  const menuReferralWrapper = document.getElementById("menuReferralWrapper");
+  if (menuReferralWrapper) menuReferralWrapper.style.display = "none";
+  
   document.querySelectorAll(".step").forEach((st, idx) => {
       if (idx === 0) st.classList.add("active");
       else st.classList.remove("active");
@@ -936,7 +941,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       const target = e.target.dataset.tab;
       if (target) {
         routeDashboardTabs(target);
-        // 🚀 FIXED: Auto-close the popover when a user selects an option
         if(optionsPopover) {
           optionsPopover.classList.add("hidden");
           optionsPopover.style.display = "none";
@@ -986,16 +990,21 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
   }
 
-  // Referral link button inside 3-dot menu
+  // 🚀 FIXED: Inner Menu Referral Copy Button
   const menuCopyReferralBtn = document.getElementById("menuCopyReferralBtn");
-  if (menuCopyReferralBtn) {
+  const menuReferralInputDisplay = document.getElementById("menuReferralInputDisplay");
+  if (menuCopyReferralBtn && menuReferralInputDisplay) {
     menuCopyReferralBtn.onclick = (e) => {
       e.stopPropagation();
-      const refLink = referralCodeDisplay ? referralCodeDisplay.value : "";
+      const refLink = menuReferralInputDisplay.value;
       if (refLink) {
         navigator.clipboard.writeText(refLink);
         menuCopyReferralBtn.innerText = "Copied!";
-        setTimeout(() => { menuCopyReferralBtn.innerText = "Copy"; }, 2000);
+        menuCopyReferralBtn.style.background = "#10b981";
+        setTimeout(() => { 
+            menuCopyReferralBtn.innerText = "Copy"; 
+            menuCopyReferralBtn.style.background = "#111827";
+        }, 2000);
       }
     };
   }
@@ -1010,8 +1019,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             optionsPopover.style.display = "none";
         }
     };
-    document.addEventListener("click", () => {
-        if(optionsPopover) {
+    document.addEventListener("click", (e) => {
+        if(optionsPopover && !optionsPopover.contains(e.target) && e.target !== menuToggleBtn) {
           optionsPopover.classList.add("hidden");
           optionsPopover.style.display = "none";
         }
