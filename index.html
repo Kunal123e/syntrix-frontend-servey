@@ -225,6 +225,7 @@
 
         <div class="header-controls-group">
           
+          <!-- Top Bar Badge Display (Left of 3 Dots) -->
           <div id="topbarBadgeDisplay" style="display: none; align-items: center; gap: 8px; background: #ffffff; padding: 8px 14px; border-radius: 12px; border: 2px solid #e5e7eb; font-size: 14px; font-weight: 800; color: #374151; box-shadow: 0 4px 10px rgba(0,0,0,0.02);">
             <span id="topbarBadgeIcon" style="display: flex; align-items: center;"></span>
             <span id="topbarBadgeText">Profile</span>
@@ -241,27 +242,37 @@
           <div class="options-menu-container">
             <button type="button" id="menuToggleBtn" class="icon-menu-btn" aria-label="More Options">⋮</button>
             
-            <div id="optionsPopover" class="options-popover hidden" style="display: none;">
+            <div id="optionsPopover" class="options-popover hidden" style="display: none; min-width: 280px;">
               
-              <div id="menuPsychologyBadgeWrapper" style="padding: 10px 14px; font-size: 13px; font-weight: 700; border-bottom: 1px solid #ece4da; color: #6b6258; display: none; align-items: center; gap: 6px;">
+              <!-- Inner Menu Badge -->
+              <div id="menuPsychologyBadgeWrapper" style="padding: 12px 14px; font-size: 13px; font-weight: 700; border-bottom: 1px solid #ece4da; color: #6b6258; display: none; align-items: center; gap: 6px;">
                 <span id="menuBadgeIcon" style="display: flex; align-items: center;"></span> Profile: <span id="menuPsychologyBadgeText">None</span>
               </div>
               
-              <div id="menuReferralWrapper" style="padding: 10px 14px; font-size: 13px; font-weight: 700; border-bottom: 1px solid #ece4da; color: #6b6258; display: flex; align-items: center; justify-content: space-between; gap: 6px;">
-                <span>🎁 Referral Link</span>
-                <button type="button" id="menuCopyReferralBtn" style="padding: 4px 8px; font-size: 11px; background: #f3f4f6; border-radius: 6px; border: 1px solid #e5e7eb; cursor: pointer; text-align: center;">Copy</button>
+              <!-- 🚀 FIXED UI: Inner Menu Referral Option (Aligned & Clean) -->
+              <div id="menuReferralWrapper" style="padding: 14px 14px; border-bottom: 1px solid #ece4da; display: none; flex-direction: column; gap: 10px;">
+                <div style="font-size: 13px; font-weight: 800; color: #111827; display: flex; align-items: center; gap: 6px;">
+                  <span>💎</span> Referral Link
+                </div>
+                <div style="display: flex; gap: 8px; width: 100%;">
+                  <input type="text" id="menuReferralInputDisplay" value="https://domain.com/?ref=..." readonly style="flex: 1; padding: 8px 10px; font-size: 11px; font-family: monospace; border-radius: 8px; border: 1px solid #e5e7eb; background: #f9fafb; color: #6b7280; outline: none; margin: 0;">
+                  <button type="button" id="menuCopyReferralBtn" style="padding: 8px 14px; font-size: 12px; font-weight: 700; background: #111827; color: #ffffff; border-radius: 8px; border: none; cursor: pointer; transition: background 0.2s;">Copy</button>
+                </div>
               </div>
 
-              <!-- 🚀 DASHBOARD TABS MOVED HERE INTO THE 3-DOT MENU -->
-              <div id="dashboardTabLinks" style="display: none; flex-direction: column; border-bottom: 1px solid #ece4da; padding-bottom: 8px; margin-bottom: 8px;">
-                <button class="tab-btn active" data-tab="hub" style="padding: 12px 14px; font-size: 13.5px; border-radius: 8px;">📊 Core Metrics Hub</button>
-                <button class="tab-btn" data-tab="badge" style="padding: 12px 14px; font-size: 13.5px; border-radius: 8px;">🎨 Persona Badge Profile</button>
-                <button class="tab-btn" data-tab="referrals" style="padding: 12px 14px; font-size: 13.5px; border-radius: 8px;">🎁 Viral Referrals</button>
-                <button class="tab-btn" id="sidebarLogoutBtn" style="padding: 12px 14px; font-size: 13.5px; border-radius: 8px; color: #ef4444;">🔒 Account Logout</button>
+              <!-- DASHBOARD TABS -->
+              <div id="dashboardTabLinks" style="display: none; flex-direction: column; padding: 8px 0; border-bottom: 1px solid #ece4da;">
+                <button class="tab-btn active" data-tab="hub" style="padding: 12px 16px; font-size: 13.5px; border-radius: 0;">📊 Core Metrics Hub</button>
+                <button class="tab-btn" data-tab="badge" style="padding: 12px 16px; font-size: 13.5px; border-radius: 0;">👤 Identity Persona</button>
+                <button class="tab-btn" data-tab="referrals" style="padding: 12px 16px; font-size: 13.5px; border-radius: 0;">💎 Growth Rewards</button>
+                <button class="tab-btn" id="sidebarLogoutBtn" style="padding: 12px 16px; font-size: 13.5px; border-radius: 0; color: #ef4444;">🔒 Account Logout</button>
               </div>
               
-              <button type="button" id="menuRestartBtn">✨ New Survey Registration</button>
-              <button type="button" id="menuRecoverBtn">🔍 Retrieve Pending Allocation</button>
+              <!-- UTILITY TABS -->
+              <div style="padding: 8px 0;">
+                <button type="button" id="menuRestartBtn" style="padding: 12px 16px;">✨ New Survey Registration</button>
+                <button type="button" id="menuRecoverBtn" style="padding: 12px 16px;">🔍 Retrieve Pending Allocation</button>
+              </div>
             </div>
           </div>
         </div>
@@ -337,8 +348,6 @@
       </form>
 
       <div id="rewardDashboardScreen" class="hidden rewardCard" style="display: none;">
-        <div id="dashboardPsychologyBadgeCard" style="display: none;"></div>
-
         <div class="badgeRow">
           <span class="submittedBadge" id="surveySubmittedBadge">✨ SURVEY SUBMITTED!</span>
         </div>
@@ -383,7 +392,7 @@
 
       <div id="tabScreenReferrals" class="hidden rewardCard" style="display: none;">
         <div class="referralContainer" style="margin-top: 0;">
-          <div class="dividerLine"><span id="referralDashboardTitle">🎁 SYNTRIX REFERRAL DASHBOARD</span></div>
+          <div class="dividerLine"><span id="referralDashboardTitle">💎 SYNTRIX GROWTH REWARDS</span></div>
           <h3 class="referralTitleText" id="referralTitleText">Your Referrals & Earnings</h3>
           <p class="referralDescription" id="referralSubText">
             Invite friends using your unique referral code. For each colleague who registers and completes the modules, you earn an additional 10 SYN tokens!
@@ -392,7 +401,7 @@
           <div class="referralStatsGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; margin: 25px 0;">
             <div class="statBox" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 15px; text-align: center;">
               <div id="lblTotalReferrals" style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 5px; letter-spacing: 0.5px;">Total Referrals</div>
-              <div id="statTotalReferrals" style="font-size: 24px; font-weight: 900; color: #111827;">0</div>
+              <div id="statTotalReferrals" style="font-size: 24px; font-weight: 900; color: #ffffff;">0</div>
             </div>
             <div class="statBox" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 15px; text-align: center;">
               <div id="lblPendingRewards" style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 5px; letter-spacing: 0.5px;">Pending Rewards</div>
