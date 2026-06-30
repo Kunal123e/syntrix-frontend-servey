@@ -120,11 +120,13 @@
   <p style="font-size: 20px; color: #d1d5db; margin-top: 15px; font-weight: 600; text-align: center; max-width: 500px; line-height: 1.5;">Validating your responses...<br><span style="color: #34d399; font-size: 24px; font-weight: 800; display: inline-block; margin-top: 10px;">Your 48 SYNX reward is waiting!</span></p>
 </div>
 
+<!-- ================= 🚀 PREMIUM BLACK SPLASH GATE ================= -->
 <div id="splashLandingGate" style="display: flex;">
   <nav class="landing-nav">
-    <div class="nav-logo" id="navLogoHomeTrigger" style="cursor: pointer;">
-      <img src="syntrix-logo.png" alt="Syntrix Logo" style="width: 32px; height: 32px; object-fit: contain;">
-      <span>SYN<span style="font-weight: 500; color: #a1a1aa;">TRIX</span></span>
+    <div class="nav-logo" id="navLogoHomeTrigger" style="cursor: pointer; display: flex; align-items: center; gap: 10px;">
+      <!-- 🚀 FIXED: Splash screen logo size adjusted -->
+      <img src="syntrix-logo.png" alt="Syntrix Logo" style="height: 32px; width: auto; object-fit: contain;">
+      <span style="font-size: 24px; font-weight: 800;">SYN<span style="font-weight: 500; color: #a1a1aa;">TRIX</span></span>
     </div>
     <div class="nav-links">
       <a href="#" id="linkHomeTab" class="nav-splash-tab active">Home</a>
@@ -185,17 +187,19 @@
   </div>
 </div>
 
+<!-- ================= 🚀 MAIN SURVEY APPLICATION ================= -->
 <div id="mainApplicationLayout" class="hidden" style="display: none; padding: 32px; min-height: 100vh;">
   <div class="app">
     <div class="content">
       
       <div class="topbar">
         <div>
-          <div class="logo-container" style="margin-bottom: 18px; padding-left: 0;">
-            <div class="logo-mark" style="width: 32px; height: 32px;">
-              <img src="syntrix-logo.png" alt="Syntrix Logo" style="width: 100%; height: 100%; object-fit: contain;">
+          <!-- 🚀 FIXED: Main Dashboard Logo size and alignment fixed -->
+          <div class="logo-container" style="margin-bottom: 20px; padding-left: 0; display: flex; align-items: center; gap: 14px;">
+            <div class="logo-mark" style="height: 42px; width: auto; display: flex; align-items: center;">
+              <img src="syntrix-logo.png" alt="Syntrix Logo" style="height: 100%; width: auto; object-fit: contain;">
             </div>
-            <div class="logo-text" style="font-size: 26px;">
+            <div class="logo-text" style="font-size: 32px;">
               <span class="logo-bold">SYN</span><span class="logo-light">TRIX</span>
             </div>
           </div>
@@ -222,7 +226,7 @@
           </div>
 
           <div class="options-menu-container">
-            <button type="button" id="menuToggleBtn" class="icon-menu-btn" aria-label="More Options">⋮</button>
+            <button type="button" id="menuToggleBtn" class="icon-menu-btn" aria-label="More Options">☰</button>
             
             <div id="optionsPopover" class="options-popover hidden" style="display: none; min-width: 280px;">
               
@@ -248,8 +252,7 @@
               </div>
               
               <div style="padding: 8px 0;">
-                <button type="button" id="menuRestartBtn" style="padding: 12px 16px;">✨ New Survey Registration</button>
-                <button type="button" id="menuRecoverBtn" style="padding: 12px 16px;">🔍 Retrieve Pending Allocation</button>
+                <button type="button" id="menuRecoverBtn" style="padding: 12px 16px;">🔍 Sign Up / Retrieve Profile</button>
               </div>
             </div>
           </div>
@@ -266,44 +269,44 @@
       <div id="excitementBanner" style="display: none; background: linear-gradient(145deg, #23272f 0%, #111418 100%); border: 1px solid #3f444d; box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 12px 24px -6px rgba(0,0,0,0.6); border-radius: 12px; padding: 16px 24px; margin-bottom: 25px; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; width: 100%; box-sizing: border-box;">
       </div>
 
-      <div id="emailGateSection" class="authCard" style="display: block;">
-        <h2 class="sectionTitle" id="emailSectionTitle">Enter Communication Profile</h2>
-        <p class="cardDescription" id="emailSectionSub" style="margin-bottom: 20px;">Please provide your authorized email address to clear the registration gate and activate the research module matrix.</p>
+      <div id="emailGateSection" class="authCard" style="display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 65vh; max-width: 680px; margin: 0 auto; text-align: center; border: none; box-shadow: none;">
         
-        <div style="display: inline-flex; align-items: center; gap: 8px; background: #d0ded3; color: #111827; padding: 10px 24px; border-radius: 999px; font-size: 15px; font-weight: 500; margin-bottom: 30px;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="10" y1="2" x2="14" y2="2"></line>
-            <line x1="12" y1="14" x2="15" y2="11"></line>
-            <circle cx="12" cy="14" r="8"></circle>
+        <div style="display: inline-flex; align-items: center; gap: 8px; background: #d0ded3; color: #111827; padding: 10px 24px; border-radius: 999px; font-size: 15px; font-weight: 700; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.15);">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
           </svg>
           Takes ~3 Minutes to Complete
         </div>
 
-        <form id="emailGateForm">
+        <h2 class="sectionTitle" id="emailSectionTitle" style="font-size: 42px; margin-bottom: 15px;">Enter Communication Profile</h2>
+        <p class="cardDescription" id="emailSectionSub" style="margin-bottom: 40px; font-size: 17px; max-width: 500px;">Please provide your authorized email address to clear the registration gate and activate the research module matrix.</p>
+        
+        <form id="emailGateForm" style="width: 100%; max-width: 480px;">
           <div class="form-group" style="margin-bottom: 20px;">
-            <input type="email" id="gateEmail" placeholder="User Communication Profile (Email Address)" style="width: 100%;">
+            <input type="email" id="gateEmail" placeholder="User Communication Profile (Email Address)" style="width: 100%; padding: 22px; font-size: 16px; border-radius: 16px;">
           </div>
 
           <div id="otpSection" class="form-group hidden" style="display: none; margin-bottom: 20px;">
-            <p style="color:#10b981; font-size:13px; margin-bottom:8px; text-align: left; padding-left: 5px;">✅ Code sent! Check your email inbox.</p>
-            <input type="text" id="gateOtp" placeholder="Enter 6-Digit Code" maxlength="12" style="width: 100%; text-align: center; letter-spacing: 5px; font-weight: bold; font-size: 18px; background: rgba(255,255,255,0.02);">
+            <p style="color:#10b981; font-size:14px; margin-bottom:10px; text-align: left; padding-left: 5px; font-weight: 700;">✅ Code sent! Check your email inbox.</p>
+            <input type="text" id="gateOtp" placeholder="Enter 6-Digit Code" maxlength="12" style="width: 100%; padding: 22px; text-align: center; letter-spacing: 6px; font-weight: 800; font-size: 20px; background: rgba(255,255,255,0.02); border-radius: 16px;">
           </div>
 
-          <div class="form-group" style="margin-bottom: 20px; text-align: left;">
+          <div class="form-group" style="margin-bottom: 25px; text-align: left;">
             <label for="referredByCode" id="referralInputLabel" style="font-size: 13px; font-weight: bold; color: var(--text-secondary); display: block; margin-bottom: 8px; letter-spacing: 0.5px;">
               Referral Code (Optional)
             </label>
-            <input type="text" id="referredByCode" placeholder="Enter Referral Code (e.g. SYN-AB1234)" style="width: 100%; border-color: rgba(99, 102, 241, 0.2);">
+            <input type="text" id="referredByCode" placeholder="Enter Referral Code (e.g. SYN-AB1234)" style="width: 100%; padding: 18px; border-color: rgba(99, 102, 241, 0.2); border-radius: 14px;">
           </div>
 
-          <div class="form-group" style="margin-bottom: 20px; text-align: left; display: flex; align-items: flex-start; gap: 12px; background: #faf7f2; padding: 15px; border-radius: 12px; border: 1px solid #ece4da;">
-            <input type="checkbox" id="legalConsent" style="width: 20px; height: 20px; margin-top: 3px; cursor: pointer; accent-color: #1f1f1f;">
-            <label for="legalConsent" style="font-size: 13px; color: #5c544c; line-height: 1.5; cursor: pointer; user-select: none;">
+          <div class="form-group" style="margin-bottom: 30px; text-align: left; display: flex; align-items: flex-start; gap: 14px; background: #faf7f2; padding: 18px; border-radius: 14px; border: 1px solid #ece4da;">
+            <input type="checkbox" id="legalConsent" style="width: 22px; height: 22px; margin-top: 2px; cursor: pointer; accent-color: #1f1f1f;">
+            <label for="legalConsent" style="font-size: 13.5px; color: #5c544c; line-height: 1.5; cursor: pointer; user-select: none;">
               I confirm that I have read and agree to the <a href="#" onclick="openLegalModal(); return false;" style="color: #6366f1; text-decoration: underline; font-weight: bold;">Terms of Research & Privacy Policy</a>. I understand token rewards are subject to internal data validation and institutional approvals.
             </label>
           </div>
 
-          <button type="submit" id="startSurveyBtn" class="primaryActionBtn">
+          <button type="submit" id="startSurveyBtn" class="primaryActionBtn" style="padding: 20px; font-size: 18px; border-radius: 16px;">
             Send Verification Code &rarr;
           </button>
         </form>
@@ -471,7 +474,7 @@
 <div id="retrieveModal" class="modal-overlay hidden" style="display: none;">
   <div class="modal-card animate-fade-in">
     <div class="modal-header">
-      <h2>🔍 Retrieve Pending Allocation</h2>
+      <h2>🔍 Sign Up / Retrieve Profile</h2>
       <button type="button" id="closeModalBtn" class="close-btn">&times;</button>
     </div>
     
