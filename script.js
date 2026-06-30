@@ -42,6 +42,7 @@ const referredByCodeInput = document.getElementById("referredByCode");
 const menuToggleBtn = document.getElementById("menuToggleBtn");
 const optionsPopover = document.getElementById("optionsPopover");
 const menuRecoverBtn = document.getElementById("menuRecoverBtn");
+const menuRestartBtn = document.getElementById("menuRestartBtn"); // 🚀 FIXED: Declared missing button identifier
 const retrieveModal = document.getElementById("retrieveModal");
 const closeModalBtn = document.getElementById("closeModalBtn");
 const cancelModalBtn = document.getElementById("cancelModalBtn");
@@ -489,9 +490,10 @@ function handlePrevSection() {
   }
 }
 
+// 🚀 FIXED: Fixed explicit fallback mapping from q.question or q.id
 function getQuestionText(q) {
   if (typeof questionTranslations !== "undefined" && questionTranslations[currentLanguage]) {
-    return questionTranslations[currentLanguage][q.id] || q.text || q.id;
+    return questionTranslations[currentLanguage][q.id] || q.question || q.id;
   }
   return q.question || q.id;
 }
@@ -636,7 +638,6 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
   const outputTarget = isFromModal ? modalStatus : statusDiv;
   if (!outputTarget) return;
 
-  // 🚀 FIXED: Default checking text
   outputTarget.innerHTML = `⏳ ${getUIText("checkingLedger")}`;
   outputTarget.style.color = "#57d6c2";
 
@@ -650,7 +651,6 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
       userEmailAddress = email;
       localStorage.setItem("syntrix_user_email", email);
       
-      // 🚀 FIXED: Appended "SYNX" instead of "SYN" in the referral screen
       if (statTotalReferrals) statTotalReferrals.innerText = statusResult.referralsCount || "0";
       if (statPendingRewards) statPendingRewards.innerText = `${statusResult.pendingRewards || 0} SYNX`;
       if (statClaimedRewards) statClaimedRewards.innerText = `${statusResult.claimedRewards || 0} SYNX`;
@@ -699,12 +699,12 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
         renderSection();
         outputTarget.innerHTML = "";
       } else {
-        outputTarget.innerHTML = ""; // 🚀 FIXED: Explicitly clear loading text on error
+        outputTarget.innerHTML = ""; 
         showToast("Profile ledger entry not found.", "❌");
       }
     }
   } catch (err) {
-    outputTarget.innerHTML = ""; // 🚀 FIXED: Explicitly clear loading text on server timeout/sleep
+    outputTarget.innerHTML = ""; 
     showToast("Server waking up or offline. Please try again.", "❌");
   }
 }
