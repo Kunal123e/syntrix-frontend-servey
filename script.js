@@ -8,7 +8,7 @@ const BACKEND_URL = window.location.origin.includes("localhost") || window.locat
 
 const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 const WALLET_REGEX = /^0x[a-fA-F0-9]{40}$/;
-const DEFAULT_TIMEOUT_MS = 60000;
+const DEFAULT_TIMEOUT_MS = 90000; // 🚀 FIXED: Increased timeout to 90 seconds to allow Render.com free-tier to wake up
 
 let userEmailAddress = "";
 let currentSection = 0;
@@ -41,7 +41,6 @@ const startSurveyBtn = document.getElementById("startSurveyBtn");
 const referredByCodeInput = document.getElementById("referredByCode"); 
 const menuToggleBtn = document.getElementById("menuToggleBtn");
 const optionsPopover = document.getElementById("optionsPopover");
-const menuRestartBtn = document.getElementById("menuRestartBtn");
 const menuRecoverBtn = document.getElementById("menuRecoverBtn");
 const retrieveModal = document.getElementById("retrieveModal");
 const closeModalBtn = document.getElementById("closeModalBtn");
@@ -301,7 +300,7 @@ function getUIText(key) {
     validationRequired: "Please answer all questions before continuing.",
     submitting: "⏳ Storing survey data metrics across secure registers...",
     claiming: "⚡ Appending whitelist configuration parameters...",
-    checkingLedger: "🔍 Authenticating communication profile ledger status..."
+    checkingLedger: "⏳ Setting up your exclusive premium experience..."
   };
   if (typeof translations !== "undefined" && translations[currentLanguage] && translations[currentLanguage][key]) {
     return translations[currentLanguage][key];
@@ -637,6 +636,7 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
   const outputTarget = isFromModal ? modalStatus : statusDiv;
   if (!outputTarget) return;
 
+  // 🚀 FIXED: Default checking text
   outputTarget.innerHTML = `⏳ ${getUIText("checkingLedger")}`;
   outputTarget.style.color = "#57d6c2";
 
@@ -650,16 +650,14 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
       userEmailAddress = email;
       localStorage.setItem("syntrix_user_email", email);
       
-      // 🚀 FIXED: Append SYNX to the updated dashboard variables
+      // 🚀 FIXED: Appended "SYNX" instead of "SYN" in the referral screen
       if (statTotalReferrals) statTotalReferrals.innerText = statusResult.referralsCount || "0";
       if (statPendingRewards) statPendingRewards.innerText = `${statusResult.pendingRewards || 0} SYNX`;
       if (statClaimedRewards) statClaimedRewards.innerText = `${statusResult.claimedRewards || 0} SYNX`;
       if (statTotalEarned) statTotalEarned.innerText = `${(statusResult.pendingRewards || 0) + (statusResult.claimedRewards || 0)} SYNX`;
       
-      // Update Original Display
       if (referralCodeDisplay) referralCodeDisplay.value = `${window.location.origin}/?ref=${statusResult.referralCode || ""}`;
       
-      // Update Dropdown Popover Display specifically
       const menuReferralInput = document.getElementById("menuReferralInputDisplay");
       if (menuReferralInput) menuReferralInput.value = `${window.location.origin}/?ref=${statusResult.referralCode || ""}`;
       
@@ -701,11 +699,13 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
         renderSection();
         outputTarget.innerHTML = "";
       } else {
+        outputTarget.innerHTML = ""; // 🚀 FIXED: Explicitly clear loading text on error
         showToast("Profile ledger entry not found.", "❌");
       }
     }
   } catch (err) {
-    showToast("Communication framework offline.", "❌");
+    outputTarget.innerHTML = ""; // 🚀 FIXED: Explicitly clear loading text on server timeout/sleep
+    showToast("Server waking up or offline. Please try again.", "❌");
   }
 }
 
@@ -1035,6 +1035,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (menuRecoverBtn && retrieveModal) {
     menuRecoverBtn.onclick = () => {
+      if(optionsPopover) {
+          optionsPopover.classList.add("hidden"); 
+          optionsPopover.style.display = "none";
+      }
       retrieveModal.classList.remove("hidden");
       retrieveModal.style.display = "flex";
       if (modalEmailInput) modalEmailInput.value = "";
@@ -1052,7 +1056,15 @@ document.addEventListener("DOMContentLoaded", async () => {
               mainApplicationLayout.classList.remove("hidden");
               mainApplicationLayout.style.display = "flex";
           }
+          
+          const originalText = confirmRetrieveBtn.innerText;
+          confirmRetrieveBtn.innerText = "Searching...";
+          confirmRetrieveBtn.disabled = true;
+          
           await runProfileLedgerVerification(searchEmail, true);
+          
+          confirmRetrieveBtn.innerText = originalText;
+          confirmRetrieveBtn.disabled = false;
         };
       }
     };
