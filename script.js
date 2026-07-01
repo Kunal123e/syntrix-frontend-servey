@@ -76,6 +76,13 @@ const statClaimedRewards = document.getElementById("statClaimedRewards");
 const statTotalEarned = document.getElementById("statTotalEarned");
 const referralCodeDisplay = document.getElementById("referralCodeDisplay");
 const copyReferralBtn = document.getElementById("copyReferralBtn");
+
+// 🚀 NEW: QR Code Element Selectors
+const generateQrBtn = document.getElementById("generateQrBtn");
+const qrCodeWrapper = document.getElementById("qrCodeWrapper");
+const qrCodeCanvas = document.getElementById("qrCodeCanvas");
+const downloadQrBtn = document.getElementById("downloadQrBtn");
+
 const statusDiv = document.getElementById("status");
 const progressFill = document.querySelector(".progressFill");
 const progressText = document.querySelector(".progressText");
@@ -983,6 +990,57 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
   }
 
+  // 🚀 NEW: Generate QR Code Logic
+  if (generateQrBtn) {
+    generateQrBtn.addEventListener("click", () => {
+      if (!referralCodeDisplay || !referralCodeDisplay.value) {
+        showToast("Referral link not found.", "❌");
+        return;
+      }
+      
+      qrCodeWrapper.style.display = "flex";
+      qrCodeCanvas.innerHTML = "";
+      
+      new QRCode(qrCodeCanvas, {
+        text: referralCodeDisplay.value,
+        width: 220,
+        height: 220,
+        colorDark: "#111827",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+      qrCodeWrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+  }
+
+  // 🚀 NEW: Download QR Code Logic
+  if (downloadQrBtn) {
+    downloadQrBtn.addEventListener("click", () => {
+      const qrImg = qrCodeCanvas.querySelector("img");
+      let downloadUrl = "";
+
+      if (qrImg && qrImg.src) {
+        downloadUrl = qrImg.src;
+      } else {
+        const canvas = qrCodeCanvas.querySelector("canvas");
+        if (canvas) downloadUrl = canvas.toDataURL("image/png");
+      }
+
+      if (downloadUrl) {
+        const tempLink = document.createElement("a");
+        tempLink.href = downloadUrl;
+        tempLink.download = "Syntrix_Dealer_QR.png";
+        document.body.appendChild(tempLink);
+        tempLink.click();
+        document.body.removeChild(tempLink);
+        showToast("QR Code saved to gallery!", "✅");
+      } else {
+        showToast("Failed to generate download link.", "❌");
+      }
+    });
+  }
+
   const menuCopyReferralBtn = document.getElementById("menuCopyReferralBtn");
   const menuReferralInputDisplay = document.getElementById("menuReferralInputDisplay");
   if (menuCopyReferralBtn && menuReferralInputDisplay) {
@@ -1057,7 +1115,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
       retrieveModal.classList.remove("hidden");
       retrieveModal.style.display = "flex";
-      if (modalEmailInput) modalEmailInput.value = ""; // 🚀 FIXED: modalInputLabelEl safely replaced
+      if (modalEmailInput) modalEmailInput.value = ""; // 🚀 FIXED: Reference repaired
       if (modalStatus) modalStatus.innerHTML = "";
       
       if (confirmRetrieveBtn) {
