@@ -260,7 +260,6 @@ function displayConsumerBadgesUI(badgeKey) {
     dropdownBadgeText.innerText = profile.title;
     dropdownBadgeText.style.color = profile.color;
   }
-  // 🚀 FIXED: topbar left analyzer alignment badge displays are cleanly deleted
 }
 
 function normalizeReferralCode(code) {
@@ -673,7 +672,6 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
         const tabLinksContainer = document.getElementById("dashboardTabLinks");
         if (tabLinksContainer) { tabLinksContainer.classList.remove("hidden"); tabLinksContainer.style.display = "flex"; }
         
-        // 🚀 FIXED: The absolute first page opened whenever logged in is their dynamic badge screen
         routeDashboardTabs("badge");
         outputTarget.innerHTML = "";
       } else {
@@ -1059,7 +1057,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
       retrieveModal.classList.remove("hidden");
       retrieveModal.style.display = "flex";
-      if (modalInputLabelEl) modalEmailInput.value = "";
+      if (modalEmailInput) modalEmailInput.value = ""; // 🚀 FIXED: modalInputLabelEl safely replaced
       if (modalStatus) modalStatus.innerHTML = "";
       
       if (confirmRetrieveBtn) {
