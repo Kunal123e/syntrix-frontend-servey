@@ -8,7 +8,7 @@ const BACKEND_URL = window.location.origin.includes("localhost") || window.locat
 
 const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 const WALLET_REGEX = /^0x[a-fA-F0-9]{40}$/;
-const DEFAULT_TIMEOUT_MS = 90000; // 🚀 FIXED: Increased timeout to 90 seconds to allow Render.com free-tier to wake up
+const DEFAULT_TIMEOUT_MS = 90000; 
 
 let userEmailAddress = "";
 let currentSection = 0;
@@ -17,7 +17,6 @@ let currentLanguage = "en";
 let isOtpSent = false;
 let userConnectedWalletAddress = "";
 
-// 🚀 NEW: Legal Consent tracking variables
 let legalConsentTimestamp = "";
 let clientUserAgent = "";
 
@@ -42,7 +41,7 @@ const referredByCodeInput = document.getElementById("referredByCode");
 const menuToggleBtn = document.getElementById("menuToggleBtn");
 const optionsPopover = document.getElementById("optionsPopover");
 const menuRecoverBtn = document.getElementById("menuRecoverBtn");
-const menuRestartBtn = document.getElementById("menuRestartBtn"); // 🚀 FIXED: Declared missing button identifier
+const menuRestartBtn = document.getElementById("menuRestartBtn"); 
 const retrieveModal = document.getElementById("retrieveModal");
 const closeModalBtn = document.getElementById("closeModalBtn");
 const cancelModalBtn = document.getElementById("cancelModalBtn");
@@ -61,6 +60,7 @@ const rewardDashboardScreen = document.getElementById("rewardDashboardScreen");
 const tabScreenHub = document.getElementById("rewardDashboardScreen"); 
 const tabScreenBadge = document.getElementById("tabScreenBadge");
 const tabScreenReferrals = document.getElementById("tabScreenReferrals");
+const tabScreenMoreSurveys = document.getElementById("tabScreenMoreSurveys");
 const claimScreenSection = document.getElementById("claimScreenSection");
 
 const dashboardWalletInput = document.getElementById("dashboardWalletInput");
@@ -82,7 +82,6 @@ const progressText = document.querySelector(".progressText");
 
 const dashboardTabLinks = document.getElementById("dashboardTabLinks");
 const sidebarLogoutBtn = document.getElementById("sidebarLogoutBtn");
-const lockedClaimGatewayBtn = document.getElementById("lockedClaimGatewayBtn");
 
 const confirmRestartModal = document.getElementById("confirmRestartModal");
 const cancelRestartBtn = document.getElementById("cancelRestartBtn");
@@ -162,7 +161,6 @@ if (navGetStartedAction) {
   });
 }
 
-// Improved Logic to handle immediate dashboard access if previously logged in
 if (initializePlatformBtn) {
   initializePlatformBtn.addEventListener("click", () => {
     if(splashLandingGate) splashLandingGate.style.display = "none"; 
@@ -180,9 +178,15 @@ if (initializePlatformBtn) {
       }
       runProfileLedgerVerification(userEmailAddress, false);
     } else {
+      // 🚀 FIXED: When not logged in, explicitly lock out the app dashboard sheets so they can't bleed out under the login form
+      const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection"];
+      dashboardCards.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.style.display = "none"; el.classList.add("hidden"); }
+      });
       if (emailGateSection) {
           emailGateSection.classList.remove("hidden");
-          emailGateSection.style.display = "block";
+          emailGateSection.style.display = "flex";
       }
     }
   });
@@ -248,7 +252,6 @@ function displayConsumerBadgesUI(badgeKey) {
     `;
   }
 
-  // Populate Dropdown Badge (inside 3-dots)
   const dropdownBadgeWrapper = document.getElementById("menuPsychologyBadgeWrapper");
   const dropdownBadgeText = document.getElementById("menuPsychologyBadgeText");
   const dropdownBadgeIcon = document.getElementById("menuBadgeIcon");
@@ -259,7 +262,6 @@ function displayConsumerBadgesUI(badgeKey) {
     dropdownBadgeText.style.color = profile.color;
   }
 
-  // Populate Topbar Badge (Left of 3 Dots)
   const topbarBadgeDisplay = document.getElementById("topbarBadgeDisplay");
   const topbarBadgeText = document.getElementById("topbarBadgeText");
   const topbarBadgeIcon = document.getElementById("topbarBadgeIcon");
@@ -315,6 +317,7 @@ function routeDashboardTabs(targetTab) {
     document.getElementById("rewardDashboardScreen"),
     document.getElementById("tabScreenBadge"),
     document.getElementById("tabScreenReferrals"),
+    document.getElementById("tabScreenMoreSurveys"),
     document.getElementById("claimScreenSection")
   ];
   
@@ -333,6 +336,7 @@ function routeDashboardTabs(targetTab) {
   if (targetTab === "hub") targetCard = document.getElementById("rewardDashboardScreen");
   if (targetTab === "badge") targetCard = document.getElementById("tabScreenBadge");
   if (targetTab === "referrals") targetCard = document.getElementById("tabScreenReferrals");
+  if (targetTab === "more-surveys") targetCard = document.getElementById("tabScreenMoreSurveys");
   
   if (targetCard) {
     targetCard.classList.remove("hidden");
@@ -490,7 +494,6 @@ function handlePrevSection() {
   }
 }
 
-// 🚀 FIXED: Fixed explicit fallback mapping from q.question or q.id
 function getQuestionText(q) {
   if (typeof questionTranslations !== "undefined" && questionTranslations[currentLanguage]) {
     return questionTranslations[currentLanguage][q.id] || q.question || q.id;
@@ -629,7 +632,7 @@ function updateExcitementBanner(sectionIndex) {
       if (sectionIndex < 5) {
           banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! You've secured <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> so far!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Complete the next module to claim <strong style="color: #fbbf24;">8 more!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div></div>`;
       } else {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! You've secured all <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span>!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Hit Submit below to transfer them to your wallet!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div>`;
+          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! You've secured all <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span>!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Hit Submit below to transfer them to your wallet!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div> desert;
       }
   }
 }
@@ -679,7 +682,7 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
       } else {
         if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
         
-        const cards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "claimScreenSection"];
+        const cards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection"];
         cards.forEach(id => {
           const el = document.getElementById(id);
           if (el) { el.classList.add("hidden"); el.style.display = "none"; }
@@ -694,7 +697,13 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
       }
     } else {
       if (!isFromModal) {
-        if (emailGateSection) { emailGateSection.classList.remove("hidden"); emailGateSection.style.display = "block"; }
+        // 🚀 FIXED: Double guarantee lockout on negative database verification responses
+        const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection"];
+        dashboardCards.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) { el.style.display = "none"; el.classList.add("hidden"); }
+        });
+        if (emailGateSection) { emailGateSection.classList.remove("hidden"); emailGateSection.style.display = "flex"; }
         currentSection = 0;
         renderSection();
         outputTarget.innerHTML = "";
@@ -864,8 +873,15 @@ function resetApplicationFlowState() {
   
   if (emailGateSection) {
       emailGateSection.classList.remove("hidden");
-      emailGateSection.style.display = "block";
+      emailGateSection.style.display = "flex";
   }
+  
+  const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection"];
+  dashboardCards.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.classList.add("hidden"); el.style.display = "none"; }
+  });
+
   if (claimForm) {
       claimForm.classList.add("hidden");
       claimForm.style.display = "none";
@@ -873,10 +889,6 @@ function resetApplicationFlowState() {
   if (topProgressBox) {
       topProgressBox.classList.add("hidden");
       topProgressBox.style.display = "none";
-  }
-  if (rewardDashboardScreen) {
-      rewardDashboardScreen.classList.add("hidden");
-      rewardDashboardScreen.style.display = "none";
   }
   
   const tabLinksContainer = document.getElementById("dashboardTabLinks");
@@ -912,7 +924,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const savedRefCode = localStorage.getItem("referralCode");
   if (savedRefCode && referredByCodeInput) referredByCodeInput.value = savedRefCode;
 
-  // Initialize Routing for Dashboard Tabs from inside Popover
   document.querySelectorAll(".tab-btn").forEach(btn => {
     btn.addEventListener("click", (e) => {
       const target = e.target.dataset.tab;
@@ -930,7 +941,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
     if (claimForm) { claimForm.classList.add("hidden"); claimForm.style.display = "none"; }
     if (topProgressBox) { topProgressBox.classList.add("hidden"); topProgressBox.style.display = "none"; }
-    if (rewardDashboardScreen) { rewardDashboardScreen.classList.add("hidden"); rewardDashboardScreen.style.display = "none"; }
+    
+    const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys"];
+    dashboardCards.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.classList.add("hidden"); el.style.display = "none"; }
+    });
   } else {
     if (splashLandingGate) {
         splashLandingGate.style.display = "flex";
