@@ -990,7 +990,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
   }
 
-  // 🚀 NEW: Generate QR Code Logic
+  // 🚀 NEW: Generate QR Code Logic (Fixed with Quiet Zone Padding)
   if (generateQrBtn) {
     generateQrBtn.addEventListener("click", () => {
       if (!referralCodeDisplay || !referralCodeDisplay.value) {
@@ -1003,8 +1003,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       
       new QRCode(qrCodeCanvas, {
         text: referralCodeDisplay.value,
-        width: 220,
-        height: 220,
+        width: 256,
+        height: 256,
         colorDark: "#111827",
         colorLight: "#ffffff",
         correctLevel: QRCode.CorrectLevel.H
@@ -1014,30 +1014,40 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // 🚀 NEW: Download QR Code Logic
+  // 🚀 NEW: Download QR Code Logic (Fixed with Quiet Zone Padding)
   if (downloadQrBtn) {
     downloadQrBtn.addEventListener("click", () => {
-      const qrImg = qrCodeCanvas.querySelector("img");
-      let downloadUrl = "";
+      const originalCanvas = qrCodeCanvas.querySelector("canvas");
 
-      if (qrImg && qrImg.src) {
-        downloadUrl = qrImg.src;
-      } else {
-        const canvas = qrCodeCanvas.querySelector("canvas");
-        if (canvas) downloadUrl = canvas.toDataURL("image/png");
+      if (!originalCanvas) {
+        showToast("Please generate the QR code first.", "❌");
+        return;
       }
 
-      if (downloadUrl) {
-        const tempLink = document.createElement("a");
-        tempLink.href = downloadUrl;
-        tempLink.download = "Syntrix_Dealer_QR.png";
-        document.body.appendChild(tempLink);
-        tempLink.click();
-        document.body.removeChild(tempLink);
-        showToast("QR Code saved to gallery!", "✅");
-      } else {
-        showToast("Failed to generate download link.", "❌");
-      }
+      // Create a new canvas to add a white "Quiet Zone" border (Required for scanners)
+      const padding = 24; 
+      const paddedCanvas = document.createElement("canvas");
+      paddedCanvas.width = originalCanvas.width + (padding * 2);
+      paddedCanvas.height = originalCanvas.height + (padding * 2);
+      
+      const ctx = paddedCanvas.getContext("2d");
+      // Fill solid white background
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, paddedCanvas.width, paddedCanvas.height);
+      // Draw original QR code in the center
+      ctx.drawImage(originalCanvas, padding, padding);
+
+      // Convert to image URL and download
+      const downloadUrl = paddedCanvas.toDataURL("image/png");
+      
+      const tempLink = document.createElement("a");
+      tempLink.href = downloadUrl;
+      tempLink.download = "Syntrix_Dealer_QR.png";
+      document.body.appendChild(tempLink);
+      tempLink.click();
+      document.body.removeChild(tempLink);
+      
+      showToast("QR Code saved to gallery!", "✅");
     });
   }
 
