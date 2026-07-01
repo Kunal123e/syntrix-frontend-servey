@@ -4,9 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Syntrix Consumer Analytics Hub</title>
+  
+  <link rel="icon" href="data:,"> 
+  
   <link rel="stylesheet" href="style.css">
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/base@9/dist/base.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/ethereum-provider@9/dist/ethereumProvider.umd.min.js"></script>
@@ -171,7 +176,6 @@
   <p style="font-size: 20px; color: #d1d5db; margin-top: 15px; font-weight: 600; text-align: center; max-width: 500px; line-height: 1.5;">Validating your responses...<br><span style="color: #34d399; font-size: 24px; font-weight: 800; display: inline-block; margin-top: 10px;">Your 48 SYNX reward is waiting!</span></p>
 </div>
 
-<!-- ================= 🚀 PREMIUM BLACK SPLASH GATE ================= -->
 <div id="splashLandingGate" style="display: flex;">
   <nav class="landing-nav">
     <div class="nav-logo" id="navLogoHomeTrigger" style="cursor: pointer; display: flex; align-items: center; gap: 10px;">
@@ -237,7 +241,6 @@
   </div>
 </div>
 
-<!-- ================= 🚀 MAIN SURVEY APPLICATION ================= -->
 <div id="mainApplicationLayout" class="hidden" style="display: none; padding: 32px; min-height: 100vh;">
   <div class="app">
     <div class="content">
@@ -260,8 +263,7 @@
         </div>
 
         <div class="header-controls-group">
-          <!-- 🚀 FIXED: Left side analyzer badge completely removed to clear space -->
-
+          
           <div class="languageGroupWrapper">
             <div class="languageGroup">
               <button type="button" class="langBtn" data-lang="hinglish">Hinglish</button>
@@ -315,7 +317,6 @@
       <div id="excitementBanner" style="display: none; background: linear-gradient(145deg, #23272f 0%, #111418 100%); border: 1px solid #3f444d; box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 12px 24px -6px rgba(0,0,0,0.6); border-radius: 12px; padding: 16px 24px; margin-bottom: 25px; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; width: 100%; box-sizing: border-box;">
       </div>
 
-      <!-- ================= 🚀 PERFECTLY CENTERED EMAIL GATE ================= -->
       <div id="emailGateSection" class="authCard gate-centered-wrapper" style="display: flex; min-height: 65vh; max-width: 680px; border: none; box-shadow: none;">
         
         <div style="display: inline-flex; align-items: center; gap: 8px; background: #d0ded3; color: #111827; padding: 10px 24px; border-radius: 999px; font-size: 15px; font-weight: 700; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.15);">
@@ -335,15 +336,15 @@
           </div>
 
           <div id="otpSection" class="form-group hidden" style="display: none; margin-bottom: 20px;">
-            <p style="color:#10b981; font-size:14px; margin-bottom:10px; text-align: left; padding-left: 5px; font-weight: 700;">✅ Code sent! Check your email inbox.</p>
+            <p style="color:#10b981; font-size:14px; margin-bottom:10px; text-align: center; font-weight: 700;">✅ Code sent! Check your email inbox.</p>
             <input type="text" id="gateOtp" placeholder="Enter 6-Digit Code" maxlength="12" style="width: 100%; padding: 22px; text-align: center; letter-spacing: 6px; font-weight: 800; font-size: 20px; background: rgba(255,255,255,0.02); border-radius: 16px;">
           </div>
 
           <div class="form-group" style="margin-bottom: 25px; text-align: left;">
-            <label for="referredByCode" id="referralInputLabel" style="font-size: 13px; font-weight: bold; color: var(--text-secondary); display: block; margin-bottom: 8px; letter-spacing: 0.5px;">
+            <label for="referredByCode" id="referralInputLabel" style="font-size: 13px; font-weight: bold; color: var(--text-secondary); display: block; margin-bottom: 8px; letter-spacing: 0.5px; text-align: center;">
               Referral Code (Optional)
             </label>
-            <input type="text" id="referredByCode" placeholder="Enter Referral Code (e.g. SYN-AB1234)" style="width: 100%; padding: 18px; border-color: rgba(99, 102, 241, 0.2); border-radius: 14px;">
+            <input type="text" id="referredByCode" placeholder="Enter Referral Code (e.g. SYN-AB1234)" style="width: 100%; padding: 18px; border-color: rgba(99, 102, 241, 0.2); border-radius: 14px; text-align: center;">
           </div>
 
           <div class="form-group" style="margin-bottom: 30px; text-align: left; display: flex; align-items: flex-start; gap: 14px; background: #faf7f2; padding: 18px; border-radius: 14px; border: 1px solid #ece4da;">
@@ -375,7 +376,6 @@
         </div>
       </form>
 
-      <!-- ================= 🚀 REWARD DASHBOARD SCREEN (QUANTUM CLAIM - HARD LOCKED) ================= -->
       <div id="rewardDashboardScreen" class="hidden rewardCard" style="display: none;">
         <div class="badgeRow">
           <span class="submittedBadge" id="surveySubmittedBadge">✨ SURVEY SUBMITTED!</span>
@@ -383,7 +383,6 @@
         
         <h2 class="rewardTitle" id="claimTitle">Secure Your 48 SYNX Allocation</h2>
         
-        <!-- 🚀 FIXED: Premium luxury lock placeholder screen block layout inserted inside context layer -->
         <div id="dashboardClaimLockedOverlay" class="luxury-lock-screen">
           <div style="font-size: 44px; margin-bottom: 15px;">🔒</div>
           <h3 style="font-size: 20px; font-weight: 800; color: #111827; margin-bottom: 8px;">Claim Allocation Locked</h3>
@@ -450,14 +449,23 @@
             </div>
           </div>
 
-          <div class="referralLinkBlock">
-            <input type="text" id="referralCodeDisplay" value="https://domain.com/?ref=SYN-AB1234" readonly>
+          <div class="referralLinkBlock" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+            <input type="text" id="referralCodeDisplay" value="https://domain.com/?ref=SYN-AB1234" readonly style="flex: 1; min-width: 200px;">
             <button type="button" id="copyReferralBtn" class="copyBtn">Copy Link</button>
+            <button type="button" id="generateQrBtn" class="inviteActionBtn">Generate QR</button>
           </div>
+
+          <div id="qrCodeWrapper" style="display: none; flex-direction: column; align-items: center; margin-top: 25px; background: rgba(255, 255, 255, 0.02); border: 1px dashed rgba(99, 102, 241, 0.3); border-radius: 16px; padding: 25px;">
+            <h4 style="font-size: 15px; font-weight: 800; color: #111827; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px;">Your Unique Dealer QR</h4>
+            <div id="qrCodeCanvas" style="background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px;"></div>
+            <button type="button" id="downloadQrBtn" class="executeDistributionBtn" style="max-width: 250px; padding: 14px; margin-top: 0;">
+              ↓ Download to Gallery
+            </button>
+          </div>
+          
         </div>
       </div>
 
-      <!-- ================= 🚀 MORE SURVEYS PORTAL MULTI-PAGE VIEW ================= -->
       <div id="tabScreenMoreSurveys" class="hidden rewardCard" style="display: none;">
         <h2 class="rewardTitle">Discover Research Matrix</h2>
         <p class="rewardSubtitle">Expand your psychographic data framework nodes to scale up token collection channels.</p>
@@ -624,6 +632,47 @@
     
     <div class="modal-footer" style="justify-content: center;">
       <button type="button" onclick="closeLegalModal()" class="btn-primary" style="width: 100%; background: #6366f1; border-color: #6366f1; font-size: 15px; padding: 14px;">I Have Read & Accept the Terms</button>
+    </div>
+  </div>
+</div>
+
+<div id="walletCreatorModal" class="modal-overlay hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter:blur(5px); display:none; align-items:center; justify-content:center; z-index:10000;">
+  <div style="background:#ffffff; color:#1f1f1f; width:100%; max-width:400px; padding:32px; border-radius:24px; box-shadow:0 20px 40px rgba(0,0,0,0.15); border:1px solid #ece4da; text-align:center;">
+    <div style="font-size:42px; margin-bottom:12px;">🦊</div>
+    <h3 style="font-size:22px; font-weight:900; margin-bottom:8px; letter-spacing:-0.5px;">Create MetaMask Account</h3>
+    <p style="font-size:14px; color:#6b6258; line-height:1.5; margin-bottom:24px;">Create a real, secure Web3 wallet address instantly using your existing accounts. No seed phrases or extensions required.</p>
+    
+    <button id="authGoogleWalletBtn" style="width:100%; padding:14px; background:#f4efe8; border:1px solid #ddd4c8; border-radius:12px; font-size:15px; font-weight:700; color:#1f1f1f; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:12px; transition:0.2s;">
+      Continue with Web3Auth Gateway
+    </button>
+
+    <button id="closeWalletCreatorBtn" style="background:transparent; border:none; color:#999086; font-size:13px; font-weight:700; cursor:pointer; text-decoration:underline;">
+      Cancel and return
+    </button>
+  </div>
+</div>
+
+<div id="confirmRestartModal" class="modal-overlay hidden" style="display: none; backdrop-filter: blur(8px); background: rgba(10, 10, 10, 0.75);">
+  <div class="animate-fade-in" style="background: #18181c; border-radius: 24px; width: 100%; max-width: 440px; padding: 35px 30px 20px; text-align: center; box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); position: relative; margin: 20px;">
+    <div style="width: 56px; height: 56px; background: rgba(99, 102, 241, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 1px solid rgba(99, 102, 241, 0.2);">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+    </div>
+    <h2 style="font-size: 21px; font-weight: 800; color: #facc15; margin-bottom: 12px; letter-spacing: -0.5px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+      ⚠️ Potential Data Loss Ahead!
+    </h2>
+    <p style="color: #a1a1aa; font-size: 14.5px; margin-bottom: 30px; line-height: 1.6; padding: 0 5px;">
+      Are you sure you want to reset your progress? All your current answers will be permanently deleted, and you will need to start the modules from the beginning.
+    </p>
+    <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 25px;">
+      <button type="button" id="cancelRestartBtn" style="flex: 1; padding: 14px; background: #e5e7eb; color: #1f2937; border: none; border-bottom: 4px solid #9ca3af; border-radius: 14px; font-weight: 800; font-size: 15px; cursor: pointer; transition: background 0.2s;" onmousedown="this.style.transform='translateY(4px)'; this.style.borderBottomWidth='0px';" onmouseup="this.style.transform='translateY(0px)'; this.style.borderBottomWidth='4px';" onmouseleave="this.style.transform='translateY(0px)'; this.style.borderBottomWidth='4px';">
+        Keep Progress
+      </button>
+      <button type="button" id="confirmRestartBtn" style="flex: 1; padding: 14px; background: #dc2626; color: white; border: none; border-bottom: 4px solid #991b1b; border-radius: 14px; font-weight: 800; font-size: 15px; cursor: pointer; transition: background 0.2s;" onmousedown="this.style.transform='translateY(4px)'; this.style.borderBottomWidth='0px';" onmouseup="this.style.transform='translateY(0px)'; this.style.borderBottomWidth='4px';" onmouseleave="this.style.transform='translateY(0px)'; this.style.borderBottomWidth='4px';">
+        Yes, Reset
+      </button>
+    </div>
+    <div style="font-family: monospace; color: #52525b; font-size: 11px; letter-spacing: 0.5px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
+      Note: This action cannot be undone.
     </div>
   </div>
 </div>
