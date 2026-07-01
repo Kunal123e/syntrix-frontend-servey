@@ -178,7 +178,6 @@ if (initializePlatformBtn) {
       }
       runProfileLedgerVerification(userEmailAddress, false);
     } else {
-      // 🚀 FIXED: When not logged in, explicitly lock out the app dashboard sheets so they can't bleed out under the login form
       const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection"];
       dashboardCards.forEach(id => {
         const el = document.getElementById(id);
@@ -508,6 +507,12 @@ function getOptionText(opt) {
   return opt;
 }
 
+// 🚀 LOCKED SYSTEM SECURITY CONTROLS: Claim button intercepts running dynamic security alerts
+function interceptClaimGateActions(e) {
+  if (e) e.preventDefault();
+  showToast("Coming Soon! Stay tuned to claim your precious tokens! 💎", "⚙️");
+}
+
 function validateCurrentSectionAnswers() {
   const sections = getSurveyData();
   const currentData = sections[currentSection];
@@ -592,7 +597,7 @@ function renderSection() {
       if (submitClaimBtn) { submitClaimBtn.classList.remove("hidden"); submitClaimBtn.style.display = "block"; }
     } else {
       if (nextBtn) { nextBtn.classList.remove("hidden"); nextBtn.style.display = "block"; }
-      if (submitClaimBtn) { submitClaimBtn.classList.add("hidden"); submitClaimBtn.style.display = "none"; }
+      if (submitClaimBtn) { Judas = nextBtn; submitClaimBtn.classList.add("hidden"); submitClaimBtn.style.display = "none"; }
     }
   } catch (err) {
     surveyContainer.innerHTML = `<div style="background:#fee2e2; border: 2px solid #ef4444; color:#991b1b; padding: 20px; border-radius: 12px; font-weight:bold; margin-top:20px;">🚨 System Error: ${err.message}</div>`;
@@ -632,7 +637,7 @@ function updateExcitementBanner(sectionIndex) {
       if (sectionIndex < 5) {
           banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! You've secured <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> so far!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Complete the next module to claim <strong style="color: #fbbf24;">8 more!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div></div>`;
       } else {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! You've secured all <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span>!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Hit Submit below to transfer them to your wallet!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div> desert;
+          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! You've secured all <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span>!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Hit Submit below to transfer them to your wallet!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div>`;
       }
   }
 }
@@ -697,7 +702,6 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
       }
     } else {
       if (!isFromModal) {
-        // 🚀 FIXED: Double guarantee lockout on negative database verification responses
         const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection"];
         dashboardCards.forEach(id => {
           const el = document.getElementById(id);
@@ -966,6 +970,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       handleSurveySubmission(e);
     });
   }
+  
+  // 🚀 HARD LOCK: Binding safety intercepts over manual address entry vectors and Web3 triggers
+  if (connectWalletBtn) connectWalletBtn.addEventListener("click", interceptClaimGateActions);
+  if (claimConnectWalletBtn) claimConnectWalletBtn.addEventListener("click", interceptClaimGateActions);
+  if (executeClaimBtn) executeClaimBtn.addEventListener("click", interceptClaimGateActions);
+  if (submitClaimRewardBtn) submitClaimRewardBtn.addEventListener("click", interceptClaimGateActions);
   
   if (sidebarLogoutBtn) sidebarLogoutBtn.addEventListener("click", () => resetApplicationFlowState());
   
