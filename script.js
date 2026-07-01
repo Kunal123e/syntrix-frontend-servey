@@ -260,16 +260,7 @@ function displayConsumerBadgesUI(badgeKey) {
     dropdownBadgeText.innerText = profile.title;
     dropdownBadgeText.style.color = profile.color;
   }
-
-  const topbarBadgeDisplay = document.getElementById("topbarBadgeDisplay");
-  const topbarBadgeText = document.getElementById("topbarBadgeText");
-  const topbarBadgeIcon = document.getElementById("topbarBadgeIcon");
-  if (topbarBadgeDisplay && topbarBadgeText && topbarBadgeIcon) {
-    topbarBadgeDisplay.style.display = "flex";
-    topbarBadgeIcon.innerHTML = profile.menuIcon;
-    topbarBadgeText.innerText = profile.title;
-    topbarBadgeText.style.color = profile.color;
-  }
+  // 🚀 FIXED: topbar left analyzer alignment badge displays are cleanly deleted
 }
 
 function normalizeReferralCode(code) {
@@ -597,7 +588,7 @@ function renderSection() {
       if (submitClaimBtn) { submitClaimBtn.classList.remove("hidden"); submitClaimBtn.style.display = "block"; }
     } else {
       if (nextBtn) { nextBtn.classList.remove("hidden"); nextBtn.style.display = "block"; }
-      if (submitClaimBtn) { Judas = nextBtn; submitClaimBtn.classList.add("hidden"); submitClaimBtn.style.display = "none"; }
+      if (submitClaimBtn) { submitClaimBtn.classList.add("hidden"); submitClaimBtn.style.display = "none"; }
     }
   } catch (err) {
     surveyContainer.innerHTML = `<div style="background:#fee2e2; border: 2px solid #ef4444; color:#991b1b; padding: 20px; border-radius: 12px; font-weight:bold; margin-top:20px;">🚨 System Error: ${err.message}</div>`;
@@ -682,7 +673,8 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
         const tabLinksContainer = document.getElementById("dashboardTabLinks");
         if (tabLinksContainer) { tabLinksContainer.classList.remove("hidden"); tabLinksContainer.style.display = "flex"; }
         
-        routeDashboardTabs("hub");
+        // 🚀 FIXED: The absolute first page opened whenever logged in is their dynamic badge screen
+        routeDashboardTabs("badge");
         outputTarget.innerHTML = "";
       } else {
         if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
@@ -971,7 +963,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
   
-  // 🚀 HARD LOCK: Binding safety intercepts over manual address entry vectors and Web3 triggers
+  // 🚀 HARD LOCK: Dynamic button overrides wrapped permanently across all interfaces
   if (connectWalletBtn) connectWalletBtn.addEventListener("click", interceptClaimGateActions);
   if (claimConnectWalletBtn) claimConnectWalletBtn.addEventListener("click", interceptClaimGateActions);
   if (executeClaimBtn) executeClaimBtn.addEventListener("click", interceptClaimGateActions);
@@ -1067,7 +1059,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
       retrieveModal.classList.remove("hidden");
       retrieveModal.style.display = "flex";
-      if (modalEmailInput) modalEmailInput.value = "";
+      if (modalInputLabelEl) modalEmailInput.value = "";
       if (modalStatus) modalStatus.innerHTML = "";
       
       if (confirmRetrieveBtn) {
