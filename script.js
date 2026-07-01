@@ -1115,7 +1115,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
       retrieveModal.classList.remove("hidden");
       retrieveModal.style.display = "flex";
-      if (modalEmailInput) modalEmailInput.value = ""; // 🚀 FIXED: Reference repaired
+      if (modalEmailInput) modalEmailInput.value = ""; 
       if (modalStatus) modalStatus.innerHTML = "";
       
       if (confirmRetrieveBtn) {
