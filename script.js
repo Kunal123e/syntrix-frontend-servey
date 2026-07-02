@@ -180,8 +180,6 @@ if (initializePlatformBtn) {
         mainApplicationLayout.style.display = "flex"; 
     }
     
-    surveyStartTime = Date.now(); // 🚀 Capture start time
-    
     const savedEmail = localStorage.getItem("syntrix_user_email");
     if (savedEmail) {
       userEmailAddress = savedEmail;
@@ -729,7 +727,7 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
 async function handleSurveySubmission(e) {
   if (e) e.preventDefault();
 
-  // 🚀 QUALITY GATE: 2 Minutes Strict Check Validation
+  // 🚀 FRONTEND QUALITY GATE: Time check against exactly when they started Question 1
   if ((Date.now() - surveyStartTime) < QUALITY_THRESHOLD_MS) {
     showToast("Please take more time to read the questions carefully.", "⏱️");
     return;
@@ -757,8 +755,8 @@ async function handleSurveySubmission(e) {
     legal_consent: true,
     consent_timestamp: legalConsentTimestamp || new Date().toISOString(),
     user_agent: clientUserAgent || navigator.userAgent,
-    startTime: surveyStartTime,       // 🚀 Sent to backend
-    submissionTime: Date.now()        // 🚀 Sent to backend
+    startTime: surveyStartTime, // 🚀 Timestamps pushed securely
+    submissionTime: Date.now()
   };
 
   try {
