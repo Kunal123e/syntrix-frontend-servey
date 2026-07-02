@@ -180,6 +180,8 @@ if (initializePlatformBtn) {
         mainApplicationLayout.style.display = "flex"; 
     }
     
+    // 🚀 REMOVED: Timer no longer starts here. 
+    
     const savedEmail = localStorage.getItem("syntrix_user_email");
     if (savedEmail) {
       userEmailAddress = savedEmail;
@@ -535,6 +537,10 @@ function renderSection() {
   const currentData = sections[currentSection];
   
   try {
+    if (currentSection === 0) {
+       surveyStartTime = Date.now(); // 🚀 TIMER STARTS EXACTLY WHEN FIRST SECTION RENDERS
+    }
+
     if (topProgressBox) {
       topProgressBox.classList.remove("hidden");
       topProgressBox.style.display = "block";
@@ -755,8 +761,8 @@ async function handleSurveySubmission(e) {
     legal_consent: true,
     consent_timestamp: legalConsentTimestamp || new Date().toISOString(),
     user_agent: clientUserAgent || navigator.userAgent,
-    startTime: surveyStartTime, // 🚀 Timestamps pushed securely
-    submissionTime: Date.now()
+    startTime: surveyStartTime,       // 🚀 Sent to backend
+    submissionTime: Date.now()        // 🚀 Sent to backend
   };
 
   try {
@@ -1007,16 +1013,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 🚀 NEW: Generate QR Code Logic (Fixed with local QRCodejs structure)
   if (generateQrBtn) {
     generateQrBtn.addEventListener("click", () => {
-      if (!referralCodeDisplay || !referralCodeDisplay.value) {
-        showToast("Referral link not found.", "❌");
+      const shopRefCode = localStorage.getItem("referralCode");
+      if (!shopRefCode) {
+        showToast("Referral link not found. Please log in to your shop account.", "❌");
         return;
       }
       
       qrCodeWrapper.style.display = "flex";
       qrCodeCanvas.innerHTML = "";
       
+      // The QR code now points to your backend redirector
+      const dynamicQrLink = `${BACKEND_URL}/r/${shopRefCode}`;
+      
       new QRCode(qrCodeCanvas, {
-        text: referralCodeDisplay.value,
+        text: dynamicQrLink,
         width: 256,
         height: 256,
         colorDark: "#111827",
@@ -1025,6 +1035,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
 
       qrCodeWrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      showToast("Shop QR Code generated!", "✅");
     });
   }
 
