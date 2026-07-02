@@ -10,6 +10,10 @@ const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 const WALLET_REGEX = /^0x[a-fA-F0-9]{40}$/;
 const DEFAULT_TIMEOUT_MS = 90000; 
 
+// 🚀 QUALITY GATE: Start time tracker
+let surveyStartTime = 0;
+const QUALITY_THRESHOLD_MS = 120000; // 2 minutes strict data validation
+
 let userEmailAddress = "";
 let currentSection = 0;
 const answers = {};
@@ -77,7 +81,7 @@ const statTotalEarned = document.getElementById("statTotalEarned");
 const referralCodeDisplay = document.getElementById("referralCodeDisplay");
 const copyReferralBtn = document.getElementById("copyReferralBtn");
 
-// 🚀 NEW: QR Code Element Selectors
+// 🚀 QR Code Element Selectors
 const generateQrBtn = document.getElementById("generateQrBtn");
 const qrCodeWrapper = document.getElementById("qrCodeWrapper");
 const qrCodeCanvas = document.getElementById("qrCodeCanvas");
@@ -175,6 +179,8 @@ if (initializePlatformBtn) {
         mainApplicationLayout.classList.remove("hidden");
         mainApplicationLayout.style.display = "flex"; 
     }
+    
+    surveyStartTime = Date.now(); // 🚀 Capture start time
     
     const savedEmail = localStorage.getItem("syntrix_user_email");
     if (savedEmail) {
@@ -679,6 +685,7 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
         const tabLinksContainer = document.getElementById("dashboardTabLinks");
         if (tabLinksContainer) { tabLinksContainer.classList.remove("hidden"); tabLinksContainer.style.display = "flex"; }
         
+        // 🚀 DEFAULT ENTRY POINT: Verified users are routed exclusively to the Persona Badge page
         routeDashboardTabs("badge");
         outputTarget.innerHTML = "";
       } else {
@@ -721,6 +728,13 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
 
 async function handleSurveySubmission(e) {
   if (e) e.preventDefault();
+
+  // 🚀 QUALITY GATE: 2 Minutes Strict Check Validation
+  if ((Date.now() - surveyStartTime) < QUALITY_THRESHOLD_MS) {
+    showToast("Please take more time to read the questions carefully.", "⏱️");
+    return;
+  }
+
   if (!validateCurrentSectionAnswers()) {
     showToast(getUIText("validationRequired"), "⚠️");
     return;
@@ -742,7 +756,9 @@ async function handleSurveySubmission(e) {
     referredBy: referralCodeUsed,
     legal_consent: true,
     consent_timestamp: legalConsentTimestamp || new Date().toISOString(),
-    user_agent: clientUserAgent || navigator.userAgent
+    user_agent: clientUserAgent || navigator.userAgent,
+    startTime: surveyStartTime,       // 🚀 Sent to backend
+    submissionTime: Date.now()        // 🚀 Sent to backend
   };
 
   try {
@@ -990,7 +1006,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
   }
 
-  // 🚀 NEW: Generate QR Code Logic (Fixed with Quiet Zone Padding)
+  // 🚀 NEW: Generate QR Code Logic (Fixed with local QRCodejs structure)
   if (generateQrBtn) {
     generateQrBtn.addEventListener("click", () => {
       if (!referralCodeDisplay || !referralCodeDisplay.value) {
@@ -1014,7 +1030,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // 🚀 NEW: Download QR Code Logic (Fixed with Quiet Zone Padding)
+  // 🚀 NEW: Download QR Code Logic (Fixed with 24px Canvas White Quiet Zone Padding)
   if (downloadQrBtn) {
     downloadQrBtn.addEventListener("click", () => {
       const originalCanvas = qrCodeCanvas.querySelector("canvas");
@@ -1024,7 +1040,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
       }
 
-      // Create a new canvas to add a white "Quiet Zone" border (Required for scanners)
+      // Create a new canvas to add a white "Quiet Zone" border
       const padding = 24; 
       const paddedCanvas = document.createElement("canvas");
       paddedCanvas.width = originalCanvas.width + (padding * 2);
