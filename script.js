@@ -180,8 +180,6 @@ if (initializePlatformBtn) {
         mainApplicationLayout.style.display = "flex"; 
     }
     
-    // 🚀 REMOVED: Timer no longer starts here. 
-    
     const savedEmail = localStorage.getItem("syntrix_user_email");
     if (savedEmail) {
       userEmailAddress = savedEmail;
@@ -679,7 +677,7 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
       const menuReferralWrapper = document.getElementById("menuReferralWrapper");
       if (menuReferralWrapper) menuReferralWrapper.style.display = "flex";
 
-      displayConsumerBadgesUI("Analyzer");
+      displayConsumerBadgesUI(statusResult.badge || "Analyzer");
 
       if (statusResult.exists === true) {
         if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
@@ -730,6 +728,39 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
   }
 }
 
+function determinePersonaBadge(answersObj) {
+  const scores = { Analyzer: 0, Stylist: 0, Hedger: 0, Native: 0 };
+  const mapping = {
+    "question_1_id": {
+      "I compare all the data and reviews": "Analyzer",
+      "I care about how beautiful it looks": "Stylist",
+      "I only buy if there is a safe warranty": "Hedger",
+      "I buy what my friends recommend": "Native"
+    },
+    "question_2_id": {
+      "Logic and numbers": "Analyzer",
+      "Aesthetics and vibe": "Stylist",
+      "Safety and guarantees": "Hedger",
+      "Community and trust": "Native"
+    }
+  };
+  for (const [qId, selectedAnswer] of Object.entries(answersObj)) {
+    if (mapping[qId] && mapping[qId][selectedAnswer]) {
+      const persona = mapping[qId][selectedAnswer];
+      scores[persona]++;
+    }
+  }
+  let topBadge = "Analyzer";
+  let maxScore = -1;
+  for (const [badge, score] of Object.entries(scores)) {
+    if (score > maxScore) {
+      maxScore = score;
+      topBadge = badge;
+    }
+  }
+  return topBadge;
+}
+
 async function handleSurveySubmission(e) {
   if (e) e.preventDefault();
 
@@ -761,8 +792,9 @@ async function handleSurveySubmission(e) {
     legal_consent: true,
     consent_timestamp: legalConsentTimestamp || new Date().toISOString(),
     user_agent: clientUserAgent || navigator.userAgent,
-    startTime: surveyStartTime,       // 🚀 Sent to backend
-    submissionTime: Date.now()        // 🚀 Sent to backend
+    startTime: surveyStartTime, 
+    submissionTime: Date.now(),
+    assignedBadge: determinePersonaBadge(answers)
   };
 
   try {
