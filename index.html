@@ -330,31 +330,32 @@
         <h2 class="sectionTitle" id="emailSectionTitle" style="font-size: 42px; margin-bottom: 15px;">Enter Communication Profile</h2>
         <p class="cardDescription" id="emailSectionSub" style="margin-bottom: 40px; font-size: 17px; max-width: 500px;">Please provide your authorized email address to clear the registration gate and activate the research module matrix.</p>
         
-        <form id="emailGateForm" style="width: 100%; max-width: 480px;">
+        <form id="emailGateForm" style="width: 100%; max-width: 480px; margin: 0 auto; box-sizing: border-box;">
           <div class="form-group" style="margin-bottom: 20px;">
-            <input type="email" id="gateEmail" placeholder="User Communication Profile (Email Address)" style="width: 100%; padding: 22px; font-size: 16px; border-radius: 16px; text-align: center;">
+            <input type="email" id="gateEmail" placeholder="User Communication Profile (Email Address)" style="width: 100%; padding: 22px; font-size: 16px; border-radius: 16px; text-align: center; box-sizing: border-box;">
           </div>
 
           <div id="otpSection" class="form-group hidden" style="display: none; margin-bottom: 20px;">
             <p style="color:#10b981; font-size:14px; margin-bottom:10px; text-align: center; font-weight: 700;">✅ Code sent! Check your email inbox.</p>
-            <input type="text" id="gateOtp" placeholder="Enter 6-Digit Code" maxlength="12" style="width: 100%; padding: 22px; text-align: center; letter-spacing: 6px; font-weight: 800; font-size: 20px; background: rgba(255,255,255,0.02); border-radius: 16px;">
+            <input type="text" id="gateOtp" placeholder="Enter 6-Digit Code" maxlength="12" style="width: 100%; padding: 22px; text-align: center; letter-spacing: 6px; font-weight: 800; font-size: 20px; background: rgba(255,255,255,0.02); border-radius: 16px; box-sizing: border-box;">
           </div>
 
           <div class="form-group" style="margin-bottom: 25px; text-align: left;">
-            <label for="referredByCode" id="referralInputLabel" style="font-size: 13px; font-weight: bold; color: var(--text-secondary); display: block; margin-bottom: 8px; letter-spacing: 0.5px; text-align: center;">
+            <label for="referredByCode" id="referralInputLabel" style="font-size: 13px; font-weight: bold; color: #4b5563; display: block; margin-bottom: 8px; letter-spacing: 0.5px; text-align: center;">
               Referral Code (Optional)
             </label>
-            <input type="text" id="referredByCode" placeholder="Enter Referral Code (e.g. SYN-AB1234)" style="width: 100%; padding: 18px; border-color: rgba(99, 102, 241, 0.2); border-radius: 14px; text-align: center;">
+            <input type="text" id="referredByCode" placeholder="Enter Referral Code (e.g. SYN-AB1234)" style="width: 100%; padding: 18px; border: 2px solid #e5e7eb; border-radius: 14px; text-align: center; box-sizing: border-box;">
           </div>
 
-          <div class="form-group" style="margin-bottom: 30px; text-align: left; display: flex; align-items: flex-start; gap: 14px; background: #faf7f2; padding: 18px; border-radius: 14px; border: 1px solid #ece4da;">
-            <input type="checkbox" id="legalConsent" style="width: 22px; height: 22px; margin-top: 2px; cursor: pointer; accent-color: #1f1f1f;">
-            <label for="legalConsent" style="font-size: 13.5px; color: #5c544c; line-height: 1.5; cursor: pointer; user-select: none;">
-              I confirm that I have read and agree to the <a href="#" onclick="openLegalModal(); return false;" style="color: #6366f1; text-decoration: underline; font-weight: bold;">Terms of Research & Privacy Policy</a>. I understand token rewards are subject to internal data validation and institutional approvals.
+          <!-- 🎯 FIXED & FORCED VISIBLE PRIVACY GATE CONTAINER -->
+          <div class="form-group" style="margin-bottom: 30px; text-align: left; display: flex; align-items: flex-start; gap: 14px; background: #f8fafc; padding: 20px; border-radius: 16px; border: 2px solid #e2e8f0; box-sizing: border-box; width: 100%;">
+            <input type="checkbox" id="legalConsent" style="width: 22px; height: 22px; margin-top: 2px; cursor: pointer; accent-color: #111827; flex-shrink: 0;">
+            <label for="legalConsent" style="font-size: 13.5px; color: #334155; line-height: 1.5; cursor: pointer; user-select: none; font-weight: 600; margin: 0;">
+              I confirm that I have read and agree to the <a href="#" onclick="openLegalModal(); return false;" style="color: #6366f1; text-decoration: underline; font-weight: 800;">Terms of Research & Privacy Policy</a>. I understand token rewards are subject to internal data validation and institutional approvals.
             </label>
           </div>
 
-          <button type="submit" id="startSurveyBtn" class="primaryActionBtn" style="padding: 20px; font-size: 18px; border-radius: 16px;">
+          <button type="submit" id="startSurveyBtn" class="primaryActionBtn" style="padding: 20px; font-size: 18px; border-radius: 16px; width: 100%; box-sizing: border-box;">
             Send Verification Code &rarr;
           </button>
         </form>
