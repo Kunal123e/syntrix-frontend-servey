@@ -933,6 +933,128 @@ input[type="radio"] {
 .back-to-home-btn { background: transparent; border: 1px solid rgba(255,255,255,0.15); color: #ffffff; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
 .back-to-home-btn:hover { background: rgba(255,255,255,0.05); }
 
+/* ================= GATEWAY SELECTION CARDS ================= */
+.gateway-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 40px 30px;
+  width: 300px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.gateway-card:hover {
+  border-color: #111827;
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* ================= DOCUMENT MODE ================= */
+.document-wrapper {
+  background: #f9fafb;
+  padding: 40px;
+  border-radius: 24px;
+  border: 1px solid #e5e7eb;
+}
+.doc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.header-left { display: flex; align-items: center; gap: 12px; }
+.icon-doc { background: #111827; color: white; padding: 8px 12px; border-radius: 8px; font-size: 20px; }
+.doc-header h2 { font-size: 28px; font-weight: 800; margin: 0; color: #111827;}
+.back-btn { background: none; border: none; font-weight: 600; cursor: pointer; color: #4b5563; font-size: 15px;}
+.back-btn:hover { color: #111827; }
+.doc-description { color: #6b7280; margin-bottom: 30px; font-size: 15px; }
+
+.doc-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 24px;
+}
+
+.upload-section, .submission-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 30px;
+}
+.upload-box {
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 50px 20px;
+  text-align: center;
+  margin-bottom: 20px;
+  background: #f8fafc;
+  transition: background 0.3s;
+}
+.upload-icon { font-size: 40px; margin-bottom: 15px; }
+.upload-box h3 { font-size: 18px; margin-bottom: 5px; color:#111827;}
+.upload-box p { color: #6b7280; font-size: 14px; margin-bottom: 20px; }
+
+.btn-dark {
+  background: #111827;
+  color: #ffffff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-block;
+  transition: opacity 0.2s;
+}
+.btn-dark:hover { opacity: 0.9; }
+.btn-dark:disabled { background: #9ca3af; cursor: not-allowed; }
+.full-width { width: 100%; margin-top: 15px; padding:16px 24px; border-radius:14px; font-size:16px;}
+
+.preview-window { margin-top: 20px; border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb; width: 100%; aspect-ratio: 1/1; background: #000;}
+.preview-window img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.info-banner {
+  display: flex;
+  gap: 12px;
+  background: #f3f4f6;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.submission-card h4 { font-size: 16px; margin: 0 0 20px 0; font-weight: 700; color:#111827;}
+.reward-amount {
+  background: #111827;
+  color: white;
+  padding: 30px 20px;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 25px;
+}
+.reward-amount strong { display: block; font-size: 28px; margin-bottom: 5px; }
+.reward-amount span { font-size: 13px; opacity: 0.8; }
+.how-it-works h5 { font-size: 14px; margin-bottom: 15px; color:#111827;}
+.how-it-works ul { list-style: none; padding: 0; margin: 0 0 20px 0; }
+.how-it-works li { font-size: 13px; margin-bottom: 12px; color: #4b5563; }
+.how-it-works strong { color: #111827; }
+.security-badge {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #4b5563;
+  text-align: center;
+}
+.input-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color:#111827;}
+.premium-select {
+  width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #d1d5db; outline: none; font-size: 14px;
+}
+.status-message { text-align: center; margin-top: 15px; font-size: 14px; font-weight: 600; }
+
 /* ================= RESPONSIVE FIXES ================= */
 @media(max-width: 900px) {
   body { padding: 12px; }
@@ -962,6 +1084,7 @@ input[type="radio"] {
   
   .static-info-grid { grid-template-columns: 1fr; }
   .landing-nav .nav-links { display: none; }
+  .doc-grid { grid-template-columns: 1fr; }
 }
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }

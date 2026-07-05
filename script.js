@@ -59,6 +59,10 @@ const nextBtn = document.getElementById("nextBtn");
 const prevBtn = document.getElementById("prevBtn");
 const submitClaimBtn = document.getElementById("submitClaimBtn");
 
+// Gateway & Document Selectors
+const gatewayScreenSection = document.getElementById("gatewayScreenSection");
+const documentModeSection = document.getElementById("documentModeSection");
+
 // Dashboard Selectors
 const rewardDashboardScreen = document.getElementById("rewardDashboardScreen");
 const tabScreenHub = document.getElementById("rewardDashboardScreen"); 
@@ -189,7 +193,7 @@ if (initializePlatformBtn) {
       }
       runProfileLedgerVerification(userEmailAddress, false);
     } else {
-      const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection"];
+      const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "gatewayScreenSection", "documentModeSection"];
       dashboardCards.forEach(id => {
         const el = document.getElementById(id);
         if (el) { el.style.display = "none"; el.classList.add("hidden"); }
@@ -201,6 +205,27 @@ if (initializePlatformBtn) {
     }
   });
 }
+
+// ================= GATEWAY LOGIC =================
+window.openMode = function(mode) {
+  const gateway = document.getElementById("gatewayScreenSection");
+  const survey = document.getElementById("claimForm");
+  const topProgress = document.getElementById("topProgressBox");
+  const docMode = document.getElementById("documentModeSection");
+
+  [gateway, survey, topProgress, docMode].forEach(el => {
+      if (el) { el.classList.add("hidden"); el.style.display = "none"; }
+  });
+
+  if (mode === 'gateway') {
+      if(gateway) { gateway.classList.remove("hidden"); gateway.style.display = "flex"; }
+  } else if (mode === 'survey') {
+      currentSection = 0;
+      renderSection(); 
+  } else if (mode === 'document') {
+      if(docMode) { docMode.classList.remove("hidden"); docMode.style.display = "block"; }
+  }
+};
 
 const BADGE_PROFILES = {
   Analyzer: { 
@@ -683,6 +708,8 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
         if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
         if (claimForm) { claimForm.classList.add("hidden"); claimForm.style.display = "none"; }
         if (topProgressBox) { topProgressBox.classList.add("hidden"); topProgressBox.style.display = "none"; }
+        if (gatewayScreenSection) { gatewayScreenSection.classList.add("hidden"); gatewayScreenSection.style.display = "none"; }
+        if (documentModeSection) { documentModeSection.classList.add("hidden"); documentModeSection.style.display = "none"; }
         
         const tabLinksContainer = document.getElementById("dashboardTabLinks");
         if (tabLinksContainer) { tabLinksContainer.classList.remove("hidden"); tabLinksContainer.style.display = "flex"; }
@@ -691,9 +718,10 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
         routeDashboardTabs("badge");
         outputTarget.innerHTML = "";
       } else {
+        // NEW USER - ROUTE TO GATEWAY SELECTOR INSTEAD OF FORCING SURVEY
         if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
         
-        const cards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection"];
+        const cards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "claimForm", "topProgressBox", "documentModeSection"];
         cards.forEach(id => {
           const el = document.getElementById(id);
           if (el) { el.classList.add("hidden"); el.style.display = "none"; }
@@ -702,13 +730,12 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
         const tabLinksContainer = document.getElementById("dashboardTabLinks");
         if (tabLinksContainer) { tabLinksContainer.classList.add("hidden"); tabLinksContainer.style.display = "none"; }
 
-        currentSection = 0;
-        renderSection();
+        window.openMode('gateway');
         outputTarget.innerHTML = "";
       }
     } else {
       if (!isFromModal) {
-        const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection"];
+        const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "gatewayScreenSection", "documentModeSection"];
         dashboardCards.forEach(id => {
           const el = document.getElementById(id);
           if (el) { el.style.display = "none"; el.classList.add("hidden"); }
@@ -929,7 +956,7 @@ function resetApplicationFlowState() {
       emailGateSection.style.display = "flex";
   }
   
-  const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection"];
+  const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "gatewayScreenSection", "documentModeSection"];
   dashboardCards.forEach(id => {
     const el = document.getElementById(id);
     if (el) { el.classList.add("hidden"); el.style.display = "none"; }
@@ -994,6 +1021,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
     if (claimForm) { claimForm.classList.add("hidden"); claimForm.style.display = "none"; }
     if (topProgressBox) { topProgressBox.classList.add("hidden"); topProgressBox.style.display = "none"; }
+    if (gatewayScreenSection) { gatewayScreenSection.classList.add("hidden"); gatewayScreenSection.style.display = "none"; }
+    if (documentModeSection) { documentModeSection.classList.add("hidden"); documentModeSection.style.display = "none"; }
     
     const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys"];
     dashboardCards.forEach(id => {
@@ -1225,3 +1254,92 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 });
+
+// ================= DOCUMENT MODE API LOGIC =================
+const fileInput = document.getElementById('fileInput');
+const previewContainer = document.getElementById('previewContainer');
+const imagePreview = document.getElementById('imagePreview');
+const submitDocBtn = document.getElementById('submitDocBtn');
+const taskTypeSelect = document.getElementById('taskType');
+const statusMessage = document.getElementById('statusMessage');
+
+let selectedFile = null;
+
+if (fileInput) {
+  fileInput.addEventListener('change', function(e) {
+    if (e.target.files && e.target.files.length > 0) {
+      selectedFile = e.target.files[0];
+      if (submitDocBtn) submitDocBtn.disabled = false;
+      
+      const url = URL.createObjectURL(selectedFile);
+      if (imagePreview) imagePreview.src = url;
+      if (previewContainer) previewContainer.style.display = 'block';
+    }
+  });
+}
+
+function convertToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+}
+
+if (submitDocBtn) {
+  submitDocBtn.addEventListener('click', async function() {
+    if (!selectedFile || !userEmailAddress) { 
+      showDocStatus('⚠️ Please select a file and ensure you are logged in.', '#ef4444');
+      return;
+    }
+
+    submitDocBtn.disabled = true;
+    submitDocBtn.innerText = 'Processing...';
+    showDocStatus('⏳ Compressing and queuing your document...', '#ea580c');
+
+    try {
+      const base64String = await convertToBase64(selectedFile);
+      
+      const payload = {
+        userEmail: userEmailAddress,
+        taskType: taskTypeSelect ? taskTypeSelect.value : 'notes',
+        fileName: selectedFile.name || 'camera_capture.jpg',
+        imageBase64: base64String
+      };
+
+      const targetUrl = `${BACKEND_URL}/api/upload-task`;
+
+      const response = await fetch(targetUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        showDocStatus('✨ ' + data.message, '#10b981');
+        selectedFile = null;
+        if (fileInput) fileInput.value = '';
+        if (previewContainer) previewContainer.style.display = 'none';
+        submitDocBtn.innerText = 'Approve & Submit to Waiting Room';
+      } else {
+        showDocStatus('❌ ' + (data.error || 'Upload failed.'), '#ef4444');
+        submitDocBtn.disabled = false;
+        submitDocBtn.innerText = 'Approve & Submit to Waiting Room';
+      }
+    } catch (error) {
+      showDocStatus('⚠️ Network error. Could not connect to waiting room.', '#ef4444');
+      submitDocBtn.disabled = false;
+      submitDocBtn.innerText = 'Approve & Submit to Waiting Room';
+    }
+  });
+}
+
+function showDocStatus(text, color) {
+  if (statusMessage) {
+    statusMessage.innerText = text;
+    statusMessage.style.color = color;
+  }
+}
