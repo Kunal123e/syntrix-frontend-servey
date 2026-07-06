@@ -1311,6 +1311,10 @@ if (submitDocBtn) {
       return;
     }
 
+    // 🚀 STEP 1: Capture starting balance before upload
+    const startingBalanceText = statTotalEarned ? statTotalEarned.innerText : "0";
+    const startingBalance = parseInt(startingBalanceText.replace(/[^0-9]/g, '')) || 0;
+
     submitDocBtn.disabled = true;
     submitDocBtn.innerText = 'Processing...';
     showDocStatus('⏳ Compressing and queuing your document...', '#ea580c');
@@ -1336,11 +1340,42 @@ if (submitDocBtn) {
       const data = await response.json();
 
       if (response.ok) {
-        showDocStatus('✨ ' + data.message, '#10b981');
+        // Clear the form visually
         selectedFile = null;
         if (fileInput) fileInput.value = '';
         if (previewContainer) previewContainer.style.display = 'none';
-        submitDocBtn.innerText = 'Approve & Submit to Waiting Room';
+
+        // 🚀 STEP 2: Live Countdown while AI processes in the background
+        let timeLeft = 65;
+        
+        const countdownInterval = setInterval(() => {
+            timeLeft--;
+            submitDocBtn.innerText = `AI Verifying... (${timeLeft}s)`;
+            showDocStatus(`🤖 AI is analyzing your image. Please wait ${timeLeft} seconds...`, '#6366f1');
+            
+            if (timeLeft <= 0) {
+                clearInterval(countdownInterval);
+                submitDocBtn.innerText = 'Syncing Ledger...';
+                
+                // 🚀 STEP 3: Check ledger and compare balances
+                runProfileLedgerVerification(userEmailAddress, false).then(() => {
+                    const newBalanceText = statTotalEarned ? statTotalEarned.innerText : "0";
+                    const newBalance = parseInt(newBalanceText.replace(/[^0-9]/g, '')) || 0;
+                    
+                    if (newBalance > startingBalance) {
+                        // AI APPROVED IT
+                        showDocStatus('✅ Verification Approved! 48 SYNX added to your rewards.', '#10b981');
+                    } else {
+                        // AI REJECTED IT (TRASH/INVALID)
+                        showDocStatus('❌ Verification Failed: Image was not valid or unclear. Please upload a valid document.', '#ef4444');
+                    }
+                    
+                    submitDocBtn.disabled = false;
+                    submitDocBtn.innerText = 'Approve & Submit to Waiting Room';
+                });
+            }
+        }, 1000);
+
       } else {
         showDocStatus('❌ ' + (data.error || 'Upload failed.'), '#ef4444');
         submitDocBtn.disabled = false;
