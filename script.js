@@ -343,7 +343,10 @@ function routeDashboardTabs(targetTab) {
     document.getElementById("tabScreenBadge"),
     document.getElementById("tabScreenReferrals"),
     document.getElementById("tabScreenMoreSurveys"),
-    document.getElementById("claimScreenSection")
+    document.getElementById("claimScreenSection"),
+    document.getElementById("documentModeSection"),
+    document.getElementById("gatewayScreenSection"),
+    document.getElementById("claimForm")
   ];
   
   cards.forEach(card => {
@@ -357,15 +360,25 @@ function routeDashboardTabs(targetTab) {
   const clickedBtn = document.querySelector(`[data-tab="${targetTab}"]`);
   if (clickedBtn) clickedBtn.classList.add("active");
 
-  let targetCard = null;
-  if (targetTab === "hub") targetCard = document.getElementById("rewardDashboardScreen");
-  if (targetTab === "badge") targetCard = document.getElementById("tabScreenBadge");
-  if (targetTab === "referrals") targetCard = document.getElementById("tabScreenReferrals");
-  if (targetTab === "more-surveys") targetCard = document.getElementById("tabScreenMoreSurveys");
-  
-  if (targetCard) {
-    targetCard.classList.remove("hidden");
-    targetCard.style.display = "block";
+  if (targetTab === "hub") {
+    const el = document.getElementById("rewardDashboardScreen");
+    if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
+  }
+  if (targetTab === "badge") {
+    const el = document.getElementById("tabScreenBadge");
+    if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
+  }
+  if (targetTab === "referrals") {
+    const el = document.getElementById("tabScreenReferrals");
+    if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
+  }
+  if (targetTab === "more-surveys") {
+    const el = document.getElementById("tabScreenMoreSurveys");
+    if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
+  }
+  if (targetTab === "document") {
+    const el = document.getElementById("documentModeSection");
+    if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
   }
 }
 
@@ -511,6 +524,7 @@ function handleNextSection() {
   }
 }
 
+// 🚀 FIXED: UNHIDED PROGRESS TOPBOX TO PREVENT CLASHING WITH MAIN FLOW
 function handlePrevSection() {
   if (currentSection > 0) {
     currentSection--;
@@ -714,11 +728,11 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
         const tabLinksContainer = document.getElementById("dashboardTabLinks");
         if (tabLinksContainer) { tabLinksContainer.classList.remove("hidden"); tabLinksContainer.style.display = "flex"; }
         
-        // 🚀 DEFAULT ENTRY POINT: Verified users are routed exclusively to the Persona Badge page
+        // 🚀 ROUTE EXISTING REGISTERED USERS TO THE PERSONA HUB
         routeDashboardTabs("badge");
         outputTarget.innerHTML = "";
       } else {
-        // NEW USER - ROUTE TO GATEWAY SELECTOR INSTEAD OF FORCING SURVEY
+        // ROUTE NEW VALIDATED USERS STRAIGHT TO PATH GATEWAY SELECTOR
         if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
         
         const cards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "claimForm", "topProgressBox", "documentModeSection"];
@@ -734,15 +748,18 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
         outputTarget.innerHTML = "";
       }
     } else {
+      // 🎯 THE FIX: ROUTE FAILED LEDGER CHECKS FOR NEW USERS DIRECTLY TO GATEWAY PATHS
       if (!isFromModal) {
-        const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "gatewayScreenSection", "documentModeSection"];
+        if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
+        const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "claimForm", "topProgressBox", "documentModeSection"];
         dashboardCards.forEach(id => {
           const el = document.getElementById(id);
           if (el) { el.style.display = "none"; el.classList.add("hidden"); }
         });
-        if (emailGateSection) { emailGateSection.classList.remove("hidden"); emailGateSection.style.display = "flex"; }
-        currentSection = 0;
-        renderSection();
+        const tabLinksContainer = document.getElementById("dashboardTabLinks");
+        if (tabLinksContainer) { tabLinksContainer.classList.add("hidden"); tabLinksContainer.style.display = "none"; }
+        
+        window.openMode('gateway');
         outputTarget.innerHTML = "";
       } else {
         outputTarget.innerHTML = ""; 
@@ -1337,6 +1354,7 @@ if (submitDocBtn) {
   });
 }
 
+// 🚀 STABLE RENDER RELEASES
 function showDocStatus(text, color) {
   if (statusMessage) {
     statusMessage.innerText = text;
