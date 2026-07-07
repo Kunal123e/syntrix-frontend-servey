@@ -1130,47 +1130,75 @@ input[type="radio"] {
   
   /* 🚀 DASHBOARD SPECIFIC MOBILE FIXES */
   .referralStatsGrid { grid-template-columns: 1fr 1fr; }
-  .referralLinkBlock { flex-direction: column; }
-  .referralLinkBlock input, .referralLinkBlock button { width: 100%; }
+  .referralLinkBlock { flex-direction: column !important; display: flex !important; width: 100% !important; gap: 10px !important;}
+  .referralLinkBlock input, .referralLinkBlock button { width: 100% !important; box-sizing: border-box !important;}
   
   /* Document UI Enhancements */
-  .upload-box { padding: 30px 15px; }
-  .btn-dark { width: 100%; text-align: center; font-size: 14px; padding: 16px; }
+  .upload-box { padding: 30px 15px !important; width: 100% !important; box-sizing: border-box !important; }
+  .btn-dark { width: 100% !important; text-align: center !important; font-size: 14px !important; padding: 16px !important; box-sizing: border-box !important; }
   .reward-amount strong { font-size: 24px; }
 
   /* ========================================================
      🚀 TARGETED FIXES FOR THE OVERFLOW CUT-OFF BUGS 
      ======================================================== */
   
-  /* Tighten main card padding so it stops bleeding off screen */
-  .authCard, .rewardCard { padding: 24px 15px !important; }
+  /* 1. Prevent overlapping Menu Popover */
+  .options-popover {
+      width: 100% !important;
+      max-width: 100vw !important;
+      left: 0 !important;
+      right: 0 !important;
+      box-sizing: border-box !important;
+      z-index: 9999 !important; /* Ensure it stays fully on top */
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3) !important;
+  }
   
-  /* Fix 1: Force Badge Card to Stack Vertically & Center */
+  /* 2. Tighten main card padding so it stops bleeding off screen */
+  .authCard, .rewardCard, .submission-card { 
+      padding: 24px 15px !important; 
+      width: 100% !important;
+      box-sizing: border-box !important;
+  }
+  
+  /* 3. Force Badge Card to Stack Vertically & Center */
   #dashboardPsychologyBadgeCard {
       flex-direction: column !important;
       text-align: center !important;
       padding: 24px 15px !important;
       gap: 15px !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
   }
   #dashboardPsychologyBadgeCard > div:first-child {
-      margin: 0 auto !important; /* Force center the icon ring */
+      margin: 0 auto !important; 
   }
   #dashboardPsychologyBadgeCard h3 {
-      font-size: 26px !important; /* Scale down title */
+      font-size: 26px !important; 
   }
   
-  /* Fix 2: Prevent Form Inputs from bursting container width */
+  /* 4. Fix Document Dropdown cutting off */
+  .premium-select {
+      width: 100% !important;
+      box-sizing: border-box !important;
+      white-space: normal !important;
+      padding: 14px !important;
+      font-size: 14px !important;
+  }
+
+  /* 5. Prevent Form Inputs from bursting container width */
   input#gateEmail, input#gateOtp, input#referredByCode {
-      padding: 16px !important; /* Remove the bulky 22px padding */
+      padding: 16px !important; 
       font-size: 14px !important;
       width: 100% !important;
       box-sizing: border-box !important;
   }
 
-  /* Fix 3: Keep Privacy Policy box from squishing awkwardly */
+  /* 6. Keep Privacy Policy box from squishing awkwardly */
   .form-group {
       padding: 16px 14px !important;
       gap: 10px !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
   }
   .form-group label[for="legalConsent"] {
       font-size: 12.5px !important;
@@ -1179,5 +1207,7 @@ input[type="radio"] {
   .primaryActionBtn {
       padding: 16px !important;
       font-size: 16px !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
   }
 }
