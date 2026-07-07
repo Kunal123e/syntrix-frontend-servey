@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Syntrix Consumer Analytics Hub</title>
+  <title>Syntrix Hub</title>
   
   <link rel="icon" href="data:,"> 
   
@@ -361,7 +361,7 @@
         </form>
       </div>
 
-            <div id="gatewayScreenSection" class="hidden authCard gate-centered-wrapper" style="display: none;">
+      <div id="gatewayScreenSection" class="hidden authCard gate-centered-wrapper" style="display: none;">
         <h2 class="sectionTitle" style="font-size: 38px; margin-bottom: 15px;">Choose Your Path</h2>
         <p class="cardDescription" style="margin-bottom: 40px; font-size: 17px;">How would you like to earn your tokens today?</p>
         <div class="options" style="justify-content: center; gap: 20px; width: 100%; display: flex;">
@@ -378,7 +378,7 @@
         </div>
       </div>
 
-            <div id="documentModeSection" class="hidden document-wrapper" style="display: none;">
+      <div id="documentModeSection" class="hidden document-wrapper" style="display: none;">
         <div class="doc-header">
           <div class="header-left">
             <span class="icon-doc">📄</span>
@@ -389,59 +389,112 @@
         <p class="doc-description">Upload your study materials, notes, questions, answers, or theory content and earn tokens.</p>
 
         <div class="doc-grid">
+          
           <div class="upload-section">
+            
+            <div class="input-group" style="margin-bottom: 25px;">
+              <label>1. Select Upload Task Type:</label>
+              <select id="taskType" class="premium-select">
+                <option value="notes">📝 Physical Notes / Document</option>
+                <option value="selfie">🤳 Human Selfie Check</option>
+              </select>
+            </div>
+
             <div class="upload-box" id="uploadDropzone">
               <div class="upload-icon">☁️</div>
-              <h3>Drag & drop your document here</h3>
-              <p>Supports JPG, PNG (Max 20MB)</p>
+              <h3 id="uploadTitle">Provide your document</h3>
+              <p id="uploadSubtext">Supports JPG, PNG (Max 20MB)</p>
               
-              <label class="btn-dark" style="margin: 0 auto; display: inline-block;">
-                Choose File or Camera
-                <input type="file" id="fileInput" accept="image/jpeg, image/png" capture="environment" style="display: none;" />
-              </label>
+              <div class="upload-actions" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 15px;">
+                
+                <label class="btn-dark" id="btnCamera">
+                  <span id="btnCameraText">📷 Take Photo</span>
+                  <input type="file" id="fileInputCamera" accept="image/jpeg, image/png" capture="environment" style="display: none;" />
+                </label>
+                
+                <label class="btn-secondary-outline" id="btnGallery">
+                  🖼️ Upload from Gallery
+                  <input type="file" id="fileInputGallery" accept="image/jpeg, image/png" style="display: none;" />
+                </label>
+
+              </div>
               
               <div id="previewContainer" class="preview-window" style="display: none;">
                 <img id="imagePreview" src="" alt="Snapped Preview" />
               </div>
             </div>
 
-            <div class="info-banner">
-              <span class="info-icon">ℹ️</span>
-              <p style="margin:0;">You can upload notes, math questions, answers, theory questions and other educational content. Ensure handwriting is clear.</p>
+            <div id="strictRulesBox" class="info-banner" style="display: flex; background: #fff1f2; color: #9f1239; border: 1px solid #fecdd3; flex-direction: column;">
+              <strong style="margin-bottom:5px;">⚠️ Strict Quality Guidelines:</strong>
+              <ul style="margin-left: 20px; font-size: 13px;">
+                <li>✅ <strong>ONLY</strong> authentic handwritten notes.</li>
+                <li>❌ <strong>NO</strong> screenshots or PDFs.</li>
+                <li>❌ <strong>NO</strong> printed photos, textbook pages, or digital text.</li>
+                <li>❌ <strong>NO</strong> blank pages.</li>
+              </ul>
             </div>
+            
           </div>
 
           <div class="action-section">
-            <div class="reward-card">
+            <div class="reward-card" style="margin-bottom: 20px;">
               <h4>Earn Tokens</h4>
               <div class="reward-amount">
                 <strong>48 SYNX</strong>
-                <span>for every valid document upload</span>
+                <span>for every valid upload</span>
               </div>
-              
               <div class="how-it-works">
                 <h5>How it works</h5>
                 <ul>
-                  <li><strong>1. Upload your document:</strong> Add your study material or notes.</li>
+                  <li><strong>1. Upload your file:</strong> Provide the requested image.</li>
                   <li><strong>2. AI Verification:</strong> Our background AI verifies the physical authenticity.</li>
                   <li><strong>3. Earn your tokens:</strong> Once approved, 48 SYNX are queued.</li>
                 </ul>
               </div>
-              <div class="security-badge">
-                🛡️ All uploads are secure and privacy protected.
+            </div>
+
+            <div id="notesSpecificUI" class="submission-card" style="margin-bottom: 20px; background: #f8fafc;">
+              
+              <div class="form-group" style="margin-bottom: 20px;">
+                <label style="font-weight: 800; font-size: 14px;">2. What does this notebook page contain?</label>
+                <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+                  <label style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; cursor: pointer;"><input type="checkbox" class="doc-tag" value="Math Equations" style="width:16px; height:16px;"> Math Equations / Line Calculations</label>
+                  <label style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; cursor: pointer;"><input type="checkbox" class="doc-tag" value="Diagrams" style="width:16px; height:16px;"> Diagrams / Graphs / Drawn Shapes</label>
+                  <label style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; cursor: pointer;"><input type="checkbox" class="doc-tag" value="Theory" style="width:16px; height:16px;"> Theory Paragraphs / Written Notes</label>
+                </div>
               </div>
+
+              <div class="form-group" style="margin-bottom: 20px;">
+                 <label style="font-weight: 800; font-size: 14px;">3. Academic Level / Track:</label>
+                 <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
+                    <button type="button" class="pill-toggle active" data-val="School">School (Up to Class 12)</button>
+                    <button type="button" class="pill-toggle" data-val="Higher Ed">Higher Ed (College)</button>
+                 </div>
+                 <input type="hidden" id="academicLevelInput" value="School">
+              </div>
+
+              <div class="form-group" style="margin-bottom: 20px;">
+                 <label style="font-weight: 800; font-size: 14px;">4. What language or script did you write these notes in?</label>
+                 <input type="text" id="docLanguageInput" placeholder="E.G., HINGLISH, SPANISH" style="padding: 14px; font-size: 13px; border-radius: 8px; text-transform: uppercase; margin-top: 10px;">
+              </div>
+
+              <div class="form-group" style="margin-bottom: 5px;">
+                 <label style="font-weight: 800; font-size: 14px;">5. Legal Consent & Data Release</label>
+                 <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px; background: #ffffff; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <label style="display:flex; align-items:flex-start; gap:10px; font-size:12px; line-height:1.5; font-weight: 600; cursor: pointer;">
+                      <input type="checkbox" id="consentSensitive" style="width: 18px; height: 18px; margin-top:2px;"> 
+                      I confirm that this image does not contain any sensitive personal information (such as full names, phone numbers, addresses, or private financial details).
+                    </label>
+                    <label style="display:flex; align-items:flex-start; gap:10px; font-size:12px; line-height:1.5; font-weight: 600; cursor: pointer;">
+                      <input type="checkbox" id="consentCommercial" style="width: 18px; height: 18px; margin-top:2px;"> 
+                      I explicitly agree to the Terms of Service and Privacy Policy, and grant Syntrix a perpetual license to anonymize and sell this image for commercial Artificial Intelligence (AI) training.
+                    </label>
+                 </div>
+              </div>
+
             </div>
 
             <div class="submission-card">
-              <h4>Ready to Submit?</h4>
-              <div class="input-group">
-                <label>Confirm Task Type:</label>
-                <select id="taskType" class="premium-select">
-                  <option value="notes">📝 Physical Notes / Document</option>
-                  <option value="selfie">🤳 Human Selfie Check</option>
-                </select>
-              </div>
-              
               <button id="submitDocBtn" class="btn-dark full-width" disabled>Approve & Submit to Waiting Room</button>
               <p id="statusMessage" class="status-message"></p>
             </div>
