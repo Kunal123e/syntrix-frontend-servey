@@ -1137,4 +1137,47 @@ input[type="radio"] {
   .upload-box { padding: 30px 15px; }
   .btn-dark { width: 100%; text-align: center; font-size: 14px; padding: 16px; }
   .reward-amount strong { font-size: 24px; }
+
+  /* ========================================================
+     🚀 TARGETED FIXES FOR THE OVERFLOW CUT-OFF BUGS 
+     ======================================================== */
+  
+  /* Tighten main card padding so it stops bleeding off screen */
+  .authCard, .rewardCard { padding: 24px 15px !important; }
+  
+  /* Fix 1: Force Badge Card to Stack Vertically & Center */
+  #dashboardPsychologyBadgeCard {
+      flex-direction: column !important;
+      text-align: center !important;
+      padding: 24px 15px !important;
+      gap: 15px !important;
+  }
+  #dashboardPsychologyBadgeCard > div:first-child {
+      margin: 0 auto !important; /* Force center the icon ring */
+  }
+  #dashboardPsychologyBadgeCard h3 {
+      font-size: 26px !important; /* Scale down title */
+  }
+  
+  /* Fix 2: Prevent Form Inputs from bursting container width */
+  input#gateEmail, input#gateOtp, input#referredByCode {
+      padding: 16px !important; /* Remove the bulky 22px padding */
+      font-size: 14px !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+  }
+
+  /* Fix 3: Keep Privacy Policy box from squishing awkwardly */
+  .form-group {
+      padding: 16px 14px !important;
+      gap: 10px !important;
+  }
+  .form-group label[for="legalConsent"] {
+      font-size: 12.5px !important;
+  }
+  
+  .primaryActionBtn {
+      padding: 16px !important;
+      font-size: 16px !important;
+  }
 }
