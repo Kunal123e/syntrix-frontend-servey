@@ -212,6 +212,7 @@ window.openMode = function(mode) {
   const survey = document.getElementById("claimForm");
   const topProgress = document.getElementById("topProgressBox");
   const docMode = document.getElementById("documentModeSection");
+  const mainSubtitle = document.getElementById("mainSubtitle"); 
 
   [gateway, survey, topProgress, docMode].forEach(el => {
       if (el) { el.classList.add("hidden"); el.style.display = "none"; }
@@ -219,11 +220,14 @@ window.openMode = function(mode) {
 
   if (mode === 'gateway') {
       if(gateway) { gateway.classList.remove("hidden"); gateway.style.display = "flex"; }
+      if(mainSubtitle) mainSubtitle.style.display = "block";
   } else if (mode === 'survey') {
       currentSection = 0;
+      if(mainSubtitle) mainSubtitle.style.display = "block";
       renderSection(); 
   } else if (mode === 'document') {
       if(docMode) { docMode.classList.remove("hidden"); docMode.style.display = "block"; }
+      if(mainSubtitle) mainSubtitle.style.display = "none"; 
   }
 };
 
@@ -360,6 +364,9 @@ function routeDashboardTabs(targetTab) {
   const clickedBtn = document.querySelector(`[data-tab="${targetTab}"]`);
   if (clickedBtn) clickedBtn.classList.add("active");
 
+  const mainSubtitle = document.getElementById("mainSubtitle"); 
+  if(mainSubtitle) mainSubtitle.style.display = "block";
+
   if (targetTab === "hub") {
     const el = document.getElementById("rewardDashboardScreen");
     if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
@@ -379,6 +386,7 @@ function routeDashboardTabs(targetTab) {
   if (targetTab === "document") {
     const el = document.getElementById("documentModeSection");
     if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
+    if(mainSubtitle) mainSubtitle.style.display = "none"; 
   }
 }
 
@@ -716,9 +724,10 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
       const menuReferralWrapper = document.getElementById("menuReferralWrapper");
       if (menuReferralWrapper) menuReferralWrapper.style.display = "flex";
 
-      displayConsumerBadgesUI(statusResult.badge || "Analyzer");
-
       if (statusResult.exists === true) {
+        // 🚀 FIXED: ONLY DISPLAY THE BADGE IF THE USER ACTUALLY EXISTS AND HAS ONE
+        displayConsumerBadgesUI(statusResult.badge || "Analyzer");
+
         if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
         if (claimForm) { claimForm.classList.add("hidden"); claimForm.style.display = "none"; }
         if (topProgressBox) { topProgressBox.classList.add("hidden"); topProgressBox.style.display = "none"; }
@@ -728,11 +737,13 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
         const tabLinksContainer = document.getElementById("dashboardTabLinks");
         if (tabLinksContainer) { tabLinksContainer.classList.remove("hidden"); tabLinksContainer.style.display = "flex"; }
         
-        // 🚀 ROUTE EXISTING REGISTERED USERS TO THE PERSONA HUB
         routeDashboardTabs("badge");
         outputTarget.innerHTML = "";
       } else {
-        // ROUTE NEW VALIDATED USERS STRAIGHT TO PATH GATEWAY SELECTOR
+        // 🚀 FIXED: HIDE BADGE MENU FOR NEW USERS WHO HAVEN'T TAKEN THE SURVEY
+        const menuPsychologyBadgeWrapper = document.getElementById("menuPsychologyBadgeWrapper");
+        if (menuPsychologyBadgeWrapper) menuPsychologyBadgeWrapper.style.display = "none";
+
         if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
         
         const cards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "claimForm", "topProgressBox", "documentModeSection"];
@@ -748,7 +759,6 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
         outputTarget.innerHTML = "";
       }
     } else {
-      // 🎯 THE FIX: ROUTE FAILED LEDGER CHECKS FOR NEW USERS DIRECTLY TO GATEWAY PATHS
       if (!isFromModal) {
         if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
         const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "claimForm", "topProgressBox", "documentModeSection"];
@@ -1273,27 +1283,84 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 // ================= DOCUMENT MODE API LOGIC =================
-const fileInput = document.getElementById('fileInput');
+
+const taskTypeSelect = document.getElementById('taskType');
+const fileInputCamera = document.getElementById('fileInputCamera');
+const fileInputGallery = document.getElementById('fileInputGallery');
 const previewContainer = document.getElementById('previewContainer');
 const imagePreview = document.getElementById('imagePreview');
 const submitDocBtn = document.getElementById('submitDocBtn');
-const taskTypeSelect = document.getElementById('taskType');
 const statusMessage = document.getElementById('statusMessage');
+
+const btnCamera = document.getElementById('btnCamera');
+const btnGallery = document.getElementById('btnGallery');
+const btnCameraText = document.getElementById('btnCameraText');
+const strictRulesBox = document.getElementById('strictRulesBox');
+const notesSpecificUI = document.getElementById('notesSpecificUI');
+const uploadTitle = document.getElementById('uploadTitle');
+const docLanguageInput = document.getElementById('docLanguageInput');
 
 let selectedFile = null;
 
-if (fileInput) {
-  fileInput.addEventListener('change', function(e) {
-    if (e.target.files && e.target.files.length > 0) {
-      selectedFile = e.target.files[0];
-      if (submitDocBtn) submitDocBtn.disabled = false;
-      
-      const url = URL.createObjectURL(selectedFile);
-      if (imagePreview) imagePreview.src = url;
-      if (previewContainer) previewContainer.style.display = 'block';
+// 🚀 TOGGLE UI BASED ON TASK TYPE
+if (taskTypeSelect) {
+  taskTypeSelect.addEventListener('change', function(e) {
+    selectedFile = null;
+    if (previewContainer) previewContainer.style.display = 'none';
+    if (submitDocBtn) submitDocBtn.disabled = true;
+    
+    if (e.target.value === 'selfie') {
+      // 🤳 SELFIE MODE: Camera only, no gallery, no notes UI.
+      if (btnGallery) btnGallery.style.display = 'none';
+      if (strictRulesBox) strictRulesBox.style.display = 'none';
+      if (notesSpecificUI) notesSpecificUI.style.display = 'none';
+      if (btnCameraText) btnCameraText.innerText = '🤳 Take Selfie';
+      if (fileInputCamera) fileInputCamera.setAttribute('capture', 'user'); // Forces front camera on mobile
+      if (uploadTitle) uploadTitle.innerText = "Provide your Human Selfie";
+    } else {
+      // 📝 NOTES MODE: Camera + Gallery, show rules and notes UI.
+      if (btnGallery) btnGallery.style.display = 'inline-block';
+      if (strictRulesBox) strictRulesBox.style.display = 'flex';
+      if (notesSpecificUI) notesSpecificUI.style.display = 'block';
+      if (btnCameraText) btnCameraText.innerText = '📷 Take Photo';
+      if (fileInputCamera) fileInputCamera.setAttribute('capture', 'environment'); // Back camera
+      if (uploadTitle) uploadTitle.innerText = "Provide your document";
     }
   });
 }
+
+// 🚀 FORCE UPPERCASE ON LANGUAGE INPUT
+if (docLanguageInput) {
+  docLanguageInput.addEventListener('input', function() {
+    this.value = this.value.toUpperCase();
+  });
+}
+
+// 🚀 TOGGLE ACADEMIC PILLS
+const pillToggles = document.querySelectorAll('.pill-toggle');
+const academicLevelInput = document.getElementById('academicLevelInput');
+pillToggles.forEach(pill => {
+  pill.addEventListener('click', function() {
+    pillToggles.forEach(p => p.classList.remove('active'));
+    this.classList.add('active');
+    if (academicLevelInput) academicLevelInput.value = this.getAttribute('data-val');
+  });
+});
+
+// Handle File Selection (Camera or Gallery)
+function handleFileSelection(e) {
+  if (e.target.files && e.target.files.length > 0) {
+    selectedFile = e.target.files[0];
+    if (submitDocBtn) submitDocBtn.disabled = false;
+    
+    const url = URL.createObjectURL(selectedFile);
+    if (imagePreview) imagePreview.src = url;
+    if (previewContainer) previewContainer.style.display = 'block';
+  }
+}
+
+if (fileInputCamera) fileInputCamera.addEventListener('change', handleFileSelection);
+if (fileInputGallery) fileInputGallery.addEventListener('change', handleFileSelection);
 
 function convertToBase64(file) {
   return new Promise((resolve, reject) => {
@@ -1311,6 +1378,36 @@ if (submitDocBtn) {
       return;
     }
 
+    const taskType = taskTypeSelect ? taskTypeSelect.value : 'notes';
+    let contentTags = [];
+    let academicLevel = "School";
+    let userLanguageInput = "";
+
+    // Validation for Notes Mode
+    if (taskType === 'notes') {
+      const consentSensitive = document.getElementById('consentSensitive');
+      const consentCommercial = document.getElementById('consentCommercial');
+      
+      if (!consentSensitive.checked || !consentCommercial.checked) {
+        showDocStatus('⚠️ You must agree to the Legal Consents before uploading.', '#ef4444');
+        return;
+      }
+
+      if (docLanguageInput && docLanguageInput.value.trim() === "") {
+        showDocStatus('⚠️ Please specify the language used in the notes.', '#ef4444');
+        return;
+      }
+      userLanguageInput = docLanguageInput.value.trim();
+      academicLevel = academicLevelInput ? academicLevelInput.value : "School";
+      
+      const tagCheckboxes = document.querySelectorAll('.doc-tag:checked');
+      tagCheckboxes.forEach(cb => contentTags.push(cb.value));
+      if (contentTags.length === 0) {
+        showDocStatus('⚠️ Please select at least one content tag.', '#ef4444');
+        return;
+      }
+    }
+
     // 🚀 STEP 1: Capture starting balance before upload
     const startingBalanceText = statTotalEarned ? statTotalEarned.innerText : "0";
     const startingBalance = parseInt(startingBalanceText.replace(/[^0-9]/g, '')) || 0;
@@ -1324,9 +1421,12 @@ if (submitDocBtn) {
       
       const payload = {
         userEmail: userEmailAddress,
-        taskType: taskTypeSelect ? taskTypeSelect.value : 'notes',
+        taskType: taskType,
         fileName: selectedFile.name || 'camera_capture.jpg',
-        imageBase64: base64String
+        imageBase64: base64String,
+        contentTags: contentTags,
+        academicLevel: academicLevel,
+        userLanguageInput: userLanguageInput
       };
 
       const targetUrl = `${BACKEND_URL}/api/upload-task`;
@@ -1342,7 +1442,8 @@ if (submitDocBtn) {
       if (response.ok) {
         // Clear the form visually
         selectedFile = null;
-        if (fileInput) fileInput.value = '';
+        if (fileInputCamera) fileInputCamera.value = '';
+        if (fileInputGallery) fileInputGallery.value = '';
         if (previewContainer) previewContainer.style.display = 'none';
 
         // 🚀 STEP 2: Live Countdown while AI processes in the background
@@ -1366,8 +1467,12 @@ if (submitDocBtn) {
                         // AI APPROVED IT
                         showDocStatus('✅ Verification Approved! 48 SYNX added to your rewards.', '#10b981');
                     } else {
-                        // AI REJECTED IT (TRASH/INVALID)
-                        showDocStatus('❌ Verification Failed: Image was not valid or unclear. Please upload a valid document.', '#ef4444');
+                        // AI REJECTED IT (TRASH/INVALID) - SHOW EXPLICIT RULES AS REASON
+                        if (taskType === 'notes') {
+                          showDocStatus('❌ Verification Failed: Image was not valid or unclear (e.g. PDF, printed text, blank, or wrong content). Please upload a valid document.', '#ef4444');
+                        } else {
+                          showDocStatus('❌ Verification Failed: Could not detect a clear human selfie.', '#ef4444');
+                        }
                     }
                     
                     submitDocBtn.disabled = false;
