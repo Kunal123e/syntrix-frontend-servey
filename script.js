@@ -1315,7 +1315,11 @@ if (taskTypeSelect) {
   taskTypeSelect.addEventListener('change', function(e) {
     selectedFile = null;
     if (previewContainer) previewContainer.style.display = 'none';
-    if (submitDocBtn) submitDocBtn.disabled = true;
+    if (submitDocBtn) {
+        submitDocBtn.disabled = true;
+        submitDocBtn.innerText = 'Approve & Submit to Waiting Room';
+    }
+    if (statusMessage) statusMessage.innerText = '';
     
     if (e.target.value === 'selfie') {
       // 🤳 SELFIE MODE: Camera only, no gallery, no notes UI.
@@ -1355,11 +1359,18 @@ pillToggles.forEach(pill => {
   });
 });
 
-// Handle File Selection (Camera or Gallery)
+// 🚀 FIX: INSTANTLY REFRESH THE UI WHEN A NEW FILE IS SELECTED
 function handleFileSelection(e) {
   if (e.target.files && e.target.files.length > 0) {
     selectedFile = e.target.files[0];
-    if (submitDocBtn) submitDocBtn.disabled = false;
+    
+    if (submitDocBtn) {
+        submitDocBtn.disabled = false;
+        submitDocBtn.innerText = 'Approve & Submit to Waiting Room'; // Wipes out "AI Verifying..."
+    }
+    if (statusMessage) {
+        statusMessage.innerText = ''; // Wipes out the old red "Verification Failed" message instantly!
+    }
     
     const url = URL.createObjectURL(selectedFile);
     if (imagePreview) imagePreview.src = url;
@@ -1416,13 +1427,9 @@ if (submitDocBtn) {
       }
     }
 
-    // 🚀 STEP 1: Capture starting balance before upload
-    const startingBalanceText = statTotalEarned ? statTotalEarned.innerText : "0";
-    const startingBalance = parseInt(startingBalanceText.replace(/[^0-9]/g, '')) || 0;
-
     submitDocBtn.disabled = true;
-    submitDocBtn.innerText = 'Processing...';
-    showDocStatus('⏳ Compressing and queuing your document...', '#ea580c');
+    submitDocBtn.innerText = 'Uploading...';
+    showDocStatus('⏳ Sending document securely to server...', '#ea580c');
 
     try {
       const base64String = await convertToBase64(selectedFile);
@@ -1430,66 +1437,75 @@ if (submitDocBtn) {
       const payload = {
         userEmail: userEmailAddress,
         taskType: taskType,
-        fileName: selectedFile.name || 'camera_capture.jpg',
+        fileName: selectedFile.name || 'capture.jpg',
         imageBase64: base64String,
-        contentTags: contentTags,
+        contentTags: contentTags.length > 0 ? contentTags : ['none'],
         academicLevel: academicLevel,
         userLanguageInput: userLanguageInput
       };
 
       const targetUrl = `${BACKEND_URL}/api/upload-task`;
-
       const response = await fetch(targetUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 
-      const data = await response.json();
-
       if (response.ok) {
-        // Clear the form visually
+        // Reset File inputs
         selectedFile = null;
         if (fileInputCamera) fileInputCamera.value = '';
         if (fileInputGallery) fileInputGallery.value = '';
         if (previewContainer) previewContainer.style.display = 'none';
 
-        // 🚀 STEP 2: Live Countdown while AI processes in the background
-        let timeLeft = 65;
+        // 🚀 FIX: SMART POLLING INSTEAD OF 65-SECOND WAIT
+        let attempts = 0;
+        const maxAttempts = 20; // 60 seconds max (Checking every 3 seconds)
         
-        const countdownInterval = setInterval(() => {
-            timeLeft--;
-            submitDocBtn.innerText = `AI Verifying... (${timeLeft}s)`;
-            showDocStatus(`🤖 AI is analyzing your image. Please wait ${timeLeft} seconds...`, '#6366f1');
-            
-            if (timeLeft <= 0) {
-                clearInterval(countdownInterval);
-                submitDocBtn.innerText = 'Syncing Ledger...';
+        submitDocBtn.innerText = 'AI Verifying...';
+        showDocStatus('🤖 AI is analyzing your image. This usually takes 3 to 10 seconds...', '#6366f1');
+
+        const pollInterval = setInterval(async () => {
+            attempts++;
+            try {
+                // Ask the server for the latest status of this user's upload
+                const res = await fetch(`${BACKEND_URL}/api/check-submission?email=${encodeURIComponent(userEmailAddress)}`);
+                const checkData = await res.json();
                 
-                // 🚀 STEP 3: Check ledger and compare balances (Pass true for isBackgroundSync so it doesn't leave the page!)
-                runProfileLedgerVerification(userEmailAddress, false, true).then(() => {
-                    const newBalanceText = statTotalEarned ? statTotalEarned.innerText : "0";
-                    const newBalance = parseInt(newBalanceText.replace(/[^0-9]/g, '')) || 0;
+                if (checkData.success && checkData.submission) {
+                    const status = checkData.submission.status;
                     
-                    if (newBalance > startingBalance) {
-                        // AI APPROVED IT
+                    // If Gemini gave a final answer, stop polling!
+                    if (status === 'verified' || status === 'approved') {
+                        clearInterval(pollInterval);
+                        await runProfileLedgerVerification(userEmailAddress, false, true); // Update UI Balance (Background sync = true)
                         showDocStatus('✅ Verification Approved! 48 SYNX added to your rewards.', '#10b981');
-                    } else {
-                        // AI REJECTED IT (TRASH/INVALID) - SHOW EXPLICIT RULES AS REASON
-                        if (taskType === 'notes') {
-                          showDocStatus('❌ Verification Failed: Image was not valid or unclear (e.g. PDF, printed text, blank, or wrong content). Please upload a valid document.', '#ef4444');
-                        } else {
-                          showDocStatus('❌ Verification Failed: Could not detect a clear human selfie.', '#ef4444');
-                        }
+                        submitDocBtn.disabled = false;
+                        submitDocBtn.innerText = 'Approve & Submit to Waiting Room';
+                    } 
+                    else if (status === 'rejected' || status === 'rejected_pii' || status === 'fraud' || status === 'duplicate') {
+                        clearInterval(pollInterval);
+                        showDocStatus(`❌ Verification Failed: ${checkData.submission.reason || 'Invalid document format.'}`, '#ef4444');
+                        submitDocBtn.disabled = false;
+                        submitDocBtn.innerText = 'Approve & Submit to Waiting Room';
                     }
-                    
+                    // If status is still 'pending', it just loops and waits.
+                }
+                
+                // Backup timeout just in case the server crashes
+                if (attempts >= maxAttempts) {
+                    clearInterval(pollInterval);
+                    showDocStatus('⚠️ AI is taking longer than expected. Check your balance in a few minutes.', '#ea580c');
                     submitDocBtn.disabled = false;
                     submitDocBtn.innerText = 'Approve & Submit to Waiting Room';
-                });
+                }
+            } catch (e) {
+                console.error("Polling error", e);
             }
-        }, 1000);
+        }, 3000); // Check every 3 seconds!
 
       } else {
+        const data = await response.json();
         showDocStatus('❌ ' + (data.error || 'Upload failed.'), '#ef4444');
         submitDocBtn.disabled = false;
         submitDocBtn.innerText = 'Approve & Submit to Waiting Room';
@@ -1502,7 +1518,6 @@ if (submitDocBtn) {
   });
 }
 
-// 🚀 STABLE RENDER RELEASES
 function showDocStatus(text, color) {
   if (statusMessage) {
     statusMessage.innerText = text;
