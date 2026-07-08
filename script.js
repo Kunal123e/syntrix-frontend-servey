@@ -694,12 +694,15 @@ function updateExcitementBanner(sectionIndex) {
   }
 }
 
-async function runProfileLedgerVerification(email, isFromModal = false) {
+// 🚀 FIXED: Added isBackgroundSync flag so it only silently updates stats and stops hiding/routing pages during Document upload.
+async function runProfileLedgerVerification(email, isFromModal = false, isBackgroundSync = false) {
   const outputTarget = isFromModal ? modalStatus : statusDiv;
   if (!outputTarget) return;
 
-  outputTarget.innerHTML = `⏳ ${getUIText("checkingLedger")}`;
-  outputTarget.style.color = "#57d6c2";
+  if (!isBackgroundSync) {
+    outputTarget.innerHTML = `⏳ ${getUIText("checkingLedger")}`;
+    outputTarget.style.color = "#57d6c2";
+  }
 
   try {
     const response = await fetchWithTimeout(`${BACKEND_URL}/api/user-status?email=${encodeURIComponent(email)}`);
@@ -725,59 +728,64 @@ async function runProfileLedgerVerification(email, isFromModal = false) {
       if (menuReferralWrapper) menuReferralWrapper.style.display = "flex";
 
       if (statusResult.exists === true) {
-        // 🚀 FIXED: ONLY DISPLAY THE BADGE IF THE USER ACTUALLY EXISTS AND HAS ONE
         displayConsumerBadgesUI(statusResult.badge || "Analyzer");
 
-        if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
-        if (claimForm) { claimForm.classList.add("hidden"); claimForm.style.display = "none"; }
-        if (topProgressBox) { topProgressBox.classList.add("hidden"); topProgressBox.style.display = "none"; }
-        if (gatewayScreenSection) { gatewayScreenSection.classList.add("hidden"); gatewayScreenSection.style.display = "none"; }
-        if (documentModeSection) { documentModeSection.classList.add("hidden"); documentModeSection.style.display = "none"; }
-        
-        const tabLinksContainer = document.getElementById("dashboardTabLinks");
-        if (tabLinksContainer) { tabLinksContainer.classList.remove("hidden"); tabLinksContainer.style.display = "flex"; }
-        
-        routeDashboardTabs("badge");
-        outputTarget.innerHTML = "";
+        // 🚀 ONLY route to badge if it's NOT a background sync (keeps you on Document mode!)
+        if (!isBackgroundSync) {
+            if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
+            if (claimForm) { claimForm.classList.add("hidden"); claimForm.style.display = "none"; }
+            if (topProgressBox) { topProgressBox.classList.add("hidden"); topProgressBox.style.display = "none"; }
+            if (gatewayScreenSection) { gatewayScreenSection.classList.add("hidden"); gatewayScreenSection.style.display = "none"; }
+            if (documentModeSection) { documentModeSection.classList.add("hidden"); documentModeSection.style.display = "none"; }
+            
+            const tabLinksContainer = document.getElementById("dashboardTabLinks");
+            if (tabLinksContainer) { tabLinksContainer.classList.remove("hidden"); tabLinksContainer.style.display = "flex"; }
+            
+            routeDashboardTabs("badge");
+        }
+        if (!isBackgroundSync) outputTarget.innerHTML = "";
       } else {
-        // 🚀 FIXED: HIDE BADGE MENU FOR NEW USERS WHO HAVEN'T TAKEN THE SURVEY
         const menuPsychologyBadgeWrapper = document.getElementById("menuPsychologyBadgeWrapper");
         if (menuPsychologyBadgeWrapper) menuPsychologyBadgeWrapper.style.display = "none";
 
-        if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
-        
-        const cards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "claimForm", "topProgressBox", "documentModeSection"];
-        cards.forEach(id => {
-          const el = document.getElementById(id);
-          if (el) { el.classList.add("hidden"); el.style.display = "none"; }
-        });
-        
-        const tabLinksContainer = document.getElementById("dashboardTabLinks");
-        if (tabLinksContainer) { tabLinksContainer.classList.add("hidden"); tabLinksContainer.style.display = "none"; }
+        if (!isBackgroundSync) {
+            if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
+            
+            const cards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "claimForm", "topProgressBox", "documentModeSection"];
+            cards.forEach(id => {
+              const el = document.getElementById(id);
+              if (el) { el.classList.add("hidden"); el.style.display = "none"; }
+            });
+            
+            const tabLinksContainer = document.getElementById("dashboardTabLinks");
+            if (tabLinksContainer) { tabLinksContainer.classList.add("hidden"); tabLinksContainer.style.display = "none"; }
 
-        window.openMode('gateway');
-        outputTarget.innerHTML = "";
+            window.openMode('gateway');
+            outputTarget.innerHTML = "";
+        }
       }
     } else {
       if (!isFromModal) {
-        if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
-        const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "claimForm", "topProgressBox", "documentModeSection"];
-        dashboardCards.forEach(id => {
-          const el = document.getElementById(id);
-          if (el) { el.style.display = "none"; el.classList.add("hidden"); }
-        });
-        const tabLinksContainer = document.getElementById("dashboardTabLinks");
-        if (tabLinksContainer) { tabLinksContainer.classList.add("hidden"); tabLinksContainer.style.display = "none"; }
-        
-        window.openMode('gateway');
-        outputTarget.innerHTML = "";
+        if (!isBackgroundSync) {
+            if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
+            const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "claimForm", "topProgressBox", "documentModeSection"];
+            dashboardCards.forEach(id => {
+              const el = document.getElementById(id);
+              if (el) { el.style.display = "none"; el.classList.add("hidden"); }
+            });
+            const tabLinksContainer = document.getElementById("dashboardTabLinks");
+            if (tabLinksContainer) { tabLinksContainer.classList.add("hidden"); tabLinksContainer.style.display = "none"; }
+            
+            window.openMode('gateway');
+            outputTarget.innerHTML = "";
+        }
       } else {
-        outputTarget.innerHTML = ""; 
+        if (!isBackgroundSync) outputTarget.innerHTML = ""; 
         showToast("Profile ledger entry not found.", "❌");
       }
     }
   } catch (err) {
-    outputTarget.innerHTML = ""; 
+    if (!isBackgroundSync) outputTarget.innerHTML = ""; 
     showToast("Server waking up or offline. Please try again.", "❌");
   }
 }
@@ -1458,8 +1466,8 @@ if (submitDocBtn) {
                 clearInterval(countdownInterval);
                 submitDocBtn.innerText = 'Syncing Ledger...';
                 
-                // 🚀 STEP 3: Check ledger and compare balances
-                runProfileLedgerVerification(userEmailAddress, false).then(() => {
+                // 🚀 STEP 3: Check ledger and compare balances (Pass true for isBackgroundSync so it doesn't leave the page!)
+                runProfileLedgerVerification(userEmailAddress, false, true).then(() => {
                     const newBalanceText = statTotalEarned ? statTotalEarned.innerText : "0";
                     const newBalance = parseInt(newBalanceText.replace(/[^0-9]/g, '')) || 0;
                     
