@@ -583,7 +583,7 @@ function renderSection() {
   
   try {
     if (currentSection === 0) {
-       surveyStartTime = Date.now(); // 🚀 TIMER STARTS EXACTLY WHEN FIRST SECTION RENDERS
+       surveyStartTime = Date.now(); 
     }
 
     if (topProgressBox) {
@@ -694,7 +694,6 @@ function updateExcitementBanner(sectionIndex) {
   }
 }
 
-// 🚀 FIXED: Added isBackgroundSync flag so it only silently updates stats and stops hiding/routing pages during Document upload.
 async function runProfileLedgerVerification(email, isFromModal = false, isBackgroundSync = false) {
   const outputTarget = isFromModal ? modalStatus : statusDiv;
   if (!outputTarget) return;
@@ -730,7 +729,6 @@ async function runProfileLedgerVerification(email, isFromModal = false, isBackgr
       if (statusResult.exists === true) {
         displayConsumerBadgesUI(statusResult.badge || "Analyzer");
 
-        // 🚀 ONLY route to badge if it's NOT a background sync (keeps you on Document mode!)
         if (!isBackgroundSync) {
             if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
             if (claimForm) { claimForm.classList.add("hidden"); claimForm.style.display = "none"; }
@@ -826,7 +824,6 @@ function determinePersonaBadge(answersObj) {
 async function handleSurveySubmission(e) {
   if (e) e.preventDefault();
 
-  // 🚀 FRONTEND QUALITY GATE: Time check against exactly when they started Question 1
   if ((Date.now() - surveyStartTime) < QUALITY_THRESHOLD_MS) {
     showToast("Please take more time to read the questions carefully.", "⏱️");
     return;
@@ -1084,7 +1081,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
   
-  // 🚀 HARD LOCK: Dynamic button overrides wrapped permanently across all interfaces
   if (connectWalletBtn) connectWalletBtn.addEventListener("click", interceptClaimGateActions);
   if (claimConnectWalletBtn) claimConnectWalletBtn.addEventListener("click", interceptClaimGateActions);
   if (executeClaimBtn) executeClaimBtn.addEventListener("click", interceptClaimGateActions);
@@ -1106,7 +1102,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
   }
 
-  // 🚀 NEW: Generate QR Code Logic (Fixed with local QRCodejs structure)
   if (generateQrBtn) {
     generateQrBtn.addEventListener("click", () => {
       const shopRefCode = localStorage.getItem("referralCode");
@@ -1118,7 +1113,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       qrCodeWrapper.style.display = "flex";
       qrCodeCanvas.innerHTML = "";
       
-      // The QR code now points to your backend redirector
       const dynamicQrLink = `${BACKEND_URL}/r/${shopRefCode}`;
       
       new QRCode(qrCodeCanvas, {
@@ -1135,7 +1129,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // 🚀 NEW: Download QR Code Logic (Fixed with 24px Canvas White Quiet Zone Padding)
   if (downloadQrBtn) {
     downloadQrBtn.addEventListener("click", () => {
       const originalCanvas = qrCodeCanvas.querySelector("canvas");
@@ -1145,20 +1138,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
       }
 
-      // Create a new canvas to add a white "Quiet Zone" border
       const padding = 24; 
       const paddedCanvas = document.createElement("canvas");
       paddedCanvas.width = originalCanvas.width + (padding * 2);
       paddedCanvas.height = originalCanvas.height + (padding * 2);
       
       const ctx = paddedCanvas.getContext("2d");
-      // Fill solid white background
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, paddedCanvas.width, paddedCanvas.height);
-      // Draw original QR code in the center
       ctx.drawImage(originalCanvas, padding, padding);
 
-      // Convert to image URL and download
       const downloadUrl = paddedCanvas.toDataURL("image/png");
       
       const tempLink = document.createElement("a");
@@ -1291,7 +1280,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 // ================= DOCUMENT MODE API LOGIC =================
-
 const taskTypeSelect = document.getElementById('taskType');
 const fileInputCamera = document.getElementById('fileInputCamera');
 const fileInputGallery = document.getElementById('fileInputGallery');
@@ -1299,8 +1287,9 @@ const previewContainer = document.getElementById('previewContainer');
 const imagePreview = document.getElementById('imagePreview');
 const submitDocBtn = document.getElementById('submitDocBtn');
 const statusMessage = document.getElementById('statusMessage');
+const detailedReasonBox = document.getElementById('detailedReasonBox');
+const retryUploadBtn = document.getElementById('retryUploadBtn');
 
-const btnCamera = document.getElementById('btnCamera');
 const btnGallery = document.getElementById('btnGallery');
 const btnCameraText = document.getElementById('btnCameraText');
 const strictRulesBox = document.getElementById('strictRulesBox');
@@ -1309,68 +1298,69 @@ const uploadTitle = document.getElementById('uploadTitle');
 const docLanguageInput = document.getElementById('docLanguageInput');
 
 let selectedFile = null;
+let currentPollInterval = null;
 
-// 🚀 TOGGLE UI BASED ON TASK TYPE
-if (taskTypeSelect) {
-  taskTypeSelect.addEventListener('change', function(e) {
+// 🚀 FIX: FULL FRONTEND STATE RESET FUNCTION
+function resetUploadState() {
     selectedFile = null;
+    if (fileInputCamera) fileInputCamera.value = '';
+    if (fileInputGallery) fileInputGallery.value = '';
     if (previewContainer) previewContainer.style.display = 'none';
+    if (imagePreview) imagePreview.src = '';
+    
     if (submitDocBtn) {
         submitDocBtn.disabled = true;
         submitDocBtn.innerText = 'Approve & Submit to Waiting Room';
+        submitDocBtn.style.display = 'block';
     }
-    if (statusMessage) statusMessage.innerText = '';
+    
+    if (statusMessage) {
+        statusMessage.innerHTML = '';
+        statusMessage.className = 'status-message'; 
+    }
+    
+    if (detailedReasonBox) {
+        detailedReasonBox.style.display = 'none';
+        detailedReasonBox.innerText = '';
+        detailedReasonBox.className = 'dynamic-reason-box';
+    }
+    
+    if (retryUploadBtn) retryUploadBtn.style.display = 'none';
+    if (currentPollInterval) clearInterval(currentPollInterval);
+}
+
+if (retryUploadBtn) {
+    retryUploadBtn.addEventListener('click', resetUploadState);
+}
+
+if (taskTypeSelect) {
+  taskTypeSelect.addEventListener('change', function(e) {
+    resetUploadState();
     
     if (e.target.value === 'selfie') {
-      // 🤳 SELFIE MODE: Camera only, no gallery, no notes UI.
       if (btnGallery) btnGallery.style.display = 'none';
       if (strictRulesBox) strictRulesBox.style.display = 'none';
       if (notesSpecificUI) notesSpecificUI.style.display = 'none';
       if (btnCameraText) btnCameraText.innerText = '🤳 Take Selfie';
-      if (fileInputCamera) fileInputCamera.setAttribute('capture', 'user'); // Forces front camera on mobile
+      if (fileInputCamera) fileInputCamera.setAttribute('capture', 'user'); 
       if (uploadTitle) uploadTitle.innerText = "Provide your Human Selfie";
     } else {
-      // 📝 NOTES MODE: Camera + Gallery, show rules and notes UI.
       if (btnGallery) btnGallery.style.display = 'inline-block';
       if (strictRulesBox) strictRulesBox.style.display = 'flex';
       if (notesSpecificUI) notesSpecificUI.style.display = 'block';
       if (btnCameraText) btnCameraText.innerText = '📷 Take Photo';
-      if (fileInputCamera) fileInputCamera.setAttribute('capture', 'environment'); // Back camera
+      if (fileInputCamera) fileInputCamera.setAttribute('capture', 'environment'); 
       if (uploadTitle) uploadTitle.innerText = "Provide your document";
     }
   });
 }
 
-// 🚀 FORCE UPPERCASE ON LANGUAGE INPUT
-if (docLanguageInput) {
-  docLanguageInput.addEventListener('input', function() {
-    this.value = this.value.toUpperCase();
-  });
-}
-
-// 🚀 TOGGLE ACADEMIC PILLS
-const pillToggles = document.querySelectorAll('.pill-toggle');
-const academicLevelInput = document.getElementById('academicLevelInput');
-pillToggles.forEach(pill => {
-  pill.addEventListener('click', function() {
-    pillToggles.forEach(p => p.classList.remove('active'));
-    this.classList.add('active');
-    if (academicLevelInput) academicLevelInput.value = this.getAttribute('data-val');
-  });
-});
-
-// 🚀 FIX: INSTANTLY REFRESH THE UI WHEN A NEW FILE IS SELECTED
 function handleFileSelection(e) {
   if (e.target.files && e.target.files.length > 0) {
+    resetUploadState(); // 🚀 Instant clear of old errors on new file
     selectedFile = e.target.files[0];
     
-    if (submitDocBtn) {
-        submitDocBtn.disabled = false;
-        submitDocBtn.innerText = 'Approve & Submit to Waiting Room'; // Wipes out "AI Verifying..."
-    }
-    if (statusMessage) {
-        statusMessage.innerText = ''; // Wipes out the old red "Verification Failed" message instantly!
-    }
+    if (submitDocBtn) submitDocBtn.disabled = false;
     
     const url = URL.createObjectURL(selectedFile);
     if (imagePreview) imagePreview.src = url;
@@ -1390,137 +1380,133 @@ function convertToBase64(file) {
   });
 }
 
+// 🚀 UI PROGRESS HELPER
+function updateProgressUI(stepText, percent) {
+    if (!statusMessage) return;
+    statusMessage.innerHTML = `
+      <div style="font-size:12.5px; color:#6b7280; margin-bottom:8px; font-weight:600;">Estimated Time: 5–15 Seconds</div>
+      <div style="background:#e2e8f0; height:8px; border-radius:4px; overflow:hidden; margin-bottom:10px;">
+         <div style="width: ${percent}%; background:#6366f1; height:100%; transition: width 0.4s ease;"></div>
+      </div>
+      <div style="font-weight:800; color:#4f46e5; font-size:15px;" class="status-text-pulse">${stepText}</div>
+    `;
+}
+
+function showDetailedReason(reasonText, isSuccess) {
+    if(detailedReasonBox) {
+        detailedReasonBox.style.display = 'block';
+        detailedReasonBox.innerText = reasonText;
+        detailedReasonBox.className = isSuccess ? 'dynamic-reason-box reason-success' : 'dynamic-reason-box reason-error';
+    }
+}
+
 if (submitDocBtn) {
   submitDocBtn.addEventListener('click', async function() {
     if (!selectedFile || !userEmailAddress) { 
-      showDocStatus('⚠️ Please select a file and ensure you are logged in.', '#ef4444');
+      if (statusMessage) statusMessage.innerHTML = '<span style="color:#ef4444;">⚠️ Please select a file and ensure you are logged in.</span>';
       return;
     }
 
     const taskType = taskTypeSelect ? taskTypeSelect.value : 'notes';
     let contentTags = [];
-    let academicLevel = "School";
-    let userLanguageInput = "";
-
-    // Validation for Notes Mode
+    
     if (taskType === 'notes') {
       const consentSensitive = document.getElementById('consentSensitive');
       const consentCommercial = document.getElementById('consentCommercial');
-      
-      if (!consentSensitive.checked || !consentCommercial.checked) {
-        showDocStatus('⚠️ You must agree to the Legal Consents before uploading.', '#ef4444');
-        return;
+      if (!consentSensitive.checked || !consentCommercial.checked) { 
+          if (statusMessage) statusMessage.innerHTML = '<span style="color:#ef4444;">⚠️ You must agree to the Legal Consents before uploading.</span>';
+          return; 
       }
-
-      if (docLanguageInput && docLanguageInput.value.trim() === "") {
-        showDocStatus('⚠️ Please specify the language used in the notes.', '#ef4444');
-        return;
+      if (docLanguageInput && docLanguageInput.value.trim() === "") { 
+          if (statusMessage) statusMessage.innerHTML = '<span style="color:#ef4444;">⚠️ Please specify the language used in the notes.</span>';
+          return; 
       }
-      userLanguageInput = docLanguageInput.value.trim();
-      academicLevel = academicLevelInput ? academicLevelInput.value : "School";
-      
       const tagCheckboxes = document.querySelectorAll('.doc-tag:checked');
       tagCheckboxes.forEach(cb => contentTags.push(cb.value));
-      if (contentTags.length === 0) {
-        showDocStatus('⚠️ Please select at least one content tag.', '#ef4444');
-        return;
+      if (contentTags.length === 0) { 
+          if (statusMessage) statusMessage.innerHTML = '<span style="color:#ef4444;">⚠️ Please select at least one content tag.</span>';
+          return; 
       }
     }
 
     submitDocBtn.disabled = true;
-    submitDocBtn.innerText = 'Uploading...';
-    showDocStatus('⏳ Sending document securely to server...', '#ea580c');
+    updateProgressUI('📤 Uploading securely...', 15);
 
     try {
       const base64String = await convertToBase64(selectedFile);
-      
       const payload = {
-        userEmail: userEmailAddress,
-        taskType: taskType,
-        fileName: selectedFile.name || 'capture.jpg',
-        imageBase64: base64String,
-        contentTags: contentTags.length > 0 ? contentTags : ['none'],
-        academicLevel: academicLevel,
-        userLanguageInput: userLanguageInput
+        userEmail: userEmailAddress, taskType: taskType, fileName: selectedFile.name || 'capture.jpg', imageBase64: base64String,
+        contentTags: contentTags.length > 0 ? contentTags : ['none']
       };
 
-      const targetUrl = `${BACKEND_URL}/api/upload-task`;
-      const response = await fetch(targetUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+      const response = await fetch(`${BACKEND_URL}/api/upload-task`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
       });
 
       if (response.ok) {
-        // Reset File inputs
-        selectedFile = null;
-        if (fileInputCamera) fileInputCamera.value = '';
-        if (fileInputGallery) fileInputGallery.value = '';
-        if (previewContainer) previewContainer.style.display = 'none';
-
-        // 🚀 FIX: SMART POLLING INSTEAD OF 65-SECOND WAIT
-        let attempts = 0;
-        const maxAttempts = 20; // 60 seconds max (Checking every 3 seconds)
         
-        submitDocBtn.innerText = 'AI Verifying...';
-        showDocStatus('🤖 AI is analyzing your image. This usually takes 3 to 10 seconds...', '#6366f1');
+        let attempts = 0;
+        const maxAttempts = 15; // 45 seconds total check
+        
+        updateProgressUI('🤖 AI is verifying parameters...', 35);
 
-        const pollInterval = setInterval(async () => {
+        // 🚀 DYNAMIC PROGRESS INDICATOR UX
+        currentPollInterval = setInterval(async () => {
             attempts++;
+            
+            // Visual UX Swapping
+            if(attempts === 2) updateProgressUI('📄 Checking quality and embeddings...', 60);
+            if(attempts === 5) updateProgressUI('🔐 Security verification...', 85);
+
             try {
-                // Ask the server for the latest status of this user's upload
                 const res = await fetch(`${BACKEND_URL}/api/check-submission?email=${encodeURIComponent(userEmailAddress)}`);
                 const checkData = await res.json();
                 
                 if (checkData.success && checkData.submission) {
                     const status = checkData.submission.status;
+                    const reason = checkData.submission.reason || "System processing error.";
                     
-                    // If Gemini gave a final answer, stop polling!
                     if (status === 'verified' || status === 'approved') {
-                        clearInterval(pollInterval);
-                        await runProfileLedgerVerification(userEmailAddress, false, true); // Update UI Balance (Background sync = true)
-                        showDocStatus('✅ Verification Approved! 48 SYNX added to your rewards.', '#10b981');
-                        submitDocBtn.disabled = false;
-                        submitDocBtn.innerText = 'Approve & Submit to Waiting Room';
+                        clearInterval(currentPollInterval);
+                        await runProfileLedgerVerification(userEmailAddress, false, true); 
+                        
+                        submitDocBtn.style.display = 'none';
+                        statusMessage.innerHTML = `
+                            <div style="font-size:40px; margin-bottom:10px;">✅</div>
+                            <div style="font-weight:900; color:#166534; font-size:18px;">Document Verified</div>
+                            <div style="color:#111827; font-size:14px; margin-top:8px;"><strong>+48 SYNX Tokens</strong><br>Tokens will be credited after final approval.</div>
+                        `;
+                        showDetailedReason(reason, true);
+                        retryUploadBtn.style.display = 'block'; 
                     } 
                     else if (status === 'rejected' || status === 'rejected_pii' || status === 'fraud' || status === 'duplicate') {
-                        clearInterval(pollInterval);
-                        showDocStatus(`❌ Verification Failed: ${checkData.submission.reason || 'Invalid document format.'}`, '#ef4444');
-                        submitDocBtn.disabled = false;
-                        submitDocBtn.innerText = 'Approve & Submit to Waiting Room';
+                        clearInterval(currentPollInterval);
+                        
+                        submitDocBtn.style.display = 'none';
+                        statusMessage.innerHTML = '<span style="font-weight:800; font-size:16px; color:#9f1239;">❌ Verification Failed</span>';
+                        showDetailedReason(reason, false); 
+                        retryUploadBtn.style.display = 'block';
                     }
-                    // If status is still 'pending', it just loops and waits.
                 }
                 
-                // Backup timeout just in case the server crashes
                 if (attempts >= maxAttempts) {
-                    clearInterval(pollInterval);
-                    showDocStatus('⚠️ AI is taking longer than expected. Check your balance in a few minutes.', '#ea580c');
+                    clearInterval(currentPollInterval);
+                    statusMessage.innerHTML = '<span style="color:#ea580c; font-weight:700;">⚠️ AI timed out. Please try again.</span>';
                     submitDocBtn.disabled = false;
                     submitDocBtn.innerText = 'Approve & Submit to Waiting Room';
+                    retryUploadBtn.style.display = 'block';
                 }
-            } catch (e) {
-                console.error("Polling error", e);
-            }
-        }, 3000); // Check every 3 seconds!
+            } catch (e) { console.error("Polling error", e); }
+        }, 3000); 
 
       } else {
         const data = await response.json();
-        showDocStatus('❌ ' + (data.error || 'Upload failed.'), '#ef4444');
+        statusMessage.innerHTML = `<span style="color:#ef4444;">❌ ${data.error || 'Upload failed.'}</span>`;
         submitDocBtn.disabled = false;
-        submitDocBtn.innerText = 'Approve & Submit to Waiting Room';
       }
     } catch (error) {
-      showDocStatus('⚠️ Network error. Could not connect to waiting room.', '#ef4444');
+      statusMessage.innerHTML = '<span style="color:#ef4444;">⚠️ Network error. Could not connect to waiting room.</span>';
       submitDocBtn.disabled = false;
-      submitDocBtn.innerText = 'Approve & Submit to Waiting Room';
     }
   });
-}
-
-function showDocStatus(text, color) {
-  if (statusMessage) {
-    statusMessage.innerText = text;
-    statusMessage.style.color = color;
-  }
 }
