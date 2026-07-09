@@ -151,6 +151,7 @@ const dismissModal = () => {
   }
 };
 
+// ================= SPLASH PAGE ISOLATED ROUTING =================
 function routeSplashNavViews(targetView) {
   if (viewSplashHome) viewSplashHome.style.display = "none";
   if (viewSplashRewards) viewSplashRewards.style.display = "none";
@@ -205,6 +206,7 @@ if (initializePlatformBtn) {
   });
 }
 
+// ================= GATEWAY LOGIC =================
 window.openMode = function(mode) {
   const gateway = document.getElementById("gatewayScreenSection");
   const survey = document.getElementById("claimForm");
@@ -229,33 +231,32 @@ window.openMode = function(mode) {
   }
 };
 
-// 🚀 FIX 2: NO SPACES IN PATHS. You MUST rename the folder to BADGES_PNG and files as listed below.
 const BADGE_PROFILES = {
   Analyzer: { 
     title: "ANALYZER", sub: "The Mindful Shopper",
     desc: "You shop with brilliant clarity! For you, real value and true quality matter most. By thoughtfully comparing details and trusting genuine reviews, you always make incredibly smart and satisfying choices.", 
-    iconHTML: `<img src="./BADGES_PNG/badge_1_analyzer.jpeg" alt="Analyzer" style="width: 100%; height: 100%; object-fit: cover;">`, 
+    iconHTML: `<img src="BADGES_PNG/badge_1_analyzer.jpeg" alt="Analyzer" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none';">`, 
     menuIcon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`,
     color: "#2563eb", textColor: "#0f172a"
   },
   Stylist: { 
     title: "STYLIST", sub: "The Tasteful Explorer",
     desc: "You have a beautiful eye for design! For you, shopping is about joy, artistry, and wonderful experiences. You naturally gravitate towards things that tell a great story and bring an extra touch of elegance into your everyday life.", 
-    iconHTML: `<img src="./BADGES_PNG/badge_3.jpeg" alt="Stylist" style="width: 100%; height: 100%; object-fit: cover;">`, 
+    iconHTML: `<img src="BADGES_PNG/badge_3.jpeg" alt="Stylist" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none';">`, 
     menuIcon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L15 9L22 12L15 15L12 22L9 15L2 12L9 9Z"></path></svg>`,
     color: "#8b5cf6", textColor: "#0f172a"
   },
   Hedger: { 
     title: "HEDGER", sub: "The Thoughtful Planner",
     desc: "You value peace of mind and total reliability! You love knowing your purchases are safe and backed by great guarantees. By choosing trusted paths, you ensure every shopping experience is completely smooth, secure, and worry-free.", 
-    iconHTML: `<img src="./BADGES_PNG/badge_2.jpeg" alt="Hedger" style="width: 100%; height: 100%; object-fit: cover;">`, 
+    iconHTML: `<img src="BADGES_PNG/badge_2.jpeg" alt="Hedger" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none';">`, 
     menuIcon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>`,
     color: "#ea580c", textColor: "#0f172a"
   },
   Native: { 
     title: "NATIVE", sub: "The Connected Heart",
     desc: "You deeply value genuine connections! Your best shopping moments come from trusted recommendations and shared stories. By listening to friends and family, you always bring home products that carry real warmth and authenticity.", 
-    iconHTML: `<img src="./BADGES_PNG/badge_4.jpeg" alt="Native" style="width: 100%; height: 100%; object-fit: cover;">`, 
+    iconHTML: `<img src="BADGES_PNG/badge_4.jpeg" alt="Native" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none';">`, 
     menuIcon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`,
     color: "#eab308", textColor: "#0f172a"
   }
@@ -339,6 +340,7 @@ function getUIText(key) {
   return fallbacks[key] || key;
 }
 
+// ================= DASHBOARD APP TABS ROUTER =================
 function routeDashboardTabs(targetTab) {
   const cards = [
     document.getElementById("rewardDashboardScreen"),
@@ -388,6 +390,7 @@ function routeDashboardTabs(targetTab) {
   }
 }
 
+// ================= STAGE 1: EMAIL VERIFICATION GATE =================
 if (emailGateForm) {
   emailGateForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -529,6 +532,7 @@ function handleNextSection() {
   }
 }
 
+// 🚀 FIXED: UNHIDED PROGRESS TOPBOX TO PREVENT CLASHING WITH MAIN FLOW
 function handlePrevSection() {
   if (currentSection > 0) {
     currentSection--;
@@ -551,6 +555,7 @@ function getOptionText(opt) {
   return opt;
 }
 
+// 🚀 LOCKED SYSTEM SECURITY CONTROLS: Claim button intercepts running dynamic security alerts
 function interceptClaimGateActions(e) {
   if (e) e.preventDefault();
   showToast("Coming Soon! Stay tuned to claim your precious tokens! 💎", "⚙️");
@@ -724,6 +729,7 @@ async function runProfileLedgerVerification(email, isFromModal = false, isBackgr
       if (statusResult.exists === true) {
         displayConsumerBadgesUI(statusResult.badge || "Analyzer");
 
+        // 🚀 ONLY route to badge if it's NOT a background sync (keeps you on Document mode!)
         if (!isBackgroundSync) {
             if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
             if (claimForm) { claimForm.classList.add("hidden"); claimForm.style.display = "none"; }
@@ -819,6 +825,7 @@ function determinePersonaBadge(answersObj) {
 async function handleSurveySubmission(e) {
   if (e) e.preventDefault();
 
+  // 🚀 FRONTEND QUALITY GATE: Time check against exactly when they started Question 1
   if ((Date.now() - surveyStartTime) < QUALITY_THRESHOLD_MS) {
     showToast("Please take more time to read the questions carefully.", "⏱️");
     return;
@@ -1076,6 +1083,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
   
+  // 🚀 HARD LOCK: Dynamic button overrides wrapped permanently across all interfaces
   if (connectWalletBtn) connectWalletBtn.addEventListener("click", interceptClaimGateActions);
   if (claimConnectWalletBtn) claimConnectWalletBtn.addEventListener("click", interceptClaimGateActions);
   if (executeClaimBtn) executeClaimBtn.addEventListener("click", interceptClaimGateActions);
@@ -1296,7 +1304,7 @@ const docLanguageInput = document.getElementById('docLanguageInput');
 let selectedFile = null;
 let currentPollInterval = null;
 
-// 🚀 FIX 2: FULL FRONTEND STATE RESET FUNCTION (Fixes the objectURL error!)
+// 🚀 FIX: FULL FRONTEND STATE RESET FUNCTION (Clears old errors and states perfectly)
 function resetUploadState(keepInputs = false) {
     if (!keepInputs) {
       selectedFile = null;
@@ -1356,7 +1364,7 @@ if (taskTypeSelect) {
 function handleFileSelection(e) {
   if (e.target.files && e.target.files.length > 0) {
     const newFile = e.target.files[0];
-    resetUploadState(true); // Don't clear inputs here, just the UI text!
+    resetUploadState(true); 
     selectedFile = newFile;
     
     if (submitDocBtn) submitDocBtn.disabled = false;
@@ -1383,7 +1391,7 @@ function convertToBase64(file) {
   });
 }
 
-// 🚀 UI PROGRESS HELPER
+// 🚀 UI PROGRESS HELPER (Dynamic Progress Steps)
 function updateProgressUI(stepText, percent) {
     if (!statusMessage) return;
     statusMessage.innerHTML = `
