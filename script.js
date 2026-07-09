@@ -10,9 +10,8 @@ const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 const WALLET_REGEX = /^0x[a-fA-F0-9]{40}$/;
 const DEFAULT_TIMEOUT_MS = 90000; 
 
-// 🚀 QUALITY GATE: Start time tracker
 let surveyStartTime = 0;
-const QUALITY_THRESHOLD_MS = 120000; // 2 minutes strict data validation
+const QUALITY_THRESHOLD_MS = 120000; 
 
 let userEmailAddress = "";
 let currentSection = 0;
@@ -20,11 +19,9 @@ const answers = {};
 let currentLanguage = "en";
 let isOtpSent = false;
 let userConnectedWalletAddress = "";
-
 let legalConsentTimestamp = "";
 let clientUserAgent = "";
 
-// Splash Screen & App Shell Element Selectors
 const splashLandingGate = document.getElementById("splashLandingGate");
 const mainApplicationLayout = document.getElementById("mainApplicationLayout");
 const viewSplashHome = document.getElementById("viewSplashHome");
@@ -59,13 +56,10 @@ const nextBtn = document.getElementById("nextBtn");
 const prevBtn = document.getElementById("prevBtn");
 const submitClaimBtn = document.getElementById("submitClaimBtn");
 
-// Gateway & Document Selectors
 const gatewayScreenSection = document.getElementById("gatewayScreenSection");
 const documentModeSection = document.getElementById("documentModeSection");
 
-// Dashboard Selectors
 const rewardDashboardScreen = document.getElementById("rewardDashboardScreen");
-const tabScreenHub = document.getElementById("rewardDashboardScreen"); 
 const tabScreenBadge = document.getElementById("tabScreenBadge");
 const tabScreenReferrals = document.getElementById("tabScreenReferrals");
 const tabScreenMoreSurveys = document.getElementById("tabScreenMoreSurveys");
@@ -85,7 +79,6 @@ const statTotalEarned = document.getElementById("statTotalEarned");
 const referralCodeDisplay = document.getElementById("referralCodeDisplay");
 const copyReferralBtn = document.getElementById("copyReferralBtn");
 
-// 🚀 QR Code Element Selectors
 const generateQrBtn = document.getElementById("generateQrBtn");
 const qrCodeWrapper = document.getElementById("qrCodeWrapper");
 const qrCodeCanvas = document.getElementById("qrCodeCanvas");
@@ -94,10 +87,8 @@ const downloadQrBtn = document.getElementById("downloadQrBtn");
 const statusDiv = document.getElementById("status");
 const progressFill = document.querySelector(".progressFill");
 const progressText = document.querySelector(".progressText");
-
 const dashboardTabLinks = document.getElementById("dashboardTabLinks");
 const sidebarLogoutBtn = document.getElementById("sidebarLogoutBtn");
-
 const confirmRestartModal = document.getElementById("confirmRestartModal");
 const cancelRestartBtn = document.getElementById("cancelRestartBtn");
 const confirmRestartBtn = document.getElementById("confirmRestartBtn");
@@ -121,7 +112,6 @@ function showToast(message, icon = "⚠️") {
   if(toastIcon) toastIcon.innerText = icon;
   
   void toast.offsetWidth;
-  
   toast.style.display = "flex";
   toast.classList.add("show");
   setTimeout(() => { 
@@ -151,7 +141,6 @@ const dismissModal = () => {
   }
 };
 
-// ================= SPLASH PAGE ISOLATED ROUTING =================
 function routeSplashNavViews(targetView) {
   if (viewSplashHome) viewSplashHome.style.display = "none";
   if (viewSplashRewards) viewSplashRewards.style.display = "none";
@@ -170,27 +159,17 @@ if (linkAboutTab) linkAboutTab.addEventListener("click", (e) => { e.preventDefau
 if (navLogoHomeTrigger) navLogoHomeTrigger.addEventListener("click", () => routeSplashNavViews("home"));
 document.querySelectorAll(".back-to-home-btn").forEach(btn => btn.addEventListener("click", () => routeSplashNavViews("home")));
 
-if (navGetStartedAction) {
-  navGetStartedAction.addEventListener("click", () => {
-    if (initializePlatformBtn) initializePlatformBtn.click();
-  });
-}
+if (navGetStartedAction) navGetStartedAction.addEventListener("click", () => { if (initializePlatformBtn) initializePlatformBtn.click(); });
 
 if (initializePlatformBtn) {
   initializePlatformBtn.addEventListener("click", () => {
     if(splashLandingGate) splashLandingGate.style.display = "none"; 
-    if(mainApplicationLayout) {
-        mainApplicationLayout.classList.remove("hidden");
-        mainApplicationLayout.style.display = "flex"; 
-    }
+    if(mainApplicationLayout) { mainApplicationLayout.classList.remove("hidden"); mainApplicationLayout.style.display = "flex"; }
     
     const savedEmail = localStorage.getItem("syntrix_user_email");
     if (savedEmail) {
       userEmailAddress = savedEmail;
-      if (emailGateSection) {
-          emailGateSection.style.display = "none";
-          emailGateSection.classList.add("hidden");
-      }
+      if (emailGateSection) { emailGateSection.style.display = "none"; emailGateSection.classList.add("hidden"); }
       runProfileLedgerVerification(userEmailAddress, false);
     } else {
       const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "gatewayScreenSection", "documentModeSection"];
@@ -198,15 +177,11 @@ if (initializePlatformBtn) {
         const el = document.getElementById(id);
         if (el) { el.style.display = "none"; el.classList.add("hidden"); }
       });
-      if (emailGateSection) {
-          emailGateSection.classList.remove("hidden");
-          emailGateSection.style.display = "flex";
-      }
+      if (emailGateSection) { emailGateSection.classList.remove("hidden"); emailGateSection.style.display = "flex"; }
     }
   });
 }
 
-// ================= GATEWAY LOGIC =================
 window.openMode = function(mode) {
   const gateway = document.getElementById("gatewayScreenSection");
   const survey = document.getElementById("claimForm");
@@ -231,7 +206,7 @@ window.openMode = function(mode) {
   }
 };
 
-// 🚀 FIX: Badge paths use proper URL encoding to prevent ERR_NAME_NOT_RESOLVED
+// 🚀 Explicitly URL encoded paths to bypass space formatting errors in browsers
 const BADGE_PROFILES = {
   Analyzer: { 
     title: "ANALYZER", sub: "The Mindful Shopper",
@@ -307,10 +282,7 @@ function normalizeReferralCode(code) {
   if (!code) return "";
   let clean = code.trim().toUpperCase();
   clean = clean.replace(/\s+/g, "");
-  if (!clean.startsWith("SYN-")) {
-    if (clean.startsWith("SYN")) clean = "SYN-" + clean.substring(3);
-    else clean = "SYN-" + clean;
-  }
+  if (!clean.startsWith("SYN-")) clean = "SYN-" + clean;
   return clean;
 }
 
@@ -341,7 +313,6 @@ function getUIText(key) {
   return fallbacks[key] || key;
 }
 
-// ================= DASHBOARD APP TABS ROUTER =================
 function routeDashboardTabs(targetTab) {
   const cards = [
     document.getElementById("rewardDashboardScreen"),
@@ -355,10 +326,7 @@ function routeDashboardTabs(targetTab) {
   ];
   
   cards.forEach(card => {
-    if (card) {
-      card.classList.add("hidden");
-      card.style.display = "none";
-    }
+    if (card) { card.classList.add("hidden"); card.style.display = "none"; }
   });
   
   document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
@@ -368,30 +336,13 @@ function routeDashboardTabs(targetTab) {
   const mainSubtitle = document.getElementById("mainSubtitle"); 
   if(mainSubtitle) mainSubtitle.style.display = "block";
 
-  if (targetTab === "hub") {
-    const el = document.getElementById("rewardDashboardScreen");
-    if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
-  }
-  if (targetTab === "badge") {
-    const el = document.getElementById("tabScreenBadge");
-    if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
-  }
-  if (targetTab === "referrals") {
-    const el = document.getElementById("tabScreenReferrals");
-    if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
-  }
-  if (targetTab === "more-surveys") {
-    const el = document.getElementById("tabScreenMoreSurveys");
-    if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
-  }
-  if (targetTab === "document") {
-    const el = document.getElementById("documentModeSection");
-    if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
-    if(mainSubtitle) mainSubtitle.style.display = "none"; 
-  }
+  if (targetTab === "hub") { const el = document.getElementById("rewardDashboardScreen"); if(el) { el.classList.remove("hidden"); el.style.display = "block"; } }
+  if (targetTab === "badge") { const el = document.getElementById("tabScreenBadge"); if(el) { el.classList.remove("hidden"); el.style.display = "block"; } }
+  if (targetTab === "referrals") { const el = document.getElementById("tabScreenReferrals"); if(el) { el.classList.remove("hidden"); el.style.display = "block"; } }
+  if (targetTab === "more-surveys") { const el = document.getElementById("tabScreenMoreSurveys"); if(el) { el.classList.remove("hidden"); el.style.display = "block"; } }
+  if (targetTab === "document") { const el = document.getElementById("documentModeSection"); if(el) { el.classList.remove("hidden"); el.style.display = "block"; } if(mainSubtitle) mainSubtitle.style.display = "none"; }
 }
 
-// ================= STAGE 1: EMAIL VERIFICATION GATE =================
 if (emailGateForm) {
   emailGateForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -403,27 +354,18 @@ if (emailGateForm) {
       return;
     }
     
-    if (legalConsent && legalConsent.checked && !legalConsentTimestamp) {
-      legalConsentTimestamp = new Date().toISOString();
-      clientUserAgent = navigator.userAgent;
-    }
-    
     const emailVal = gateEmailInput.value.trim().toLowerCase();
     
     if (!emailVal || !EMAIL_REGEX.test(emailVal)) {
       showToast("Please input a valid email address.", "❌");
-      if (statusDiv) { statusDiv.innerHTML = ""; }
       return;
     }
 
     if (!isOtpSent) {
       if (startSurveyBtn.disabled) return; 
       startSurveyBtn.disabled = true;
-      const originalText = startSurveyBtn.innerHTML;
       startSurveyBtn.innerHTML = "⏳ Sending Code...";
 
-      if (statusDiv) { statusDiv.innerHTML = "⏳ Generating secure token..."; statusDiv.style.color = "#57d6c2"; }
-      
       try {
         const response = await fetchWithTimeout(`${BACKEND_URL}/api/send-otp`, {
           method: "POST",
@@ -433,51 +375,34 @@ if (emailGateForm) {
         const result = await response.json();
         if (result.success) {
           isOtpSent = true;
-          const otpSection = document.getElementById("otpSection");
-          if (otpSection) {
-            otpSection.classList.remove("hidden");
-            otpSection.style.display = "block";
-          }
+          document.getElementById("otpSection").style.display = "block";
           startSurveyBtn.innerHTML = "Verify & Enter &rarr;";
           startSurveyBtn.disabled = false;
           gateEmailInput.readOnly = true; 
-          
-          if(legalConsent && legalConsent.parentElement) {
-            legalConsent.parentElement.style.display = "none";
-          }
-          
-          if (statusDiv) statusDiv.innerHTML = "";
         } else {
-          showToast(result.error || "Failed to send code.", "❌");
+          showToast("Failed to send code.", "❌");
           startSurveyBtn.disabled = false;
-          startSurveyBtn.innerHTML = originalText;
-          if (statusDiv) { statusDiv.innerHTML = ""; }
+          startSurveyBtn.innerHTML = "Send Verification Code &rarr;";
         }
       } catch (err) {
-        showToast("Network error. Could not send code.", "❌");
+        showToast("Network error.", "❌");
         startSurveyBtn.disabled = false;
-        startSurveyBtn.innerHTML = originalText;
-        if (statusDiv) { statusDiv.innerHTML = ""; }
+        startSurveyBtn.innerHTML = "Send Verification Code &rarr;";
       }
       return; 
     }
 
     const gateOtpInput = document.getElementById("gateOtp");
-    const rawOtpVal = gateOtpInput ? gateOtpInput.value : "";
-    const otpVal = rawOtpVal.replace(/[\s-]/g, "");
+    const otpVal = gateOtpInput.value.replace(/[\s-]/g, "");
 
     if (!otpVal || otpVal.length !== 6) {
       showToast("Please enter the 6-digit verification code.", "❌");
-      if (statusDiv) { statusDiv.innerHTML = ""; }
       return;
     }
 
     if (startSurveyBtn.disabled) return;
     startSurveyBtn.disabled = true;
-    const originalVerifyText = startSurveyBtn.innerHTML;
     startSurveyBtn.innerHTML = "⏳ Verifying...";
-
-    if (statusDiv) { statusDiv.innerHTML = "⏳ Verifying code..."; statusDiv.style.color = "#57d6c2"; }
 
     try {
       const response = await fetchWithTimeout(`${BACKEND_URL}/api/verify-otp`, {
@@ -488,71 +413,21 @@ if (emailGateForm) {
 
       const result = await response.json();
       if (result.success) {
-        if (statusDiv) statusDiv.innerHTML = "✅ Verification successful!";
         userEmailAddress = emailVal;
         localStorage.setItem("syntrix_user_email", emailVal);
-        if (referredByCodeInput && referredByCodeInput.value.trim() !== "") {
-          localStorage.setItem("referralCode", normalizeReferralCode(referredByCodeInput.value));
-        }
         startSurveyBtn.disabled = false;
         await runProfileLedgerVerification(emailVal, false);
       } else {
-        showToast(result.error || "Invalid or expired code.", "❌");
+        showToast("Invalid code.", "❌");
         startSurveyBtn.disabled = false;
-        startSurveyBtn.innerHTML = originalVerifyText;
-        if (statusDiv) { statusDiv.innerHTML = ""; }
+        startSurveyBtn.innerHTML = "Verify & Enter &rarr;";
       }
     } catch (err) {
-      showToast("Network error. Could not verify code.", "❌");
+      showToast("Network error.", "❌");
       startSurveyBtn.disabled = false;
-      startSurveyBtn.innerHTML = originalVerifyText;
-      if (statusDiv) { statusDiv.innerHTML = ""; }
+      startSurveyBtn.innerHTML = "Verify & Enter &rarr;";
     }
   });
-}
-
-function getSurveyData() { return typeof surveySections !== "undefined" ? surveySections : []; }
-
-function getSectionTitle(section) {
-  if (typeof sectionTranslations !== "undefined" && sectionTranslations[currentLanguage]) {
-    return sectionTranslations[currentLanguage][section.title] || section.title;
-  }
-  return section.title || "";
-}
-
-function handleNextSection() {
-  const sections = getSurveyData();
-  if (!validateCurrentSectionAnswers()) {
-    showToast(getUIText("validationRequired"), "⚠️");
-    return;
-  }
-  if (currentSection < sections.length - 1) {
-    currentSection++;
-    renderSection();
-    updateExcitementBanner(currentSection);
-  }
-}
-
-function handlePrevSection() {
-  if (currentSection > 0) {
-    currentSection--;
-    renderSection();
-    updateExcitementBanner(currentSection);
-  }
-}
-
-function getQuestionText(q) {
-  if (typeof questionTranslations !== "undefined" && questionTranslations[currentLanguage]) {
-    return questionTranslations[currentLanguage][q.id] || q.question || q.id;
-  }
-  return q.question || q.id;
-}
-
-function getOptionText(opt) {
-  if (typeof optionTranslations !== "undefined" && optionTranslations[currentLanguage]) {
-    return optionTranslations[currentLanguage][opt] || opt;
-  }
-  return opt;
 }
 
 function interceptClaimGateActions(e) {
@@ -581,49 +456,30 @@ function renderSection() {
   const currentData = sections[currentSection];
   
   try {
-    if (currentSection === 0) {
-       surveyStartTime = Date.now(); 
-    }
+    if (currentSection === 0) surveyStartTime = Date.now(); 
 
-    if (topProgressBox) {
-      topProgressBox.classList.remove("hidden");
-      topProgressBox.style.display = "block";
-    }
-    if (claimForm) {
-      claimForm.classList.remove("hidden");
-      claimForm.style.display = "block";
-    }
-    if (emailGateSection) {
-      emailGateSection.classList.add("hidden");
-      emailGateSection.style.display = "none";
-    }
+    if (topProgressBox) { topProgressBox.classList.remove("hidden"); topProgressBox.style.display = "block"; }
+    if (claimForm) { claimForm.classList.remove("hidden"); claimForm.style.display = "block"; }
+    if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
 
     const progressPercent = ((currentSection + 1) / sections.length) * 100;
     if (progressFill) progressFill.style.width = `${progressPercent}%`;
     if (progressText) progressText.innerText = `Progress ${currentSection + 1}/${sections.length}`;
 
-    let htmlStr = `<div class="survey-section-card animate-fade-in">
-      <h2 class="surveySectionTitle" style="font-size: 26px; font-weight: 800; color: #111827; margin-bottom: 5px;">${getSectionTitle(currentData)}</h2>`;
+    let htmlStr = `<div class="survey-section-card animate-fade-in"><h2 class="surveySectionTitle" style="font-size: 26px; font-weight: 800; color: #111827; margin-bottom: 5px;">${getSectionTitle(currentData)}</h2>`;
 
     if (currentData && currentData.questions) {
         currentData.questions.forEach((q) => {
           const savedAnswer = answers[q.id] || "";
-          htmlStr += `<div class="question-block" style="margin-top:30px; text-align:left;">
-            <p class="questionText" style="font-weight:800; margin-bottom:16px; font-size:17px; color:#1f1f1f;">${getQuestionText(q)}</p>
-            <div class="options">`; 
+          htmlStr += `<div class="question-block" style="margin-top:30px; text-align:left;"><p class="questionText" style="font-weight:800; margin-bottom:16px; font-size:17px; color:#1f1f1f;">${getQuestionText(q)}</p><div class="options">`; 
 
           if (q.type === "textarea") {
                htmlStr += `<textarea id="${q.id}" placeholder="Type your answer here..." onchange="recordSelection('${q.id}', this.value)" style="width:100%; border:2px solid #e2e8f0; border-radius:14px; padding:16px; font-size:15px; font-family:inherit;">${savedAnswer}</textarea>`;
-          } 
-          else if (q.options && Array.isArray(q.options)) {
+          } else if (q.options && Array.isArray(q.options)) {
               q.options.forEach((opt) => {
                 const isChecked = savedAnswer === opt ? "checked" : "";
                 const isSelectedClass = savedAnswer === opt ? "selected" : ""; 
-                htmlStr += `
-                  <label class="option ${isSelectedClass}" style="display:inline-block; user-select:none; font-weight: 600;">
-                    <input type="radio" name="${q.id}" value="${opt}" ${isChecked} style="display:none;" onchange="recordSelection('${q.id}', this.value)">
-                    <span class="optionText">${getOptionText(opt)}</span>
-                  </label>`;
+                htmlStr += `<label class="option ${isSelectedClass}" style="display:inline-block; user-select:none; font-weight: 600;"><input type="radio" name="${q.id}" value="${opt}" ${isChecked} style="display:none;" onchange="recordSelection('${q.id}', this.value)"><span class="optionText">${getOptionText(opt)}</span></label>`;
               });
           }
           htmlStr += `</div></div>`;
@@ -634,13 +490,8 @@ function renderSection() {
     surveyContainer.innerHTML = htmlStr;
 
     if (prevBtn) {
-      if(currentSection === 0) {
-        prevBtn.style.visibility = "hidden";
-        prevBtn.style.display = "none";
-      } else {
-        prevBtn.style.visibility = "visible";
-        prevBtn.style.display = "block";
-      }
+      if(currentSection === 0) { prevBtn.style.visibility = "hidden"; prevBtn.style.display = "none"; } 
+      else { prevBtn.style.visibility = "visible"; prevBtn.style.display = "block"; }
     }
     
     if (currentSection === sections.length - 1) {
@@ -652,14 +503,12 @@ function renderSection() {
     }
   } catch (err) {
     surveyContainer.innerHTML = `<div style="background:#fee2e2; border: 2px solid #ef4444; color:#991b1b; padding: 20px; border-radius: 12px; font-weight:bold; margin-top:20px;">🚨 System Error: ${err.message}</div>`;
-    console.error(err);
   }
 }
 
-window.recordSelection = function(questionId, selectedValue) {
-  answers[questionId] = selectedValue;
-  renderSection();
-};
+window.recordSelection = function(questionId, selectedValue) { answers[questionId] = selectedValue; renderSection(); };
+function handleNextSection() { if (!validateCurrentSectionAnswers()) { showToast(getUIText("validationRequired"), "⚠️"); return; } if (currentSection < getSurveyData().length - 1) { currentSection++; renderSection(); updateExcitementBanner(currentSection); } }
+function handlePrevSection() { if (currentSection > 0) { currentSection--; renderSection(); updateExcitementBanner(currentSection); } }
 
 function updateExcitementBanner(sectionIndex) {
   const banner = document.getElementById("excitementBanner");
@@ -673,23 +522,14 @@ function updateExcitementBanner(sectionIndex) {
   banner.style.animation = 'none'; banner.offsetHeight; banner.style.animation = 'slideDown 0.5s ease-out';
 
   if (currentLanguage === "hi") {
-      if (sectionIndex < 5) {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">शानदार! आपने अब तक <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> सुरक्षित कर लिए हैं!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">अगला मॉड्यूल पूरा करें Aur <strong style="color: #fbbf24;">8 Aur Paayein!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">जारी रखें & दावा करें &gt;</div></div>`;
-      } else {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">अविश्वसनीय! आपने सभी <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span> सुरक्षित कर लिए हैं!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">दावा करने के लिए नीचे सबमिट पर क्लिक करें!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">दावा करने के लिए तैयार</div></div>`;
-      }
+      if (sectionIndex < 5) banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">शानदार! आपने अब तक <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> सुरक्षित कर लिए हैं!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">अगला मॉड्यूल पूरा करें Aur <strong style="color: #fbbf24;">8 Aur Paayein!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">जारी रखें & दावा करें &gt;</div></div>`;
+      else banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">अविश्वसनीय! आपने सभी <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span> सुरक्षित कर लिए हैं!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">दावा करने के लिए नीचे सबमिट पर क्लिक करें!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">दावा करने के लिए तैयार</div></div>`;
   } else if (currentLanguage === "hinglish") {
-      if (sectionIndex < 5) {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! Aapne ab tak <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> secure kar liye hain!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Next module complete karein aur <strong style="color: #fbbf24;">8 more payein!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div></div>`;
-      } else {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! Aapne sabhi <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span> secure kar liye hain!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Neeche Submit button par click karke claim karein!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div>`;
-      }
+      if (sectionIndex < 5) banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! Aapne ab tak <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> secure kar liye hain!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Next module complete karein aur <strong style="color: #fbbf24;">8 more payein!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div></div>`;
+      else banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! Aapne sabhi <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span> secure kar liye hain!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Neeche Submit button par click karke claim karein!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div>`;
   } else {
-      if (sectionIndex < 5) {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! You've secured <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> so far!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Complete the next module to claim <strong style="color: #fbbf24;">8 more!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div></div>`;
-      } else {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! You've secured all <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span>!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Hit Submit below to transfer them to your wallet!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div>`;
-      }
+      if (sectionIndex < 5) banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! You've secured <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> so far!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Complete the next module to claim <strong style="color: #fbbf24;">8 more!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div></div>`;
+      else banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! You've secured all <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span>!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Hit Submit below to transfer them to your wallet!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div>`;
   }
 }
 
@@ -790,89 +630,44 @@ async function runProfileLedgerVerification(email, isFromModal = false, isBackgr
 function determinePersonaBadge(answersObj) {
   const scores = { Analyzer: 0, Stylist: 0, Hedger: 0, Native: 0 };
   const mapping = {
-    "question_1_id": {
-      "I compare all the data and reviews": "Analyzer",
-      "I care about how beautiful it looks": "Stylist",
-      "I only buy if there is a safe warranty": "Hedger",
-      "I buy what my friends recommend": "Native"
-    },
-    "question_2_id": {
-      "Logic and numbers": "Analyzer",
-      "Aesthetics and vibe": "Stylist",
-      "Safety and guarantees": "Hedger",
-      "Community and trust": "Native"
-    }
+    "question_1_id": { "I compare all the data and reviews": "Analyzer", "I care about how beautiful it looks": "Stylist", "I only buy if there is a safe warranty": "Hedger", "I buy what my friends recommend": "Native" },
+    "question_2_id": { "Logic and numbers": "Analyzer", "Aesthetics and vibe": "Stylist", "Safety and guarantees": "Hedger", "Community and trust": "Native" }
   };
   for (const [qId, selectedAnswer] of Object.entries(answersObj)) {
-    if (mapping[qId] && mapping[qId][selectedAnswer]) {
-      const persona = mapping[qId][selectedAnswer];
-      scores[persona]++;
-    }
+    if (mapping[qId] && mapping[qId][selectedAnswer]) { scores[mapping[qId][selectedAnswer]]++; }
   }
-  let topBadge = "Analyzer";
-  let maxScore = -1;
-  for (const [badge, score] of Object.entries(scores)) {
-    if (score > maxScore) {
-      maxScore = score;
-      topBadge = badge;
-    }
-  }
+  let topBadge = "Analyzer"; let maxScore = -1;
+  for (const [badge, score] of Object.entries(scores)) { if (score > maxScore) { maxScore = score; topBadge = badge; } }
   return topBadge;
 }
 
 async function handleSurveySubmission(e) {
   if (e) e.preventDefault();
-
-  if ((Date.now() - surveyStartTime) < QUALITY_THRESHOLD_MS) {
-    showToast("Please take more time to read the questions carefully.", "⏱️");
-    return;
-  }
-
-  if (!validateCurrentSectionAnswers()) {
-    showToast(getUIText("validationRequired"), "⚠️");
-    return;
-  }
-
+  if ((Date.now() - surveyStartTime) < QUALITY_THRESHOLD_MS) { showToast("Please take more time to read the questions carefully.", "⏱️"); return; }
+  if (!validateCurrentSectionAnswers()) { showToast(getUIText("validationRequired"), "⚠️"); return; }
   if (claimForm) { claimForm.classList.add("hidden"); claimForm.style.display = "none"; }
   
-  const excitementBanner = document.getElementById("excitementBanner");
-  if(excitementBanner) excitementBanner.style.display = "none";
-
   const animOverlay = document.getElementById("rewardAnimationOverlay");
   if (animOverlay) animOverlay.style.display = "flex";
 
   const referralCodeUsed = localStorage.getItem("referralCode") || "";
 
   const finalPayload = {
-    email: userEmailAddress,
-    answers: answers,
-    referredBy: referralCodeUsed,
-    legal_consent: true,
-    consent_timestamp: legalConsentTimestamp || new Date().toISOString(),
-    user_agent: clientUserAgent || navigator.userAgent,
-    startTime: surveyStartTime, 
-    submissionTime: Date.now(),
-    assignedBadge: determinePersonaBadge(answers)
+    email: userEmailAddress, answers: answers, referredBy: referralCodeUsed, legal_consent: true,
+    consent_timestamp: legalConsentTimestamp || new Date().toISOString(), user_agent: clientUserAgent || navigator.userAgent,
+    startTime: surveyStartTime, submissionTime: Date.now(), assignedBadge: determinePersonaBadge(answers)
   };
 
   try {
     const response = await fetchWithTimeout(`${BACKEND_URL}/api/submit-survey`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(finalPayload)
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(finalPayload)
     });
-
     const result = await response.json();
     
     setTimeout(async () => {
       if (animOverlay) animOverlay.style.display = "none";
-      if (result.success) {
-        if (statusDiv) statusDiv.innerHTML = "";
-        await runProfileLedgerVerification(userEmailAddress, false);
-      } else {
-        if (claimForm) { claimForm.classList.remove("hidden"); claimForm.style.display = "block"; }
-        showToast(`${result.error || "Submission rejected by registry backend."}`, "❌");
-      }
+      if (result.success) await runProfileLedgerVerification(userEmailAddress, false);
+      else { if (claimForm) { claimForm.classList.remove("hidden"); claimForm.style.display = "block"; } showToast(`${result.error || "Submission rejected."}`, "❌"); }
     }, 3500);
   } catch (err) {
     if (animOverlay) animOverlay.style.display = "none";
@@ -881,406 +676,55 @@ async function handleSurveySubmission(e) {
   }
 }
 
-function translatePage() {
-  if (typeof translations === "undefined" || !translations[currentLanguage]) return;
-  const dict = translations[currentLanguage];
-
-  const mainTitleEl = document.getElementById("mainTitle");
-  const mainSubtitleEl = document.getElementById("mainSubtitle");
-  if (mainTitleEl && dict.mainTitle) mainTitleEl.innerHTML = dict.mainTitle;
-  if (mainSubtitleEl && dict.mainSubtitle) mainSubtitleEl.innerHTML = dict.mainSubtitle;
-
-  const emailSectionTitleEl = document.querySelector("#emailGateSection .sectionTitle");
-  if (emailSectionTitleEl && dict.emailSectionTitle) emailSectionTitleEl.innerText = dict.emailSectionTitle;
-  
-  const startSurveyBtnEl = document.getElementById("startSurveyBtn");
-  if (startSurveyBtnEl && dict.btnStart) startSurveyBtnEl.innerHTML = dict.btnStart;
-
-  const prevBtnEl = document.getElementById("prevBtn");
-  const nextBtnEl = document.getElementById("nextBtn");
-  const submitClaimBtnEl = document.getElementById("submitClaimBtn");
-  if (prevBtnEl && dict.previous) prevBtnEl.innerHTML = `&lt; ${dict.previous}`;
-  if (nextBtnEl && dict.next) nextBtnEl.innerHTML = `${dict.next} &gt;`;
-  if (submitClaimBtnEl && dict.submit) submitClaimBtnEl.innerHTML = dict.submit;
-
-  const rewardTitleEl = document.getElementById("claimTitle");
-  const rewardSubtitleEl = document.getElementById("rewardSubtitleDesc");
-  if (rewardTitleEl && dict.claimTitle) rewardTitleEl.innerHTML = dict.claimTitle;
-  if (rewardSubtitleEl && dict.rewardSubtitle) rewardSubtitleEl.innerHTML = dict.rewardSubtitle;
-
-  const connectWalletBtnEl = document.querySelector("#connectWalletBtn span");
-  if (connectWalletBtnEl && dict.metaMaskLabel) connectWalletBtnEl.innerText = dict.metaMaskLabel;
-  
-  const manualLabelEl = document.querySelector(".manualWalletWrapper .dividerLine span");
-  if (manualLabelEl && dict.manualLabel) manualLabelEl.innerText = dict.manualLabel;
-  
-  const executeClaimBtnEl = document.getElementById("executeClaimBtn");
-  if (executeClaimBtnEl && dict.btnExecute) executeClaimBtnEl.innerText = dict.btnExecute;
-  
-  const referralTitleEl = document.querySelector(".referralContainer .dividerLine span");
-  if (referralTitleEl && dict.referralTitle) referralTitleEl.innerText = dict.referralTitle;
-
-  const referralDescriptionEl = document.getElementById("referralSubText");
-  if (referralDescriptionEl && dict.referralSub) referralDescriptionEl.innerHTML = dict.referralSub;
-  
-  const copyReferralBtnEl = document.getElementById("copyReferralBtn");
-  if (copyReferralBtnEl && dict.btnCopy) copyReferralBtnEl.innerText = dict.btnCopy;
-
-  const modalTitleEl = document.querySelector("#retrieveModal .modal-header h2");
-  if (modalTitleEl && dict.modalTitle) modalTitleEl.innerText = dict.modalTitle;
-  
-  const modalSubEl = document.querySelector("#retrieveModal .modal-subtitle");
-  if (modalSubEl && dict.modalSub) modalSubEl.innerText = dict.modalSub;
-  
-  const modalDetailsTitleEl = document.querySelector("#retrieveModal .extra-details-box h4");
-  if (modalDetailsTitleEl && dict.modalDetailsTitle) modalDetailsTitleEl.innerText = dict.modalDetailsTitle;
-  
-  const modalDetails1El = document.querySelector("#retrieveModal .extra-details-box li:nth-child(1)");
-  if (modalDetails1El && dict.modalDetails1) modalDetails1El.innerText = dict.modalDetails1;
-  
-  const modalDetails2El = document.querySelector("#retrieveModal .extra-details-box li:nth-child(2)");
-  if (modalDetails2El && dict.modalDetails2) modalDetails2El.innerText = dict.modalDetails2;
-  
-  const modalDetails3El = document.querySelector("#retrieveModal .extra-details-box li:nth-child(3)");
-  if (modalDetails3El && dict.modalDetails3) modalDetails3El.innerText = dict.modalDetails3;
-  
-  const modalInputLabelEl = document.querySelector("#retrieveModal .input-wrapper label");
-  if (modalInputLabelEl && dict.modalInputLabel) modalInputLabelEl.innerText = dict.modalInputLabel;
-  
-  const cancelModalBtnEl = document.getElementById("cancelModalBtn");
-  if (cancelModalBtnEl && dict.btnCancel) cancelModalBtnEl.innerText = dict.btnCancel;
-  
-  const confirmRetrieveBtnEl = document.getElementById("confirmRetrieveBtn");
-  if (confirmRetrieveBtnEl && dict.btnSearch) confirmRetrieveBtnEl.innerText = dict.btnSearch;
-}
-
 function resetApplicationFlowState() {
   if (emailGateForm) emailGateForm.reset();
   localStorage.removeItem("syntrix_user_email");
-  localStorage.removeItem("referralCode");
-  
-  if (statusDiv) statusDiv.innerHTML = "";
-  
   userEmailAddress = "";
-  currentSection = 0;
-  isOtpSent = false;
-  legalConsentTimestamp = "";
-  clientUserAgent = ""; 
-  
-  const otpSection = document.getElementById("otpSection");
-  if (otpSection) {
-      otpSection.classList.add("hidden");
-      otpSection.style.display = "none";
-  }
-  
-  if (startSurveyBtn) startSurveyBtn.innerHTML = "Send Verification Code &rarr;";
-  if (gateEmailInput) gateEmailInput.readOnly = false;
-  
-  for (const prop in answers) {
-      if (Object.prototype.hasOwnProperty.call(answers, prop)) {
-          delete answers[prop];
-      }
-  }
-  
-  if (emailGateSection) {
-      emailGateSection.classList.remove("hidden");
-      emailGateSection.style.display = "flex";
-  }
-  
+  if (emailGateSection) { emailGateSection.classList.remove("hidden"); emailGateSection.style.display = "flex"; }
   const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "gatewayScreenSection", "documentModeSection"];
-  dashboardCards.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) { el.classList.add("hidden"); el.style.display = "none"; }
-  });
-
-  if (claimForm) {
-      claimForm.classList.add("hidden");
-      claimForm.style.display = "none";
-  }
-  if (topProgressBox) {
-      topProgressBox.classList.add("hidden");
-      topProgressBox.style.display = "none";
-  }
-  
-  const tabLinksContainer = document.getElementById("dashboardTabLinks");
-  if (tabLinksContainer) {
-      tabLinksContainer.classList.add("hidden");
-      tabLinksContainer.style.display = "none";
-  }
-  
-  const menuReferralWrapper = document.getElementById("menuReferralWrapper");
-  if (menuReferralWrapper) menuReferralWrapper.style.display = "none";
-  
-  if (mainApplicationLayout) {
-      mainApplicationLayout.classList.add("hidden");
-      mainApplicationLayout.style.display = "none";
-  }
-  if (splashLandingGate) {
-      splashLandingGate.style.display = "flex";
-  }
+  dashboardCards.forEach(id => { const el = document.getElementById(id); if (el) { el.classList.add("hidden"); el.style.display = "none"; } });
+  if (mainApplicationLayout) { mainApplicationLayout.classList.add("hidden"); mainApplicationLayout.style.display = "none"; }
+  if (splashLandingGate) { splashLandingGate.style.display = "flex"; }
   routeSplashNavViews("home");
   showToast("Account profiles successfully signed out.", "✓");
 }
 
-// ================= LIFE CYCLE REGISTRATION RUNNERS & EVENT ROUTERS =================
 document.addEventListener("DOMContentLoaded", async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const claimToken = urlParams.get("token");
   const refParam = urlParams.get("ref");
   
-  if (refParam) {
-    localStorage.setItem("referralCode", normalizeReferralCode(refParam));
-    window.history.replaceState({}, document.title, window.location.pathname);
-  }
+  if (refParam) { localStorage.setItem("referralCode", normalizeReferralCode(refParam)); window.history.replaceState({}, document.title, window.location.pathname); }
   const savedRefCode = localStorage.getItem("referralCode");
   if (savedRefCode && referredByCodeInput) referredByCodeInput.value = savedRefCode;
 
   document.querySelectorAll(".tab-btn").forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      const target = e.target.dataset.tab;
-      if (target) {
-        routeDashboardTabs(target);
-        if(optionsPopover) {
-          optionsPopover.classList.add("hidden");
-          optionsPopover.style.display = "none";
-        }
-      }
-    });
+    btn.addEventListener("click", (e) => { const target = e.target.dataset.tab; if (target) routeDashboardTabs(target); });
   });
 
   if (claimToken) {
-    if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
-    if (claimForm) { claimForm.classList.add("hidden"); claimForm.style.display = "none"; }
-    if (topProgressBox) { topProgressBox.classList.add("hidden"); topProgressBox.style.display = "none"; }
-    if (gatewayScreenSection) { gatewayScreenSection.classList.add("hidden"); gatewayScreenSection.style.display = "none"; }
-    if (documentModeSection) { documentModeSection.classList.add("hidden"); documentModeSection.style.display = "none"; }
-    
-    const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys"];
-    dashboardCards.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) { el.classList.add("hidden"); el.style.display = "none"; }
-    });
+    const dashboardCards = ["emailGateSection", "claimForm", "topProgressBox", "gatewayScreenSection", "documentModeSection", "rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys"];
+    dashboardCards.forEach(id => { const el = document.getElementById(id); if (el) { el.classList.add("hidden"); el.style.display = "none"; } });
   } else {
-    if (splashLandingGate) {
-        splashLandingGate.style.display = "flex";
+    const savedEmail = localStorage.getItem("syntrix_user_email");
+    if (savedEmail) {
+      if(splashLandingGate) splashLandingGate.style.display = "none";
+      if(mainApplicationLayout) { mainApplicationLayout.classList.remove("hidden"); mainApplicationLayout.style.display = "flex"; }
+      runProfileLedgerVerification(savedEmail, false);
     }
-    if (mainApplicationLayout) {
-        mainApplicationLayout.style.display = "none";
-        mainApplicationLayout.classList.add("hidden");
-    }
-    routeSplashNavViews("home");
   }
 
   if (nextBtn) nextBtn.onclick = () => handleNextSection();
   if (prevBtn) prevBtn.onclick = () => handlePrevSection();
-  if (claimForm) {
-    claimForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      handleSurveySubmission(e);
-    });
-  }
-  
-  // 🚀 HARD LOCK: Dynamic button overrides wrapped permanently across all interfaces
+  if (claimForm) claimForm.addEventListener("submit", (e) => handleSurveySubmission(e));
   if (connectWalletBtn) connectWalletBtn.addEventListener("click", interceptClaimGateActions);
   if (claimConnectWalletBtn) claimConnectWalletBtn.addEventListener("click", interceptClaimGateActions);
   if (executeClaimBtn) executeClaimBtn.addEventListener("click", interceptClaimGateActions);
   if (submitClaimRewardBtn) submitClaimRewardBtn.addEventListener("click", interceptClaimGateActions);
-  
   if (sidebarLogoutBtn) sidebarLogoutBtn.addEventListener("click", () => resetApplicationFlowState());
-  
-  if (copyReferralBtn) {
-      copyReferralBtn.onclick = () => {
-        if (!referralCodeDisplay) return;
-        referralCodeDisplay.select(); 
-        referralCodeDisplay.setSelectionRange(0, 99999);
-        try {
-          navigator.clipboard.writeText(referralCodeDisplay.value);
-          const originalText = copyReferralBtn.innerText; 
-          copyReferralBtn.innerText = "Copied! ✓";
-          setTimeout(() => { copyReferralBtn.innerText = originalText; }, 2000);
-        } catch (err) { showToast("Failed to access system registers.", "❌"); }
-      }
-  }
-
-  if (generateQrBtn) {
-    generateQrBtn.addEventListener("click", () => {
-      const shopRefCode = localStorage.getItem("referralCode");
-      if (!shopRefCode) {
-        showToast("Referral link not found. Please log in to your shop account.", "❌");
-        return;
-      }
-      
-      qrCodeWrapper.style.display = "flex";
-      qrCodeCanvas.innerHTML = "";
-      
-      const dynamicQrLink = `${BACKEND_URL}/r/${shopRefCode}`;
-      
-      new QRCode(qrCodeCanvas, {
-        text: dynamicQrLink,
-        width: 256,
-        height: 256,
-        colorDark: "#111827",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
-      });
-
-      qrCodeWrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      showToast("Shop QR Code generated!", "✅");
-    });
-  }
-
-  if (downloadQrBtn) {
-    downloadQrBtn.addEventListener("click", () => {
-      const originalCanvas = qrCodeCanvas.querySelector("canvas");
-
-      if (!originalCanvas) {
-        showToast("Please generate the QR code first.", "❌");
-        return;
-      }
-
-      const padding = 24; 
-      const paddedCanvas = document.createElement("canvas");
-      paddedCanvas.width = originalCanvas.width + (padding * 2);
-      paddedCanvas.height = originalCanvas.height + (padding * 2);
-      
-      const ctx = paddedCanvas.getContext("2d");
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, paddedCanvas.width, paddedCanvas.height);
-      ctx.drawImage(originalCanvas, padding, padding);
-
-      const downloadUrl = paddedCanvas.toDataURL("image/png");
-      
-      const tempLink = document.createElement("a");
-      tempLink.href = downloadUrl;
-      tempLink.download = "Syntrix_Dealer_QR.png";
-      document.body.appendChild(tempLink);
-      tempLink.click();
-      document.body.removeChild(tempLink);
-      
-      showToast("QR Code saved to gallery!", "✅");
-    });
-  }
-
-  const menuCopyReferralBtn = document.getElementById("menuCopyReferralBtn");
-  const menuReferralInputDisplay = document.getElementById("menuReferralInputDisplay");
-  if (menuCopyReferralBtn && menuReferralInputDisplay) {
-    menuCopyReferralBtn.onclick = (e) => {
-      e.stopPropagation();
-      const refLink = menuReferralInputDisplay.value;
-      if (refLink) {
-        navigator.clipboard.writeText(refLink);
-        menuCopyReferralBtn.innerText = "Copied!";
-        menuCopyReferralBtn.style.background = "#10b981";
-        setTimeout(() => { 
-            menuCopyReferralBtn.innerText = "Copy"; 
-            menuCopyReferralBtn.style.background = "#111827";
-        }, 2000);
-      }
-    };
-  }
-
-  if (menuToggleBtn && optionsPopover) {
-    menuToggleBtn.onclick = (e) => { 
-        e.stopPropagation(); 
-        optionsPopover.classList.toggle("hidden"); 
-        if(optionsPopover.style.display === "none" || optionsPopover.style.display === "") {
-            optionsPopover.style.display = "block";
-        } else {
-            optionsPopover.style.display = "none";
-        }
-    };
-    document.addEventListener("click", (e) => {
-        if(optionsPopover && !optionsPopover.contains(e.target) && e.target !== menuToggleBtn) {
-          optionsPopover.classList.add("hidden");
-          optionsPopover.style.display = "none";
-        }
-    });
-  }
-
-  if (menuRestartBtn) {
-    menuRestartBtn.onclick = () => { 
-      if(optionsPopover) {
-          optionsPopover.classList.add("hidden"); 
-          optionsPopover.style.display = "none";
-      }
-      if(confirmRestartModal) {
-          confirmRestartModal.classList.remove("hidden"); 
-          confirmRestartModal.style.display = "flex";
-      }
-    };
-  }
-  if (cancelRestartBtn) {
-    cancelRestartBtn.onclick = () => {
-      if(confirmRestartModal) {
-          confirmRestartModal.classList.add("hidden");
-          confirmRestartModal.style.display = "none";
-      }
-    };
-  }
-  if (confirmRestartBtn) {
-    confirmRestartBtn.onclick = () => {
-      if(confirmRestartModal) {
-          confirmRestartModal.classList.add("hidden");
-          confirmRestartModal.style.display = "none";
-      }
-      resetApplicationFlowState();
-    };
-  }
-
-  if (menuRecoverBtn && retrieveModal) {
-    menuRecoverBtn.onclick = () => {
-      if(optionsPopover) {
-          optionsPopover.classList.add("hidden"); 
-          optionsPopover.style.display = "none";
-      }
-      retrieveModal.classList.remove("hidden");
-      retrieveModal.style.display = "flex";
-      if (modalEmailInput) modalEmailInput.value = ""; 
-      if (modalStatus) modalStatus.innerHTML = "";
-      
-      if (confirmRetrieveBtn) {
-        confirmRetrieveBtn.onclick = async () => {
-          const searchEmail = modalEmailInput ? modalEmailInput.value.trim().toLowerCase() : "";
-          if (!searchEmail || !EMAIL_REGEX.test(searchEmail)) {
-            showToast("Please provide a valid email structure.", "❌");
-            return;
-          }
-          if (splashLandingGate) splashLandingGate.style.display = "none";
-          if (mainApplicationLayout) {
-              mainApplicationLayout.classList.remove("hidden");
-              mainApplicationLayout.style.display = "flex";
-          }
-          
-          const originalText = confirmRetrieveBtn.innerText;
-          confirmRetrieveBtn.innerText = "Searching...";
-          confirmRetrieveBtn.disabled = true;
-          
-          await runProfileLedgerVerification(searchEmail, true);
-          
-          confirmRetrieveBtn.innerText = originalText;
-          confirmRetrieveBtn.disabled = false;
-        };
-      }
-    };
-  }
-
-  if (closeModalBtn) closeModalBtn.onclick = () => dismissModal();
-  if (cancelModalBtn) cancelModalBtn.onclick = () => dismissModal();
-
-  const langButtons = document.querySelectorAll(".langBtn");
-  langButtons.forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      langButtons.forEach(b => b.classList.remove("active"));
-      btn.classList.add("active"); currentLanguage = btn.dataset.lang;
-      if (typeof translatePage === "function") translatePage();
-      updateExcitementBanner(currentSection); 
-      if (claimForm && claimForm.style.display !== "none") renderSection();
-    });
-  });
 });
 
 // ================= DOCUMENT MODE API LOGIC =================
-
 const taskTypeSelect = document.getElementById('taskType');
 const fileInputCamera = document.getElementById('fileInputCamera');
 const fileInputGallery = document.getElementById('fileInputGallery');
@@ -1301,7 +745,7 @@ const docLanguageInput = document.getElementById('docLanguageInput');
 let selectedFile = null;
 let currentPollInterval = null;
 
-// 🚀 FIX: FULL FRONTEND STATE RESET FUNCTION (Clears old errors and states perfectly without breaking the file URL)
+// 🚀 FIX: Ensures safe UI resets without breaking the object URL
 function resetUploadState(keepInputs = false) {
     if (!keepInputs) {
       selectedFile = null;
@@ -1388,7 +832,6 @@ function convertToBase64(file) {
   });
 }
 
-// 🚀 UI PROGRESS HELPER (Dynamic Progress Steps)
 function updateProgressUI(stepText, percent) {
     if (!statusMessage) return;
     statusMessage.innerHTML = `
@@ -1452,17 +895,14 @@ if (submitDocBtn) {
       });
 
       if (response.ok) {
-        
         let attempts = 0;
         const maxAttempts = 15; // 45 seconds total check
         
         updateProgressUI('🤖 AI is verifying parameters...', 35);
 
-        // 🚀 DYNAMIC PROGRESS INDICATOR UX
         currentPollInterval = setInterval(async () => {
             attempts++;
             
-            // Visual UX Swapping
             if(attempts === 2) updateProgressUI('📄 Checking quality and embeddings...', 60);
             if(attempts === 5) updateProgressUI('🔐 Security verification...', 85);
 
