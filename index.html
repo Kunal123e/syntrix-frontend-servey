@@ -6,13 +6,10 @@
   <title>Syntrix Hub</title>
   
   <link rel="icon" href="data:,"> 
-  
   <link rel="stylesheet" href="style.css">
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
-  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/base@9/dist/base.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/ethereum-provider@9/dist/ethereumProvider.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@9/dist/modal.umd.min.js"></script>
@@ -21,6 +18,9 @@
     @keyframes slideDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes floatBox { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
     @keyframes pulseGlow { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.7); } 70% { box-shadow: 0 0 0 20px rgba(16,185,129,0); } 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } }
+    @keyframes pulseText { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+    
+    .status-text-pulse { animation: pulseText 1.5s infinite ease-in-out; font-weight: 800; }
     .badge-icon-glow { filter: drop-shadow(0 0 8px var(--glow-color, #6366f1)); }
     .app, body { transition: background-color 0.3s ease-in-out; }
     .option { transition: all 0.2s ease; transform: scale(1); }
@@ -81,6 +81,20 @@
       text-align: center;
       margin-top: 20px;
     }
+
+    /* 🚀 Document Mode UX Overrides */
+    .btn-retry { 
+        background: #fef2f2; color: #e11d48; border: 1px solid #fecdd3; 
+        padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; 
+        transition: 0.2s; width: 100%; margin-top: 10px; display: none; 
+    }
+    .btn-retry:hover { background: #ffe4e6; }
+    .dynamic-reason-box { 
+        font-size: 13px; margin-top: 8px; font-weight: 600; line-height: 1.5; 
+        border-radius: 8px; padding: 10px; display: none;
+    }
+    .reason-error { background: #fef2f2; color: #9f1239; border: 1px solid #fecdd3; }
+    .reason-success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
   </style>
 
   <script>
@@ -406,17 +420,14 @@
               <p id="uploadSubtext">Supports JPG, PNG (Max 20MB)</p>
               
               <div class="upload-actions" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 15px;">
-                
                 <label class="btn-dark" id="btnCamera">
                   <span id="btnCameraText">📷 Take Photo</span>
                   <input type="file" id="fileInputCamera" accept="image/jpeg, image/png" capture="environment" style="display: none;" />
                 </label>
-                
                 <label class="btn-secondary-outline" id="btnGallery">
                   🖼️ Upload from Gallery
                   <input type="file" id="fileInputGallery" accept="image/jpeg, image/png" style="display: none;" />
                 </label>
-
               </div>
               
               <div id="previewContainer" class="preview-window" style="display: none;">
@@ -494,10 +505,22 @@
 
             </div>
 
-            <div class="submission-card">
+            <div class="submission-card" style="text-align: center;">
               <button id="submitDocBtn" class="btn-dark full-width" disabled>Approve & Submit to Waiting Room</button>
-              <p id="statusMessage" class="status-message"></p>
+              
+              <div id="statusMessage" class="status-message"></div>
+              
+              <div id="detailedReasonBox" class="dynamic-reason-box"></div>
+              
+              <button id="retryUploadBtn" class="btn-retry">🔄 Clear & Retry Upload</button>
             </div>
+
+            <div id="uploadHistorySection" class="submission-card" style="margin-top: 20px; display: none;">
+              <h4 style="margin-bottom: 15px;">Upload History</h4>
+              <div id="historyList" class="history-list">
+                </div>
+            </div>
+            
           </div>
         </div>
       </div>
