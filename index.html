@@ -174,6 +174,23 @@
       } catch (err) {
         console.error("❌ Web3Auth Boot Error:", err);
       }
+
+      // 🚀 FRONTEND FIX: "Select All" Checkbox Logic
+      const selectAll = document.getElementById('selectAllConsent');
+      const childConsents = document.querySelectorAll('.consent-child');
+      
+      if(selectAll && childConsents.length > 0) {
+          selectAll.addEventListener('change', (e) => {
+              childConsents.forEach(cb => cb.checked = e.target.checked);
+          });
+
+          childConsents.forEach(cb => {
+              cb.addEventListener('change', () => {
+                  const allChecked = Array.from(childConsents).every(c => c.checked);
+                  selectAll.checked = allChecked;
+              });
+          });
+      }
     });
   </script>
 </head>
@@ -193,7 +210,7 @@
 <div id="splashLandingGate" style="display: flex;">
   <nav class="landing-nav">
     <div class="nav-logo" id="navLogoHomeTrigger" style="cursor: pointer; display: flex; align-items: center; gap: 10px;">
-      <img src="syntrix-logo.png" alt="Syntrix Logo" style="height: 32px; width: auto; object-fit: contain;">
+      <img src="syntrix-logo.png" alt="Syntrix Logo" style="height: 32px; width: auto; object-fit: contain; filter: brightness(0) invert(1);">
       <span style="font-size: 24px; font-weight: 800;">SYN<span style="font-weight: 500; color: #a1a1aa;">TRIX</span></span>
     </div>
     <div class="nav-links">
@@ -491,13 +508,19 @@
 
               <div class="form-group" style="margin-bottom: 5px;">
                  <label style="font-weight: 800; font-size: 14px;">5. Legal Consent & Data Release</label>
-                 <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px; background: #ffffff; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <label style="display:flex; align-items:flex-start; gap:10px; font-size:12px; line-height:1.5; font-weight: 600; cursor: pointer;">
-                      <input type="checkbox" id="consentSensitive" style="width: 18px; height: 18px; margin-top:2px;"> 
+                 <div style="display: flex; flex-direction: column; background: #ffffff; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 10px;">
+                    
+                    <label style="display:flex; align-items:center; gap:10px; font-size:14px; font-weight: 800; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 12px; cursor: pointer; color: #0f172a;">
+                      <input type="checkbox" id="selectAllConsent" style="width: 20px; height: 20px; flex-shrink: 0; accent-color: #4f46e5;"> 
+                      Select All Consents
+                    </label>
+
+                    <label style="display:flex; align-items:flex-start; gap:12px; font-size:13px; line-height:1.5; font-weight: 600; cursor: pointer; margin-bottom: 12px; color: #475569;">
+                      <input type="checkbox" id="consentSensitive" class="consent-child" style="width: 18px; height: 18px; margin-top:2px; flex-shrink: 0; accent-color: #4f46e5;"> 
                       I confirm that this image does not contain any sensitive personal information (such as full names, phone numbers, addresses, or private financial details).
                     </label>
-                    <label style="display:flex; align-items:flex-start; gap:10px; font-size:12px; line-height:1.5; font-weight: 600; cursor: pointer;">
-                      <input type="checkbox" id="consentCommercial" style="width: 18px; height: 18px; margin-top:2px;"> 
+                    <label style="display:flex; align-items:flex-start; gap:12px; font-size:13px; line-height:1.5; font-weight: 600; cursor: pointer; color: #475569;">
+                      <input type="checkbox" id="consentCommercial" class="consent-child" style="width: 18px; height: 18px; margin-top:2px; flex-shrink: 0; accent-color: #4f46e5;"> 
                       I explicitly agree to the Terms of Service and Privacy Policy, and grant Syntrix a perpetual license to anonymize and sell this image for commercial Artificial Intelligence (AI) training.
                     </label>
                  </div>
