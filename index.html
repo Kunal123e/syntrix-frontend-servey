@@ -175,7 +175,7 @@
         console.error("❌ Web3Auth Boot Error:", err);
       }
 
-      // 🚀 FRONTEND FIX: "Select All" Checkbox Logic
+      // "Select All" Checkbox Logic
       const selectAll = document.getElementById('selectAllConsent');
       const childConsents = document.querySelectorAll('.consent-child');
       
@@ -207,27 +207,34 @@
   <p style="font-size: 20px; color: #d1d5db; margin-top: 15px; font-weight: 600; text-align: center; max-width: 500px; line-height: 1.5;">Validating your responses...<br><span style="color: #34d399; font-size: 24px; font-weight: 800; display: inline-block; margin-top: 10px;">Your 48 SYNX reward is waiting!</span></p>
 </div>
 
-<div id="splashLandingGate" style="display: flex;">
-  <header class="mobile-header">
-    <button class="icon-btn" aria-label="Menu">
-      <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-    </button>
+<div id="splashLandingGate">
+  <header class="splash-header">
     <div class="nav-logo" id="navLogoHomeTrigger" style="cursor: pointer; display: flex; align-items: center; gap: 10px;">
-      <img src="syntrix-logo.png" alt="Syntrix Logo" style="height: 28px; width: auto; object-fit: contain;">
-      <span style="font-size: 22px; font-weight: 800; color: #ffffff;">SYN<span style="font-weight: 400; color: #a1a1aa;">TRIX</span></span>
+      <img src="syntrix-logo.png" alt="Syntrix Logo" style="height: 32px; width: auto; object-fit: contain;">
+      <span style="font-size: 24px; font-weight: 800; color: #ffffff;">SYN<span style="font-weight: 400; color: #a1a1aa;">TRIX</span></span>
     </div>
-    <button class="icon-btn" aria-label="Notifications">
-      <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-    </button>
+
+    <div class="desktop-nav-links">
+      <a href="#" class="nav-splash-tab active">Home</a>
+      <a href="#" class="nav-splash-tab">Rewards</a>
+      <a href="#" class="nav-splash-tab">About Us</a>
+    </div>
+
+    <div class="header-actions">
+      <button type="button" class="nav-btn-outline desktop-only" onclick="document.getElementById('initializePlatformBtn').click()">Get Started &rarr;</button>
+      <button class="icon-btn mobile-only" aria-label="Menu">
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
+    </div>
   </header>
 
-  <div class="mobile-nav-tabs">
-    <a href="#" id="linkHomeTab" class="nav-splash-tab active">Home</a>
-    <a href="#" id="linkRewardsTab" class="nav-splash-tab">Rewards</a>
-    <a href="#" id="linkAboutTab" class="nav-splash-tab">About Us</a>
+  <div class="mobile-nav-tabs mobile-only">
+    <a href="#" class="nav-splash-tab active">Home</a>
+    <a href="#" class="nav-splash-tab">Rewards</a>
+    <a href="#" class="nav-splash-tab">About Us</a>
   </div>
 
-  <div class="secondary-cta-container">
+  <div class="secondary-cta-container mobile-only">
     <button type="button" class="nav-btn secondary-cta" id="navGetStartedAction">
       Get Started 
       <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
@@ -237,60 +244,123 @@
   <div class="hero-container">
     <div class="hero-content animate-fade" id="viewSplashHome" style="display: block;">
       
-      <div class="mini-badge">
-        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="margin-right: 6px; vertical-align: text-bottom;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
-        Your Opinion. Real Impact. Real Rewards.
-      </div>
-      
-      <h2 class="hero-title">SYNTRIX<br>WEB3 AUTH</h2>
-      
-      <p class="hero-desc">Complete surveys from top brands, influence products you love, and earn rewards instantly.</p>
-      <p class="hero-desc" style="margin-top: -15px;">Complete all 6 modules to secure your<br><strong>48 SYNX</strong> token node framework.</p>
-      
-      <div class="earnings-card">
-         <div class="ec-image-placeholder"></div>
-         <div class="ec-info">
-            <span class="ec-label">EARN UP TO</span>
-            <span class="ec-amount">48 SYNX</span>
-            <span class="ec-sub">Per Verified Submission</span>
-         </div>
-         <div class="ec-features">
-            <div class="ec-feat-item">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg> 
-              <span>AI Verified</span>
+      <div class="desktop-hero-grid">
+        
+        <div class="dh-left">
+          <div class="mini-badge">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="margin-right: 6px; vertical-align: text-bottom;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
+            Your Opinion. Real Impact. Real Rewards.
+          </div>
+          
+          <h2 class="hero-title">SYNTRIX<br>WEB3 AUTH</h2>
+          
+          <p class="hero-desc">Complete surveys from top brands, influence products you love, and earn rewards instantly.</p>
+          <p class="hero-desc">Complete all 6 modules to secure your<br><strong>48 SYNX</strong> token node framework.</p>
+          
+          <div class="cta-wrapper">
+            <button type="button" id="initializePlatformBtn" class="hero-action-btn">
+              Get Started Free &rarr;
+            </button>
+          </div>
+          
+          <div class="bottom-features-grid">
+            <div class="bf-card">
+               <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+               <h4>100% Secure</h4>
+               <p>Your data is safe and encrypted.</p>
             </div>
-            <div class="ec-feat-item">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> 
-              <span>Secure Rewards</span>
+            <div class="bf-card">
+               <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+               <h4>Verified Surveys</h4>
+               <p>Only high quality surveys & tasks.</p>
             </div>
-            <div class="ec-feat-item">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> 
-              <span>Instant Payouts</span>
+            <div class="bf-card">
+               <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="8" width="18" height="14" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="22"/><path d="M19 8c-1.5 0-3-1.5-3-3s1.5-3 3-3 3 1.5 3 3-1.5 3-3 3Z"/><path d="M5 8c1.5 0 3-1.5 3-3S6.5 2 5 2 2 3.5 2 5s1.5 3 3 3Z"/></svg>
+               <h4>Instant Rewards</h4>
+               <p>Track rewards and earn instantly.</p>
             </div>
-         </div>
-      </div>
+          </div>
+        </div>
 
-      <div>
-        <button type="button" id="initializePlatformBtn" class="hero-action-btn">
-          Get Started Free &rarr;
-        </button>
-      </div>
-      
-      <div class="bottom-features-grid">
-        <div class="bf-card">
-           <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-           <h4>100% Secure</h4>
-           <p>Your data is safe and encrypted.</p>
+        <div class="dh-right">
+          <div class="earnings-card">
+             <div class="ec-image-placeholder">
+               <img src="syntrix-logo.png" alt="Logo" style="width: 100%; height: 100%; object-fit: contain; padding: 10px;">
+             </div>
+             <div class="ec-info">
+                <span class="ec-label">EARN UP TO</span>
+                <span class="ec-amount">48 SYNX</span>
+                <span class="ec-sub">Per Verified Submission</span>
+             </div>
+             <div class="ec-features">
+                <div class="ec-feat-item">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg> 
+                  <span>AI Verified</span>
+                </div>
+                <div class="ec-feat-item">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> 
+                  <span>Secure Rewards</span>
+                </div>
+                <div class="ec-feat-item">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> 
+                  <span>Instant Payouts</span>
+                </div>
+             </div>
+          </div>
+
+          <div class="stats-card">
+            <div class="stat-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              <h4>10K+</h4>
+              <p>Active Contributors</p>
+            </div>
+            <div class="stat-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+              <h4>150K+</h4>
+              <p>Surveys Completed</p>
+            </div>
+            <div class="stat-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+              <h4>2M+</h4>
+              <p>SYNX Distributed</p>
+            </div>
+            <div class="stat-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+              <h4>25+</h4>
+              <p>Countries</p>
+            </div>
+          </div>
         </div>
-        <div class="bf-card">
-           <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-           <h4>Verified Surveys</h4>
-           <p>Only high quality surveys & tasks.</p>
-        </div>
-        <div class="bf-card">
-           <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="8" width="18" height="14" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="22"/><path d="M19 8c-1.5 0-3-1.5-3-3s1.5-3 3-3 3 1.5 3 3-1.5 3-3 3Z"/><path d="M5 8c1.5 0 3-1.5 3-3S6.5 2 5 2 2 3.5 2 5s1.5 3 3 3Z"/></svg>
-           <h4>Instant Rewards</h4>
-           <p>Track rewards and earn instantly.</p>
+
+      </div> <div class="how-it-works-section">
+        <h3>How It Works</h3>
+        <div class="hiw-steps-container">
+          
+          <div class="hiw-step">
+            <div class="hiw-icon">1</div>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            <h5>Upload</h5>
+            <p>Submit documents or answers through our secure system.</p>
+          </div>
+
+          <div class="hiw-arrow desktop-only"></div>
+
+          <div class="hiw-step">
+            <div class="hiw-icon">2</div>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            <h5>AI Verification</h5>
+            <p>Our AI verifies quality and authenticity in real-time.</p>
+          </div>
+
+          <div class="hiw-arrow desktop-only"></div>
+
+          <div class="hiw-step">
+            <div class="hiw-icon">3</div>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="14" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="22"/><path d="M19 8c-1.5 0-3-1.5-3-3s1.5-3 3-3 3 1.5 3 3-1.5 3-3 3Z"/><path d="M5 8c1.5 0 3-1.5 3-3S6.5 2 5 2 2 3.5 2 5s1.5 3 3 3Z"/></svg>
+            <h5>Earn Rewards</h5>
+            <p>Get rewarded with SYNX instantly to your wallet.</p>
+          </div>
+
         </div>
       </div>
 
