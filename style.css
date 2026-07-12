@@ -1039,7 +1039,11 @@ input[type="radio"] {
   
   /* Hero Section Typography */
   .hero-container { padding: 20px 15px 60px; }
-  .hero-title { font-size: 38px !important; margin-bottom: 15px; line-height: 1.1; text-align: center; }
+  .hero-title { font-size: 38px !important; margin-bottom: 0px; line-height: 1.1; text-align: center; }
+  
+  /* 🚀 NEW: Mobile Subtitle override */
+  .hero-subtitle-ai { font-size: 18px !important; margin-bottom: 15px !important; text-align: center; }
+  
   .hero-desc { font-size: 15px !important; margin-bottom: 20px; text-align: center; }
   .cta-wrapper { display: none; } /* Hide the desktop left-col button on mobile */
   
@@ -1128,7 +1132,12 @@ input[type="radio"] {
 /* Left Column */
 .dh-left { text-align: left; }
 .mini-badge { display: inline-flex; align-items: center; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); padding: 8px 18px; border-radius: 999px; color: #a1a1aa; font-size: 13px; font-weight: 600; margin-bottom: 28px; }
-.hero-title { font-size: clamp(48px, 6vw, 76px) !important; font-weight: 900; color: #ffffff; letter-spacing: -2.5px; margin-bottom: 24px; line-height: 1.05; text-transform: uppercase; }
+
+.hero-title { font-size: clamp(48px, 6vw, 76px) !important; font-weight: 900; color: #ffffff; letter-spacing: -2.5px; margin-bottom: 5px; line-height: 1.05; text-transform: uppercase; }
+
+/* 🚀 NEW: AI Subtitle */
+.hero-subtitle-ai { font-size: 24px; font-weight: 700; color: #6366f1; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 24px; }
+
 .hero-desc { font-size: 17px !important; line-height: 1.6; color: #a1a1aa; margin-bottom: 15px; font-weight: 500; max-width: 550px; }
 .cta-wrapper { margin-top: 30px; }
 .hero-action-btn { display: inline-flex; align-items: center; gap: 10px; padding: 18px 40px; background: #ffffff; color: #000000; border: none; border-radius: 14px; font-weight: 700; font-size: 16px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
