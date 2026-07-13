@@ -903,7 +903,7 @@ input[type="radio"] {
 }
 
 
-/* ================= 📱 RESPONSIVE MOBILE ENGINE ================= */
+/* ================= 📱 RESPONSIVE DASHBOARD ENGINE ================= */
 @media(max-width: 900px) {
   body { padding: 12px; }
   .app { flex-direction: column; border-radius: 20px;}
@@ -938,10 +938,8 @@ input[type="radio"] {
   .modal-footer button { width: 100%; text-align: center; }
   
   /* Feature Grids */
-  .static-info-grid { grid-template-columns: 1fr; gap: 15px; }
   .doc-grid { grid-template-columns: 1fr; }
   .survey-expansion-grid { grid-template-columns: 1fr; }
-  
   .gateway-card { width: 100%; padding: 25px 20px; }
 }
 
@@ -968,67 +966,29 @@ input[type="radio"] {
   .form-group label[for="legalConsent"] { font-size: 12.5px !important; }
   .primaryActionBtn { padding: 16px !important; font-size: 16px !important; width: 100% !important; box-sizing: border-box !important; }
 
-  /* =========================================================
-     📱 SYNTRIX MOBILE-FIRST POLISH & LAYOUT FIXES
-  ========================================================= */
-  
-  /* 1. Survey Buttons: Make them compact so they don't cover the whole screen */
-  .option {
-      padding: 12px 16px !important;
-      margin-bottom: 8px !important;
-      border-radius: 12px !important;
-  }
-  .optionText {
-      font-size: 14px !important;
-  }
-  .questionText {
-      font-size: 16px !important;
-      line-height: 1.4 !important;
-      margin-bottom: 12px !important;
-  }
+  /* 1. Survey Buttons */
+  .option { padding: 12px 16px !important; margin-bottom: 8px !important; border-radius: 12px !important; }
+  .optionText { font-size: 14px !important; }
+  .questionText { font-size: 16px !important; line-height: 1.4 !important; margin-bottom: 12px !important; }
 
-  /* 2. Document Mode Header: Stop the "Back" button from colliding with the title */
-  .doc-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap; /* Lets it drop to a new line if it's too tight */
-      gap: 12px;
-      margin-bottom: 15px;
-  }
-  .doc-header h2 {
-      font-size: 20px !important;
-  }
+  /* 2. Document Mode Header */
+  .doc-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 15px; }
+  .doc-header h2 { font-size: 20px !important; }
 
-  /* 3. Dashboard / Options Popover: Make it look premium and fit the screen */
-  .options-popover {
-      position: absolute;
-      top: 60px;
-      right: 10px !important; /* Locks it to the right edge */
-      width: 90vw !important; /* Prevents it from going off-screen */
-      max-width: 320px;
-      border-radius: 20px !important;
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15) !important;
-      border: 1px solid #e2e8f0 !important;
-      overflow: hidden; /* Keeps edges neat */
-  }
+  /* 3. Dashboard / Options Popover */
+  .options-popover { position: absolute; top: 60px; right: 10px !important; width: 90vw !important; max-width: 320px; border-radius: 20px !important; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15) !important; border: 1px solid #e2e8f0 !important; overflow: hidden; }
 
-  /* 4. Discover Research Matrix: Tighter gaps so cards aren't too big */
-  .survey-expansion-grid {
-      grid-template-columns: 1fr !important; /* Forces 1 column on mobile */
-      gap: 12px !important;
-  }
-  .survey-expansion-card {
-      padding: 16px !important;
-  }
+  /* 4. Discover Research Matrix */
+  .survey-expansion-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+  .survey-expansion-card { padding: 16px !important; }
 }
 
 /* =========================================================
-   🚀 PREMIUM SPLASH SCREEN REDESIGN (MOBILE FIRST & PREMIUM)
+   🚀 V3 PREMIUM SPLASH SCREEN REDESIGN (MOBILE FIRST)
 ========================================================= */
 
 #splashLandingGate {
-  background: #000000; /* Pure black aesthetic */
+  background: #000000; 
   color: #ffffff;
   width: 100%; 
   height: 100vh; 
@@ -1057,7 +1017,7 @@ input[type="radio"] {
 /* Header */
 .splash-header {
   display: flex; 
-  flex-direction: column; /* Stacked on mobile by default */
+  flex-direction: column; 
   align-items: center; 
   gap: 20px;
   padding: 24px 20px; 
@@ -1072,7 +1032,6 @@ input[type="radio"] {
 .logo-title { font-size: 22px; font-weight: 900; color: #ffffff; letter-spacing: -0.5px;}
 .logo-title span { font-weight: 400; color: #a1a1aa; }
 
-/* Navigation Links: Now always visible, wrapped beautifully on mobile */
 .unified-nav-links {
   display: flex;
   flex-wrap: wrap;
@@ -1090,7 +1049,7 @@ input[type="radio"] {
 .hero-container { position: relative; width: 100%; max-width: 1200px; margin: 0 auto; padding: 40px 20px; z-index: 5; }
 .main-hero-text { text-align: center; margin-bottom: 60px; }
 .hero-title { font-size: clamp(42px, 10vw, 82px) !important; font-weight: 900; color: #ffffff; letter-spacing: -2px; margin-bottom: 5px; line-height: 1.1; }
-.hero-subtitle-ai { font-size: clamp(14px, 4vw, 20px); font-weight: 700; color: #8b5cf6; letter-spacing: 6px; margin-bottom: 25px; }
+.hero-subtitle-ai { font-size: clamp(14px, 4vw, 20px); font-weight: 700; color: #8b5cf6; letter-spacing: 6px; margin-bottom: 25px; text-transform: uppercase;}
 .hero-desc { font-size: 15px !important; line-height: 1.6; color: #a1a1aa; margin: 0 auto 30px; font-weight: 500; max-width: 500px; }
 .hero-action-btn { display: inline-block; background: #ffffff; color: #000000; padding: 16px 36px; border-radius: 30px; font-weight: 800; font-size: 15px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border: none;}
 .hero-action-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4); }
@@ -1098,7 +1057,7 @@ input[type="radio"] {
 /* Bento Features Grid */
 .bento-features-grid {
   display: grid;
-  grid-template-columns: 1fr; /* 1 column on mobile */
+  grid-template-columns: 1fr; 
   gap: 16px;
   margin-bottom: 40px;
 }
@@ -1130,7 +1089,7 @@ input[type="radio"] {
 /* Trust Badges Row */
 .trust-strip {
   display: flex;
-  flex-direction: column; /* Stack on mobile */
+  flex-direction: column; 
   gap: 20px;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -1149,7 +1108,7 @@ input[type="radio"] {
 .ts-item h4 { font-size: 16px; font-weight: 700; color: white; margin-bottom: 4px; }
 .ts-item p { font-size: 13px; color: #9ca3af; margin: 0; line-height: 1.4; }
 
-/* AI Pipeline (Vertical Mobile, Horizontal PC) */
+/* AI Pipeline (Vertical Mobile) */
 .ai-pipeline-container {
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.01);
@@ -1160,7 +1119,6 @@ input[type="radio"] {
 }
 .ai-pipeline-container h3 { font-size: 22px; font-weight: 800; color: white; margin-bottom: 40px; }
 
-/* The Premium Vertical Mobile Timeline */
 .pipeline-flow {
   display: flex;
   flex-direction: column; 
@@ -1202,13 +1160,13 @@ input[type="radio"] {
   overflow: hidden;
 }
 .pb-text { z-index: 2; }
-.pb-badge { display: inline-block; font-size: 10px; font-weight: 800; color: #8b5cf6; letter-spacing: 1px; margin-bottom: 12px; }
+.pb-badge { display: inline-block; font-size: 10px; font-weight: 800; color: #8b5cf6; letter-spacing: 1px; margin-bottom: 12px; text-transform: uppercase;}
 .promo-banner h3 { font-size: 28px; font-weight: 900; color: white; margin-bottom: 12px; letter-spacing: -1px;}
 .promo-banner p { font-size: 14px; color: #a1a1aa; line-height: 1.6; margin-bottom: 24px; }
 .hero-action-btn-small { background: white; color: black; border: none; padding: 12px 24px; border-radius: 30px; font-weight: 700; font-size: 14px; cursor: pointer; transition: 0.2s;}
 .hero-action-btn-small:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,255,255,0.2); }
 
-/* Decorative Graphics for Promo Banners (CSS Generated so no images needed) */
+/* Decorative Graphics for Promo Banners */
 .pb-graphic {
   width: 100%;
   height: 150px;
@@ -1219,7 +1177,6 @@ input[type="radio"] {
 .pb-wallet { background: radial-gradient(circle at center, rgba(139, 92, 246, 0.2) 0%, transparent 70%), repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0px, transparent 1px, transparent 15px); border: 1px dashed rgba(255,255,255,0.1); }
 .pb-network { background: radial-gradient(circle at bottom, rgba(99, 102, 241, 0.3) 0%, transparent 80%); border-top: 1px solid rgba(255,255,255,0.05); margin-top: 30px;}
 
-
 /* =========================================================
    🖥️ DESKTOP RESPONSIVE OVERRIDES (min-width: 900px)
 ========================================================= */
@@ -1229,19 +1186,22 @@ input[type="radio"] {
   .cosmic-bg-effect { top: -20%; right: -20%; left: auto; transform: none; width: 800px; height: 800px; background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, rgba(99, 102, 241, 0.05) 40%, transparent 70%); }
 
   /* Header Spreads Out */
-  .splash-header { flex-direction: row; padding: 30px 40px; }
-  .header-actions { width: auto; }
-  .nav-btn-outline { width: auto; }
+  .splash-header { flex-direction: row; padding: 30px 40px; border-bottom: none; background: transparent; backdrop-filter: none;}
+  .header-actions { width: auto; display: flex;}
+  .nav-btn-outline { width: auto; border: 1px solid rgba(255, 255, 255, 0.2); background: transparent; color: white; display: block;}
+  .nav-btn-outline:hover { border-color: white; background: rgba(255,255,255,0.1);}
+  .unified-nav-links { background: #09090b; border: 1px solid #27272a; border-radius: 999px; padding: 6px; }
+  .unified-nav-links a { padding: 10px 24px; }
+  .unified-nav-links a.active { background: rgba(255, 255, 255, 0.08); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
 
   /* Hero adjustments */
   .hero-container { padding: 100px 40px; }
-  .main-hero-text { text-align: left; margin-bottom: 80px; max-width: 600px; }
+  .main-hero-text { text-align: left; margin-bottom: 80px; max-width: 600px; margin-left: 0; }
   .hero-subtitle-ai { letter-spacing: 8px; }
   .hero-desc { margin: 0 0 40px 0; font-size: 16px !important;}
 
   /* 3-Column Grid */
   .bento-features-grid { grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 60px; }
-  .span-pc-2 { grid-column: span 1.5; /* Forces 2 cards to center under 3 cards */ }
   .bento-features-grid > :nth-child(4) { grid-column: 1 / span 2; max-width: 90%; margin-left: auto; }
   .bento-features-grid > :nth-child(5) { grid-column: 2 / span 2; max-width: 90%; margin-right: auto; }
 
