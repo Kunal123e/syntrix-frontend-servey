@@ -10,9 +10,9 @@
 }
 
 body { 
-  background: #000000; /* Richer off-white for luxury feel */
+  background: #000000; 
   min-height: 100vh; 
-  color: #111827; 
+  color: #ffffff; 
   overflow-x: hidden;
 }
 
@@ -25,7 +25,7 @@ body {
   border-radius: 32px; 
   overflow: hidden; 
   border: 1px solid #27272a; 
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); /* Deep soft Apple-style shadow */
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
 }
 
 /* ================= PREMIUM FUSION LOGO STYLES ================= */
@@ -105,7 +105,7 @@ body {
 
 /* ================= CONTENT CORE ================= */
 .content { 
-  flex: 1; /* Takes full width since sidebar is removed */
+  flex: 1; 
   padding: 55px 65px; 
   background: #000000;
   color: #ffffff;
@@ -123,7 +123,7 @@ body {
   font-size: 54px; 
   line-height: 1.1; 
   font-weight: 900; 
-  letter-spacing: -2.5px; /* Tighter tracking for headings */
+  letter-spacing: -2.5px; 
   color: #ffffff; 
   margin-bottom: 14px;
 }
@@ -275,9 +275,9 @@ body {
 .primaryActionBtn, .executeDistributionBtn, .btn-dark { 
   display: block; 
   width: 100%; 
-  padding: 16px; 
+  padding: 18px; 
   border: none; 
-  border-radius: 14px; 
+  border-radius: 16px; 
   background: #ffffff; 
   color: #000000; 
   font-weight: 800; 
@@ -285,6 +285,7 @@ body {
   cursor: pointer; 
   margin-top: 25px; 
   transition: all 0.2s ease; 
+  box-shadow: 0 10px 20px -5px rgba(17, 24, 39, 0.2);
 }
 
 .primaryActionBtn:active, .executeDistributionBtn:active {
@@ -294,6 +295,7 @@ body {
 .primaryActionBtn:hover, .executeDistributionBtn:hover, .btn-dark:hover { 
   background: #f4f4f5; 
   transform: translateY(-2px);
+  box-shadow: 0 15px 25px -5px rgba(17, 24, 39, 0.3);
 }
 
 /* ================= SECTION & QUESTIONS ================= */
@@ -1029,12 +1031,11 @@ input[type="radio"] {
 .tl-content h4 { font-size: 9px; font-weight: 700; color: white; margin-bottom: 4px; }
 .tl-content p { font-size: 8px; color: #a1a1aa; line-height: 1.4; margin: 0; }
 
-
 /* ================= 4. DASHBOARD RESPONSIVE FIXES (MOBILE) ================= */
 @media(max-width: 900px) {
-  body { padding: 12px; }
-  .app { flex-direction: column; border-radius: 20px;}
-  .content { padding: 30px 20px; }
+  body { padding: 0; }
+  .app { flex-direction: column; border-radius: 0; border: none; }
+  .content { padding: 30px 15px; }
   
   .topbar { flex-direction: column; align-items: stretch; gap: 20px; }
   .topbar h1 { font-size: 32px; letter-spacing: -1px; }
@@ -1114,14 +1115,14 @@ input[type="radio"] {
   .btn-solid-v3:hover { border-color: white; background: rgba(255,255,255,0.1);}
   
   .hero-container-v3 { padding: 100px 40px; }
-  .hero-grid-v3 { display: flex; justify-content: space-between; align-items: center; margin-bottom: 60px; }
-  .hg-left { width: 60%; }
-  .hero-title-v3 { font-size: 84px !important; margin-bottom: 10px; line-height: 1; }
+  .hero-grid-v3 { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; margin-bottom: 60px; align-items: center; }
+  .hg-left { width: 100%; text-align: left;}
+  .hero-title-v3 { font-size: 76px !important; margin-bottom: 10px; }
   .hero-subtitle-v3 { font-size: 20px; letter-spacing: 8px; margin-bottom: 30px; }
   .hero-desc-v3 { font-size: 17px; max-width: 600px; }
   .hero-desc-v3 p { margin-bottom: 15px; }
   .btn-glow-v3 { padding: 18px 42px; font-size: 16px; }
-  .hg-right { position: absolute; right: -5%; top: 10%; width: 45%; }
+  .hg-right { position: relative; right: 0; top: 0; width: 100%; display: flex; justify-content: center;}
   
   .f5-grid { gap: 24px; margin-bottom: 60px; }
   .f5-card { padding: 30px; border-radius: 24px;}
