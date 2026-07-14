@@ -75,7 +75,7 @@
 
         const web3auth = new Web3AuthSDK.Web3Auth({
           clientId: "BLTKOOeFj7P8fVIGNIwqX3lhHeA948YDtXgKO_ClNELkI06hZ17XKvfpiAWA0AujfpBMAs75-LivYTtCeRWg2Lo", 
-          web3AuthNetwork: "sapphire_devnet", 
+          web3AuthNetwork: "sapphire_mainnet", 
           privateKeyProvider: privateKeyProvider,
           enableLogging: false,
           buildEnv: "production",
@@ -145,7 +145,6 @@
   <p style="font-size: 20px; color: #d1d5db; margin-top: 15px; font-weight: 600; text-align: center; max-width: 500px; line-height: 1.5;">Validating your responses...<br><span style="color: #34d399; font-size: 24px; font-weight: 800; display: inline-block; margin-top: 10px;">Your 48 SYNX reward is waiting!</span></p>
 </div>
 
-<!-- ================= 🚀 V3 EXACT MATCH PREMIUM SPLASH SCREEN ================= -->
 <div id="splashLandingGate">
   
   <div class="cosmic-bg-effect"></div>
@@ -157,9 +156,9 @@
     </div>
 
     <div class="unified-nav-links">
-      <a href="#" class="active">Home</a>
-      <a href="#">Rewards</a>
-      <a href="#">About Us</a>
+      <a href="#" id="linkHomeTab" class="nav-splash-tab active">Home</a>
+      <a href="#" id="linkRewardsTab" class="nav-splash-tab">Rewards</a>
+      <a href="#" id="linkAboutTab" class="nav-splash-tab">About Us</a>
     </div>
 
     <div class="header-actions-v3">
@@ -186,12 +185,11 @@
       
       <div class="hg-right">
         <div class="galaxy-wrapper">
-          <img src="galaxy.png" alt="AI Network Sphere" class="galaxy-img" onerror="this.style.display='none';">
+          <div class="galaxy-glow-bg"></div>
         </div>
       </div>
     </div>
 
-    <!-- 🚀 EXACT 5-CARD FEATURES GRID -->
     <div class="f5-grid animate-fade">
       <div class="f5-card f5-c1">
         <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg></div>
@@ -225,7 +223,6 @@
       </div>
     </div>
 
-    <!-- 🚀 EXACT TRUST BADGES ROW -->
     <div class="trust-row-v3 animate-fade">
       <div class="tr-badge">
         <div class="tr-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
@@ -241,7 +238,6 @@
       </div>
     </div>
 
-    <!-- 🚀 EXACT 5-STEP HORIZONTAL AI TIMELINE -->
     <div class="timeline-box-v3 animate-fade">
       <h3>How AI Classifies Your Submission</h3>
       <div class="timeline-flex">
