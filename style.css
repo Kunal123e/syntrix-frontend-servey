@@ -953,10 +953,28 @@ input[type="radio"] {
 .btn-glow-v3 { display: inline-block; background: #ffffff; color: #000000; padding: 16px 36px; border-radius: 30px; font-weight: 800; font-size: 15px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border: none; box-shadow: 0 0 20px rgba(255,255,255,0.4); }
 .btn-glow-v3:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(255, 255, 255, 0.6); }
 
-/* Galaxy Orb Positioning */
-.hg-right { position: relative; right: auto; top: auto; width: 100%; z-index: 1; pointer-events: none; margin-top: 30px; display: flex; justify-content: center;}
-.galaxy-wrapper { width: 100%; max-width: 400px; aspect-ratio: 1/1; position: relative; }
-.galaxy-img { width: 100%; height: 100%; object-fit: contain; }
+/* 🚀 GALAXY ORB POSITIONING & STYLING (MOBILE FIRST) */
+.hg-right { position: relative; width: 100%; display: flex; justify-content: center; margin-top: 20px; z-index: 1; pointer-events: none; }
+.galaxy-wrapper { width: 100%; display: flex; justify-content: center; position: relative; }
+
+/* The actual image constraints and effects */
+.galaxy-img { 
+  width: 100%; 
+  max-width: 320px; /* Sane size on mobile */
+  height: auto; 
+  object-fit: contain;
+  mix-blend-mode: screen; /* Makes dark backgrounds of the image invisible */
+  opacity: 0.85;
+  filter: drop-shadow(0 0 30px rgba(139, 92, 246, 0.3)); /* Premium glow */
+  animation: floatOrb 6s ease-in-out infinite; 
+}
+
+/* Floating animation for the galaxy */
+@keyframes floatOrb {
+  0% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-15px) scale(1.02); }
+  100% { transform: translateY(0px) scale(1); }
+}
 
 /* Bento Features Grid - Exact Replica */
 .f5-grid {
@@ -1041,8 +1059,12 @@ input[type="radio"] {
   .app { flex-direction: column; border-radius: 0; border: none; }
   .content { padding: 30px 15px; }
   
+  /* Topbar & Dashboard Mobile Spacing */
   .topbar { flex-direction: column; align-items: stretch; gap: 20px; }
   .topbar h1 { font-size: 32px; letter-spacing: -1px; }
+  .subtitle { font-size: 14px; }
+  
+  /* Controls Stacking */
   .header-controls-group { flex-direction: column; gap: 15px; width: 100%; }
   .languageGroupWrapper { width: 100%; justify-content: center; }
   .languageGroup { width: 100%; }
@@ -1051,6 +1073,7 @@ input[type="radio"] {
   .icon-menu-btn { width: 100%; border-radius: 12px; }
   .options-popover { width: 100%; right: auto; left: 0; }
   
+  /* Cards & Forms */
   .authCard, .rewardCard, .document-wrapper, .submission-card { padding: 24px 15px; margin: 10px 0; border-radius: 20px; width: 100%; }
   .sectionTitle { font-size: 28px !important; }
   
@@ -1113,13 +1136,16 @@ input[type="radio"] {
   
   .hero-container-v3 { padding: 100px 40px; }
   .hero-grid-v3 { display: flex; flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 60px; }
-  .hg-left { width: 60%; text-align: left; }
+  .hg-left { width: 55%; text-align: left; }
   .hero-title-v3 { font-size: 84px !important; margin-bottom: 10px; line-height: 1; }
   .hero-subtitle-v3 { font-size: 20px; letter-spacing: 8px; margin-bottom: 30px; }
   .hero-desc-v3 { font-size: 17px; max-width: 600px; }
   .hero-desc-v3 p { margin-bottom: 15px; }
   .btn-glow-v3 { padding: 18px 42px; font-size: 16px; }
-  .hg-right { position: absolute; right: -5%; top: 10%; width: 45%; display: flex; justify-content: center; margin-top: 0;}
+  
+  /* 🚀 DESKTOP GALAXY ORB POSITIONING */
+  .hg-right { position: absolute; right: -5%; top: 50%; transform: translateY(-50%); width: 45%; display: flex; justify-content: center; margin-top: 0;}
+  .galaxy-img { max-width: 550px; } /* Scales up beautifully on PC */
   
   .f5-grid { grid-template-columns: repeat(6, 1fr); gap: 24px; margin-bottom: 60px; }
   .f5-c1, .f5-c2, .f5-c3 { grid-column: span 2; }
