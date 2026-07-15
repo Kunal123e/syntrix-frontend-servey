@@ -1053,10 +1053,28 @@ input[type="radio"] {
 .btn-glow-v3 { display: inline-block; background: #ffffff; color: #000000; padding: 16px 36px; border-radius: 30px; font-weight: 800; font-size: 15px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border: none; box-shadow: 0 0 20px rgba(255,255,255,0.4); }
 .btn-glow-v3:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(255, 255, 255, 0.6); }
 
-/* Galaxy Orb Positioning */
-.hg-right { position: relative; right: auto; top: auto; width: 100%; z-index: 1; pointer-events: none; margin-top: 30px; display: flex; justify-content: center;}
-.galaxy-wrapper { width: 100%; max-width: 400px; aspect-ratio: 1/1; position: relative; }
-.galaxy-img { width: 100%; height: 100%; object-fit: contain; max-width: 300px; margin: 0 auto;}
+/* 🚀 GALAXY ORB POSITIONING & STYLING (MOBILE FIRST) */
+.hg-right { position: relative; width: 100%; display: flex; justify-content: center; margin-top: 20px; z-index: 1; pointer-events: none; }
+.galaxy-wrapper { width: 100%; display: flex; justify-content: center; position: relative; }
+
+/* The actual image constraints and effects */
+.galaxy-img { 
+  width: 100%; 
+  max-width: 320px; /* Sane size on mobile */
+  height: auto; 
+  object-fit: contain;
+  mix-blend-mode: screen; /* Makes dark backgrounds of the image invisible */
+  opacity: 0.85;
+  filter: drop-shadow(0 0 30px rgba(139, 92, 246, 0.3)); /* Premium glow */
+  animation: floatOrb 6s ease-in-out infinite; 
+}
+
+/* Floating animation for the galaxy */
+@keyframes floatOrb {
+  0% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-15px) scale(1.02); }
+  100% { transform: translateY(0px) scale(1); }
+}
 
 /* Bento Features Grid - Exact Replica */
 .f5-grid {
@@ -1073,14 +1091,16 @@ input[type="radio"] {
   position: relative;
   transition: all 0.3s ease;
   text-align: left;
-  overflow: hidden;
+  overflow: hidden; /* 🔥 FIX: Stops content from escaping card */
 }
 .f5-card:hover { border-color: #3f3f46; }
 .f5-c1, .f5-c2, .f5-c3, .f5-c4, .f5-c5 { grid-column: span 1; }
 
 .f5-icon { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 8px; border: 1px solid #27272a; margin-bottom: 15px; color: white; }
 .f5-icon svg { width: 20px; height: 20px; }
+/* 🔥 FIX: Force images inside icons to fit */
 .f5-icon img { max-width: 100%; height: auto; }
+
 .f5-card h4 { font-size: 15px; font-weight: 700; color: white; margin-bottom: 6px; }
 .f5-card p { font-size: 13px; color: #a1a1aa; line-height: 1.4; margin: 0 0 20px 0; }
 .f5-arrow { position: absolute; bottom: 15px; right: 15px; width: 24px; height: 24px; border-radius: 50%; background: #18181b; border: 1px solid #27272a; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; }
@@ -1088,55 +1108,64 @@ input[type="radio"] {
 /* Exact Trust Badges Row */
 .trust-row-v3 {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: column; 
   gap: 20px;
-  background: transparent;
-  border: 1px solid #27272a;
-  border-radius: 16px;
-  padding: 20px 15px;
-  margin-bottom: 30px;
-  overflow: hidden;
-}
-.tr-badge { display: flex; align-items: center; gap: 12px; width: 100%;}
-.tr-icon svg { color: #ffffff; width: 24px; height: 24px; }
-.tr-text h4 { font-size: 14px; font-weight: 700; color: white; margin: 0 0 2px 0; }
-.tr-text p { font-size: 12px; color: #a1a1aa; margin: 0; line-height: 1.2; }
-
-/* 5-Step Horizontal AI Timeline */
-.timeline-box-v3 {
-  border: 1px solid #27272a;
-  background: #09090b;
-  border-radius: 20px;
-  padding: 30px 20px;
-  text-align: left;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 30px;
   margin-bottom: 40px;
-  overflow: hidden;
+  overflow: hidden; /* 🔥 FIX */
 }
-.timeline-box-v3 h3 { font-size: 18px; font-weight: 800; color: white; margin-bottom: 30px; text-align: center;}
+.ts-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: left;
+}
+.ts-item svg { color: #ffffff; }
+.ts-item h4 { font-size: 16px; font-weight: 700; color: white; margin-bottom: 4px; }
+.ts-item p { font-size: 13px; color: #9ca3af; margin: 0; line-height: 1.4; }
 
-.timeline-flex {
+/* AI Pipeline (Vertical Mobile) */
+.ai-pipeline-container {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.01);
+  border-radius: 24px;
+  padding: 40px 20px;
+  text-align: center;
+  margin-bottom: 40px;
+  overflow: hidden; /* 🔥 FIX */
+}
+.ai-pipeline-container h3 { font-size: 22px; font-weight: 800; color: white; margin-bottom: 40px; }
+
+.pipeline-flow {
+  display: flex;
+  flex-direction: column; 
+  gap: 40px;
+  position: relative;
+}
+.pipeline-flow::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 2px; height: 100%;
+  background: repeating-linear-gradient(to bottom, #3f3f46 0, #3f3f46 6px, transparent 6px, transparent 12px);
+  z-index: 0;
+}
+.pipe-step {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-  position: relative;
-}
-.tl-line-bg { display: none; } /* Hidden on mobile */
-.tl-step {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 15px;
   position: relative;
   z-index: 2;
-  width: 100%;
 }
-.tl-num { width: 28px; height: 28px; border-radius: 50%; border: 1px solid #3f3f46; background: #000000; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; margin-bottom: 0; flex-shrink: 0;}
-.tl-icon { display: none; } /* Hidden on mobile */
-.tl-content { padding-top: 5px; }
-.tl-content h4 { font-size: 14px; font-weight: 700; color: white; margin-bottom: 4px; }
-.tl-content p { font-size: 13px; color: #a1a1aa; line-height: 1.4; margin: 0; }
+.pipe-num { width: 32px; height: 32px; border-radius: 50%; border: 2px solid #3f3f46; background: #000000; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; margin-bottom: 12px; }
+.pipe-icon { color: white; margin-bottom: 12px; background: #000; padding: 5px; border-radius: 50%;}
+.pipe-step h4 { font-size: 16px; font-weight: 700; color: white; margin-bottom: 6px; background: #000; padding: 0 10px;}
+.pipe-step p { font-size: 13px; color: #9ca3af; line-height: 1.5; max-width: 260px; margin: 0 auto; background: #000; padding: 0 10px;}
 
 /* Promo Banners */
 .promo-banner {
@@ -1149,7 +1178,7 @@ input[type="radio"] {
   margin-bottom: 24px;
   text-align: center;
   position: relative;
-  overflow: hidden;
+  overflow: hidden; /* 🔥 FIX: Stops background graphics from escaping */
 }
 .pb-text { z-index: 2; }
 .pb-badge { display: inline-block; font-size: 10px; font-weight: 800; color: #8b5cf6; letter-spacing: 1px; margin-bottom: 12px; text-transform: uppercase;}
@@ -1157,8 +1186,18 @@ input[type="radio"] {
 .promo-banner p { font-size: 14px; color: #a1a1aa; line-height: 1.6; margin-bottom: 24px; }
 .hero-action-btn-small { background: white; color: black; border: none; padding: 12px 24px; border-radius: 30px; font-weight: 700; font-size: 14px; cursor: pointer; transition: 0.2s;}
 .hero-action-btn-small:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,255,255,0.2); }
-.pb-graphic { width: 100%; height: 150px; margin-top: 20px; border-radius: 16px; z-index: 1;}
-.pb-graphic img { max-width: 100px !important; height: auto !important; }
+
+/* Decorative Graphics for Promo Banners */
+.pb-graphic {
+  width: 100%;
+  height: 150px;
+  margin-top: 20px;
+  border-radius: 16px;
+  z-index: 1;
+}
+.pb-graphic img { max-width: 100%; height: auto; } /* 🔥 FIX */
+.pb-wallet { background: radial-gradient(circle at center, rgba(139, 92, 246, 0.2) 0%, transparent 70%), repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0px, transparent 1px, transparent 15px); border: 1px dashed rgba(255,255,255,0.1); }
+.pb-network { background: radial-gradient(circle at bottom, rgba(99, 102, 241, 0.3) 0%, transparent 80%); border-top: 1px solid rgba(255,255,255,0.05); margin-top: 30px;}
 
 /* Emergency Constraints */
 .bento-card, .promo-banner, .trust-strip, .ai-pipeline-container {
@@ -1175,7 +1214,7 @@ input[type="radio"] {
   .desktop-only { display: flex !important; }
   .mobile-only { display: none !important; }
 
-  .cosmic-bg-effect { top: -20%; right: -20%; left: auto; transform: none; width: 800px; height: 800px; }
+  .cosmic-bg-effect { top: -20%; right: -20%; left: auto; transform: none; width: 800px; height: 800px; background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, rgba(99, 102, 241, 0.05) 40%, transparent 70%); }
   
   .splash-header-v3 { padding: 30px 40px; border-bottom: none; background: transparent; backdrop-filter: none;}
   .logo-text-v3 { font-size: 24px; }
@@ -1194,8 +1233,11 @@ input[type="radio"] {
   .hero-desc-v3 { font-size: 17px; max-width: 600px; }
   .hero-desc-v3 p { margin-bottom: 15px; }
   .btn-glow-v3 { padding: 18px 42px; font-size: 16px; }
-  .hg-right { position: absolute; right: -5%; top: 10%; width: 45%; display: flex; justify-content: center; margin-top: 0;}
-  .galaxy-img { max-width: 550px; }
+
+  /* 🚀 DESKTOP GALAXY ORB POSITIONING (UPDATED FOR MAXIMUM SIZE) */
+  .hg-right { position: absolute; right: -10%; top: 50%; transform: translateY(-50%); width: 55%; display: flex; justify-content: center; margin-top: 0;}
+  .galaxy-wrapper { max-width: 750px; }
+  .galaxy-img { max-width: 750px; width: 100%; }
   
   .f5-grid { grid-template-columns: repeat(6, 1fr); gap: 24px; margin-bottom: 60px; }
   .f5-c1, .f5-c2, .f5-c3 { grid-column: span 2; }
