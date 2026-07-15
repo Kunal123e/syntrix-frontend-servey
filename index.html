@@ -145,183 +145,261 @@
   <p style="font-size: 20px; color: #d1d5db; margin-top: 15px; font-weight: 600; text-align: center; max-width: 500px; line-height: 1.5;">Validating your responses...<br><span style="color: #34d399; font-size: 24px; font-weight: 800; display: inline-block; margin-top: 10px;">Your 48 SYNX reward is waiting!</span></p>
 </div>
 
-<!-- ================= 🚀 V3 PREMIUM SPLASH SCREEN ================= -->
 <div id="splashLandingGate">
   
   <div class="cosmic-bg-effect"></div>
 
-  <!-- Header Section -->
   <header class="splash-header-v3">
     <div class="nav-logo" id="navLogoHomeTrigger">
-      <img src="syntrix-logo.png" alt="Syntrix Logo" onerror="this.style.display='none'">
-      <span class="logo-text-v3">SYN<span>TRIX</span></span>
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+      <span class="logo-text-v3">SYNTRIX</span>
     </div>
 
     <div class="unified-nav-links">
-      <a href="#" class="active">Home</a>
-      <a href="#">Rewards</a>
-      <a href="#">About Us</a>
+      <a href="#" id="linkHomeTab" class="nav-splash-tab active">Home</a>
+      <a href="#" id="linkRewardsTab" class="nav-splash-tab">Rewards</a>
+      <a href="#" id="linkAboutTab" class="nav-splash-tab">About Us</a>
     </div>
 
     <div class="header-actions-v3">
-      <button type="button" class="btn-solid-v3" onclick="document.getElementById('initializePlatformBtn').click()">Get Started &rarr;</button>
+      <button type="button" class="btn-solid-v3" onclick="document.getElementById('initializePlatformBtn').click()">Get Started Free &rarr;</button>
     </div>
   </header>
 
-  <!-- Mobile Secondary Navigation (Hidden on PC) -->
   <div class="mobile-nav-v3 mobile-only">
     <div class="mn-links">
-      <a href="#" class="active">Home</a>
-      <a href="#">Rewards</a>
-      <a href="#">About Us</a>
+      <a href="#" class="nav-splash-tab active" onclick="document.getElementById('linkHomeTab').click(); return false;">Home</a>
+      <a href="#" class="nav-splash-tab" onclick="document.getElementById('linkRewardsTab').click(); return false;">Rewards</a>
+      <a href="#" class="nav-splash-tab" onclick="document.getElementById('linkAboutTab').click(); return false;">About Us</a>
     </div>
+    <button type="button" class="btn-solid-v3 mobile-get-started" onclick="document.getElementById('initializePlatformBtn').click()">Get Started Free &rarr;</button>
   </div>
 
   <div class="hero-container-v3">
     
-    <!-- 🚀 DESKTOP HERO GRID -->
-    <div class="hero-grid-v3 animate-fade">
-      <div class="hg-left">
-        <h1 class="hero-title-v3">SYNTRIX</h1>
-        <h3 class="hero-subtitle-v3">A I &nbsp; C O M P A N Y</h3>
+    <div id="viewSplashHome" style="display: block; width: 100%;">
+      <div class="hero-grid-v3 animate-fade">
+        <div class="hg-left">
+          <h1 class="hero-title-v3">SYNTRIX</h1>
+          <h3 class="hero-subtitle-v3">A I &nbsp; C O M P A N Y</h3>
+          
+          <div class="hero-desc-v3">
+            <p>Powering decentralized AI verification.<br>Complete interactive surveys,<br>document classification,<br>embedding intelligence,<br>and selfie verification.</p>
+            <p style="margin-top: 25px;">Everything secured through our<br>decentralized AI infrastructure.</p>
+          </div>
+          
+          <button type="button" id="initializePlatformBtn" class="btn-glow-v3">
+            Get Started Free &rarr;
+          </button>
+        </div>
         
-        <div class="hero-desc-v3">
-          <p>Powering decentralized AI verification.<br>Complete interactive surveys, document classification, embedding intelligence, and selfie verification.</p>
-          <p style="margin-top: 15px;">Everything secured through our decentralized AI infrastructure.</p>
+        <div class="hg-right">
+          <div class="galaxy-wrapper">
+            <div class="galaxy-glow-bg"></div>
+            <img src="galaxy.png" alt="AI Network Sphere" class="galaxy-img" onerror="this.src='https://images.unsplash.com/photo-1620825937374-87fc7d6bddc2?q=80&w=1000&auto=format&fit=crop'; this.style.mixBlendMode='screen'; this.style.opacity='0.8';">
+          </div>
+        </div>
+      </div>
+
+      <div class="f5-grid animate-fade">
+        <div class="f5-card f5-c1">
+          <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg></div>
+          <h4>AI Integrated</h4>
+          <p>Advanced AI models working behind the scenes to ensure accuracy and authenticity.</p>
+          <div class="f5-arrow">&rarr;</div>
+        </div>
+        <div class="f5-card f5-c2">
+          <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div>
+          <h4>Automated Embeddings</h4>
+          <p>Smart embedding system for faster processing and better data understanding.</p>
+          <div class="f5-arrow">&rarr;</div>
+        </div>
+        <div class="f5-card f5-c3">
+          <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
+          <h4>Interactive Surveys</h4>
+          <p>Engaging and intelligent surveys designed to collect real opinions and valuable insights.</p>
+          <div class="f5-arrow">&rarr;</div>
+        </div>
+        <div class="f5-card f5-c4">
+          <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
+          <h4>Document Classification</h4>
+          <p>AI-powered document classification for accurate and reliable verification.</p>
+          <div class="f5-arrow">&rarr;</div>
+        </div>
+        <div class="f5-card f5-c5">
+          <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          <h4>Selfie Verification</h4>
+          <p>Real-time selfie analysis to verify authenticity and prevent fraud.</p>
+          <div class="f5-arrow">&rarr;</div>
+        </div>
+      </div>
+
+      <div class="trust-row-v3 animate-fade">
+        <div class="tr-badge">
+          <div class="tr-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+          <div class="tr-text"><h4>100% Secure</h4><p>Your data is safe<br>and encrypted.</p></div>
+        </div>
+        <div class="tr-badge">
+          <div class="tr-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          <div class="tr-text"><h4>AI Validated</h4><p>Only high-quality<br>submissions pass.</p></div>
+        </div>
+        <div class="tr-badge">
+          <div class="tr-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="8" width="18" height="14" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="22"/><path d="M19 8c-1.5 0-3-1.5-3-3s1.5-3 3-3 3 1.5 3 3-1.5 3-3 3Z"/><path d="M5 8c1.5 0 3-1.5 3-3S6.5 2 5 2 2 3.5 2 5s1.5 3 3 3Z"/></svg></div>
+          <div class="tr-text"><h4>Instant Rewards</h4><p>Track rewards and<br>earn instantly.</p></div>
+        </div>
+      </div>
+
+      <div class="timeline-box-v3 animate-fade">
+        <h3>How AI Classifies Your Submission</h3>
+        <div class="timeline-flex">
+          <div class="tl-line-bg"></div>
+
+          <div class="tl-step">
+            <div class="tl-num">1</div>
+            <div class="tl-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+            <div class="tl-content">
+              <h4>Upload</h4>
+              <p>Submit surveys,<br>documents, or<br>selfies securely.</p>
+            </div>
+          </div>
+
+          <div class="tl-step">
+            <div class="tl-num">2</div>
+            <div class="tl-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            <div class="tl-content">
+              <h4>AI Embedding Engine</h4>
+              <p>AI converts inputs<br>into intelligent<br>embeddings.</p>
+            </div>
+          </div>
+
+          <div class="tl-step">
+            <div class="tl-num">3</div>
+            <div class="tl-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+            <div class="tl-content">
+              <h4>AI Classification</h4>
+              <p>AI analyzes content<br>for quality, patterns,<br>and relevance.</p>
+            </div>
+          </div>
+
+          <div class="tl-step">
+            <div class="tl-num">4</div>
+            <div class="tl-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+            <div class="tl-content">
+              <h4>Quality Verification</h4>
+              <p>Verified through<br>multiple AI checks<br>for maximum<br>integrity.</p>
+            </div>
+          </div>
+
+          <div class="tl-step">
+            <div class="tl-num">5</div>
+            <div class="tl-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="8" width="18" height="14" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="22"/><path d="M19 8c-1.5 0-3-1.5-3-3s1.5-3 3-3 3 1.5 3 3-1.5 3-3 3Z"/><path d="M5 8c1.5 0 3-1.5 3-3S6.5 2 5 2 2 3.5 2 5s1.5 3 3 3Z"/></svg></div>
+            <div class="tl-content">
+              <h4>Reward Approved</h4>
+              <p>Rewards are<br>approved and<br>SYNX tokens<br>sent to your<br>wallet.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div> <div id="viewSplashRewards" style="display: none; width: 100%;">
+      <div class="hero-grid-v3 animate-fade">
+        <div class="hg-left">
+          <h1 class="hero-title-v3">REWARDS</h1>
+          <h3 class="hero-subtitle-v3">E A R N &nbsp; S Y N X</h3>
+          <div class="hero-desc-v3">
+            <p>We believe your data is valuable.<br>Participate in our decentralized intelligence matrix<br>and earn native SYNX tokens securely.</p>
+          </div>
+          <button type="button" class="btn-glow-v3 back-to-home-btn" style="background: transparent; border: 1px solid #3f3f46; color: white; box-shadow: none;">
+            &larr; Back to Home
+          </button>
         </div>
         
-        <button type="button" id="initializePlatformBtn" class="btn-glow-v3">
-          Get Started Free &rarr;
-        </button>
-      </div>
-      
-      <!-- 🚀 GALAXY IMAGE INSERTED HERE -->
-      <div class="hg-right">
-        <div class="galaxy-wrapper">
-          <div class="galaxy-glow-bg"></div>
-          <img src="galaxypng.png" alt="AI Network Sphere" class="galaxy-img" onerror="this.style.display='none';">
+        <div class="hg-right">
+          <div class="earnings-card">
+            <div class="ec-image-placeholder">
+              <img src="syntrix-logo.png" alt="Logo" style="width: 100%; height: 100%; object-fit: contain; filter: brightness(0) invert(1);">
+            </div>
+            <div class="ec-info">
+              <span class="ec-label">EARN UP TO</span>
+              <span class="ec-amount">48 SYNX</span>
+              <span class="ec-sub">Per Verified Submission</span>
+            </div>
+            <div class="ec-features">
+              <div class="ec-feat-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg> <span>AI Verified</span></div>
+              <div class="ec-feat-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> <span>Secure Rewards</span></div>
+              <div class="ec-feat-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span>Instant Payouts</span></div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- 🚀 5-CARD FEATURES GRID -->
-    <div class="f5-grid animate-fade">
-      <div class="f5-card f5-c1">
-        <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg></div>
-        <h4>AI Integrated</h4>
-        <p>Advanced AI models working behind the scenes to ensure accuracy and authenticity.</p>
-        <div class="f5-arrow">&rarr;</div>
+      <div class="f5-grid split-grid animate-fade">
+        <div class="f5-card">
+          <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+          <h4 style="font-size: 20px;">48 SYNX Base Allocation</h4>
+          <p style="font-size: 14px;">Complete the initial consumer research modules. Each module securely hashes your preferences and rewards you proportionally.</p>
+        </div>
+        <div class="f5-card">
+          <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <h4 style="font-size: 20px;">+10 SYNX Viral Bonus</h4>
+          <p style="font-size: 14px;">Use your unique referral dashboard to invite others. Every successful completion grants you a direct 10 SYNX deposit.</p>
+        </div>
       </div>
-      <div class="f5-card f5-c2">
-        <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div>
-        <h4>Automated Embeddings</h4>
-        <p>Smart embedding system for faster processing and better data understanding.</p>
-        <div class="f5-arrow">&rarr;</div>
-      </div>
-      <div class="f5-card f5-c3">
-        <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
-        <h4>Interactive Surveys</h4>
-        <p>Engaging and intelligent surveys designed to collect real opinions and valuable insights.</p>
-        <div class="f5-arrow">&rarr;</div>
-      </div>
-      <div class="f5-card f5-c4">
-        <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
-        <h4>Document Classification</h4>
-        <p>AI-powered document classification for accurate and reliable verification.</p>
-        <div class="f5-arrow">&rarr;</div>
-      </div>
-      <div class="f5-card f5-c5">
-        <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-        <h4>Selfie Verification</h4>
-        <p>Real-time selfie analysis to verify authenticity and prevent fraud.</p>
-        <div class="f5-arrow">&rarr;</div>
-      </div>
-    </div>
-
-    <!-- 🚀 TRUST BADGES ROW -->
-    <div class="trust-row-v3 animate-fade">
-      <div class="tr-badge">
-        <div class="tr-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
-        <div class="tr-text"><h4>100% Secure</h4><p>Your data is safe<br>and encrypted.</p></div>
-      </div>
-      <div class="tr-badge">
-        <div class="tr-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-        <div class="tr-text"><h4>AI Validated</h4><p>Only high-quality<br>submissions pass.</p></div>
-      </div>
-      <div class="tr-badge">
-        <div class="tr-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="14" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="22"/><path d="M19 8c-1.5 0-3-1.5-3-3s1.5-3 3-3 3 1.5 3 3-1.5 3-3 3Z"/><path d="M5 8c1.5 0 3-1.5 3-3S6.5 2 5 2 2 3.5 2 5s1.5 3 3 3Z"/></svg></div>
-        <div class="tr-text"><h4>Instant Rewards</h4><p>Track rewards and<br>earn instantly.</p></div>
-      </div>
-    </div>
-
-    <!-- 🚀 5-STEP AI TIMELINE -->
-    <div class="timeline-box-v3 animate-fade">
-      <h3>How AI Classifies Your Submission</h3>
-      <div class="timeline-flex">
+    </div> <div id="viewSplashAbout" style="display: none; width: 100%;">
+      <div class="hero-grid-v3 animate-fade">
+        <div class="hg-left">
+          <h1 class="hero-title-v3">PROTOCOL</h1>
+          <h3 class="hero-subtitle-v3">A B O U T &nbsp; U S</h3>
+          <div class="hero-desc-v3">
+            <p>Syntrix bridges enterprise AI commercialization<br>pools with authentic consumer sentiment.<br>Direct user data value returned to the producer.</p>
+          </div>
+          <button type="button" class="btn-glow-v3 back-to-home-btn" style="background: transparent; border: 1px solid #3f3f46; color: white; box-shadow: none;">
+            &larr; Back to Home
+          </button>
+        </div>
         
-        <div class="tl-line-bg desktop-only"></div>
-
-        <div class="tl-step">
-          <div class="tl-num">1</div>
-          <div class="tl-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
-          <div class="tl-content">
-            <h4>Upload</h4>
-            <p>Submit surveys, documents, or selfies securely.</p>
+        <div class="hg-right">
+          <div class="stats-card">
+            <div class="stat-item">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              <h4>10K+</h4>
+              <p>Contributors</p>
+            </div>
+            <div class="stat-item">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+              <h4>150K+</h4>
+              <p>Completed Tasks</p>
+            </div>
+            <div class="stat-item">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+              <h4>2M+</h4>
+              <p>SYNX Distributed</p>
+            </div>
+            <div class="stat-item">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+              <h4>25+</h4>
+              <p>Countries</p>
+            </div>
           </div>
         </div>
-
-        <div class="tl-line-vertical mobile-only"></div>
-
-        <div class="tl-step">
-          <div class="tl-num">2</div>
-          <div class="tl-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
-          <div class="tl-content">
-            <h4>AI Embedding Engine</h4>
-            <p>AI converts inputs into intelligent embeddings.</p>
-          </div>
-        </div>
-
-        <div class="tl-line-vertical mobile-only"></div>
-
-        <div class="tl-step">
-          <div class="tl-num">3</div>
-          <div class="tl-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
-          <div class="tl-content">
-            <h4>AI Classification</h4>
-            <p>AI analyzes content for quality, patterns, and relevance.</p>
-          </div>
-        </div>
-
-        <div class="tl-line-vertical mobile-only"></div>
-
-        <div class="tl-step">
-          <div class="tl-num">4</div>
-          <div class="tl-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
-          <div class="tl-content">
-            <h4>Quality Verification</h4>
-            <p>Verified through multiple AI checks for maximum integrity.</p>
-          </div>
-        </div>
-
-        <div class="tl-line-vertical mobile-only"></div>
-
-        <div class="tl-step">
-          <div class="tl-num">5</div>
-          <div class="tl-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="14" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="22"/><path d="M19 8c-1.5 0-3-1.5-3-3s1.5-3 3-3 3 1.5 3 3-1.5 3-3 3Z"/><path d="M5 8c1.5 0 3-1.5 3-3S6.5 2 5 2 2 3.5 2 5s1.5 3 3 3Z"/></svg></div>
-          <div class="tl-content">
-            <h4>Reward Approved</h4>
-            <p>Rewards are approved and SYNX tokens sent to your wallet.</p>
-          </div>
-        </div>
-
       </div>
-    </div>
 
-  </div>
+      <div class="f5-grid split-grid animate-fade">
+        <div class="f5-card">
+          <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+          <h4 style="font-size: 20px;">Our Mission</h4>
+          <p style="font-size: 14px;">To decentralize consumer analytics by creating a direct, transparent, and rewarding link between enterprise B2B models and real-world consumers. No middlemen, just real rewards for real insights.</p>
+        </div>
+        <div class="f5-card">
+          <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+          <h4 style="font-size: 20px;">Technology Base</h4>
+          <p style="font-size: 14px;">Powered by Polygon Mainnet and secure Web3Auth gateways to ensure your data and rewards remain mathematically protected and instantly distributed.</p>
+        </div>
+      </div>
+    </div> </div>
 </div>
 
 <div id="mainApplicationLayout" class="hidden" style="display: none; padding: 32px; min-height: 100vh;">
-  <!-- Your existing Application layout remains unchanged here... -->
   <div class="app">
     <div class="content">
       
@@ -491,7 +569,7 @@
                   <input type="file" id="fileInputCamera" accept="image/jpeg, image/png" capture="environment" style="display: none;" />
                 </label>
                 <label class="btn-secondary-outline" id="btnGallery">
-                  <span style="font-family: 'Segoe UI Emoji', sans-serif;">🖼️</span> Upload from Gallery
+                  🖼️ Upload from Gallery
                   <input type="file" id="fileInputGallery" accept="image/jpeg, image/png" style="display: none;" />
                 </label>
               </div>
