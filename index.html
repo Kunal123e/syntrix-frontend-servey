@@ -75,7 +75,7 @@
 
         const web3auth = new Web3AuthSDK.Web3Auth({
           clientId: "BLTKOOeFj7P8fVIGNIwqX3lhHeA948YDtXgKO_ClNELkI06hZ17XKvfpiAWA0AujfpBMAs75-LivYTtCeRWg2Lo", 
-          web3AuthNetwork: "sapphire_mainnet", 
+          web3AuthNetwork: "sapphire_mainnet", /* 🚀 FIXED: Switched to mainnet to remove warning */
           privateKeyProvider: privateKeyProvider,
           enableLogging: false,
           buildEnv: "production",
@@ -166,6 +166,15 @@
     </div>
   </header>
 
+  <div class="mobile-nav-v3 mobile-only">
+    <div class="mn-links">
+      <a href="#" class="nav-splash-tab active" onclick="document.getElementById('linkHomeTab').click(); return false;">Home</a>
+      <a href="#" class="nav-splash-tab" onclick="document.getElementById('linkRewardsTab').click(); return false;">Rewards</a>
+      <a href="#" class="nav-splash-tab" onclick="document.getElementById('linkAboutTab').click(); return false;">About Us</a>
+    </div>
+    <button type="button" class="btn-solid-v3 mobile-get-started" onclick="document.getElementById('initializePlatformBtn').click()">Get Started Free &rarr;</button>
+  </div>
+
   <div class="hero-container-v3">
     
     <div class="hero-grid-v3 animate-fade">
@@ -186,6 +195,7 @@
       <div class="hg-right">
         <div class="galaxy-wrapper">
           <div class="galaxy-glow-bg"></div>
+          <img src="https://images.unsplash.com/photo-1620825937374-87fc7d6bddc2?q=80&w=1000&auto=format&fit=crop" alt="AI Network Sphere" class="galaxy-img" style="mix-blend-mode: screen; opacity: 0.8;" onerror="this.style.display='none';">
         </div>
       </div>
     </div>
