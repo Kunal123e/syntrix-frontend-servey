@@ -75,7 +75,7 @@
 
         const web3auth = new Web3AuthSDK.Web3Auth({
           clientId: "BLTKOOeFj7P8fVIGNIwqX3lhHeA948YDtXgKO_ClNELkI06hZ17XKvfpiAWA0AujfpBMAs75-LivYTtCeRWg2Lo", 
-          web3AuthNetwork: "sapphire_mainnet", /* 🚀 FIXED: Switched to mainnet to remove warning */
+          web3AuthNetwork: "sapphire_mainnet", 
           privateKeyProvider: privateKeyProvider,
           enableLogging: false,
           buildEnv: "production",
@@ -147,30 +147,31 @@
 
 <div id="splashLandingGate">
   
-  <div class="cosmic-bg-effect"></div>
-
   <header class="splash-header-v3">
     <div class="nav-logo" id="navLogoHomeTrigger">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-      <span class="logo-text-v3">SYNTRIX</span>
+      <img src="syntrix-logo.png" alt="Syntrix Logo" onerror="this.style.display='none'">
+      <span class="logo-text-v3">SYN<span>TRIX</span></span>
     </div>
 
-    <div class="unified-nav-links">
-      <a href="#" id="linkHomeTab" class="nav-splash-tab active">Home</a>
-      <a href="#" id="linkRewardsTab" class="nav-splash-tab">Rewards</a>
-      <a href="#" id="linkAboutTab" class="nav-splash-tab">About Us</a>
+    <div class="nav-links-v3 desktop-only">
+      <a href="#" class="active">Home</a>
+      <a href="#">Rewards</a>
+      <a href="#">About Us</a>
     </div>
 
     <div class="header-actions-v3">
-      <button type="button" class="btn-solid-v3" onclick="document.getElementById('initializePlatformBtn').click()">Get Started Free &rarr;</button>
+      <button type="button" class="btn-solid-v3 desktop-only" onclick="document.getElementById('initializePlatformBtn').click()">Get Started Free &rarr;</button>
+      <button class="icon-btn-v3 mobile-only" aria-label="Menu">
+        <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
     </div>
   </header>
 
   <div class="mobile-nav-v3 mobile-only">
     <div class="mn-links">
-      <a href="#" class="nav-splash-tab active" onclick="document.getElementById('linkHomeTab').click(); return false;">Home</a>
-      <a href="#" class="nav-splash-tab" onclick="document.getElementById('linkRewardsTab').click(); return false;">Rewards</a>
-      <a href="#" class="nav-splash-tab" onclick="document.getElementById('linkAboutTab').click(); return false;">About Us</a>
+      <a href="#" class="active">Home</a>
+      <a href="#">Rewards</a>
+      <a href="#">About Us</a>
     </div>
     <button type="button" class="btn-solid-v3 mobile-get-started" onclick="document.getElementById('initializePlatformBtn').click()">Get Started Free &rarr;</button>
   </div>
@@ -183,11 +184,11 @@
         <h3 class="hero-subtitle-v3">A I &nbsp; C O M P A N Y</h3>
         
         <div class="hero-desc-v3">
-          <p>Powering decentralized AI verification.<br>Complete interactive surveys,<br>document classification,<br>embedding intelligence,<br>and selfie verification.</p>
-          <p style="margin-top: 25px;">Everything secured through our<br>decentralized AI infrastructure.</p>
+          <p>Powering decentralized AI verification.<br>Complete interactive surveys, document classification, embedding intelligence, and selfie verification.</p>
+          <p style="margin-top: 15px;">Everything secured through our decentralized AI infrastructure.</p>
         </div>
         
-        <button type="button" id="initializePlatformBtn" class="btn-glow-v3">
+        <button type="button" id="initializePlatformBtn" class="btn-glow-v3 desktop-only">
           Get Started Free &rarr;
         </button>
       </div>
@@ -195,7 +196,7 @@
       <div class="hg-right">
         <div class="galaxy-wrapper">
           <div class="galaxy-glow-bg"></div>
-          <img src="https://images.unsplash.com/photo-1620825937374-87fc7d6bddc2?q=80&w=1000&auto=format&fit=crop" alt="AI Network Sphere" class="galaxy-img" style="mix-blend-mode: screen; opacity: 0.8;" onerror="this.style.display='none';">
+          <img src="galaxypng.png" alt="AI Network Sphere" class="galaxy-img" onerror="this.style.display='none';">
         </div>
       </div>
     </div>
@@ -235,15 +236,15 @@
 
     <div class="trust-row-v3 animate-fade">
       <div class="tr-badge">
-        <div class="tr-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+        <div class="tr-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
         <div class="tr-text"><h4>100% Secure</h4><p>Your data is safe<br>and encrypted.</p></div>
       </div>
       <div class="tr-badge">
-        <div class="tr-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+        <div class="tr-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
         <div class="tr-text"><h4>AI Validated</h4><p>Only high-quality<br>submissions pass.</p></div>
       </div>
       <div class="tr-badge">
-        <div class="tr-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="8" width="18" height="14" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="22"/><path d="M19 8c-1.5 0-3-1.5-3-3s1.5-3 3-3 3 1.5 3 3-1.5 3-3 3Z"/><path d="M5 8c1.5 0 3-1.5 3-3S6.5 2 5 2 2 3.5 2 5s1.5 3 3 3Z"/></svg></div>
+        <div class="tr-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="14" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="22"/><path d="M19 8c-1.5 0-3-1.5-3-3s1.5-3 3-3 3 1.5 3 3-1.5 3-3 3Z"/><path d="M5 8c1.5 0 3-1.5 3-3S6.5 2 5 2 2 3.5 2 5s1.5 3 3 3Z"/></svg></div>
         <div class="tr-text"><h4>Instant Rewards</h4><p>Track rewards and<br>earn instantly.</p></div>
       </div>
     </div>
@@ -251,50 +252,59 @@
     <div class="timeline-box-v3 animate-fade">
       <h3>How AI Classifies Your Submission</h3>
       <div class="timeline-flex">
-        <div class="tl-line-bg"></div>
+        
+        <div class="tl-line-bg desktop-only"></div>
 
         <div class="tl-step">
           <div class="tl-num">1</div>
-          <div class="tl-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+          <div class="tl-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
           <div class="tl-content">
             <h4>Upload</h4>
-            <p>Submit surveys,<br>documents, or<br>selfies securely.</p>
+            <p>Submit surveys, documents, or selfies securely.</p>
           </div>
         </div>
+
+        <div class="tl-line-vertical mobile-only"></div>
 
         <div class="tl-step">
           <div class="tl-num">2</div>
-          <div class="tl-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="tl-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
           <div class="tl-content">
             <h4>AI Embedding Engine</h4>
-            <p>AI converts inputs<br>into intelligent<br>embeddings.</p>
+            <p>AI converts inputs into intelligent embeddings.</p>
           </div>
         </div>
+
+        <div class="tl-line-vertical mobile-only"></div>
 
         <div class="tl-step">
           <div class="tl-num">3</div>
-          <div class="tl-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+          <div class="tl-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
           <div class="tl-content">
             <h4>AI Classification</h4>
-            <p>AI analyzes content<br>for quality, patterns,<br>and relevance.</p>
+            <p>AI analyzes content for quality, patterns, and relevance.</p>
           </div>
         </div>
+
+        <div class="tl-line-vertical mobile-only"></div>
 
         <div class="tl-step">
           <div class="tl-num">4</div>
-          <div class="tl-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+          <div class="tl-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
           <div class="tl-content">
             <h4>Quality Verification</h4>
-            <p>Verified through<br>multiple AI checks<br>for maximum<br>integrity.</p>
+            <p>Verified through multiple AI checks for maximum integrity.</p>
           </div>
         </div>
 
+        <div class="tl-line-vertical mobile-only"></div>
+
         <div class="tl-step">
           <div class="tl-num">5</div>
-          <div class="tl-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="8" width="18" height="14" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="22"/><path d="M19 8c-1.5 0-3-1.5-3-3s1.5-3 3-3 3 1.5 3 3-1.5 3-3 3Z"/><path d="M5 8c1.5 0 3-1.5 3-3S6.5 2 5 2 2 3.5 2 5s1.5 3 3 3Z"/></svg></div>
+          <div class="tl-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="14" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="22"/><path d="M19 8c-1.5 0-3-1.5-3-3s1.5-3 3-3 3 1.5 3 3-1.5 3-3 3Z"/><path d="M5 8c1.5 0 3-1.5 3-3S6.5 2 5 2 2 3.5 2 5s1.5 3 3 3Z"/></svg></div>
           <div class="tl-content">
             <h4>Reward Approved</h4>
-            <p>Rewards are<br>approved and<br>SYNX tokens<br>sent to your<br>wallet.</p>
+            <p>Rewards are approved and SYNX tokens sent to your wallet.</p>
           </div>
         </div>
 
@@ -474,7 +484,7 @@
                   <input type="file" id="fileInputCamera" accept="image/jpeg, image/png" capture="environment" style="display: none;" />
                 </label>
                 <label class="btn-secondary-outline" id="btnGallery">
-                  🖼️ Upload from Gallery
+                  <span style="font-family: 'Segoe UI Emoji', sans-serif;">🖼️</span> Upload from Gallery
                   <input type="file" id="fileInputGallery" accept="image/jpeg, image/png" style="display: none;" />
                 </label>
               </div>
