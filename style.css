@@ -93,13 +93,13 @@ body {
 
 .tab-btn:hover {
   background: rgba(0, 0, 0, 0.03);
-  color: #111827;
+  color: #ffffff; /* Changed for dark mode */
 }
 
 .tab-btn.active {
-  background: #ffffff;
+  background: #18181b; /* Dark mode active tab */
   color: #6366f1;
-  border-color: rgba(99, 102, 241, 0.12);
+  border-color: #27272a;
   box-shadow: 0 10px 25px -8px rgba(99, 102, 241, 0.15), 0 4px 6px -4px rgba(99, 102, 241, 0.05);
   transform: translateX(2px);
 }
@@ -404,6 +404,22 @@ input[type="radio"] {
   flex-shrink: 0;
 }
 
+/* ================= AUTOFILL DARK MODE FIX ================= */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px #18181b inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
 /* ================= NAVIGATION CONTROLS ================= */
 .navButtons { 
   display: flex; 
@@ -528,7 +544,7 @@ input[type="radio"] {
 .referralTitleText {
   font-size: 20px;
   font-weight: 800;
-  color: #111827;
+  color: #111827; /* Will need dark mode fix if used inside dashboard */
   margin-bottom: 8px;
 }
 
@@ -547,18 +563,18 @@ input[type="radio"] {
 
 .referralLinkBlock input {
   flex: 1;
-  background: #f9fafb;
-  border: 2px solid #e5e7eb;
+  background: #18181b;
+  border: 1px solid #3f3f46;
   font-weight: 600;
-  color: #374151;
+  color: #ffffff;
   padding: 16px;
   font-size: 15px;
   border-radius: 12px;
 }
 
 .copyBtn {
-  background: #111827;
-  color: white;
+  background: #ffffff;
+  color: #000000;
   border: none;
   border-radius: 12px;
   padding: 0 24px;
@@ -569,7 +585,7 @@ input[type="radio"] {
 }
 
 .copyBtn:hover {
-  background: #000000;
+  background: #f4f4f5;
 }
 
 .referralFormGroup { width: 100%; }
@@ -577,9 +593,9 @@ input[type="radio"] {
 .inlineInputGroup input { flex: 1; }
 
 .inviteActionBtn {
-  background: #ffffff;
-  color: #111827;
-  border: 2px solid #e5e7eb;
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid #3f3f46;
   padding: 0 22px;
   border-radius: 12px;
   font-weight: 700;
@@ -590,8 +606,7 @@ input[type="radio"] {
 }
 
 .inviteActionBtn:hover {
-  background: #f9fafb;
-  border-color: #111827;
+  background: #18181b;
 }
 
 .referral-status {
@@ -608,8 +623,8 @@ input[type="radio"] {
 }
 
 .statBox {
-  background: #ffffff;
-  border: 2px solid #f3f4f6;
+  background: #09090b;
+  border: 1px solid #27272a;
   border-radius: 16px;
   padding: 20px 15px;
   text-align: center;
@@ -617,14 +632,14 @@ input[type="radio"] {
 }
 
 .statBox:hover {
-  border-color: #111827;
+  border-color: #3f3f46;
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px -5px rgba(0,0,0,0.05);
+  box-shadow: 0 10px 20px -5px rgba(0,0,0,0.4);
 }
 
 #claimRewardDetails {
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: #18181b;
+  border: 1px solid #27272a;
   padding: 24px;
   border-radius: 16px;
   margin: 25px auto;
