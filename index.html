@@ -135,7 +135,7 @@
 <body class="dark-theme">
 
 <div id="customToast" class="custom-toast" style="display: none;">
-  <span class="toast-icon">⚠️</span>
+  <span class="toast-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
   <span id="toastMessage"></span>
 </div>
 
@@ -429,16 +429,27 @@
 
         <div class="header-controls-group">
           
+          <!-- 🚀 FIXED: New Dropdown Language Selector matching screenshot perfectly -->
           <div class="languageGroupWrapper">
-            <div class="languageGroup">
-              <button type="button" class="langBtn" data-lang="hinglish">Hinglish</button>
-              <button type="button" class="langBtn" data-lang="hi">हिंदी</button>
-              <button type="button" class="langBtn active" data-lang="en">English</button>
+            <div class="language-dropdown-premium">
+              <button type="button" class="lang-active-btn">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                <span>English</span>
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </button>
+              <div class="language-dropdown-content">
+                <button type="button" class="langBtn" data-lang="hinglish">Hinglish</button>
+                <button type="button" class="langBtn" data-lang="hi">हिंदी</button>
+                <button type="button" class="langBtn active" data-lang="en">English</button>
+              </div>
             </div>
           </div>
 
           <div class="options-menu-container">
-            <button type="button" id="menuToggleBtn" class="icon-menu-btn" aria-label="More Options">☰</button>
+            <!-- 🚀 FIXED: Top Home Reward Icon Replaced with Sleek SVG Hamburger -->
+            <button type="button" id="menuToggleBtn" class="icon-menu-btn" aria-label="More Options">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
             
             <div id="optionsPopover" class="options-popover hidden" style="display: none; min-width: 280px;">
               
@@ -483,7 +494,6 @@
       <div id="excitementBanner" style="display: none; background: linear-gradient(145deg, #23272f 0%, #111418 100%); border: 1px solid #3f444d; box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 12px 24px -6px rgba(0,0,0,0.6); border-radius: 12px; padding: 16px 24px; margin-bottom: 25px; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; width: 100%; box-sizing: border-box;">
       </div>
 
-      <!-- ================= 🚀 FIXED: PREMIUM AUTHENTICATION CARD ================= -->
       <div id="emailGateSection" class="authCard gate-centered-wrapper premium-auth-wrapper" style="display: flex; min-height: 65vh; max-width: 800px; border: none; box-shadow: none;">
         
         <div class="premium-auth-card">
@@ -499,6 +509,18 @@
               <div class="pac-input-wrapper">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
                 <input type="email" id="gateEmail" placeholder="Enter your email address" required>
+              </div>
+            </div>
+
+            <!-- 🚀 FIXED: Added Verification Code Box that fits perfectly into the UI -->
+            <div id="otpSection" class="pac-form-group hidden" style="display: none;">
+              <label for="gateOtp" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>Verification Code</span>
+                <span style="color:#10b981; font-size:11px; font-weight: 700;">✅ Code sent!</span>
+              </label>
+              <div class="pac-input-wrapper">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                <input type="text" id="gateOtp" placeholder="Enter 6-Digit Code" maxlength="6" style="letter-spacing: 4px; font-weight: 700;">
               </div>
             </div>
 
@@ -518,7 +540,7 @@
             </div>
 
             <button type="submit" id="startSurveyBtn" class="pac-primary-btn">
-              Sign In &rarr;
+              Verify & Enter &rarr;
             </button>
 
             <div class="pac-divider">
