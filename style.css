@@ -143,7 +143,6 @@ body {
   gap: 16px; 
 }
 
-/* 🚀 FIXED: New Premium Dropdown Language Selector Styles */
 .languageGroupWrapper { 
   display: flex; 
   justify-content: flex-end; 
@@ -433,7 +432,7 @@ input[type="radio"] {
   flex-shrink: 0;
 }
 
-/* ================= 🚀 FIXED: AUTOFILL DARK MODE FIX ================= */
+/* ================= AUTOFILL DARK MODE FIX ================= */
 input:-webkit-autofill,
 input:-webkit-autofill:hover, 
 input:-webkit-autofill:focus, 
@@ -695,7 +694,7 @@ select:-webkit-autofill:focus {
   display: none !important;
 }
 
-/* ================= 🚀 FIXED: PREMIUM TOAST NOTIFICATION MATCHING SCREENSHOT ================= */
+/* ================= PREMIUM TOAST NOTIFICATION ================= */
 .custom-toast { 
   position: fixed; 
   top: -100px; 
@@ -1111,8 +1110,9 @@ select:-webkit-autofill:focus {
   .topbar h1 { font-size: 32px; letter-spacing: -1px; }
   .header-controls-group { flex-direction: column; gap: 15px; width: 100%; }
   .languageGroupWrapper { width: 100%; justify-content: center; }
-  .languageGroup { width: 100%; }
-  .langBtn { flex: 1; text-align: center; padding: 12px 4px; font-size: 13px; }
+  .language-dropdown-premium { width: 100%; }
+  .lang-active-btn { justify-content: space-between; width: 100%; }
+  
   .options-menu-container { width: 100%; }
   .icon-menu-btn { width: 100%; border-radius: 12px; }
   .options-popover { width: 100%; right: auto; left: 0; }
