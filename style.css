@@ -60,7 +60,6 @@ body {
   align-items: center;
 }
 
-/* 🚀 FIXED: Inner Dashboard Logo Colors */
 .logo-bold {
   font-weight: 900;
   color: #ffffff;
@@ -93,11 +92,11 @@ body {
 
 .tab-btn:hover {
   background: rgba(0, 0, 0, 0.03);
-  color: #ffffff; /* Changed for dark mode */
+  color: #ffffff; 
 }
 
 .tab-btn.active {
-  background: #18181b; /* Dark mode active tab */
+  background: #18181b; 
   color: #6366f1;
   border-color: #27272a;
   box-shadow: 0 10px 25px -8px rgba(99, 102, 241, 0.15), 0 4px 6px -4px rgba(99, 102, 241, 0.05);
@@ -144,24 +143,90 @@ body {
   gap: 16px; 
 }
 
+/* 🚀 FIXED: New Premium Dropdown Language Selector Styles */
+.languageGroupWrapper { 
+  display: flex; 
+  justify-content: flex-end; 
+}
+.language-dropdown-premium {
+  position: relative;
+  display: inline-block;
+}
+.lang-active-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #09090b; 
+  border: 1px solid #27272a;
+  color: #ffffff;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.lang-active-btn:hover {
+  background: #18181b;
+  border-color: #3f3f46;
+}
+.language-dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 8px;
+  background: #09090b;
+  border: 1px solid #27272a;
+  border-radius: 12px;
+  overflow: hidden;
+  z-index: 1000;
+  min-width: 120px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+.language-dropdown-premium:hover .language-dropdown-content {
+  display: flex;
+  flex-direction: column;
+}
+.language-dropdown-content .langBtn {
+  border-radius: 0;
+  border: none;
+  padding: 12px 16px;
+  text-align: left;
+  background: transparent;
+  color: #a1a1aa;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.language-dropdown-content .langBtn:hover {
+  background: #18181b;
+  color: #ffffff;
+}
+.language-dropdown-content .langBtn.active {
+  background: rgba(255,255,255,0.05);
+  color: #ffffff;
+}
+
 .icon-menu-btn { 
   background: #09090b; 
   border: 1px solid #27272a; 
   color: #ffffff; 
-  width: 44px; 
-  height: 44px; 
-  border-radius: 14px; 
+  width: 42px; 
+  height: 42px; 
+  border-radius: 12px; 
   font-size: 20px; 
   cursor: pointer; 
   display: flex; 
   align-items: center; 
   justify-content: center; 
   transition: all 0.2s ease; 
-  box-shadow: 0 2px 5px rgba(0,0,0,0.02);
 }
 
 .icon-menu-btn:hover { 
   background: #18181b; 
+  border-color: #3f3f46;
 }
 
 .options-menu-container {
@@ -201,42 +266,6 @@ body {
 .options-popover button:hover { 
   background: #18181b; 
   color: #ffffff; 
-}
-
-/* ================= SEGMENTED PILL LANGUAGE SELECTOR ================= */
-.languageGroupWrapper { 
-  display: flex; 
-  justify-content: flex-end; 
-}
-
-.languageGroup { 
-  display: flex; 
-  background: #09090b; 
-  padding: 5px; 
-  border-radius: 14px; 
-  border: 1px solid #27272a; 
-}
-
-.langBtn { 
-  background: transparent; 
-  border: none; 
-  padding: 10px 22px; 
-  font-size: 14px; 
-  cursor: pointer; 
-  font-weight: 700; 
-  color: #71717a; 
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-  border-radius: 10px; 
-}
-
-.langBtn:hover { 
-  color: #ffffff; 
-}
-
-.langBtn.active { 
-  background: #18181b; 
-  color: #ffffff; 
-  border: 1px solid #3f3f46; 
 }
 
 /* ================= PROGRESS BOX ================= */
@@ -404,7 +433,7 @@ input[type="radio"] {
   flex-shrink: 0;
 }
 
-/* ================= AUTOFILL DARK MODE FIX ================= */
+/* ================= 🚀 FIXED: AUTOFILL DARK MODE FIX ================= */
 input:-webkit-autofill,
 input:-webkit-autofill:hover, 
 input:-webkit-autofill:focus, 
@@ -433,8 +462,8 @@ select:-webkit-autofill:focus {
   padding: 16px 32px; 
   border: none; 
   border-radius: 16px; 
-  background: #111827; 
-  color: white; 
+  background: #ffffff; 
+  color: #000000; 
   font-weight: 800; 
   font-size: 15px;
   cursor: pointer; 
@@ -442,13 +471,13 @@ select:-webkit-autofill:focus {
 }
 
 .navBtn:hover { 
-  background: #000000; 
+  background: #f4f4f5; 
   transform: translateY(-1px);
 }
 
 .submitClaimBtn { 
-  background: #000000; 
-  color: #ffffff; 
+  background: #ffffff; 
+  color: #000000; 
   border: none; 
   padding: 16px 36px; 
   font-size: 16px; 
@@ -458,14 +487,14 @@ select:-webkit-autofill:focus {
   display: inline-flex; 
   align-items: center; 
   gap: 8px; 
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); 
+  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.15); 
   transition: all 0.2s ease; 
   margin-left: auto; 
 }
 
 .submitClaimBtn:hover { 
   transform: translateY(-2px); 
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2); 
+  box-shadow: 0 15px 30px rgba(255, 255, 255, 0.2); 
 }
 
 /* ================= REWARD & REFERRAL UI ================= */
@@ -476,9 +505,9 @@ select:-webkit-autofill:focus {
 }
 
 .submittedBadge {
-  background: #fff8e7;
-  color: #d97706;
-  border: 1px solid #fef3c7;
+  background: rgba(217, 119, 6, 0.1);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.2);
   padding: 6px 14px;
   border-radius: 20px;
   font-size: 12px;
@@ -510,7 +539,7 @@ select:-webkit-autofill:focus {
 
 .manualNotice {
   font-size: 13px;
-  color: #4f46e5;
+  color: #818cf8;
   font-style: italic;
   margin-top: 14px;
 }
@@ -519,7 +548,7 @@ select:-webkit-autofill:focus {
   display: flex;
   align-items: center;
   text-align: center;
-  color: #9ca3af;
+  color: #71717a;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.5px;
@@ -529,7 +558,7 @@ select:-webkit-autofill:focus {
 .dividerLine::before, .dividerLine::after {
   content: '';
   flex: 1;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #27272a;
 }
 
 .dividerLine:not(:empty)::before { margin-right: 1em; }
@@ -544,14 +573,14 @@ select:-webkit-autofill:focus {
 .referralTitleText {
   font-size: 20px;
   font-weight: 800;
-  color: #111827; /* Will need dark mode fix if used inside dashboard */
+  color: #ffffff; 
   margin-bottom: 8px;
 }
 
 .referralDescription {
   font-size: 15px;
   line-height: 1.6;
-  color: #6b7280;
+  color: #a1a1aa;
   margin-bottom: 20px;
 }
 
@@ -666,25 +695,25 @@ select:-webkit-autofill:focus {
   display: none !important;
 }
 
-/* ================= PREMIUM TOAST NOTIFICATION ================= */
+/* ================= 🚀 FIXED: PREMIUM TOAST NOTIFICATION MATCHING SCREENSHOT ================= */
 .custom-toast { 
   position: fixed; 
   top: -100px; 
   left: 50%; 
   transform: translateX(-50%); 
-  background: #111827; 
+  background: #09090b; 
   color: white; 
-  padding: 16px 28px; 
+  padding: 12px 24px; 
   border-radius: 999px; 
-  font-size: 15px; 
+  font-size: 14px; 
   font-weight: 600; 
-  box-shadow: 0 20px 40px rgba(0,0,0,0.25); 
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5); 
   display: flex; 
   align-items: center; 
-  gap: 12px; 
+  gap: 10px; 
   z-index: 9999999; 
-  transition: top 0.5s cubic-bezier(0.16, 1, 0.3, 1); 
-  border: 1px solid rgba(255,255,255,0.1); 
+  transition: top 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+  border: 1px solid #27272a; 
 }
 .custom-toast.show { top: 40px; }
 
@@ -692,8 +721,8 @@ select:-webkit-autofill:focus {
 .modern-spinner { 
   width: 48px; 
   height: 48px; 
-  border: 4px solid #e0e7ff; 
-  border-top-color: #4f46e5; 
+  border: 4px solid #3f3f46; 
+  border-top-color: #6366f1; 
   border-radius: 50%; 
   animation: spinnerSpin 1s linear infinite; 
   margin: 0 auto; 
@@ -1267,7 +1296,6 @@ select:-webkit-autofill:focus {
 .pac-consent-group label a { color: #ffffff; font-weight: 600; text-decoration: underline; text-decoration-color: #3f3f46; text-underline-offset: 4px; transition: 0.2s; }
 .pac-consent-group label a:hover { text-decoration-color: #ffffff; }
 
-/* 🚀 FIXED: New Premium Login Button Styling */
 .pac-primary-btn {
   width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px; background: #ffffff; color: #000000; font-size: 16px; font-weight: 800; padding: 16px; border-radius: 12px; border: none; cursor: pointer; transition: 0.2s; margin-bottom: 24px;
 }
