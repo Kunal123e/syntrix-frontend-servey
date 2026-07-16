@@ -275,9 +275,9 @@ body {
 .primaryActionBtn, .executeDistributionBtn, .btn-dark { 
   display: block; 
   width: 100%; 
-  padding: 18px; 
+  padding: 16px; 
   border: none; 
-  border-radius: 16px; 
+  border-radius: 14px; 
   background: #ffffff; 
   color: #000000; 
   font-weight: 800; 
@@ -985,6 +985,33 @@ input[type="radio"] {
 .f5-arrow { position: absolute; bottom: 15px; right: 15px; width: 24px; height: 24px; border-radius: 50%; background: #18181b; border: 1px solid #27272a; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; transition: 0.2s;}
 .f5-card:hover .f5-arrow { background: white; color: black; }
 
+/* 🚀 FIXED: REWARDS & ABOUT US EXTENSIONS FOR MOBILE */
+.earnings-card {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  background: #09090b; border: 1px solid #27272a; border-radius: 20px; padding: 30px; gap: 20px; width: 100%; margin: 0 auto 30px;
+}
+/* 🚀 FIXED: Crucial fix to stop the white box from blowing up */
+.ec-image-placeholder { 
+  width: 100px; height: 100px; min-width: 100px; min-height: 100px; flex-shrink: 0; 
+  background: #ffffff; border-radius: 16px; padding: 15px; display: flex; justify-content: center; align-items: center; 
+}
+.ec-info { border-bottom: 1px solid #27272a; padding-bottom: 20px; width: 100%; display: flex; flex-direction: column; justify-content: center;}
+.ec-label { font-size: 11px; color: #a1a1aa; letter-spacing: 1px; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 8px;}
+.ec-amount { font-size: 36px; font-weight: 900; color: white; margin: 0 0 8px 0; letter-spacing: -1px; display: block; }
+.ec-sub { font-size: 11px; color: #a1a1aa; display: block;}
+.ec-features { display: flex; flex-direction: column; gap: 12px; width: 100%; align-items: center; }
+.ec-feat-item { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; color: #ffffff; }
+
+.split-grid { grid-template-columns: 1fr; } 
+
+.stats-card {
+  display: grid; grid-template-columns: 1fr 1fr; background: #09090b; border: 1px solid #27272a; border-radius: 20px; padding: 30px 20px; gap: 20px; text-align: center; width: 100%; margin: 0 auto 30px;
+}
+.stat-item { display: flex; flex-direction: column; align-items: center; }
+.stat-item svg { color: white; margin-bottom: 12px; width: 24px; height: 24px; }
+.stat-item h4 { font-size: 20px; font-weight: 900; color: white; margin: 0 0 4px 0; }
+.stat-item p { font-size: 9px; color: #a1a1aa; margin: 0; text-transform: uppercase; font-weight: 600; }
+
 /* Exact Trust Badges Row */
 .trust-row-v3 {
   display: flex;
@@ -1039,9 +1066,9 @@ input[type="radio"] {
 
 /* ================= 4. DASHBOARD RESPONSIVE FIXES (MOBILE) ================= */
 @media(max-width: 900px) {
-  body { padding: 0; }
-  .app { flex-direction: column; border-radius: 0; border: none; }
-  .content { padding: 30px 15px; }
+  body { padding: 12px; }
+  .app { flex-direction: column; border-radius: 20px;}
+  .content { padding: 30px 20px; }
   
   .topbar { flex-direction: column; align-items: stretch; gap: 20px; }
   .topbar h1 { font-size: 32px; letter-spacing: -1px; }
@@ -1136,13 +1163,13 @@ input[type="radio"] {
   .f5-card p { font-size: 14px; margin: 0 0 30px 0;}
   .f5-arrow { width: 32px; height: 32px; font-size: 14px; bottom: 24px; right: 24px; }
 
-  /* Premium Extensions for Rewards and About Sections */
-  .earnings-card { flex-direction: row; align-items: stretch; text-align: left; padding: 40px; margin: 0;}
-  .ec-info { border-bottom: none; border-right: 1px solid #27272a; padding-bottom: 0; padding-right: 30px; width: auto; justify-content: center; }
-  .ec-features { align-items: flex-start; padding-left: 30px; justify-content: center; }
+  /* 🚀 FIXED: Desktop overrides for Rewards & About Us */
+  .earnings-card { flex-direction: row; align-items: center; text-align: left; padding: 40px; margin: 0;}
+  .ec-info { border-bottom: none; border-right: 1px solid #27272a; padding-bottom: 0; padding-right: 30px; width: auto; flex: 1; justify-content: flex-start; }
+  .ec-features { align-items: flex-start; padding-left: 30px; justify-content: center; width: auto; flex-shrink: 0;}
   .split-grid { display: grid; grid-template-columns: 1fr 1fr; max-width: 1000px; margin: 0 auto; }
   .stats-card { display: grid; grid-template-columns: repeat(4, 1fr); padding: 40px 30px; margin: 0; }
-  .stat-item h4 { font-size: 32px; }
+  .stat-item h4 { font-size: 28px; }
   .stat-item p { font-size: 11px; }
 
   .trust-row-v3 { padding: 35px 20px; border-radius: 24px; margin-bottom: 60px; flex-direction: row; justify-content: space-around;}
