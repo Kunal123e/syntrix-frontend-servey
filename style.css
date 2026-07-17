@@ -1328,7 +1328,7 @@ select:-webkit-autofill:focus {
 
 .pac-form { margin-bottom: 30px; border-bottom: 1px solid #27272a; padding-bottom: 30px; }
 .pac-form-group { margin-bottom: 20px; }
-.pac-form-group label { display: block; font-size: 13px; font-weight: 600; color: #d1d5db; margin-bottom: 8px; }
+.pac-form-group label { display: flex; font-size: 13px; font-weight: 600; color: #d1d5db; margin-bottom: 8px; }
 .pac-input-wrapper {
   display: flex; align-items: center; background: #18181b; border: 1px solid #3f3f46; border-radius: 12px; padding: 0 16px; transition: 0.2s;
 }
@@ -1340,7 +1340,7 @@ select:-webkit-autofill:focus {
 
 .pac-consent-group { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 25px; }
 .pac-checkbox { width: 20px; height: 20px; margin-top: 2px; accent-color: #ffffff; cursor: pointer; flex-shrink: 0; }
-.pac-consent-group label { font-size: 13px; color: #a1a1aa; line-height: 1.5; cursor: pointer; }
+.pac-consent-group label { font-size: 13px; color: #a1a1aa; line-height: 1.5; cursor: pointer; display: block; }
 .pac-consent-group label a { color: #ffffff; font-weight: 600; text-decoration: underline; text-decoration-color: #3f3f46; text-underline-offset: 4px; transition: 0.2s; }
 .pac-consent-group label a:hover { text-decoration-color: #ffffff; }
 
