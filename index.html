@@ -125,11 +125,44 @@
           childConsents.forEach(cb => {
               cb.addEventListener('change', () => {
                   const allChecked = Array.from(childConsents).every(c => c.checked);
-                  selectAll.checked = allChecked;
+                  if (selectAll) selectAll.checked = allChecked;
               });
           });
       }
     });
+
+    window.handleGoogleLogin = async () => {
+      if (!window.isWeb3AuthReady || !window.metamaskEmbeddedInstance) {
+        alert('Secure connection loading, please wait a second...');
+        return;
+      }
+      try {
+        await window.metamaskEmbeddedInstance.connect();
+        document.getElementById('emailGateSection').style.display = 'none';
+        document.getElementById('gatewayScreenSection').style.display = 'flex';
+      } catch(err) {
+        console.error("Google Auth Blocked by Web3Auth:", err);
+        alert("Login failed! If you see a '400 Bad Request' in the console, you MUST add your Vercel URL to the Web3Auth Dashboard Whitelist.");
+      }
+    };
+
+    window.playSmoothStart = function() {
+      const splash = document.getElementById('splashLandingGate');
+      splash.style.transition = 'all 0.5s cubic-bezier(0.25, 1, 0.5, 1)';
+      splash.style.opacity = '0';
+      splash.style.transform = 'scale(0.96) translateY(-15px)';
+      
+      setTimeout(() => {
+        const hiddenBtn = document.getElementById('initializePlatformBtn');
+        if(hiddenBtn) hiddenBtn.click();
+        
+        const appLayout = document.getElementById('mainApplicationLayout');
+        if(appLayout) {
+            appLayout.style.opacity = '0';
+            appLayout.style.animation = 'fadeUpIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+        }
+      }, 450);
+    };
   </script>
 </head>
 <body class="dark-theme">
@@ -163,7 +196,7 @@
     </div>
 
     <div class="header-actions-v3">
-      <button type="button" class="btn-solid-v3" onclick="document.getElementById('initializePlatformBtn').click()">Get Started Free &rarr;</button>
+      <button type="button" class="btn-solid-v3" onclick="window.playSmoothStart()">Get Started Free &rarr;</button>
     </div>
   </header>
 
@@ -173,7 +206,7 @@
       <a href="#" class="nav-splash-tab" onclick="document.getElementById('linkRewardsTab').click(); return false;">Rewards</a>
       <a href="#" class="nav-splash-tab" onclick="document.getElementById('linkAboutTab').click(); return false;">About Us</a>
     </div>
-    <button type="button" class="btn-solid-v3 mobile-get-started" onclick="document.getElementById('initializePlatformBtn').click()">Get Started Free &rarr;</button>
+    <button type="button" class="btn-solid-v3 mobile-get-started" onclick="window.playSmoothStart()">Get Started Free &rarr;</button>
   </div>
 
   <div class="hero-container-v3">
@@ -190,9 +223,10 @@
             <p style="margin-top: 25px;">Everything secured through our<br>decentralized AI infrastructure.</p>
           </div>
           
-          <button type="button" id="initializePlatformBtn" class="btn-glow-v3 anim-4">
+          <button type="button" class="btn-glow-v3 anim-4" onclick="window.playSmoothStart()">
             Get Started Free &rarr;
           </button>
+          <button type="button" id="initializePlatformBtn" style="display: none;"></button>
         </div>
         
         <div class="hg-right">
@@ -449,34 +483,66 @@
               <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
             </button>
             
-            <div id="optionsPopover" class="options-popover hidden" style="display: none; min-width: 280px;">
+            <!-- 🚀 FIXED: SETTINGS POPOVER EXACTLY MATCHING YOUR SCREENSHOT -->
+            <div id="optionsPopover" class="options-popover hidden" style="display: none;">
               
-              <div id="menuPsychologyBadgeWrapper" style="padding: 12px 14px; font-size: 13px; font-weight: 700; border-bottom: 1px solid #ece4da; color: #6b6258; display: none; align-items: center; gap: 6px;">
-                <span id="menuBadgeIcon" style="display: flex; align-items: center;"></span> Profile: <span id="menuPsychologyBadgeText">None</span>
+              <!-- Profile Section -->
+              <div class="popover-section profile-sec">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span style="color: #a1a1aa; font-weight: 500;">Profile:</span>
+                <span id="menuPsychologyBadgeText" style="color: #ffffff; font-weight: 700;">ANALYZER</span>
               </div>
               
-              <div id="menuReferralWrapper" style="padding: 14px 14px; border-bottom: 1px solid #ece4da; display: none; flex-direction: column; gap: 10px;">
-                <div style="font-size: 13px; font-weight: 800; color: #111827; display: flex; align-items: center; gap: 6px;">
-                  <span>💎</span> Referral Link
+              <!-- Referral Section -->
+              <div class="popover-section referral-sec">
+                <div style="display: flex; align-items: center; gap: 10px; color: #a1a1aa; font-size: 13px; font-weight: 500; margin-bottom: 12px;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                  Referral Link
                 </div>
-                <div style="display: flex; gap: 8px; width: 100%;">
-                  <input type="text" id="menuReferralInputDisplay" value="https://domain.com/?ref=..." readonly style="flex: 1; padding: 8px 10px; font-size: 11px; font-family: monospace; border-radius: 8px; border: 1px solid #e5e7eb; background: #f9fafb; color: #6b7280; outline: none; margin: 0;">
-                  <button type="button" id="menuCopyReferralBtn" style="padding: 8px 14px; font-size: 12px; font-weight: 700; background: #111827; color: #ffffff; border-radius: 8px; border: none; cursor: pointer; transition: background 0.2s;">Copy</button>
-                </div>
+                <!-- Input holds the value secretly, visually we just show the copy button area -->
+                <input type="text" id="menuReferralInputDisplay" value="https://domain.com/?ref=..." readonly style="display: none;">
+                <button type="button" id="menuCopyReferralBtn" class="popover-copy-btn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  Copy
+                </button>
               </div>
 
-              <div id="dashboardTabLinks" style="display: none; flex-direction: column; padding: 8px 0; border-bottom: 1px solid #ece4da;">
-                <button class="tab-btn" data-tab="badge" style="padding: 12px 16px; font-size: 13.5px; border-radius: 0;">Identity Persona</button>
-                <button class="tab-btn" data-tab="document" style="padding: 12px 16px; font-size: 13.5px; border-radius: 0; font-weight: 700;">📄 Document Upload Mode</button>
-                <button class="tab-btn" data-tab="hub" style="padding: 12px 16px; font-size: 13.5px; border-radius: 0;">Quantum Token Claim</button>
-                <button class="tab-btn" data-tab="referrals" style="padding: 12px 16px; font-size: 13.5px; border-radius: 0;">Growth Rewards</button>
-                <button class="tab-btn" data-tab="more-surveys" style="padding: 12px 16px; font-size: 13.5px; border-radius: 0;">Discover Research Matrix</button>
-                <button class="tab-btn" id="sidebarLogoutBtn" style="padding: 12px 16px; font-size: 13.5px; border-radius: 0; color: #ef4444;">Account Logout</button>
+              <!-- Main Links -->
+              <div id="dashboardTabLinks" class="popover-section links-sec">
+                <button class="menu-item-btn tab-btn" data-tab="badge">
+                  <div class="menu-icon-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
+                  Identity Persona
+                </button>
+                <button class="menu-item-btn tab-btn" data-tab="document">
+                  <div class="menu-icon-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></div>
+                  Document Upload Mode
+                </button>
+                <button class="menu-item-btn tab-btn" data-tab="hub">
+                  <div class="menu-icon-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><line x1="12" y1="18" x2="12" y2="22"></line><line x1="12" y1="2" x2="12" y2="6"></line></svg></div>
+                  Quantum Token Claim
+                </button>
+                <button class="menu-item-btn tab-btn" data-tab="referrals">
+                  <div class="menu-icon-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="14" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="22"></line><path d="M19 8c-1.5 0-3-1.5-3-3s1.5-3 3-3 3 1.5 3 3-1.5 3-3 3Z"></path><path d="M5 8c1.5 0 3-1.5 3-3S6.5 2 5 2 2 3.5 2 5s1.5 3 3 3Z"></path></svg></div>
+                  Growth Rewards
+                </button>
+                <button class="menu-item-btn tab-btn" data-tab="more-surveys">
+                  <div class="menu-icon-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg></div>
+                  Discover Research Matrix
+                </button>
+                <button class="menu-item-btn tab-btn logout-btn" id="sidebarLogoutBtn">
+                  <div class="menu-icon-box" style="border-color: rgba(239, 68, 68, 0.3); color: #ef4444;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></div>
+                  Account Logout
+                </button>
               </div>
               
-              <div style="padding: 8px 0;">
-                <button type="button" id="menuRecoverBtn" style="padding: 12px 16px;">🔍 Sign Up / Retrieve Profile</button>
+              <!-- Bottom Sign Up -->
+              <div class="popover-section" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
+                <button type="button" class="menu-item-btn" id="menuRecoverBtn">
+                  <div class="menu-icon-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg></div>
+                  Sign Up / Retrieve Profile
+                </button>
               </div>
+
             </div>
           </div>
         </div>
@@ -537,7 +603,7 @@
               </label>
             </div>
 
-            <!-- DYNAMIC BUTTONS: Handles UI transition smoothly without breaking script.js -->
+            <!-- DYNAMIC BUTTONS -->
             <button type="button" id="preVerifyBtn" class="pac-primary-btn" onclick="document.getElementById('otpSection').style.display='block'; this.style.display='none'; document.getElementById('startSurveyBtn').style.display='flex';">
               Send Verification Code &rarr;
             </button>
@@ -551,8 +617,7 @@
                 <div class="pac-divider-line"></div>
             </div>
 
-            <!-- STANDARD GOOGLE POPUP LOGIN (Bypasses Web3Auth errors) -->
-            <button type="button" class="pac-google-btn" onclick="let p = window.open('', 'GoogleAuth', 'width=450,height=550'); p.document.write('<div style=\'font-family:sans-serif; text-align:center; padding-top:50px;\'><h2>Sign in with Google</h2><p>Authenticating account securely...</p></div>'); setTimeout(() => { p.close(); document.getElementById('emailGateSection').style.display='none'; document.getElementById('gatewayScreenSection').style.display='flex'; }, 1500);">
+            <button type="button" class="pac-google-btn" onclick="window.handleGoogleLogin();">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -613,144 +678,195 @@
         </div>
       </div>
 
-      <div id="documentModeSection" class="hidden document-wrapper" style="display: none;">
-        <div class="doc-header">
-          <div class="header-left">
-            <span class="icon-doc">📄</span>
-            <h2>Document Mode</h2>
-          </div>
-          <button class="back-btn" onclick="window.openMode('gateway')">← Back</button>
+      <!-- ================= 🚀 FIXED: BENTO-GRID DOCUMENT MODE ================= -->
+      <div id="documentModeSection" class="hidden document-wrapper" style="display: none; padding: 0; background: transparent; border: none;">
+        
+        <div class="doc-modal-header">
+          <button class="doc-back-btn" onclick="window.openMode('gateway')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <h2 style="margin: 0; font-size: 24px; font-weight: 800; color: white; display: flex; align-items: center; gap: 10px;">Document Mode</h2>
         </div>
-        <p class="doc-description">Upload your study materials, notes, questions, answers, or theory content and earn tokens.</p>
+        <p class="doc-modal-desc">Upload your study materials, notes, questions, answers, or theory content and earn tokens.</p>
 
-        <div class="doc-grid">
+        <div class="doc-bento-grid">
           
-          <div class="upload-section">
-            
-            <div class="input-group" style="margin-bottom: 25px;">
-              <label>1. Select Upload Task Type:</label>
-              <select id="taskType" class="premium-select">
-                <option value="notes">📝 Physical Notes / Document</option>
-                <option value="selfie">🤳 Human Selfie Check</option>
-              </select>
+          <!-- Card 1: Upload Dropzone -->
+          <div class="doc-card" style="display: flex; flex-direction: column;">
+            <div class="doc-card-header">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+              <h4>1. Upload Your Document</h4>
             </div>
-
-            <div class="upload-box" id="uploadDropzone">
-              <div class="upload-icon">☁️</div>
-              <h3 id="uploadTitle">Provide your document</h3>
-              <p id="uploadSubtext">Supports JPG, PNG (Max 20MB)</p>
+            <p style="text-align: center; color: #71717a; font-size: 13px; margin-bottom: 16px;">Supports JPG, PNG (Max 20MB)</p>
+            
+            <div class="doc-dropzone" id="uploadDropzone">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#71717a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 12px;"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path><polyline points="16 16 12 12 8 16"></polyline><line x1="12" y1="12" x2="12" y2="21"></line></svg>
+              <p style="color: #ffffff; font-weight: 600; font-size: 14px; margin-bottom: 4px;">Drag & drop your file here</p>
+              <p style="color: #71717a; font-size: 13px; margin-bottom: 16px;">or</p>
               
-              <div class="upload-actions" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 15px;">
-                <label class="btn-dark" id="btnCamera">
-                  <span id="btnCameraText">📷 Take Photo</span>
+              <div style="display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 200px;">
+                <label class="doc-btn-white" id="btnCamera">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                  Take Photo
                   <input type="file" id="fileInputCamera" accept="image/jpeg, image/png" capture="environment" style="display: none;" />
                 </label>
-                <label class="btn-secondary-outline" id="btnGallery">
-                  🖼️ Upload from Gallery
+                <label class="doc-btn-outline" id="btnGallery">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                  Upload from Gallery
                   <input type="file" id="fileInputGallery" accept="image/jpeg, image/png" style="display: none;" />
                 </label>
               </div>
-              
-              <div id="previewContainer" class="preview-window" style="display: none;">
+              <div id="previewContainer" class="preview-window" style="display: none; margin-top: 15px;">
                 <img id="imagePreview" src="" alt="Snapped Preview" />
               </div>
             </div>
-
-            <div id="strictRulesBox" class="info-banner" style="display: flex; background: #fff1f2; color: #9f1239; border: 1px solid #fecdd3; flex-direction: column;">
-              <strong style="margin-bottom:5px;">⚠️ Strict Quality Guidelines:</strong>
-              <ul style="margin-left: 20px; font-size: 13px;">
-                <li>✅ <strong>ONLY</strong> authentic handwritten notes.</li>
-                <li>❌ <strong>NO</strong> screenshots or PDFs.</li>
-                <li>❌ <strong>NO</strong> printed photos, textbook pages, or digital text.</li>
-                <li>❌ <strong>NO</strong> blank pages.</li>
-              </ul>
-            </div>
-            
           </div>
 
-          <div class="action-section">
-            <div class="reward-card" style="margin-bottom: 20px;">
-              <h4>Earn Tokens</h4>
-              <div class="reward-amount">
-                <strong>48 SYNX</strong>
-                <span>for every valid upload</span>
-              </div>
-              <div class="how-it-works">
-                <h5>How it works</h5>
-                <ul>
-                  <li><strong>1. Upload your file:</strong> Provide the requested image.</li>
-                  <li><strong>2. AI Verification:</strong> Our background AI verifies the physical authenticity.</li>
-                  <li><strong>3. Earn your tokens:</strong> Once approved, 48 SYNX are queued.</li>
-                </ul>
-              </div>
-            </div>
-
-            <div id="notesSpecificUI" class="submission-card" style="margin-bottom: 20px; background: #f8fafc;">
-              
-              <div class="form-group" style="margin-bottom: 20px;">
-                <label style="font-weight: 800; font-size: 14px;">2. What does this notebook page contain?</label>
-                <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
-                  <label style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; cursor: pointer;"><input type="checkbox" class="doc-tag" value="Math Equations" style="width:16px; height:16px;"> Math Equations / Line Calculations</label>
-                  <label style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; cursor: pointer;"><input type="checkbox" class="doc-tag" value="Diagrams" style="width:16px; height:16px;"> Diagrams / Graphs / Drawn Shapes</label>
-                  <label style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; cursor: pointer;"><input type="checkbox" class="doc-tag" value="Theory" style="width:16px; height:16px;"> Theory Paragraphs / Written Notes</label>
-                </div>
-              </div>
-
-              <div class="form-group" style="margin-bottom: 20px;">
-                 <label style="font-weight: 800; font-size: 14px;">3. Academic Level / Track:</label>
-                 <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
-                    <button type="button" class="pill-toggle active" data-val="School">School (Up to Class 12)</button>
-                    <button type="button" class="pill-toggle" data-val="Higher Ed">Higher Ed (College)</button>
-                 </div>
-                 <input type="hidden" id="academicLevelInput" value="School">
-              </div>
-
-              <div class="form-group" style="margin-bottom: 20px;">
-                 <label style="font-weight: 800; font-size: 14px;">4. What language or script did you write these notes in?</label>
-                 <input type="text" id="docLanguageInput" placeholder="E.G., HINGLISH, SPANISH" style="padding: 14px; font-size: 13px; border-radius: 8px; text-transform: uppercase; margin-top: 10px;">
-              </div>
-
-              <div class="form-group" style="margin-bottom: 5px;">
-                 <label style="font-weight: 800; font-size: 14px;">5. Legal Consent & Data Release</label>
-                 <div style="display: flex; flex-direction: column; background: #ffffff; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 10px;">
-                    
-                    <label style="display:flex; align-items:center; gap:10px; font-size:14px; font-weight: 800; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 12px; cursor: pointer; color: #0f172a;">
-                      <input type="checkbox" id="selectAllConsent" style="width: 20px; height: 20px; flex-shrink: 0; accent-color: #4f46e5;"> 
-                      Select All Consents
-                    </label>
-
-                    <label style="display:flex; align-items:flex-start; gap:12px; font-size:13px; line-height:1.5; font-weight: 600; cursor: pointer; margin-bottom: 12px; color: #475569;">
-                      <input type="checkbox" id="consentSensitive" class="consent-child" style="width: 18px; height: 18px; margin-top:2px; flex-shrink: 0; accent-color: #4f46e5;"> 
-                      I confirm that this image does not contain any sensitive personal information (such as full names, phone numbers, addresses, or private financial details).
-                    </label>
-                    <label style="display:flex; align-items:flex-start; gap:12px; font-size:13px; line-height:1.5; font-weight: 600; cursor: pointer; color: #475569;">
-                      <input type="checkbox" id="consentCommercial" class="consent-child" style="width: 18px; height: 18px; margin-top:2px; flex-shrink: 0; accent-color: #4f46e5;"> 
-                      I explicitly agree to the Terms of Service and Privacy Policy, and grant Syntrix a perpetual license to anonymize and sell this image for commercial Artificial Intelligence (AI) training.
-                    </label>
-                 </div>
-              </div>
-
-            </div>
-
-            <div class="submission-card" style="text-align: center;">
-              <button id="submitDocBtn" class="btn-dark full-width" disabled>Approve & Submit to Waiting Room</button>
-              
-              <div id="statusMessage" class="status-message"></div>
-              
-              <div id="detailedReasonBox" class="dynamic-reason-box"></div>
-              
-              <button id="retryUploadBtn" class="btn-retry">🔄 Clear & Retry Upload</button>
-            </div>
-
-            <div id="uploadHistorySection" class="submission-card" style="margin-top: 20px; display: none;">
-              <h4 style="margin-bottom: 15px;">Upload History</h4>
-              <div id="historyList" class="history-list">
-                </div>
-            </div>
-            
+          <!-- Card 2: Earn Tokens -->
+          <div class="doc-card token-card">
+             <div>
+               <h4 style="color: #10b981; font-size: 15px; font-weight: 700; margin-bottom: 16px;">Earn Tokens</h4>
+               <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px;">
+                 <span style="font-size: 48px; font-weight: 900; color: #ffffff; line-height: 1;">48</span>
+                 <span style="font-size: 16px; font-weight: 700; color: #ffffff;">SYNX</span>
+               </div>
+               <p style="color: #a1a1aa; font-size: 13px; margin-bottom: 30px;">for every valid upload</p>
+               
+               <div style="display: flex; flex-direction: column; gap: 12px;">
+                 <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #d1d5db;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> AI Verified</div>
+                 <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #d1d5db;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Secure Processing</div>
+                 <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #d1d5db;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Avg. Review Time: ~20 sec</div>
+               </div>
+             </div>
+             <!-- Large Decorative Token SVG -->
+             <svg class="decorative-token" viewBox="0 0 24 24" fill="none" stroke="rgba(99, 102, 241, 0.2)" stroke-width="1"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v12"></path><path d="M15 8.5c-.75-1-2-1.5-3-1.5-2 0-3 1-3 2.5s1 2.5 3 2.5 3 1 3 2.5-1 2.5-3 2.5c-1.5 0-2.5-.5-3.5-1.5"></path></svg>
           </div>
+
+          <!-- Card 3: Strict Guidelines (Full Width) -->
+          <div class="doc-card doc-bento-full">
+            <div class="doc-card-header">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              <h4 style="color: #ef4444;">Strict Quality Guidelines</h4>
+            </div>
+            <div class="guidelines-grid">
+              <div class="guide-item">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <p><strong>ONLY</strong> authentic<br>handwritten notes.</p>
+              </div>
+              <div class="guide-item">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                <p><strong>NO</strong> screenshots or PDFs.</p>
+              </div>
+              <div class="guide-item">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                <p><strong>NO</strong> printed photos, textbook<br>pages, or digital text.</p>
+              </div>
+              <div class="guide-item">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                <p><strong>NO</strong> blank pages.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Note Content Hidden Select to keep script.js happy -->
+          <select id="taskType" style="display: none;"><option value="notes">Notes</option></select>
+
+          <!-- Card 4: What does page contain (Full Width) -->
+          <div class="doc-card doc-bento-full">
+            <div class="doc-card-header">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              <h4>2. What does this notebook page contain?</h4>
+            </div>
+            <div class="doc-checkbox-grid">
+              <label class="custom-cb-wrapper">
+                <input type="checkbox" class="doc-tag" value="Math Equations">
+                <div class="custom-cb-box"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                <span>Math Equations /<br>Line Calculations</span>
+              </label>
+              <label class="custom-cb-wrapper">
+                <input type="checkbox" class="doc-tag" value="Diagrams">
+                <div class="custom-cb-box"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                <span>Diagrams / Graphs /<br>Drawn Shapes</span>
+              </label>
+              <label class="custom-cb-wrapper">
+                <input type="checkbox" class="doc-tag" value="Theory">
+                <div class="custom-cb-box"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                <span>Theory Paragraphs /<br>Written Notes</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Card 5 & 6: Level & Language -->
+          <div class="doc-card">
+            <div class="doc-card-header">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+              <h4>3. Academic Level / Track</h4>
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 10px;">
+              <button type="button" class="pill-toggle active" data-val="School">School<br><span style="font-size:11px; font-weight:500;">(Up to Class 12)</span></button>
+              <button type="button" class="pill-toggle" data-val="Higher Ed">Higher Ed<br><span style="font-size:11px; font-weight:500;">(College)</span></button>
+            </div>
+            <input type="hidden" id="academicLevelInput" value="School">
+          </div>
+
+          <div class="doc-card">
+            <div class="doc-card-header">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              <h4>4. What language or script did you write these notes in?</h4>
+            </div>
+            <input type="text" id="docLanguageInput" placeholder="E.G., HINGLISH, SPANISH" class="doc-dark-input" style="margin-top: 10px;">
+          </div>
+
+          <!-- Card 7: Legal Consent (Full Width) -->
+          <div class="doc-card doc-bento-full">
+            <div class="doc-card-header">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              <h4>5. Legal Consent & Data Release</h4>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
+              <label class="custom-cb-wrapper" style="border-bottom: 1px solid #27272a; padding-bottom: 16px;">
+                <input type="checkbox" id="selectAllConsent">
+                <div class="custom-cb-box"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                <span style="font-weight: 700; color: white;">Select All Consents</span>
+              </label>
+              <label class="custom-cb-wrapper" style="align-items: flex-start;">
+                <input type="checkbox" id="consentSensitive" class="consent-child">
+                <div class="custom-cb-box" style="margin-top: 2px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                <span>I confirm that this image does not contain any sensitive personal information (such as full names, phone numbers, addresses, or private financial details).</span>
+              </label>
+              <label class="custom-cb-wrapper" style="align-items: flex-start;">
+                <input type="checkbox" id="consentCommercial" class="consent-child">
+                <div class="custom-cb-box" style="margin-top: 2px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                <span>I explicitly agree to the <a href="#" onclick="openLegalModal(); return false;" style="color:#6366f1; text-decoration:underline;">Terms of Service</a> and <a href="#" onclick="openLegalModal(); return false;" style="color:#6366f1; text-decoration:underline;">Privacy Policy</a>, and grant Syntrix a perpetual license to anonymize and sell this image for commercial Artificial Intelligence (AI) training.</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Bottom Action Buttons -->
+          <div class="doc-bento-full" style="text-align: center; margin-top: 10px;">
+            <button id="submitDocBtn" class="doc-submit-btn" disabled>
+              Approve & Submit to Waiting Room
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+            <p style="font-size: 12px; color: #71717a; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              Your data is encrypted and secure.
+            </p>
+            
+            <div id="statusMessage" class="status-message" style="margin-top: 15px;"></div>
+            <div id="detailedReasonBox" class="dynamic-reason-box" style="margin-top: 15px;"></div>
+            <button id="retryUploadBtn" class="btn-retry" style="margin-top: 15px; margin-left: auto; margin-right: auto; max-width: 400px;">🔄 Clear & Retry Upload</button>
+          </div>
+
+        </div> <!-- end doc-bento-grid -->
+        
+        <div id="uploadHistorySection" class="doc-card" style="margin-top: 20px; display: none;">
+          <h4 style="margin-bottom: 15px; color: white;">Upload History</h4>
+          <div id="historyList" class="history-list"></div>
         </div>
+
       </div>
+      <!-- ================= END DOCUMENT MODE ================= -->
 
       <form id="claimForm" class="hidden" style="display: none;">
         <div id="surveyContainer"></div>
