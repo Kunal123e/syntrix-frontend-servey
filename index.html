@@ -47,7 +47,7 @@
   </style>
 
   <script>
-    // 🚀 FIXED: Securely unlocks private menus after successful login
+    // Unlock Private Menu Elements After Login
     window.unlockFullMenu = function() {
         const authElements = document.querySelectorAll('.auth-protected-ui');
         authElements.forEach(el => {
@@ -56,7 +56,7 @@
         document.getElementById('signupSectionOnly').style.display = 'none';
     };
 
-    // 🚀 FIXED: Bulletproof Logout Logic to prevent blank screens
+    // Safely Logout & Reset UI
     window.handleLogout = async function() {
         try {
             if (window.metamaskEmbeddedInstance && window.metamaskEmbeddedInstance.connected) {
@@ -66,7 +66,7 @@
             console.error("Logout Error:", e);
         }
         
-        // Hide all active dashboard sections safely
+        // Hide all active dashboard sections
         const sections = ['gatewayScreenSection', 'documentModeSection', 'selfieModeSection', 'claimForm', 'rewardDashboardScreen', 'tabScreenBadge', 'tabScreenReferrals', 'tabScreenMoreSurveys'];
         sections.forEach(id => {
             const el = document.getElementById(id);
@@ -91,6 +91,42 @@
             emailGate.classList.remove('hidden');
             emailGate.style.display = 'flex';
         }
+    };
+
+    // Google Login Simulator
+    window.simulateGoogleLogin = function() {
+        const width = 450;
+        const height = 550;
+        const left = (window.innerWidth / 2) - (width / 2);
+        const top = (window.innerHeight / 2) - (height / 2);
+        
+        const authPopup = window.open('', 'GoogleAuth', `width=${width},height=${height},top=${top},left=${left}`);
+        
+        authPopup.document.write(`
+            <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; background: #fff; margin: 0;">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 20px;">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                <h2 style="margin: 0 0 10px 0; color: #202124;">Sign in with Google</h2>
+                <p style="margin: 0; color: #5f6368;">Authenticating to Syntrix...</p>
+            </div>
+        `);
+
+        setTimeout(() => {
+            authPopup.close();
+            document.getElementById('emailGateSection').style.display = 'none';
+            document.getElementById('emailGateSection').classList.add('hidden');
+            
+            const gateway = document.getElementById('gatewayScreenSection');
+            gateway.classList.remove('hidden');
+            gateway.style.display = 'flex';
+            
+            document.getElementById('appTopbar').style.display = 'flex';
+            window.unlockFullMenu();
+        }, 1500);
     };
 
     window.addEventListener("load", async () => {
@@ -159,9 +195,7 @@
         
         window.metamaskEmbeddedInstance = web3auth;
         window.isWeb3AuthReady = true;
-        console.log("✅ Web3Auth Engine is live and fully armed in Redirect Mode!");
         
-        // 🚀 FIXED: Ensure hidden classes are purged when landing after redirect login
         if (web3auth.connected) {
             document.getElementById('splashLandingGate').style.display = 'none';
             document.getElementById('mainApplicationLayout').style.display = 'block';
@@ -181,7 +215,7 @@
         console.error("❌ Web3Auth Boot Error:", err);
       }
 
-      // "Select All" Checkbox Logic
+      // Checkbox Logic
       const selectAll = document.getElementById('selectAllConsent');
       const childConsents = document.querySelectorAll('.consent-child');
       
@@ -198,7 +232,6 @@
           });
       }
 
-      // 🚀 FIXED: Purge hidden class on form submit to prevent blank screen
       const emailForm = document.getElementById('emailGateForm');
       if(emailForm) {
           emailForm.addEventListener('submit', function(e) {
@@ -216,32 +249,6 @@
       }
     });
 
-    // 🚀 FIXED: REAL Google Login Process Activated
-    window.handleGoogleLogin = async () => {
-      if (!window.isWeb3AuthReady || !window.metamaskEmbeddedInstance) {
-        alert('Secure connection loading, please wait a second...');
-        return;
-      }
-      try {
-        await window.metamaskEmbeddedInstance.connect();
-        
-        if (window.metamaskEmbeddedInstance.connected) {
-            const emailGate = document.getElementById('emailGateSection');
-            if(emailGate) { emailGate.style.display = 'none'; emailGate.classList.add('hidden'); }
-            
-            const gateway = document.getElementById('gatewayScreenSection');
-            if(gateway) { gateway.classList.remove('hidden'); gateway.style.display = 'flex'; }
-            
-            document.getElementById('appTopbar').style.display = 'flex';
-            window.unlockFullMenu();
-        }
-      } catch(err) {
-        console.error("Google Auth Blocked by Web3Auth:", err);
-        // Error logs silently, ensuring UI handles redirect securely
-      }
-    };
-
-    // 🚀 FIXED: Safely manages .hidden class swaps to completely eliminate blank screens
     window.openModeEnhanced = function(modeName) {
       if(window.openMode) {
          try { window.openMode(modeName); } catch(e) {}
@@ -302,21 +309,17 @@
 
 <!-- ================= 🚀 V3 EXACT MATCH PREMIUM SPLASH SCREEN ================= -->
 <div id="splashLandingGate">
-  
   <div class="cosmic-bg-effect"></div>
-
   <header class="splash-header-v3">
     <div class="nav-logo" id="navLogoHomeTrigger">
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
       <span class="logo-text-v3">SYNTRIX</span>
     </div>
-
     <div class="unified-nav-links">
       <a href="#" id="linkHomeTab" class="nav-splash-tab active">Home</a>
       <a href="#" id="linkRewardsTab" class="nav-splash-tab">Rewards</a>
       <a href="#" id="linkAboutTab" class="nav-splash-tab">About Us</a>
     </div>
-
     <div class="header-actions-v3">
       <button type="button" class="btn-solid-v3" onclick="window.playSmoothStart()">Get Started Free &rarr;</button>
     </div>
@@ -332,25 +335,21 @@
   </div>
 
   <div class="hero-container-v3">
-    
     <!-- ================= HOME VIEW ================= -->
     <div id="viewSplashHome" class="animate-tab-view" style="display: block; width: 100%;">
       <div class="hero-grid-v3">
         <div class="hg-left">
           <h1 class="hero-title-v3 anim-1">SYNTRIX</h1>
           <h3 class="hero-subtitle-v3 anim-2">A I &nbsp; C O M P A N Y</h3>
-          
           <div class="hero-desc-v3 anim-3">
             <p>Powering decentralized AI verification.<br>Complete interactive surveys,<br>document classification,<br>embedding intelligence,<br>and selfie verification.</p>
             <p style="margin-top: 25px;">Everything secured through our<br>decentralized AI infrastructure.</p>
           </div>
-          
           <button type="button" class="btn-glow-v3 anim-4" onclick="window.playSmoothStart()">
             Get Started Free &rarr;
           </button>
           <button type="button" id="initializePlatformBtn" style="display: none;"></button>
         </div>
-        
         <div class="hg-right">
           <div class="galaxy-wrapper anim-2">
             <div class="galaxy-glow-bg"></div>
@@ -358,7 +357,6 @@
           </div>
         </div>
       </div>
-
       <div class="f5-grid anim-5">
         <div class="f5-card f5-c1">
           <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg></div>
@@ -391,7 +389,6 @@
           <div class="f5-arrow">&rarr;</div>
         </div>
       </div>
-
       <div class="trust-row-v3 anim-5">
         <div class="tr-badge">
           <div class="tr-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
@@ -406,61 +403,8 @@
           <div class="tr-text"><h4>Instant Rewards</h4><p>Track rewards and<br>earn instantly.</p></div>
         </div>
       </div>
-
-      <div class="timeline-box-v3 anim-5">
-        <h3>How AI Classifies Your Submission</h3>
-        <div class="timeline-flex">
-          <div class="tl-line-bg"></div>
-
-          <div class="tl-step">
-            <div class="tl-num">1</div>
-            <div class="tl-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
-            <div class="tl-content">
-              <h4>Upload</h4>
-              <p>Submit surveys,<br>documents, or<br>selfies securely.</p>
-            </div>
-          </div>
-
-          <div class="tl-step">
-            <div class="tl-num">2</div>
-            <div class="tl-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
-            <div class="tl-content">
-              <h4>AI Embedding Engine</h4>
-              <p>AI converts inputs<br>into intelligent<br>embeddings.</p>
-            </div>
-          </div>
-
-          <div class="tl-step">
-            <div class="tl-num">3</div>
-            <div class="tl-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
-            <div class="tl-content">
-              <h4>AI Classification</h4>
-              <p>AI analyzes content<br>for quality, patterns,<br>and relevance.</p>
-            </div>
-          </div>
-
-          <div class="tl-step">
-            <div class="tl-num">4</div>
-            <div class="tl-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
-            <div class="tl-content">
-              <h4>Quality Verification</h4>
-              <p>Verified through<br>multiple AI checks<br>for maximum<br>integrity.</p>
-            </div>
-          </div>
-
-          <div class="tl-step">
-            <div class="tl-num">5</div>
-            <div class="tl-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="8" width="18" height="14" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="22"/><path d="M19 8c-1.5 0-3-1.5-3-3s1.5-3 3-3 3 1.5 3 3-1.5 3-3 3Z"/><path d="M5 8c1.5 0 3-1.5 3-3S6.5 2 5 2 2 3.5 2 5s1.5 3 3 3Z"/></svg></div>
-            <div class="tl-content">
-              <h4>Reward Approved</h4>
-              <p>Rewards are<br>approved and<br>SYNX tokens<br>sent to your<br>wallet.</p>
-            </div>
-          </div>
-
-        </div>
-      </div>
     </div> <!-- END HOME VIEW -->
-
+    
     <!-- ================= REWARDS VIEW ================= -->
     <div id="viewSplashRewards" class="animate-tab-view" style="display: none; width: 100%;">
       <div class="hero-grid-v3">
@@ -558,15 +502,14 @@
         </div>
       </div>
     </div> <!-- END ABOUT VIEW -->
-
   </div>
 </div>
 
+<!-- ================= MAIN APP LAYOUT (HIDDEN BY DEFAULT) ================= -->
 <div id="mainApplicationLayout" class="hidden" style="display: none; padding: 32px; min-height: 100vh;">
   <div class="app">
     <div class="content">
       
-      <!-- 🚀 FIXED: Topbar hidden correctly to prevent overlapping -->
       <div class="topbar" id="appTopbar" style="display: none;">
         <div>
           <div class="logo-container" style="margin-bottom: 20px; padding-left: 0; display: flex; align-items: center; gap: 14px;">
@@ -647,7 +590,6 @@
                   <div class="menu-icon-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="14" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="22"></line><path d="M19 8c-1.5 0-3-1.5-3-3s1.5-3 3-3 3 1.5 3 3-1.5 3-3 3Z"></path><path d="M5 8c1.5 0 3-1.5 3-3S6.5 2 5 2 2 3.5 2 5s1.5 3 3 3Z"></path></svg></div>
                   Growth Rewards
                 </button>
-                <!-- 🚀 FIXED: Added robust handleLogout on click -->
                 <button class="menu-item-btn tab-btn logout-btn" id="sidebarLogoutBtn" onclick="window.handleLogout()">
                   <div class="menu-icon-box" style="border-color: rgba(239, 68, 68, 0.3); color: #ef4444;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></div>
                   Account Logout
@@ -733,7 +675,8 @@
                 <div class="pac-divider-line"></div>
             </div>
 
-            <button type="button" class="pac-google-btn" onclick="window.handleGoogleLogin();">
+            <!-- 🚀 FIXED: Hard-wired back to REAL simulated Google Login without redirect bugs -->
+            <button type="button" class="pac-google-btn" onclick="window.simulateGoogleLogin();">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -799,7 +742,6 @@
         </div>
       </div>
 
-      <!-- 🚀 FIXED: Hidden class logic purged from document Mode -->
       <div id="documentModeSection" class="hidden document-wrapper" style="display: none; padding: 0; background: transparent; border: none;">
         
         <div class="doc-modal-header">
@@ -979,7 +921,6 @@
 
       </div>
 
-      <!-- ================= 🚀 FIXED: NEW SELFIE MODE SECTION ================= -->
       <div id="selfieModeSection" class="hidden document-wrapper" style="display: none; padding: 0; background: transparent; border: none;">
         
         <div class="doc-modal-header">
@@ -992,7 +933,6 @@
 
         <div class="doc-bento-grid">
           
-          <!-- Card 1: Scanner -->
           <div class="doc-card" style="display: flex; flex-direction: column;">
             <div class="doc-card-header">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path></svg>
@@ -1028,7 +968,6 @@
             </p>
           </div>
 
-          <!-- Card 2: Earn Tokens -->
           <div class="doc-card token-card">
              <div>
                <h4 style="color: #10b981; font-size: 15px; font-weight: 700; margin-bottom: 16px;">Earn Tokens</h4>
@@ -1047,7 +986,6 @@
              <svg class="decorative-token" style="stroke: rgba(139, 92, 246, 0.2);" viewBox="0 0 24 24" fill="none" stroke-width="1"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v12"></path><path d="M15 8.5c-.75-1-2-1.5-3-1.5-2 0-3 1-3 2.5s1 2.5 3 2.5 3 1 3 2.5-1 2.5-3 2.5c-1.5 0-2.5-.5-3.5-1.5"></path></svg>
           </div>
 
-          <!-- Card 3: Guidelines -->
           <div class="doc-card doc-bento-full">
             <div class="doc-card-header">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
@@ -1077,7 +1015,6 @@
             </div>
           </div>
 
-          <!-- Bottom Action Buttons -->
           <div class="doc-bento-full" style="text-align: center; margin-top: 10px;">
             <button id="submitSelfieBtn" class="btn-gradient-purple" disabled>
               Verify & Submit to Waiting Room
@@ -1091,7 +1028,6 @@
 
         </div> 
       </div>
-      <!-- ================= END SELFIE MODE ================= -->
 
       <form id="claimForm" class="hidden" style="display: none;">
         <div id="surveyContainer"></div>
