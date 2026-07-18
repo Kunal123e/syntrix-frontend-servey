@@ -13,6 +13,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/base@9/dist/base.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/ethereum-provider@9/dist/ethereumProvider.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@9/dist/modal.umd.min.js"></script>
+  <!-- 🚀 FIXED: Added OpenLogin Adapter to force redirect mode and bypass Vercel COOP errors -->
+  <script src="https://cdn.jsdelivr.net/npm/@web3auth/openlogin-adapter@9/dist/openloginAdapter.umd.min.js"></script>
 
   <style>
     @keyframes slideDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
@@ -53,8 +55,9 @@
       try {
         const Web3AuthSDK = window.Modal || window.ModalSdk || window.Web3Auth;
         const EthProviderSDK = window.EthereumProvider;
+        const OpenloginAdapterSDK = window.OpenloginAdapter;
         
-        if (!Web3AuthSDK || !EthProviderSDK) {
+        if (!Web3AuthSDK || !EthProviderSDK || !OpenloginAdapterSDK) {
           console.error("❌ Web3Auth registry packages failed to map globally via CDN arrays.");
           return;
         }
@@ -85,11 +88,18 @@
             theme: { primary: "#6366f1" },
             loginMethodsOrder: ["google"],
             defaultLanguage: "en"
-          },
-          web3AuthOptions: {
-            popupWindowFeatures: { width: 500, height: 700, top: 100, left: 100 }
           }
         });
+
+        // 🚀 FIXED: Force Redirect Mode to completely bypass Vercel's COOP popup block
+        const openloginAdapter = new OpenloginAdapterSDK.OpenloginAdapter({
+          adapterSettings: {
+            uxMode: "redirect",
+            network: "sapphire_devnet",
+            clientId: "BLTKOOeFj7P8fVIGNIwqX3lhHeA948YDtXgKO_ClNELkI06hZ17XKvfpiAWA0AujfpBMAs75-LivYTtCeRWg2Lo"
+          }
+        });
+        web3auth.configureAdapter(openloginAdapter);
 
         await web3auth.initModal({
           modalConfig: {
@@ -108,12 +118,22 @@
         
         window.metamaskEmbeddedInstance = web3auth;
         window.isWeb3AuthReady = true;
-        console.log("✅ Web3Auth Engine is live and fully armed!");
+        console.log("✅ Web3Auth Engine is live and fully armed in Redirect Mode!");
+
+        // 🚀 FIXED: If user returns from Google Redirect perfectly authenticated, auto-skip to dashboard
+        if (web3auth.connected) {
+            document.getElementById('splashLandingGate').style.display = 'none';
+            document.getElementById('mainApplicationLayout').style.display = 'block';
+            document.getElementById('mainApplicationLayout').style.opacity = '1';
+            document.getElementById('emailGateSection').style.display = 'none';
+            document.getElementById('gatewayScreenSection').style.display = 'flex';
+            document.getElementById('appTopbar').style.display = 'flex'; // Reveal the hidden topbar
+        }
+
       } catch (err) {
         console.error("❌ Web3Auth Boot Error:", err);
       }
 
-      // "Select All" Checkbox Logic
       const selectAll = document.getElementById('selectAllConsent');
       const childConsents = document.querySelectorAll('.consent-child');
       
@@ -129,6 +149,18 @@
               });
           });
       }
+
+      // 🚀 FIXED: Event Listener to show TopBar ONLY when Email Form is submitted successfully
+      const emailForm = document.getElementById('emailGateForm');
+      if(emailForm) {
+          emailForm.addEventListener('submit', function() {
+              setTimeout(() => {
+                  if (document.getElementById('emailGateSection').style.display === 'none') {
+                      document.getElementById('appTopbar').style.display = 'flex';
+                  }
+              }, 600);
+          });
+      }
     });
 
     window.handleGoogleLogin = async () => {
@@ -138,11 +170,10 @@
       }
       try {
         await window.metamaskEmbeddedInstance.connect();
-        document.getElementById('emailGateSection').style.display = 'none';
-        document.getElementById('gatewayScreenSection').style.display = 'flex';
+        // UI updates are handled in the load event listener upon redirect return
       } catch(err) {
         console.error("Google Auth Blocked by Web3Auth:", err);
-        alert("Login failed! If you see a '400 Bad Request' in the console, you MUST add your Vercel URL to the Web3Auth Dashboard Whitelist.");
+        alert("Login failed! Please check console.");
       }
     };
 
@@ -444,7 +475,8 @@
   <div class="app">
     <div class="content">
       
-      <div class="topbar">
+      <!-- 🚀 FIXED: Topbar hidden during login phase -->
+      <div class="topbar" id="appTopbar" style="display: none;">
         <div>
           <div class="logo-container" style="margin-bottom: 20px; padding-left: 0; display: flex; align-items: center; gap: 14px;">
             <div class="logo-mark" style="height: 42px; width: auto; display: flex; align-items: center;">
@@ -483,23 +515,19 @@
               <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
             </button>
             
-            <!-- 🚀 FIXED: SETTINGS POPOVER EXACTLY MATCHING YOUR SCREENSHOT -->
             <div id="optionsPopover" class="options-popover hidden" style="display: none;">
               
-              <!-- Profile Section -->
               <div class="popover-section profile-sec">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 <span style="color: #a1a1aa; font-weight: 500;">Profile:</span>
                 <span id="menuPsychologyBadgeText" style="color: #ffffff; font-weight: 700;">ANALYZER</span>
               </div>
               
-              <!-- Referral Section -->
               <div class="popover-section referral-sec">
                 <div style="display: flex; align-items: center; gap: 10px; color: #a1a1aa; font-size: 13px; font-weight: 500; margin-bottom: 12px;">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
                   Referral Link
                 </div>
-                <!-- Input holds the value secretly, visually we just show the copy button area -->
                 <input type="text" id="menuReferralInputDisplay" value="https://domain.com/?ref=..." readonly style="display: none;">
                 <button type="button" id="menuCopyReferralBtn" class="popover-copy-btn">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
@@ -507,7 +535,6 @@
                 </button>
               </div>
 
-              <!-- Main Links -->
               <div id="dashboardTabLinks" class="popover-section links-sec">
                 <button class="menu-item-btn tab-btn" data-tab="badge">
                   <div class="menu-icon-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
@@ -535,7 +562,6 @@
                 </button>
               </div>
               
-              <!-- Bottom Sign Up -->
               <div class="popover-section" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
                 <button type="button" class="menu-item-btn" id="menuRecoverBtn">
                   <div class="menu-icon-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg></div>
@@ -576,7 +602,6 @@
               </div>
             </div>
 
-            <!-- HIDDEN BY DEFAULT: Revealed only when user clicks Send Code -->
             <div id="otpSection" class="pac-form-group" style="display: none;">
               <label for="gateOtp" style="display: flex; justify-content: space-between; align-items: center;">
                 <span>Verification Code</span>
@@ -603,7 +628,6 @@
               </label>
             </div>
 
-            <!-- DYNAMIC BUTTONS -->
             <button type="button" id="preVerifyBtn" class="pac-primary-btn" onclick="document.getElementById('otpSection').style.display='block'; this.style.display='none'; document.getElementById('startSurveyBtn').style.display='flex';">
               Send Verification Code &rarr;
             </button>
@@ -678,7 +702,6 @@
         </div>
       </div>
 
-      <!-- ================= 🚀 FIXED: BENTO-GRID DOCUMENT MODE ================= -->
       <div id="documentModeSection" class="hidden document-wrapper" style="display: none; padding: 0; background: transparent; border: none;">
         
         <div class="doc-modal-header">
@@ -691,7 +714,6 @@
 
         <div class="doc-bento-grid">
           
-          <!-- Card 1: Upload Dropzone -->
           <div class="doc-card" style="display: flex; flex-direction: column;">
             <div class="doc-card-header">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
@@ -722,7 +744,6 @@
             </div>
           </div>
 
-          <!-- Card 2: Earn Tokens -->
           <div class="doc-card token-card">
              <div>
                <h4 style="color: #10b981; font-size: 15px; font-weight: 700; margin-bottom: 16px;">Earn Tokens</h4>
@@ -738,11 +759,9 @@
                  <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #d1d5db;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Avg. Review Time: ~20 sec</div>
                </div>
              </div>
-             <!-- Large Decorative Token SVG -->
              <svg class="decorative-token" viewBox="0 0 24 24" fill="none" stroke="rgba(99, 102, 241, 0.2)" stroke-width="1"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v12"></path><path d="M15 8.5c-.75-1-2-1.5-3-1.5-2 0-3 1-3 2.5s1 2.5 3 2.5 3 1 3 2.5-1 2.5-3 2.5c-1.5 0-2.5-.5-3.5-1.5"></path></svg>
           </div>
 
-          <!-- Card 3: Strict Guidelines (Full Width) -->
           <div class="doc-card doc-bento-full">
             <div class="doc-card-header">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
@@ -768,10 +787,8 @@
             </div>
           </div>
 
-          <!-- Note Content Hidden Select to keep script.js happy -->
           <select id="taskType" style="display: none;"><option value="notes">Notes</option></select>
 
-          <!-- Card 4: What does page contain (Full Width) -->
           <div class="doc-card doc-bento-full">
             <div class="doc-card-header">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
@@ -796,7 +813,6 @@
             </div>
           </div>
 
-          <!-- Card 5 & 6: Level & Language -->
           <div class="doc-card">
             <div class="doc-card-header">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
@@ -817,7 +833,6 @@
             <input type="text" id="docLanguageInput" placeholder="E.G., HINGLISH, SPANISH" class="doc-dark-input" style="margin-top: 10px;">
           </div>
 
-          <!-- Card 7: Legal Consent (Full Width) -->
           <div class="doc-card doc-bento-full">
             <div class="doc-card-header">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
@@ -842,7 +857,6 @@
             </div>
           </div>
 
-          <!-- Bottom Action Buttons -->
           <div class="doc-bento-full" style="text-align: center; margin-top: 10px;">
             <button id="submitDocBtn" class="doc-submit-btn" disabled>
               Approve & Submit to Waiting Room
@@ -858,7 +872,7 @@
             <button id="retryUploadBtn" class="btn-retry" style="margin-top: 15px; margin-left: auto; margin-right: auto; max-width: 400px;">🔄 Clear & Retry Upload</button>
           </div>
 
-        </div> <!-- end doc-bento-grid -->
+        </div> 
         
         <div id="uploadHistorySection" class="doc-card" style="margin-top: 20px; display: none;">
           <h4 style="margin-bottom: 15px; color: white;">Upload History</h4>
@@ -866,7 +880,6 @@
         </div>
 
       </div>
-      <!-- ================= END DOCUMENT MODE ================= -->
 
       <form id="claimForm" class="hidden" style="display: none;">
         <div id="surveyContainer"></div>
