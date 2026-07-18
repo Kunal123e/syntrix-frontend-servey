@@ -1,1 +1,1354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Syntrix | AI Company</title>
+  
+  <link rel="icon" href="data:,"> 
+  <link rel="stylesheet" href="style.css">
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@web3auth/base@9/dist/base.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@web3auth/ethereum-provider@9/dist/ethereumProvider.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@9/dist/modal.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@web3auth/openlogin-adapter@9/dist/openloginAdapter.umd.min.js"></script>
+
+  <style>
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes floatBox { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+    @keyframes pulseText { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+    
+    .status-text-pulse { animation: pulseText 1.5s infinite ease-in-out; font-weight: 800; }
+    .app, body { transition: background-color 0.3s ease-in-out; }
+    .option { transition: all 0.2s ease; transform: scale(1); }
+    .option:active { transform: scale(0.98); }
+    .option.selected { 
+      background-color: #1f1f1f !important; 
+      border-color: #1f1f1f !important; 
+      color: #ffffff !important; 
+    }
+    .gate-centered-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; margin: 0 auto; text-align: center; }
+    
+    .survey-expansion-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-top: 25px; text-align: left; }
+    .survey-expansion-card { background: #fafafa; border: 2px solid #e5e7eb; border-radius: 16px; padding: 24px; position: relative; opacity: 0.7; transition: all 0.2s ease; }
+    .survey-expansion-card.active { opacity: 1; border-color: #6366f1; background: #ffffff; }
+    .coming-soon-ribbon { position: absolute; top: 12px; right: 12px; background: #f3f4f6; color: #4b5563; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    .luxury-lock-screen { background: rgba(255, 255, 255, 0.05); border: 2px dashed #e5e7eb; border-radius: 20px; padding: 40px 20px; text-align: center; margin-top: 20px; }
+
+    /* Document Mode UX Overrides */
+    .btn-retry { background: #fef2f2; color: #e11d48; border: 1px solid #fecdd3; padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; width: 100%; margin-top: 10px; display: none; }
+    .btn-retry:hover { background: #ffe4e6; }
+    .dynamic-reason-box { font-size: 13px; margin-top: 8px; font-weight: 600; line-height: 1.5; border-radius: 8px; padding: 10px; display: none; }
+    .reason-error { background: #fef2f2; color: #9f1239; border: 1px solid #fecdd3; }
+    .reason-success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+  </style>
+
+  <script>
+    // Unlock Private Menu Elements After Login
+    window.unlockFullMenu = function() {
+        const authElements = document.querySelectorAll('.auth-protected-ui');
+        authElements.forEach(el => {
+            el.style.display = el.classList.contains('links-sec') ? 'flex' : 'block';
+        });
+        document.getElementById('signupSectionOnly').style.display = 'none';
+    };
+
+    // Safely Logout & Reset UI
+    window.handleLogout = async function() {
+        try {
+            if (window.metamaskEmbeddedInstance && window.metamaskEmbeddedInstance.connected) {
+                await window.metamaskEmbeddedInstance.logout();
+            }
+        } catch(e) {
+            console.error("Logout Error:", e);
+        }
+        
+        // Hide all active dashboard sections
+        const sections = ['gatewayScreenSection', 'documentModeSection', 'selfieModeSection', 'claimForm', 'rewardDashboardScreen', 'tabScreenBadge', 'tabScreenReferrals', 'tabScreenMoreSurveys'];
+        sections.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) {
+                el.style.display = 'none';
+                el.classList.add('hidden');
+            }
+        });
+        
+        // Relock Topbar & Menu
+        document.getElementById('appTopbar').style.display = 'none';
+        const authElements = document.querySelectorAll('.auth-protected-ui');
+        authElements.forEach(el => el.style.display = 'none');
+        document.getElementById('signupSectionOnly').style.display = 'block';
+        
+        const popover = document.getElementById('optionsPopover');
+        if(popover) { popover.style.display = 'none'; popover.classList.add('hidden'); }
+        
+        // Bring Login Form back cleanly
+        const emailGate = document.getElementById('emailGateSection');
+        if(emailGate) {
+            emailGate.classList.remove('hidden');
+            emailGate.style.display = 'flex';
+        }
+    };
+
+    // Google Login Simulator
+    window.simulateGoogleLogin = function() {
+        const width = 450;
+        const height = 550;
+        const left = (window.innerWidth / 2) - (width / 2);
+        const top = (window.innerHeight / 2) - (height / 2);
+        
+        const authPopup = window.open('', 'GoogleAuth', `width=${width},height=${height},top=${top},left=${left}`);
+        
+        authPopup.document.write(`
+            <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; background: #fff; margin: 0;">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 20px;">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                <h2 style="margin: 0 0 10px 0; color: #202124;">Sign in with Google</h2>
+                <p style="margin: 0; color: #5f6368;">Authenticating to Syntrix...</p>
+            </div>
+        `);
+
+        setTimeout(() => {
+            authPopup.close();
+            document.getElementById('emailGateSection').style.display = 'none';
+            document.getElementById('emailGateSection').classList.add('hidden');
+            
+            const gateway = document.getElementById('gatewayScreenSection');
+            gateway.classList.remove('hidden');
+            gateway.style.display = 'flex';
+            
+            document.getElementById('appTopbar').style.display = 'flex';
+            window.unlockFullMenu();
+        }, 1500);
+    };
+
+    window.addEventListener("load", async () => {
+      try {
+        const Web3AuthSDK = window.Modal || window.ModalSdk || window.Web3Auth;
+        const EthProviderSDK = window.EthereumProvider;
+        const OpenloginAdapterSDK = window.OpenloginAdapter;
+        
+        if (!Web3AuthSDK || !EthProviderSDK || !OpenloginAdapterSDK) {
+          console.error("❌ Web3Auth registry packages failed to map globally via CDN arrays.");
+          return;
+        }
+
+        const chainConfig = {
+          chainNamespace: "eip155",
+          chainId: "0x89", 
+          rpcTarget: "https://polygon.llamarpc.com", 
+          displayName: "Polygon Mainnet",
+          blockExplorerUrl: "https://polygonscan.com",
+          ticker: "POL",
+          tickerName: "POL"
+        };
+
+        const privateKeyProvider = new EthProviderSDK.EthereumPrivateKeyProvider({
+          config: { chainConfig: chainConfig }
+        });
+
+        const web3auth = new Web3AuthSDK.Web3Auth({
+          clientId: "BLTKOOeFj7P8fVIGNIwqX3lhHeA948YDtXgKO_ClNELkI06hZ17XKvfpiAWA0AujfpBMAs75-LivYTtCeRWg2Lo", 
+          web3AuthNetwork: "sapphire_devnet", 
+          privateKeyProvider: privateKeyProvider,
+          enableLogging: false,
+          buildEnv: "production",
+          uiConfig: {
+            appName: "Syntrix",
+            mode: "dark",
+            theme: { primary: "#6366f1" },
+            loginMethodsOrder: ["google"],
+            defaultLanguage: "en"
+          }
+        });
+
+        const openloginAdapter = new OpenloginAdapterSDK.OpenloginAdapter({
+          adapterSettings: {
+            uxMode: "redirect",
+            network: "sapphire_devnet",
+            clientId: "BLTKOOeFj7P8fVIGNIwqX3lhHeA948YDtXgKO_ClNELkI06hZ17XKvfpiAWA0AujfpBMAs75-LivYTtCeRWg2Lo"
+          }
+        });
+        web3auth.configureAdapter(openloginAdapter);
+
+        await web3auth.initModal({
+          modalConfig: {
+            "openlogin": {
+              label: "OpenLogin",
+              showOnModal: true,
+              loginMethods: {
+                google: { name: "google", showOnModal: true },
+                facebook: { showOnModal: false },
+                twitter: { showOnModal: false },
+                reddit: { showOnModal: false }
+              }
+            }
+          }
+        });
+        
+        window.metamaskEmbeddedInstance = web3auth;
+        window.isWeb3AuthReady = true;
+        
+        if (web3auth.connected) {
+            document.getElementById('splashLandingGate').style.display = 'none';
+            document.getElementById('mainApplicationLayout').style.display = 'block';
+            document.getElementById('mainApplicationLayout').style.opacity = '1';
+            
+            const emailGate = document.getElementById('emailGateSection');
+            if(emailGate) { emailGate.style.display = 'none'; emailGate.classList.add('hidden'); }
+            
+            const gateway = document.getElementById('gatewayScreenSection');
+            if(gateway) { gateway.classList.remove('hidden'); gateway.style.display = 'flex'; }
+            
+            document.getElementById('appTopbar').style.display = 'flex';
+            window.unlockFullMenu();
+        }
+
+      } catch (err) {
+        console.error("❌ Web3Auth Boot Error:", err);
+      }
+
+      // Checkbox Logic
+      const selectAll = document.getElementById('selectAllConsent');
+      const childConsents = document.querySelectorAll('.consent-child');
+      
+      if(selectAll && childConsents.length > 0) {
+          selectAll.addEventListener('change', (e) => {
+              childConsents.forEach(cb => cb.checked = e.target.checked);
+          });
+
+          childConsents.forEach(cb => {
+              cb.addEventListener('change', () => {
+                  const allChecked = Array.from(childConsents).every(c => c.checked);
+                  if (selectAll) selectAll.checked = allChecked;
+              });
+          });
+      }
+
+      const emailForm = document.getElementById('emailGateForm');
+      if(emailForm) {
+          emailForm.addEventListener('submit', function(e) {
+              e.preventDefault(); 
+              document.getElementById('emailGateSection').classList.add('hidden');
+              document.getElementById('emailGateSection').style.display = 'none';
+              
+              const gateway = document.getElementById('gatewayScreenSection');
+              gateway.classList.remove('hidden');
+              gateway.style.display = 'flex';
+              
+              document.getElementById('appTopbar').style.display = 'flex';
+              window.unlockFullMenu();
+          });
+      }
+    });
+
+    window.openModeEnhanced = function(modeName) {
+      if(window.openMode) {
+         try { window.openMode(modeName); } catch(e) {}
+      }
+      
+      const sections = ['gatewayScreenSection', 'documentModeSection', 'selfieModeSection', 'claimForm'];
+      sections.forEach(id => {
+          const el = document.getElementById(id);
+          if(el) { el.style.display = 'none'; el.classList.add('hidden'); }
+      });
+      
+      let targetId = '';
+      if(modeName === 'document') targetId = 'documentModeSection';
+      else if (modeName === 'selfie') targetId = 'selfieModeSection';
+      else if (modeName === 'gateway') targetId = 'gatewayScreenSection';
+      else if (modeName === 'survey') targetId = 'claimForm';
+      
+      if(targetId) {
+          const targetEl = document.getElementById(targetId);
+          if(targetEl) {
+              targetEl.classList.remove('hidden');
+              targetEl.style.display = (targetId === 'gatewayScreenSection') ? 'flex' : 'block';
+          }
+      }
+    };
+
+    window.playSmoothStart = function() {
+      const splash = document.getElementById('splashLandingGate');
+      splash.style.transition = 'all 0.5s cubic-bezier(0.25, 1, 0.5, 1)';
+      splash.style.opacity = '0';
+      splash.style.transform = 'scale(0.96) translateY(-15px)';
+      
+      setTimeout(() => {
+        const hiddenBtn = document.getElementById('initializePlatformBtn');
+        if(hiddenBtn) hiddenBtn.click();
+        
+        const appLayout = document.getElementById('mainApplicationLayout');
+        if(appLayout) {
+            appLayout.style.opacity = '0';
+            appLayout.style.animation = 'fadeUpIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+        }
+      }, 450);
+    };
+  </script>
+</head>
+<body class="dark-theme">
+
+<div id="customToast" class="custom-toast" style="display: none;">
+  <span class="toast-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
+  <span id="toastMessage"></span>
+</div>
+
+<div id="rewardAnimationOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.95); z-index: 99999; flex-direction: column; align-items: center; justify-content: center; color: white; backdrop-filter: blur(10px);">
+  <div class="modern-spinner" style="width: 72px; height: 72px; border-width: 6px; margin-bottom: 20px;"></div>
+  <h2 style="font-size: 42px; font-weight: 900; margin-top: 20px; text-align: center; background: linear-gradient(to right, #10b981, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Processing Securely...</h2>
+  <p style="font-size: 20px; color: #d1d5db; margin-top: 15px; font-weight: 600; text-align: center; max-width: 500px; line-height: 1.5;">Validating your responses...<br><span style="color: #34d399; font-size: 24px; font-weight: 800; display: inline-block; margin-top: 10px;">Your 48 SYNX reward is waiting!</span></p>
+</div>
+
+<!-- ================= 🚀 V3 EXACT MATCH PREMIUM SPLASH SCREEN ================= -->
+<div id="splashLandingGate">
+  <div class="cosmic-bg-effect"></div>
+  <header class="splash-header-v3">
+    <div class="nav-logo" id="navLogoHomeTrigger">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+      <span class="logo-text-v3">SYNTRIX</span>
+    </div>
+    <div class="unified-nav-links">
+      <a href="#" id="linkHomeTab" class="nav-splash-tab active">Home</a>
+      <a href="#" id="linkRewardsTab" class="nav-splash-tab">Rewards</a>
+      <a href="#" id="linkAboutTab" class="nav-splash-tab">About Us</a>
+    </div>
+    <div class="header-actions-v3">
+      <button type="button" class="btn-solid-v3" onclick="window.playSmoothStart()">Get Started Free &rarr;</button>
+    </div>
+  </header>
+
+  <div class="mobile-nav-v3 mobile-only">
+    <div class="mn-links">
+      <a href="#" class="nav-splash-tab active" onclick="document.getElementById('linkHomeTab').click(); return false;">Home</a>
+      <a href="#" class="nav-splash-tab" onclick="document.getElementById('linkRewardsTab').click(); return false;">Rewards</a>
+      <a href="#" class="nav-splash-tab" onclick="document.getElementById('linkAboutTab').click(); return false;">About Us</a>
+    </div>
+    <button type="button" class="btn-solid-v3 mobile-get-started" onclick="window.playSmoothStart()">Get Started Free &rarr;</button>
+  </div>
+
+  <div class="hero-container-v3">
+    <!-- ================= HOME VIEW ================= -->
+    <div id="viewSplashHome" class="animate-tab-view" style="display: block; width: 100%;">
+      <div class="hero-grid-v3">
+        <div class="hg-left">
+          <h1 class="hero-title-v3 anim-1">SYNTRIX</h1>
+          <h3 class="hero-subtitle-v3 anim-2">A I &nbsp; C O M P A N Y</h3>
+          <div class="hero-desc-v3 anim-3">
+            <p>Powering decentralized AI verification.<br>Complete interactive surveys,<br>document classification,<br>embedding intelligence,<br>and selfie verification.</p>
+            <p style="margin-top: 25px;">Everything secured through our<br>decentralized AI infrastructure.</p>
+          </div>
+          <button type="button" class="btn-glow-v3 anim-4" onclick="window.playSmoothStart()">
+            Get Started Free &rarr;
+          </button>
+          <button type="button" id="initializePlatformBtn" style="display: none;"></button>
+        </div>
+        <div class="hg-right">
+          <div class="galaxy-wrapper anim-2">
+            <div class="galaxy-glow-bg"></div>
+            <img src="galaxypng.png" alt="AI Network Sphere" class="galaxy-img floating-orb" onerror="this.src='https://images.unsplash.com/photo-1620825937374-87fc7d6bddc2?q=80&w=1000&auto=format&fit=crop'; this.style.mixBlendMode='screen'; this.style.opacity='0.8';">
+          </div>
+        </div>
+      </div>
+      <div class="f5-grid anim-5">
+        <div class="f5-card f5-c1">
+          <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg></div>
+          <h4>AI Integrated</h4>
+          <p>Advanced AI models working behind the scenes to ensure accuracy and authenticity.</p>
+          <div class="f5-arrow">&rarr;</div>
+        </div>
+        <div class="f5-card f5-c2">
+          <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div>
+          <h4>Automated Embeddings</h4>
+          <p>Smart embedding system for faster processing and better data understanding.</p>
+          <div class="f5-arrow">&rarr;</div>
+        </div>
+        <div class="f5-card f5-c3">
+          <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
+          <h4>Interactive Surveys</h4>
+          <p>Engaging and intelligent surveys designed to collect real opinions and valuable insights.</p>
+          <div class="f5-arrow">&rarr;</div>
+        </div>
+        <div class="f5-card f5-c4">
+          <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
+          <h4>Document Classification</h4>
+          <p>AI-powered document classification for accurate and reliable verification.</p>
+          <div class="f5-arrow">&rarr;</div>
+        </div>
+        <div class="f5-card f5-c5">
+          <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          <h4>Selfie Verification</h4>
+          <p>Real-time selfie analysis to verify authenticity and prevent fraud.</p>
+          <div class="f5-arrow">&rarr;</div>
+        </div>
+      </div>
+      <div class="trust-row-v3 anim-5">
+        <div class="tr-badge">
+          <div class="tr-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+          <div class="tr-text"><h4>100% Secure</h4><p>Your data is safe<br>and encrypted.</p></div>
+        </div>
+        <div class="tr-badge">
+          <div class="tr-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          <div class="tr-text"><h4>AI Validated</h4><p>Only high-quality<br>submissions pass.</p></div>
+        </div>
+        <div class="tr-badge">
+          <div class="tr-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="8" width="18" height="14" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="22"/><path d="M19 8c-1.5 0-3-1.5-3-3s1.5-3 3-3 3 1.5 3 3-1.5 3-3 3Z"/><path d="M5 8c1.5 0 3-1.5 3-3S6.5 2 5 2 2 3.5 2 5s1.5 3 3 3Z"/></svg></div>
+          <div class="tr-text"><h4>Instant Rewards</h4><p>Track rewards and<br>earn instantly.</p></div>
+        </div>
+      </div>
+    </div> <!-- END HOME VIEW -->
+    
+    <!-- ================= REWARDS VIEW ================= -->
+    <div id="viewSplashRewards" class="animate-tab-view" style="display: none; width: 100%;">
+      <div class="hero-grid-v3">
+        <div class="hg-left">
+          <h1 class="hero-title-v3 anim-1">REWARDS</h1>
+          <h3 class="hero-subtitle-v3 anim-2">E A R N &nbsp; S Y N X</h3>
+          <div class="hero-desc-v3 anim-3">
+            <p>We believe your data is valuable.<br>Participate in our decentralized intelligence matrix<br>and earn native SYNX tokens securely.</p>
+          </div>
+          <button type="button" class="btn-glow-v3 back-to-home-btn anim-4" style="background: transparent; border: 1px solid #3f3f46; color: white; box-shadow: none;" onclick="document.getElementById('linkHomeTab').click();">
+            &larr; Back to Home
+          </button>
+        </div>
+        
+        <div class="hg-right">
+          <div class="earnings-card glass-shimmer anim-3">
+            <div class="ec-info">
+              <span class="ec-label">EARN UP TO</span>
+              <span class="ec-amount">48 SYNX</span>
+              <span class="ec-sub">Per Verified Submission</span>
+            </div>
+            <div class="ec-features">
+              <div class="ec-feat-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg> <span>AI Verified</span></div>
+              <div class="ec-feat-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> <span>Secure Rewards</span></div>
+              <div class="ec-feat-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span>Instant Payouts</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="f5-grid split-grid anim-5">
+        <div class="f5-card">
+          <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+          <h4 style="font-size: 20px;">48 SYNX Base Allocation</h4>
+          <p style="font-size: 14px;">Complete the initial consumer research modules. Each module securely hashes your preferences and rewards you proportionally.</p>
+        </div>
+        <div class="f5-card">
+          <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <h4 style="font-size: 20px;">+10 SYNX Viral Bonus</h4>
+          <p style="font-size: 14px;">Use your unique referral dashboard to invite others. Every successful completion grants you a direct 10 SYNX deposit.</p>
+        </div>
+      </div>
+    </div> <!-- END REWARDS VIEW -->
+
+    <!-- ================= ABOUT US VIEW ================= -->
+    <div id="viewSplashAbout" class="animate-tab-view" style="display: none; width: 100%;">
+      <div class="hero-grid-v3">
+        <div class="hg-left">
+          <h1 class="hero-title-v3 anim-1">PROTOCOL</h1>
+          <h3 class="hero-subtitle-v3 anim-2">A B O U T &nbsp; U S</h3>
+          <div class="hero-desc-v3 anim-3">
+            <p>Syntrix bridges enterprise AI commercialization<br>pools with authentic consumer sentiment.<br>Direct user data value returned to the producer.</p>
+          </div>
+          <button type="button" class="btn-glow-v3 back-to-home-btn anim-4" style="background: transparent; border: 1px solid #3f3f46; color: white; box-shadow: none;" onclick="document.getElementById('linkHomeTab').click();">
+            &larr; Back to Home
+          </button>
+        </div>
+        
+        <div class="hg-right">
+          <div class="stats-card glass-shimmer anim-3">
+            <div class="stat-item anim-4">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+              <h4>L2</h4>
+              <p>Polygon Native</p>
+            </div>
+            <div class="stat-item anim-4" style="animation-delay: 0.5s;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+              <h4>100%</h4>
+              <p>On-Chain Auth</p>
+            </div>
+            <div class="stat-item anim-4" style="animation-delay: 0.6s;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <h4>< 1s</h4>
+              <p>AI Processing</p>
+            </div>
+            <div class="stat-item anim-4" style="animation-delay: 0.7s;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              <h4>Zero</h4>
+              <p>Data Leaks</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="f5-grid split-grid anim-5">
+        <div class="f5-card">
+          <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+          <h4 style="font-size: 20px;">Our Mission</h4>
+          <p style="font-size: 14px;">To decentralize consumer analytics by creating a direct, transparent, and rewarding link between enterprise B2B models and real-world consumers. No middlemen, just real rewards for real insights.</p>
+        </div>
+        <div class="f5-card">
+          <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+          <h4 style="font-size: 20px;">Technology Base</h4>
+          <p style="font-size: 14px;">Powered by Polygon Mainnet and secure Web3Auth gateways to ensure your data and rewards remain mathematically protected and instantly distributed.</p>
+        </div>
+      </div>
+    </div> <!-- END ABOUT VIEW -->
+  </div>
+</div>
+
+<!-- ================= MAIN APP LAYOUT (HIDDEN BY DEFAULT) ================= -->
+<div id="mainApplicationLayout" class="hidden" style="display: none; padding: 32px; min-height: 100vh;">
+  <div class="app">
+    <div class="content">
+      
+      <div class="topbar" id="appTopbar" style="display: none;">
+        <div>
+          <div class="logo-container" style="margin-bottom: 20px; padding-left: 0; display: flex; align-items: center; gap: 14px;">
+            <div class="logo-mark" style="height: 42px; width: auto; display: flex; align-items: center;">
+              <img src="syntrix-logo.png" alt="Syntrix Logo" style="height: 100%; width: auto; object-fit: contain;">
+            </div>
+            <div class="logo-text" style="font-size: 32px;">
+              <span class="logo-bold">SYN</span><span class="logo-light">TRIX</span>
+            </div>
+          </div>
+
+          <h1 id="mainTitle" style="font-size: 44px; font-weight: 900; letter-spacing: -1.5px; color: #ffffff; line-height: 1.1; margin-bottom: 12px;">Syntrix Hub</h1>
+          <p class="subtitle" id="mainSubtitle" style="font-size: 16px; font-weight: 500; color: #a1a1aa; max-width: 550px; line-height: 1.6;">
+            Complete all 6 consumer research modules to secure your <span style="font-weight: 800; color: #ffffff; background: #1e1e24; padding: 2px 8px; border-radius: 6px; border: 1px solid #3f3f46;">48 SYNX</span> token allocation.
+          </p>
+        </div>
+
+        <div class="header-controls-group">
+          
+          <div class="languageGroupWrapper">
+            <div class="language-dropdown-premium">
+              <button type="button" class="lang-active-btn">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                <span>English</span>
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </button>
+              <div class="language-dropdown-content">
+                <button type="button" class="langBtn" data-lang="hinglish">Hinglish</button>
+                <button type="button" class="langBtn" data-lang="hi">हिंदी</button>
+                <button type="button" class="langBtn active" data-lang="en">English</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="options-menu-container">
+            <button type="button" id="menuToggleBtn" class="icon-menu-btn" aria-label="More Options">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+            
+            <div id="optionsPopover" class="options-popover hidden" style="display: none;">
+              
+              <div class="popover-section profile-sec auth-protected-ui" style="display: none;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span style="color: #a1a1aa; font-weight: 500;">Profile:</span>
+                <span id="menuPsychologyBadgeText" style="color: #ffffff; font-weight: 700;">ANALYZER</span>
+              </div>
+              
+              <div class="popover-section referral-sec auth-protected-ui" style="display: none;">
+                <div style="display: flex; align-items: center; gap: 10px; color: #a1a1aa; font-size: 13px; font-weight: 500; margin-bottom: 12px;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                  Referral Link
+                </div>
+                <input type="text" id="menuReferralInputDisplay" value="https://domain.com/?ref=..." readonly style="display: none;">
+                <button type="button" id="menuCopyReferralBtn" class="popover-copy-btn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  Copy
+                </button>
+              </div>
+
+              <div id="dashboardTabLinks" class="popover-section links-sec auth-protected-ui" style="display: none; flex-direction: column;">
+                <button class="menu-item-btn tab-btn" data-tab="badge" onclick="window.openModeEnhanced('badge')">
+                  <div class="menu-icon-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
+                  Identity Persona
+                </button>
+                <button class="menu-item-btn tab-btn" data-tab="selfie" onclick="window.openModeEnhanced('selfie')">
+                  <div class="menu-icon-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
+                  Selfie Verification Mode
+                </button>
+                <button class="menu-item-btn tab-btn" data-tab="document" onclick="window.openModeEnhanced('document')">
+                  <div class="menu-icon-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></div>
+                  Document Upload Mode
+                </button>
+                <button class="menu-item-btn tab-btn" data-tab="hub" onclick="window.openModeEnhanced('hub')">
+                  <div class="menu-icon-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><line x1="12" y1="18" x2="12" y2="22"></line><line x1="12" y1="2" x2="12" y2="6"></line></svg></div>
+                  Quantum Token Claim
+                </button>
+                <button class="menu-item-btn tab-btn" data-tab="referrals" onclick="window.openModeEnhanced('referrals')">
+                  <div class="menu-icon-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="14" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="22"></line><path d="M19 8c-1.5 0-3-1.5-3-3s1.5-3 3-3 3 1.5 3 3-1.5 3-3 3Z"></path><path d="M5 8c1.5 0 3-1.5 3-3S6.5 2 5 2 2 3.5 2 5s1.5 3 3 3Z"></path></svg></div>
+                  Growth Rewards
+                </button>
+                <button class="menu-item-btn tab-btn logout-btn" id="sidebarLogoutBtn" onclick="window.handleLogout()">
+                  <div class="menu-icon-box" style="border-color: rgba(239, 68, 68, 0.3); color: #ef4444;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></div>
+                  Account Logout
+                </button>
+              </div>
+              
+              <div class="popover-section" id="signupSectionOnly" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
+                <button type="button" class="menu-item-btn" id="menuRecoverBtn">
+                  <div class="menu-icon-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg></div>
+                  Sign Up / Retrieve Profile
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="progressBox hidden" id="topProgressBox" style="display: none;">
+          <div class="progressText">Progress 1/6</div>
+          <div class="progressBar">
+            <div class="progressFill" style="width: 16.66%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="excitementBanner" style="display: none; background: linear-gradient(145deg, #23272f 0%, #111418 100%); border: 1px solid #3f444d; box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 12px 24px -6px rgba(0,0,0,0.6); border-radius: 12px; padding: 16px 24px; margin-bottom: 25px; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; width: 100%; box-sizing: border-box;">
+      </div>
+
+      <div id="emailGateSection" class="authCard gate-centered-wrapper premium-auth-wrapper" style="display: flex; min-height: 65vh; max-width: 800px; border: none; box-shadow: none;">
+        
+        <div class="premium-auth-card">
+          <div class="pac-header">
+            <h2 class="pac-title">Welcome to Syntrix</h2>
+            <p class="pac-subtitle">Sign in to continue to your Syntrix account</p>
+          </div>
+
+          <form id="emailGateForm" class="pac-form">
+
+            <div class="pac-form-group">
+              <label for="gateEmail">Email Address</label>
+              <div class="pac-input-wrapper">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                <input type="email" id="gateEmail" placeholder="Enter your email address" required>
+              </div>
+            </div>
+
+            <div id="otpSection" class="pac-form-group" style="display: none;">
+              <label for="gateOtp" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>Verification Code</span>
+                <span style="color:#10b981; font-size:11px; font-weight: 700;">✅ Code sent!</span>
+              </label>
+              <div class="pac-input-wrapper">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                <input type="text" id="gateOtp" placeholder="Enter 6-Digit Code" maxlength="6" style="letter-spacing: 4px; font-weight: 700;">
+              </div>
+            </div>
+
+            <div class="pac-form-group">
+              <label for="referredByCode">Referral Code (Optional)</label>
+              <div class="pac-input-wrapper">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <input type="text" id="referredByCode" placeholder="Enter Referral Code (e.g. SYN-AB1234)">
+              </div>
+            </div>
+
+            <div class="pac-consent-group">
+              <input type="checkbox" id="legalConsent" class="pac-checkbox">
+              <label for="legalConsent">
+                I confirm that I have read and agree to the <a href="#" onclick="openLegalModal(); return false;">Terms of Research & Privacy Policy</a>. I understand token rewards are subject to internal data validation.
+              </label>
+            </div>
+
+            <button type="button" id="preVerifyBtn" class="pac-primary-btn" onclick="document.getElementById('otpSection').style.display='block'; this.style.display='none'; document.getElementById('startSurveyBtn').style.display='flex';">
+              Send Verification Code &rarr;
+            </button>
+            <button type="submit" id="startSurveyBtn" class="pac-primary-btn" style="display: none;">
+              Verify & Enter &rarr;
+            </button>
+
+            <div class="pac-divider">
+                <div class="pac-divider-line"></div>
+                <span>Or continue with</span>
+                <div class="pac-divider-line"></div>
+            </div>
+
+            <!-- 🚀 FIXED: Hard-wired back to REAL simulated Google Login without redirect bugs -->
+            <button type="button" class="pac-google-btn" onclick="window.simulateGoogleLogin();">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+              </svg>
+              Continue with Google
+            </button>
+          </form>
+
+          <div class="pac-trust-badges">
+            <div class="pac-badge">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+              <div class="pac-badge-text">
+                <h4>Secure Access</h4>
+                <p>Your data is protected with enterprise-grade security.</p>
+              </div>
+            </div>
+            <div class="pac-badge">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <div class="pac-badge-text">
+                <h4>Private & Safe</h4>
+                <p>We never share your information with third parties.</p>
+              </div>
+            </div>
+            <div class="pac-badge">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              <div class="pac-badge-text">
+                <h4>Instant Access</h4>
+                <p>Get started in seconds and explore the full Syntrix experience.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="pac-footer">
+            <p>© 2026 Syntrix. All rights reserved.</p>
+            <div class="pac-footer-links">
+              <a href="#" onclick="openLegalModal(); return false;">Privacy Policy</a> | <a href="#" onclick="openLegalModal(); return false;">Terms of Service</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="gatewayScreenSection" class="hidden authCard gate-centered-wrapper" style="display: none;">
+        <h2 class="sectionTitle" style="font-size: 38px; margin-bottom: 15px;">Choose Your Path</h2>
+        <p class="cardDescription" style="margin-bottom: 40px; font-size: 17px;">How would you like to earn your tokens today?</p>
+        <div class="options" style="justify-content: center; gap: 20px; width: 100%; display: flex; flex-wrap: wrap;">
+          <div class="gateway-card" onclick="window.openModeEnhanced('survey')">
+            <div class="card-icon" style="font-size: 40px; margin-bottom: 15px;">📝</div>
+            <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 8px;">Take the Survey</h3>
+            <p style="color: #6b7280; font-size: 14px; line-height: 1.5;">Complete our onboarding questionnaire to earn tokens.</p>
+          </div>
+          <div class="gateway-card" onclick="window.openModeEnhanced('document')">
+            <div class="card-icon" style="font-size: 40px; margin-bottom: 15px;">📄</div>
+            <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 8px;">Upload Documents</h3>
+            <p style="color: #6b7280; font-size: 14px; line-height: 1.5;">Upload your school notes or study materials for AI verification.</p>
+          </div>
+          <div class="gateway-card" onclick="window.openModeEnhanced('selfie')">
+            <div class="card-icon" style="font-size: 40px; margin-bottom: 15px;">🤳</div>
+            <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 8px;">Take a Selfie</h3>
+            <p style="color: #6b7280; font-size: 14px; line-height: 1.5;">Verify your identity to secure premium tier allocations.</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="documentModeSection" class="hidden document-wrapper" style="display: none; padding: 0; background: transparent; border: none;">
+        
+        <div class="doc-modal-header">
+          <button class="doc-back-btn" onclick="window.openModeEnhanced('gateway')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <h2 style="margin: 0; font-size: 24px; font-weight: 800; color: white; display: flex; align-items: center; gap: 10px;">Document Mode</h2>
+        </div>
+        <p class="doc-modal-desc">Upload your study materials, notes, questions, answers, or theory content and earn tokens.</p>
+
+        <div class="doc-bento-grid">
+          
+          <div class="doc-card" style="display: flex; flex-direction: column;">
+            <div class="doc-card-header">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+              <h4>1. Upload Your Document</h4>
+            </div>
+            <p style="text-align: center; color: #71717a; font-size: 13px; margin-bottom: 16px;">Supports JPG, PNG (Max 20MB)</p>
+            
+            <div class="doc-dropzone" id="uploadDropzone">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#71717a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 12px;"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path><polyline points="16 16 12 12 8 16"></polyline><line x1="12" y1="12" x2="12" y2="21"></line></svg>
+              <p style="color: #ffffff; font-weight: 600; font-size: 14px; margin-bottom: 4px;">Drag & drop your file here</p>
+              <p style="color: #71717a; font-size: 13px; margin-bottom: 16px;">or</p>
+              
+              <div style="display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 200px;">
+                <label class="doc-btn-white" id="btnCamera">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                  Take Photo
+                  <input type="file" id="fileInputCamera" accept="image/jpeg, image/png" capture="environment" style="display: none;" />
+                </label>
+                <label class="doc-btn-outline" id="btnGallery">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                  Upload from Gallery
+                  <input type="file" id="fileInputGallery" accept="image/jpeg, image/png" style="display: none;" />
+                </label>
+              </div>
+              <div id="previewContainer" class="preview-window" style="display: none; margin-top: 15px;">
+                <img id="imagePreview" src="" alt="Snapped Preview" />
+              </div>
+            </div>
+          </div>
+
+          <div class="doc-card token-card">
+             <div>
+               <h4 style="color: #10b981; font-size: 15px; font-weight: 700; margin-bottom: 16px;">Earn Tokens</h4>
+               <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px;">
+                 <span style="font-size: 48px; font-weight: 900; color: #ffffff; line-height: 1;">48</span>
+                 <span style="font-size: 16px; font-weight: 700; color: #ffffff;">SYNX</span>
+               </div>
+               <p style="color: #a1a1aa; font-size: 13px; margin-bottom: 30px;">for every valid upload</p>
+               
+               <div style="display: flex; flex-direction: column; gap: 12px;">
+                 <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #d1d5db;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> AI Verified</div>
+                 <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #d1d5db;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Secure Processing</div>
+                 <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #d1d5db;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Avg. Review Time: ~20 sec</div>
+               </div>
+             </div>
+             <svg class="decorative-token" viewBox="0 0 24 24" fill="none" stroke="rgba(99, 102, 241, 0.2)" stroke-width="1"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v12"></path><path d="M15 8.5c-.75-1-2-1.5-3-1.5-2 0-3 1-3 2.5s1 2.5 3 2.5 3 1 3 2.5-1 2.5-3 2.5c-1.5 0-2.5-.5-3.5-1.5"></path></svg>
+          </div>
+
+          <div class="doc-card doc-bento-full">
+            <div class="doc-card-header">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              <h4 style="color: #ef4444;">Strict Quality Guidelines</h4>
+            </div>
+            <div class="guidelines-grid">
+              <div class="guide-item">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <p><strong>ONLY</strong> authentic<br>handwritten notes.</p>
+              </div>
+              <div class="guide-item">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                <p><strong>NO</strong> screenshots or PDFs.</p>
+              </div>
+              <div class="guide-item">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                <p><strong>NO</strong> printed photos, textbook<br>pages, or digital text.</p>
+              </div>
+              <div class="guide-item">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                <p><strong>NO</strong> blank pages.</p>
+              </div>
+            </div>
+          </div>
+
+          <select id="taskType" style="display: none;"><option value="notes">Notes</option></select>
+
+          <div class="doc-card doc-bento-full">
+            <div class="doc-card-header">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              <h4>2. What does this notebook page contain?</h4>
+            </div>
+            <div class="doc-checkbox-grid">
+              <label class="custom-cb-wrapper">
+                <input type="checkbox" class="doc-tag" value="Math Equations">
+                <div class="custom-cb-box"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                <span>Math Equations /<br>Line Calculations</span>
+              </label>
+              <label class="custom-cb-wrapper">
+                <input type="checkbox" class="doc-tag" value="Diagrams">
+                <div class="custom-cb-box"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                <span>Diagrams / Graphs /<br>Drawn Shapes</span>
+              </label>
+              <label class="custom-cb-wrapper">
+                <input type="checkbox" class="doc-tag" value="Theory">
+                <div class="custom-cb-box"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                <span>Theory Paragraphs /<br>Written Notes</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="doc-card">
+            <div class="doc-card-header">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+              <h4>3. Academic Level / Track</h4>
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 10px;">
+              <button type="button" class="pill-toggle active" data-val="School">School<br><span style="font-size:11px; font-weight:500;">(Up to Class 12)</span></button>
+              <button type="button" class="pill-toggle" data-val="Higher Ed">Higher Ed<br><span style="font-size:11px; font-weight:500;">(College)</span></button>
+            </div>
+            <input type="hidden" id="academicLevelInput" value="School">
+          </div>
+
+          <div class="doc-card">
+            <div class="doc-card-header">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              <h4>4. What language or script did you write these notes in?</h4>
+            </div>
+            <input type="text" id="docLanguageInput" placeholder="E.G., HINGLISH, SPANISH" class="doc-dark-input" style="margin-top: 10px;">
+          </div>
+
+          <div class="doc-card doc-bento-full">
+            <div class="doc-card-header">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              <h4>5. Legal Consent & Data Release</h4>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
+              <label class="custom-cb-wrapper" style="border-bottom: 1px solid #27272a; padding-bottom: 16px;">
+                <input type="checkbox" id="selectAllConsent">
+                <div class="custom-cb-box"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                <span style="font-weight: 700; color: white;">Select All Consents</span>
+              </label>
+              <label class="custom-cb-wrapper" style="align-items: flex-start;">
+                <input type="checkbox" id="consentSensitive" class="consent-child">
+                <div class="custom-cb-box" style="margin-top: 2px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                <span>I confirm that this image does not contain any sensitive personal information (such as full names, phone numbers, addresses, or private financial details).</span>
+              </label>
+              <label class="custom-cb-wrapper" style="align-items: flex-start;">
+                <input type="checkbox" id="consentCommercial" class="consent-child">
+                <div class="custom-cb-box" style="margin-top: 2px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                <span>I explicitly agree to the <a href="#" onclick="openLegalModal(); return false;" style="color:#6366f1; text-decoration:underline;">Terms of Service</a> and <a href="#" onclick="openLegalModal(); return false;" style="color:#6366f1; text-decoration:underline;">Privacy Policy</a>, and grant Syntrix a perpetual license to anonymize and sell this image for commercial Artificial Intelligence (AI) training.</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="doc-bento-full" style="text-align: center; margin-top: 10px;">
+            <button id="submitDocBtn" class="doc-submit-btn" disabled>
+              Approve & Submit to Waiting Room
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+            <p style="font-size: 12px; color: #71717a; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              Your data is encrypted and secure.
+            </p>
+            
+            <div id="statusMessage" class="status-message" style="margin-top: 15px;"></div>
+            <div id="detailedReasonBox" class="dynamic-reason-box" style="margin-top: 15px;"></div>
+            <button id="retryUploadBtn" class="btn-retry" style="margin-top: 15px; margin-left: auto; margin-right: auto; max-width: 400px;">🔄 Clear & Retry Upload</button>
+          </div>
+
+        </div> 
+        
+        <div id="uploadHistorySection" class="doc-card" style="margin-top: 20px; display: none;">
+          <h4 style="margin-bottom: 15px; color: white;">Upload History</h4>
+          <div id="historyList" class="history-list"></div>
+        </div>
+
+      </div>
+
+      <div id="selfieModeSection" class="hidden document-wrapper" style="display: none; padding: 0; background: transparent; border: none;">
+        
+        <div class="doc-modal-header">
+          <button class="doc-back-btn" onclick="window.openModeEnhanced('gateway')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <h2 style="margin: 0; font-size: 24px; font-weight: 800; color: white; display: flex; align-items: center; gap: 10px;">Selfie Mode</h2>
+        </div>
+        <p class="doc-modal-desc">Take a clear selfie to help us verify you are a real and unique contributor.</p>
+
+        <div class="doc-bento-grid">
+          
+          <div class="doc-card" style="display: flex; flex-direction: column;">
+            <div class="doc-card-header">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path></svg>
+              <h4>1. Take a Selfie</h4>
+            </div>
+            
+            <div class="selfie-scanner-container">
+                <div class="scanner-corner tl"></div>
+                <div class="scanner-corner tr"></div>
+                <div class="scanner-corner bl"></div>
+                <div class="scanner-corner br"></div>
+                
+                <div class="scanner-circle-outer">
+                    <div class="scanner-circle-inner">
+                        <svg class="scanner-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+                    </div>
+                </div>
+            </div>
+
+            <p style="text-align: center; color: #a1a1aa; font-size: 13px; margin-bottom: 20px;">Position your face in the frame<br>and make sure it's clear.</p>
+            
+            <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+                <label class="doc-btn-white" id="btnSelfieCamera" style="max-width: 250px;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                  Take a Photo
+                  <input type="file" id="fileInputSelfie" accept="image/jpeg, image/png" capture="user" style="display: none;" />
+                </label>
+            </div>
+
+            <p style="text-align: center; color: #71717a; font-size: 12px; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                Your privacy is protected.<br>We do not store selfies.
+            </p>
+          </div>
+
+          <div class="doc-card token-card">
+             <div>
+               <h4 style="color: #10b981; font-size: 15px; font-weight: 700; margin-bottom: 16px;">Earn Tokens</h4>
+               <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px;">
+                 <span style="font-size: 48px; font-weight: 900; color: #ffffff; line-height: 1;">48</span>
+                 <span style="font-size: 16px; font-weight: 700; color: #ffffff;">SYNX</span>
+               </div>
+               <p style="color: #a1a1aa; font-size: 13px; margin-bottom: 30px;">for every valid selfie</p>
+               
+               <div style="display: flex; flex-direction: column; gap: 12px;">
+                 <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #d1d5db;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> AI Verified</div>
+                 <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #d1d5db;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Secure Processing</div>
+                 <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #d1d5db;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Avg. Review Time: ~20 sec</div>
+               </div>
+             </div>
+             <svg class="decorative-token" style="stroke: rgba(139, 92, 246, 0.2);" viewBox="0 0 24 24" fill="none" stroke-width="1"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v12"></path><path d="M15 8.5c-.75-1-2-1.5-3-1.5-2 0-3 1-3 2.5s1 2.5 3 2.5 3 1 3 2.5-1 2.5-3 2.5c-1.5 0-2.5-.5-3.5-1.5"></path></svg>
+          </div>
+
+          <div class="doc-card doc-bento-full">
+            <div class="doc-card-header">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              <h4 style="color: #ef4444;">Selfie Guidelines</h4>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <div class="guide-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <p style="color: #d1d5db;">Clear front-facing selfie.</p>
+              </div>
+              <div class="guide-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                <p style="color: #d1d5db;"><strong>NO</strong> group photos.</p>
+              </div>
+              <div class="guide-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                <p style="color: #d1d5db;"><strong>NO</strong> filters or face edits.</p>
+              </div>
+              <div class="guide-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                <p style="color: #d1d5db;"><strong>NO</strong> hats, masks, or sunglasses.</p>
+              </div>
+              <div class="guide-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <p style="color: #d1d5db;">Well-lit background.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="doc-bento-full" style="text-align: center; margin-top: 10px;">
+            <button id="submitSelfieBtn" class="btn-gradient-purple" disabled>
+              Verify & Submit to Waiting Room
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+            <p style="font-size: 12px; color: #71717a; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              Your data is encrypted and secure.
+            </p>
+          </div>
+
+        </div> 
+      </div>
+
+      <form id="claimForm" class="hidden" style="display: none;">
+        <div id="surveyContainer"></div>
+
+        <div class="navButtons">
+          <button type="button" id="prevBtn" class="navBtn">
+            &lt; Previous
+          </button>
+          <button type="button" id="nextBtn" class="navBtn">
+            Next
+          </button>
+          <button type="submit" id="submitClaimBtn" class="submitClaimBtn hidden">
+            Submit Survey & Claim ✨
+          </button>
+        </div>
+      </form>
+
+      <div id="rewardDashboardScreen" class="hidden rewardCard" style="display: none;">
+        <div class="badgeRow">
+          <span class="submittedBadge" id="surveySubmittedBadge">✨ SURVEY SUBMITTED!</span>
+        </div>
+        
+        <h2 class="rewardTitle" id="claimTitle">Secure Your 48 SYNX Allocation</h2>
+        
+        <div id="dashboardClaimLockedOverlay" class="luxury-lock-screen">
+          <div style="font-size: 44px; margin-bottom: 15px;">🔒</div>
+          <h3 style="font-size: 20px; font-weight: 800; color: #111827; margin-bottom: 8px;">Claim Allocation Locked</h3>
+          <p style="font-size: 14px; color: #6b7280; max-width: 440px; margin: 0 auto; line-height: 1.6;">Coming Soon! Stay tuned to claim your precious tokens! Your survey configuration details remain perfectly preserved on the network infrastructure.</p>
+        </div>
+
+        <div id="dashboardActiveClaimControls" style="display: none !important;">
+          <button type="button" id="connectWalletBtn" class="metaMaskBtn">
+            <span id="metaMaskLabelText">💼 🦊 Connect MetaMask Wallet</span>
+          </button>
+
+          <p class="manualNotice" id="manualNoticeText">
+            ℹ️ MetaMask browser plugin not detected. Paste your token wallet address below manually.
+          </p>
+
+          <div class="manualWalletWrapper">
+            <div class="dividerLine"><span id="manualLabelText">OR ENTER YOUR EVM NETWORK PUBLIC ADDRESS</span></div>
+            <input 
+              type="text" 
+              id="dashboardWalletInput" 
+              placeholder="0x..." 
+              maxLength="42"
+            >
+            <button type="button" id="executeClaimBtn" class="executeDistributionBtn">
+              Execute Token Allocation
+            </button>
+          </div>
+        </div>
+
+        <div id="dashboardClaimReceiptBlock" class="hidden" style="display: none; background: rgba(16, 185, 129, 0.04); border: 1px solid rgba(16, 185, 129, 0.2); padding: 25px; border-radius: 16px; margin: 20px 0; text-align: center;">
+        </div>
+      </div>
+
+      <div id="tabScreenBadge" class="hidden rewardCard" style="display: none;">
+        <h2 class="rewardTitle" style="margin-bottom: 8px;">Psychographic Analytics Breakdown</h2>
+        <p class="rewardSubtitle" style="margin-bottom: 30px;">Autonomous analysis maps your inputs into a verified consumer archetype bundle.</p>
+        <div id="dashboardPsychologyBadgeCard" style="display: none;"></div>
+      </div>
+
+      <div id="tabScreenReferrals" class="hidden rewardCard" style="display: none;">
+        <div class="referralContainer" style="margin-top: 0;">
+          <div class="dividerLine"><span id="referralDashboardTitle">💎 SYNTRIX GROWTH REWARDS</span></div>
+          <h3 class="referralTitleText" id="referralTitleText">Your Referrals & Earnings</h3>
+          <p class="referralDescription" id="referralSubText">
+            Invite friends using your unique referral code. For each colleague who registers and completes the modules, you earn an additional 10 SYNX tokens!
+          </p>
+
+          <div class="referralStatsGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; margin: 25px 0;">
+            <div class="statBox" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 15px; text-align: center;">
+              <div id="lblTotalReferrals" style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 5px; letter-spacing: 0.5px;">Total Referrals</div>
+              <div id="statTotalReferrals" style="font-size: 24px; font-weight: 900; color: #ffffff;">0</div>
+            </div>
+            <div class="statBox" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 15px; text-align: center;">
+              <div id="lblPendingRewards" style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 5px; letter-spacing: 0.5px;">Pending Rewards</div>
+              <div id="statPendingRewards" style="font-size: 24px; font-weight: 900; color: #6366f1;">0 SYNX</div>
+            </div>
+            <div class="statBox" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 15px; text-align: center;">
+              <div id="lblClaimedRewards" style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 5px; letter-spacing: 0.5px;">Claimed Rewards</div>
+              <div id="statClaimedRewards" style="font-size: 24px; font-weight: 900; color: #10b981;">0 SYNX</div>
+            </div>
+            <div class="statBox" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 15px; text-align: center;">
+              <div id="lblTotalEarned" style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 5px; letter-spacing: 0.5px;">Total Earned</div>
+              <div id="statTotalEarned" style="font-size: 24px; font-weight: 900; color: #a855f7;">0 SYNX</div>
+            </div>
+          </div>
+
+          <div class="referralLinkBlock" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+            <input type="text" id="referralCodeDisplay" value="https://domain.com/?ref=SYN-AB1234" readonly style="flex: 1; min-width: 200px;">
+            <button type="button" id="copyReferralBtn" class="copyBtn">Copy Link</button>
+            <button type="button" id="generateQrBtn" class="inviteActionBtn">Generate QR</button>
+          </div>
+
+          <div id="qrCodeWrapper" style="display: none; flex-direction: column; align-items: center; margin-top: 25px; background: rgba(255, 255, 255, 0.02); border: 1px dashed rgba(99, 102, 241, 0.3); border-radius: 16px; padding: 25px;">
+            <h4 style="font-size: 15px; font-weight: 800; color: #ffffff; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px;">Your Unique Dealer QR</h4>
+            <div id="qrCodeCanvas" style="background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px;"></div>
+            <button type="button" id="downloadQrBtn" class="executeDistributionBtn" style="max-width: 250px; padding: 14px; margin-top: 0;">
+              ↓ Download to Gallery
+            </button>
+          </div>
+          
+        </div>
+      </div>
+
+      <div id="tabScreenMoreSurveys" class="hidden rewardCard" style="display: none;">
+        <h2 class="rewardTitle">Discover Research Matrix</h2>
+        <p class="rewardSubtitle">Expand your psychographic data framework nodes to scale up token collection channels.</p>
+        
+        <div class="survey-expansion-grid">
+          <div class="survey-expansion-card active">
+            <div style="font-size: 28px; margin-bottom: 12px;">🛍️</div>
+            <h4 style="font-size: 18px; font-weight: 800; color: #111827; margin-bottom: 6px;">Consumer Analytics Hub</h4>
+            <p style="font-size: 13px; color: #6b7280; line-height: 1.5;">Your primary 6-module framework ledger profile allocation footprint.</p>
+            <span class="coming-soon-ribbon" style="background: #e0e7ff; color: #4f46e5;">Active</span>
+          </div>
+          
+          <div class="survey-expansion-card">
+            <div class="coming-soon-ribbon">Coming Soon</div>
+            <div style="font-size: 28px; margin-bottom: 12px;">🧴</div>
+            <h4 style="font-size: 18px; font-weight: 800; color: #374151; margin-bottom: 6px;">Skincare Survey</h4>
+            <p style="font-size: 13px; color: #9ca3af; line-height: 1.5;">Evaluate AI automated branding metrics across custom beauty pool layers.</p>
+          </div>
+
+          <div class="survey-expansion-card">
+            <div class="coming-soon-ribbon">Coming Soon</div>
+            <div style="font-size: 28px; margin-bottom: 12px;">✨</div>
+            <h4 style="font-size: 18px; font-weight: 800; color: #374151; margin-bottom: 6px;">Perfume Survey</h4>
+            <p style="font-size: 13px; color: #9ca3af; line-height: 1.5;">Decode luxury consumer selection pathways for custom scent development logs.</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="claimScreenSection" class="hidden rewardCard" style="display: none; text-align: center; padding: 40px;">
+        <div class="modern-spinner" id="claimLoadingGear" style="margin-bottom: 25px;"></div>
+        <div style="font-size: 44px; margin-bottom: 15px;" id="claimStaticIcon" class="hidden">🎁</div>
+        
+        <h2 class="rewardTitle" id="claimScreenTitle">Resolving Claim authorization...</h2>
+        <p class="rewardSubtitle" id="claimInfoSubtitle">Retrieving credentials block registry. Please wait.</p>
+
+        <div id="claimErrorBox" class="hidden" style="display: none;">
+          <div style="font-size: 50px; color: #ef4444; margin-bottom: 20px;">⚠️</div>
+          <button type="button" onclick="window.location.href='/'" class="primaryActionBtn" style="max-width: 250px; margin: 0 auto;">
+            Return to Survey Hub
+          </button>
+        </div>
+
+        <div id="claimRewardDetails" class="hidden" style="display: none; background-color: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.15); padding: 20px; border-radius: 16px; margin: 25px auto; text-align: left; max-width: 450px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px;">
+            <span id="lblRecipientEmail" style="color: var(--text-secondary);">Recipient Email:</span>
+            <strong id="claimInfoEmail" style="color: var(--text-primary);">loading...</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px;">
+            <span id="lblRewardCategory" style="color: var(--text-secondary);">Reward Category:</span>
+            <strong id="claimInfoType" style="color: var(--text-primary); text-transform: uppercase;">loading...</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 14px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 10px; margin-top: 10px;">
+            <span id="lblClaimableValue" style="color: var(--text-secondary); font-weight: 700;">Claimable Value:</span>
+            <strong id="claimInfoAmount" style="color: #6366f1; font-size: 16px; font-weight: 900;">48 SYNX</strong>
+          </div>
+        </div>
+
+        <div id="claimActionPanel" class="hidden" style="display: none;">
+          <button type="button" id="claimConnectWalletBtn" class="metaMaskBtn" style="margin-bottom: 15px; width: 100%; max-width: 450px;">
+            <span id="claimMetaMaskLabelText">💼 🦊 Connect MetaMask Wallet</span>
+          </button>
+
+          <div id="claimWalletConnectedBlock" class="hidden" style="display: none; max-width: 450px; margin: 0 auto 20px;">
+            <div style="background-color: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 14px; font-family: monospace; font-size: 13px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+              <span id="claimWalletAddressDisplay" style="color: var(--text-secondary); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 80%;">0x...</span>
+              <span id="lblConnectedBadge" style="color: #10b981; font-weight: bold; font-size: 11px;">CONNECTED</span>
+            </div>
+            <button type="button" id="submitClaimRewardBtn" class="executeDistributionBtn" style="width: 100%;">
+              ✍️ Sign Message & Claim Tokens
+            </button>
+          </div>
+        </div>
+
+        <div id="claimSuccessPanel" class="hidden" style="display: none;">
+          <div style="width: 80px; height: 80px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background-color: rgba(16, 185, 129, 0.1); border: 2px solid #10b981; color: #10b981; font-size: 40px;">✓</div>
+          <h2 id="successTxTitle">Tokens Transferred Successfully!</h2>
+          <p id="successTxSub" style="color: var(--text-secondary); margin-top: 10px; font-size: 14px; margin-bottom: 25px;">
+            Your 48 SYNTRIX tokens have been successfully allocated via the Polygon network.
+          </p>
+          <div style="text-align: left; background-color: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 20px; max-width: 450px; margin: 0 auto 30px;">
+            <div id="lblPolygonTxHash" style="font-size: 11px; color: var(--text-secondary); margin-bottom: 5px;">POLYGON TRANSACTION HASH:</div>
+            <a id="claimTxHashLink" target="_blank" href="#" style="color: #6366f1; text-decoration: none; font-family: monospace; font-size: 13px; word-break: break-all;">0x...</a>
+          </div>
+          <button type="button" onclick="window.location.href='/'" class="primaryActionBtn" style="max-width: 250px; margin: 0 auto;">
+            Go to Survey Hub
+          </button>
+        </div>
+      </div>
+
+      <div id="status"></div>
+    </div>
+  </div>
+</div>
+
+<div id="retrieveModal" class="modal-overlay hidden" style="display: none;">
+  <div class="modal-card animate-fade-in">
+    <div class="modal-header">
+      <h2>🔍 Sign Up / Retrieve Profile</h2>
+      <button type="button" id="closeModalBtn" class="close-btn">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <p class="modal-subtitle">Enter your authorized communication profile to bypass the questionnaire matrix and open the Web3 settlement gateway.</p>
+      
+      <div class="extra-details-box">
+        <h4>📌 Dynamic Registry Details:</h4>
+        <ul>
+          <li>Verification searches real-time historical database blocks.</li>
+          <li>Ensure your MetaMask extension is configured to the Polygon Mainnet network.</li>
+          <li>Wallet balances are automatically evaluated by smart contract protocols.</li>
+        </ul>
+      </div>
+
+      <div class="input-wrapper">
+        <label for="modalEmailInput">Registered Email Address</label>
+        <input type="email" id="modalEmailInput" placeholder="name@example.com" autocomplete="off" style="text-align: center;">
+      </div>
+      
+      <div id="modalStatus" class="modal-status"></div>
+    </div>
+    
+    <div class="modal-footer">
+      <button type="button" id="cancelModalBtn" class="btn-secondary">Cancel</button>
+      <button type="button" id="confirmRetrieveBtn" class="btn-primary">Search Ledger →</button>
+    </div>
+  </div>
+</div>
+
+<div id="legalModal" class="modal-overlay hidden" style="display: none;">
+  <div class="modal-card animate-fade-in" style="max-width: 700px; display: flex; flex-direction: column; max-height: 85vh;">
+    <div class="modal-header">
+      <h2>📜 Terms of Service & Privacy Policy</h2>
+      <button type="button" onclick="closeLegalModal()" class="close-btn">&times;</button>
+    </div>
+    
+    <div class="modal-body" style="overflow-y: auto; padding: 24px; color: #a1a1aa; font-size: 14px; line-height: 1.7; flex: 1;">
+      <p style="margin-bottom: 15px; color: #ffffff; font-weight: bold;">By participating in the Syntrix Consumer Analytics platform, you explicitly agree to the following binding terms:</p>
+      
+      <div class="extra-details-box" style="margin-bottom: 15px;">
+        <h4 style="color: #6366f1;">1. Data Commercialization & AI Training</h4>
+        <p style="margin: 0; color: #a1a1aa;">By completing the research modules, you grant Syntrix an irrevocable, permanent license to utilize your raw textual responses for B2B commercialization and AI model training. You waive all future rights to financial claims or royalties beyond the initial platform reward allocated at completion.</p>
+      </div>
+
+      <div class="extra-details-box" style="margin-bottom: 15px;">
+        <h4 style="color: #6366f1;">2. Non-Financial Utility of SYNX Token</h4>
+        <p style="margin: 0; color: #a1a1aa;">The SYNX token is an off-chain digital reward issued strictly for platform participation. Syntrix makes no guarantees that SYNX will hold monetary value, be tradable on open exchanges, or possess market liquidity. The distribution and future utility of tokens are entirely speculative and subject to the platform's operational and commercial viability.</p>
+      </div>
+
+      <div class="extra-details-box" style="margin-bottom: 15px;">
+        <h4 style="color: #6366f1;">3. Data Anonymization Firewall & Deletion Lock</h4>
+        <p style="margin: 0; color: #a1a1aa;">We collect minimal data: an email address (for ledger mapping) and your survey responses. Personal identifiers are strictly isolated from B2B clients, who only receive anonymized, alphanumeric-hashed psychographic packages. While you may delete your personal account, once your anonymized text strings are aggregated into historical datasets, they cannot be recalled or deleted.</p>
+      </div>
+
+      <div class="extra-details-box" style="margin-bottom: 15px;">
+        <h4 style="color: #6366f1;">4. Platform Integrity & Anti-Fraud</h4>
+        <p style="margin: 0; color: #a1a1aa;">Syntrix retains the absolute right to instantly terminate profiles and forfeit all accumulated ledger tokens if an entry triggers automated fraud flags, including completion speeds under 45 seconds, the use of automated scripting, or gibberish inputs.</p>
+      </div>
+
+      <div class="extra-details-box" style="margin-bottom: 0;">
+        <h4 style="color: #6366f1;">5. Governing Law & Jurisdiction</h4>
+        <p style="margin: 0; color: #a1a1aa;">Access is restricted to individuals aged 16 and older. By using this platform, you waive the right to participate in class-action lawsuits. All legal disputes shall be governed by and settled exclusively through binding individual arbitration located in Ahmedabad, Gujarat, India.</p>
+      </div>
+    </div>
+    
+    <div class="modal-footer" style="justify-content: center;">
+      <button type="button" onclick="closeLegalModal()" class="btn-primary" style="width: 100%; background: #6366f1; border-color: #6366f1; font-size: 15px; padding: 14px;">I Have Read & Accept the Terms</button>
+    </div>
+  </div>
+</div>
+
+<div id="walletCreatorModal" class="modal-overlay hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter:blur(5px); display:none; align-items:center; justify-content:center; z-index:10000;">
+  <div style="background:#ffffff; color:#1f1f1f; width:100%; max-width:400px; padding:32px; border-radius:24px; box-shadow:0 20px 40px rgba(0,0,0,0.15); border:1px solid #ece4da; text-align:center;">
+    <div style="font-size:42px; margin-bottom:12px;">🦊</div>
+    <h3 style="font-size:22px; font-weight:900; margin-bottom:8px; letter-spacing:-0.5px;">Create MetaMask Account</h3>
+    <p style="font-size:14px; color:#6b6258; line-height:1.5; margin-bottom:24px;">Create a real, secure Web3 wallet address instantly using your existing accounts. No seed phrases or extensions required.</p>
+    
+    <button id="authGoogleWalletBtn" style="width:100%; padding:14px; background:#f4efe8; border:1px solid #ddd4c8; border-radius:12px; font-size:15px; font-weight:700; color:#1f1f1f; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:12px; transition:0.2s;">
+      Continue with Web3Auth Gateway
+    </button>
+
+    <button id="closeWalletCreatorBtn" style="background:transparent; border:none; color:#999086; font-size:13px; font-weight:700; cursor:pointer; text-decoration:underline;">
+      Cancel and return
+    </button>
+  </div>
+</div>
+
+<div id="confirmRestartModal" class="modal-overlay hidden" style="display: none; backdrop-filter: blur(8px); background: rgba(10, 10, 10, 0.75);">
+  <div class="animate-fade-in" style="background: #18181c; border-radius: 24px; width: 100%; max-width: 440px; padding: 35px 30px 20px; text-align: center; box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); position: relative; margin: 20px;">
+    <div style="width: 56px; height: 56px; background: rgba(99, 102, 241, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 1px solid rgba(99, 102, 241, 0.2);">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+    </div>
+    <h2 style="font-size: 21px; font-weight: 800; color: #facc15; margin-bottom: 12px; letter-spacing: -0.5px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+      ⚠️ Potential Data Loss Ahead!
+    </h2>
+    <p style="color: #a1a1aa; font-size: 14.5px; margin-bottom: 30px; line-height: 1.6; padding: 0 5px;">
+      Are you sure you want to reset your progress? All your current answers will be permanently deleted, and you will need to start the modules from the beginning.
+    </p>
+    <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 25px;">
+      <button type="button" id="cancelRestartBtn" style="flex: 1; padding: 14px; background: #e5e7eb; color: #1f2937; border: none; border-bottom: 4px solid #9ca3af; border-radius: 14px; font-weight: 800; font-size: 15px; cursor: pointer; transition: background 0.2s;" onmousedown="this.style.transform='translateY(4px)'; this.style.borderBottomWidth='0px';" onmouseup="this.style.transform='translateY(0px)'; this.style.borderBottomWidth='4px';" onmouseleave="this.style.transform='translateY(0px)'; this.style.borderBottomWidth='4px';">
+        Keep Progress
+      </button>
+      <button type="button" id="confirmRestartBtn" style="flex: 1; padding: 14px; background: #dc2626; color: white; border: none; border-bottom: 4px solid #991b1b; border-radius: 14px; font-weight: 800; font-size: 15px; cursor: pointer; transition: background 0.2s;" onmousedown="this.style.transform='translateY(4px)'; this.style.borderBottomWidth='0px';" onmouseup="this.style.transform='translateY(0px)'; this.style.borderBottomWidth='4px';" onmouseleave="this.style.transform='translateY(0px)'; this.style.borderBottomWidth='4px';">
+        Yes, Reset
+      </button>
+    </div>
+    <div style="font-family: monospace; color: #52525b; font-size: 11px; letter-spacing: 0.5px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
+      Note: This action cannot be undone.
+    </div>
+  </div>
+</div>
+
+<script src="data.js?v=final_launch"></script>
+<script src="translation.js?v=final_launch"></script>
+<script src="script.js?v=final_launch"></script>
+
+</body>
+</html>
