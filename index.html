@@ -13,7 +13,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/base@9/dist/base.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/ethereum-provider@9/dist/ethereumProvider.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@9/dist/modal.umd.min.js"></script>
-  <!-- 🚀 FIXED: Added OpenLogin Adapter to force redirect mode and bypass Vercel COOP errors -->
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/openlogin-adapter@9/dist/openloginAdapter.umd.min.js"></script>
 
   <style>
@@ -91,7 +90,6 @@
           }
         });
 
-        // 🚀 FIXED: Force Redirect Mode to completely bypass Vercel's COOP popup block
         const openloginAdapter = new OpenloginAdapterSDK.OpenloginAdapter({
           adapterSettings: {
             uxMode: "redirect",
@@ -120,14 +118,15 @@
         window.isWeb3AuthReady = true;
         console.log("✅ Web3Auth Engine is live and fully armed in Redirect Mode!");
 
-        // 🚀 FIXED: If user returns from Google Redirect perfectly authenticated, auto-skip to dashboard
+        // 🚀 FIXED: Dynamic Menu State for Authenticated Sessions
         if (web3auth.connected) {
             document.getElementById('splashLandingGate').style.display = 'none';
             document.getElementById('mainApplicationLayout').style.display = 'block';
             document.getElementById('mainApplicationLayout').style.opacity = '1';
             document.getElementById('emailGateSection').style.display = 'none';
             document.getElementById('gatewayScreenSection').style.display = 'flex';
-            document.getElementById('appTopbar').style.display = 'flex'; // Reveal the hidden topbar
+            
+            unlockFullMenu();
         }
 
       } catch (err) {
@@ -150,18 +149,26 @@
           });
       }
 
-      // 🚀 FIXED: Event Listener to show TopBar ONLY when Email Form is submitted successfully
+      // 🚀 FIXED: Unlock Menu after manual email form submission
       const emailForm = document.getElementById('emailGateForm');
       if(emailForm) {
           emailForm.addEventListener('submit', function() {
               setTimeout(() => {
                   if (document.getElementById('emailGateSection').style.display === 'none') {
-                      document.getElementById('appTopbar').style.display = 'flex';
+                      unlockFullMenu();
                   }
               }, 600);
           });
       }
     });
+
+    // Helper function to show protected menu items
+    function unlockFullMenu() {
+        document.querySelector('.profile-sec').style.display = 'flex';
+        document.querySelector('.referral-sec').style.display = 'block';
+        document.getElementById('dashboardTabLinks').style.display = 'flex';
+        document.getElementById('signupSectionOnly').style.display = 'none';
+    }
 
     window.handleGoogleLogin = async () => {
       if (!window.isWeb3AuthReady || !window.metamaskEmbeddedInstance) {
@@ -170,7 +177,9 @@
       }
       try {
         await window.metamaskEmbeddedInstance.connect();
-        // UI updates are handled in the load event listener upon redirect return
+        document.getElementById('emailGateSection').style.display = 'none';
+        document.getElementById('gatewayScreenSection').style.display = 'flex';
+        unlockFullMenu();
       } catch(err) {
         console.error("Google Auth Blocked by Web3Auth:", err);
         alert("Login failed! Please check console.");
@@ -475,8 +484,8 @@
   <div class="app">
     <div class="content">
       
-      <!-- 🚀 FIXED: Topbar hidden during login phase -->
-      <div class="topbar" id="appTopbar" style="display: none;">
+      <!-- 🚀 FIXED: Topbar is fully visible again, menu items control the auth state natively -->
+      <div class="topbar" id="appTopbar">
         <div>
           <div class="logo-container" style="margin-bottom: 20px; padding-left: 0; display: flex; align-items: center; gap: 14px;">
             <div class="logo-mark" style="height: 42px; width: auto; display: flex; align-items: center;">
@@ -517,13 +526,14 @@
             
             <div id="optionsPopover" class="options-popover hidden" style="display: none;">
               
-              <div class="popover-section profile-sec">
+              <!-- 🚀 FIXED: Authenticated UI hidden by default -->
+              <div class="popover-section profile-sec" style="display: none;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 <span style="color: #a1a1aa; font-weight: 500;">Profile:</span>
                 <span id="menuPsychologyBadgeText" style="color: #ffffff; font-weight: 700;">ANALYZER</span>
               </div>
               
-              <div class="popover-section referral-sec">
+              <div class="popover-section referral-sec" style="display: none;">
                 <div style="display: flex; align-items: center; gap: 10px; color: #a1a1aa; font-size: 13px; font-weight: 500; margin-bottom: 12px;">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
                   Referral Link
@@ -535,7 +545,7 @@
                 </button>
               </div>
 
-              <div id="dashboardTabLinks" class="popover-section links-sec">
+              <div id="dashboardTabLinks" class="popover-section links-sec" style="display: none; flex-direction: column;">
                 <button class="menu-item-btn tab-btn" data-tab="badge">
                   <div class="menu-icon-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
                   Identity Persona
@@ -562,7 +572,8 @@
                 </button>
               </div>
               
-              <div class="popover-section" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
+              <!-- 🚀 FIXED: This is the ONLY button visible by default on the login page -->
+              <div class="popover-section" id="signupSectionOnly" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
                 <button type="button" class="menu-item-btn" id="menuRecoverBtn">
                   <div class="menu-icon-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg></div>
                   Sign Up / Retrieve Profile
