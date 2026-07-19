@@ -1448,9 +1448,7 @@ select:-webkit-autofill:focus {
   .guidelines-grid { grid-template-columns: 1fr; gap: 16px;}
 }
 
-/* =========================================================
-   🖥️ DESKTOP RESPONSIVE OVERRIDES FOR SPLASH SCREEN
-========================================================= */
+/* ================= 🚀 FIXED: DESKTOP RESPONSIVE OVERRIDES RESTORED ================= */
 @media (min-width: 900px) {
 
   /* Reverse Display States for Desktop */
