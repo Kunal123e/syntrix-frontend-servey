@@ -1393,10 +1393,12 @@ select:-webkit-autofill:focus {
   
   .modal-card { width: calc(100% - 20px); max-height: 85vh; margin: 10px; }
 
+  /* Mobile Premium Auth Card Adjustments */
   .premium-auth-card { padding: 30px 20px; border-radius: 20px; border: none; border-top: 1px solid #27272a; border-bottom: 1px solid #27272a; }
   .pac-title { font-size: 28px; }
   .pac-trust-badges { grid-template-columns: 1fr; gap: 20px; }
   
+  /* Doc Mode Mobile Grid */
   .doc-bento-grid { grid-template-columns: 1fr; }
   .doc-bento-full { grid-column: span 1; }
 }
@@ -1426,6 +1428,7 @@ select:-webkit-autofill:focus {
   .survey-expansion-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
   .survey-expansion-card { padding: 16px !important; }
 
+  /* 🚀 MOBILE SPLASH SCREEN OVERRIDES */
   #splashLandingGate { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; overflow-y: auto; background: #000; }
   .splash-header-v3 { flex-direction: column; gap: 15px; padding: 20px 15px; }
   .hero-grid-v3 { flex-direction: column; display: flex; margin-bottom: 30px;}
@@ -1440,31 +1443,53 @@ select:-webkit-autofill:focus {
   .tl-line-bg { display: none; }
   .tl-step { width: 100%; flex-direction: row; align-items: flex-start; gap: 15px; }
   
+  /* Doc Bento Fixes */
   .doc-checkbox-grid { grid-template-columns: 1fr; gap: 12px;}
   .guidelines-grid { grid-template-columns: 1fr; gap: 16px;}
 }
 
 /* ================= 🚀 FIXED: DESKTOP RESPONSIVE OVERRIDES RESTORED ================= */
 @media (min-width: 900px) {
+
+  /* Reverse Display States for Desktop */
   .desktop-only { display: flex !important; }
   .mobile-only { display: none !important; }
 
-  /* Premium Auth Rules Need to be in Global Scope, but we restore standard Desktop flows */
+  #splashLandingGate { overflow-x: hidden; }
+
   .cosmic-bg-effect { top: -20%; right: -20%; left: auto; transform: none; width: 800px; height: 800px; }
   
+  /* FIXED: Ensure Header flows perfectly */
   .splash-header-v3 { padding: 30px 40px; border-bottom: none; background: transparent; backdrop-filter: none; display: flex; flex-direction: row; justify-content: space-between; align-items: center;}
   .logo-text-v3 { font-size: 24px; }
   
   .unified-nav-links { display: flex; background: #09090b; border: 1px solid #27272a; border-radius: 999px; padding: 6px; }
-  .unified-nav-links a, .unified-nav-links a:link, .unified-nav-links a:visited { color: #a1a1aa !important; text-decoration: none !important; font-size: 14px; font-weight: 600; padding: 10px 24px; border-radius: 999px; transition: all 0.2s ease; }
-  .unified-nav-links a:hover, .unified-nav-links a.active { color: #ffffff !important; }
-  .unified-nav-links a.active { background: rgba(255, 255, 255, 0.08); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+  .unified-nav-links a, 
+  .unified-nav-links a:link, 
+  .unified-nav-links a:visited { 
+    color: #a1a1aa !important; 
+    text-decoration: none !important; 
+    font-size: 14px; 
+    font-weight: 600; 
+    padding: 10px 24px;
+    border-radius: 999px;
+    transition: all 0.2s ease; 
+  }
+  .unified-nav-links a:hover, 
+  .unified-nav-links a.active { 
+    color: #ffffff !important; 
+  }
+  .unified-nav-links a.active {
+    background: rgba(255, 255, 255, 0.08); 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2); 
+  }
   
   .btn-solid-v3 { border: 1px solid rgba(255, 255, 255, 0.2); background: transparent; color: white; padding: 12px 32px; font-size: 14px; }
   .btn-solid-v3:hover { border-color: white; background: rgba(255,255,255,0.1);}
   
   .hero-container-v3 { padding: 100px 40px; }
   
+  /* 🚀 FIXED HERO GRID: Put the globe safely back in the document flow */
   .hero-grid-v3 { display: flex; flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 80px; }
   .hg-left { width: 55%; text-align: left; position: relative; z-index: 2;}
   
@@ -1474,6 +1499,7 @@ select:-webkit-autofill:focus {
   .hero-desc-v3 p { margin-bottom: 15px; }
   .btn-glow-v3 { padding: 18px 42px; font-size: 16px; }
   
+  /* 🚀 FIXED: Position relative keeps it from breaking `.f5-grid` */
   .hg-right { position: relative; right: auto; top: auto; width: 45%; display: flex; justify-content: flex-end; margin-top: 0;}
   .galaxy-wrapper { width: 100%; max-width: 500px; transform: scale(1.15); margin-right: -5%; }
   
@@ -1495,7 +1521,19 @@ select:-webkit-autofill:focus {
   .ec-features { align-items: flex-start; padding-left: 40px; justify-content: center; width: auto; flex-shrink: 0;}
   .split-grid { display: grid; grid-template-columns: 1fr 1fr; max-width: 1000px; margin: 0 auto; }
   
-  .stats-card { display: grid; grid-template-columns: repeat(4, 1fr); padding: 40px 30px; margin: 0; background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.4) 100%); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; gap: 20px; text-align: center; width: 100%; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 20px 40px rgba(0,0,0,0.5); }
+  .stats-card { 
+      display: grid; 
+      grid-template-columns: repeat(4, 1fr); 
+      padding: 40px 30px; 
+      margin: 0; 
+      background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.4) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1); 
+      border-radius: 24px; 
+      gap: 20px; 
+      text-align: center; 
+      width: 100%;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 20px 40px rgba(0,0,0,0.5);
+  }
   .stat-item { display: flex; flex-direction: column; align-items: center; justify-content: center; }
   .stat-item svg { color: #ffffff; margin-bottom: 16px; width: 28px; height: 28px; filter: drop-shadow(0 0 8px rgba(255,255,255,0.2)); }
   .stat-item h4 { font-size: 36px; font-weight: 900; color: white; margin: 0 0 6px 0; letter-spacing: -1.5px; }
