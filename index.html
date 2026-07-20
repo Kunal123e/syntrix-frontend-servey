@@ -15,7 +15,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@9/dist/modal.umd.min.js"></script>
 
   <script>
-    // 🚀 UNLOCK PRIVATE MENUS
     window.unlockFullMenu = function() {
         const authElements = document.querySelectorAll('.auth-protected-ui');
         authElements.forEach(el => {
@@ -24,7 +23,6 @@
         document.getElementById('signupSectionOnly').style.display = 'none';
     };
 
-    // 🚀 BULLETPROOF LOGOUT (Prevents Blank Screens)
     window.handleLogout = async function() {
         try {
             if (window.metamaskEmbeddedInstance && window.metamaskEmbeddedInstance.connected) {
@@ -34,14 +32,12 @@
             console.error("Logout Error:", e);
         }
         
-        // Hide Dashboard Smoothly
         const appLayout = document.getElementById('mainApplicationLayout');
         if(appLayout) {
             appLayout.style.display = 'none';
             appLayout.style.opacity = '0';
         }
         
-        // Relock Topbar & Menu
         document.getElementById('appTopbar').style.display = 'flex';
         const authElements = document.querySelectorAll('.auth-protected-ui');
         authElements.forEach(el => el.style.display = 'none');
@@ -50,14 +46,12 @@
         const popover = document.getElementById('optionsPopover');
         if(popover) { popover.style.display = 'none'; popover.classList.add('hidden'); }
         
-        // Hide all active inner sections safely
         const sections = ['gatewayScreenSection', 'documentModeSection', 'selfieModeSection', 'claimForm', 'rewardDashboardScreen', 'tabScreenBadge', 'tabScreenReferrals', 'tabScreenMoreSurveys'];
         sections.forEach(id => {
             const el = document.getElementById(id);
             if(el) { el.style.display = 'none'; el.classList.add('hidden'); }
         });
         
-        // Glide Splash Screen Back Smoothly
         const splash = document.getElementById('splashLandingGate');
         if(splash) {
             splash.style.display = 'flex';
@@ -67,7 +61,6 @@
             }, 50);
         }
         
-        // Reset Login Form for next use
         const emailGate = document.getElementById('emailGateSection');
         if(emailGate) {
             emailGate.classList.remove('hidden');
@@ -75,7 +68,6 @@
         }
     };
 
-    // 🚀 GOOGLE LOGIN SIMULATOR (Bypasses Vercel Security Hangs)
     window.handleGoogleLogin = function() {
         const modal = document.getElementById('googleSimModal');
         modal.classList.remove('hidden');
@@ -101,7 +93,6 @@
     };
 
     window.addEventListener("load", async () => {
-      // Consent Checkbox Logic
       const selectAll = document.getElementById('selectAllConsent');
       const childConsents = document.querySelectorAll('.consent-child');
       
@@ -109,6 +100,7 @@
           selectAll.addEventListener('change', (e) => {
               childConsents.forEach(cb => cb.checked = e.target.checked);
           });
+
           childConsents.forEach(cb => {
               cb.addEventListener('change', () => {
                   const allChecked = Array.from(childConsents).every(c => c.checked);
@@ -117,7 +109,6 @@
           });
       }
 
-      // Manual Email Gateway Override
       const emailForm = document.getElementById('emailGateForm');
       if(emailForm) {
           emailForm.addEventListener('submit', function(e) {
@@ -178,9 +169,9 @@
     };
   </script>
 </head>
-<body class="dark-theme">
+<body class="dark-theme" style="background-color: #000000; color: #ffffff; overflow-x: hidden; margin: 0;">
 
-<!-- 🚀 GOOGLE ACCOUNT SIMULATOR MODAL -->
+<!-- GOOGLE ACCOUNT SIMULATOR MODAL -->
 <div id="googleSimModal" class="modal-overlay hidden" style="display: none; z-index: 100000; background: rgba(0,0,0,0.6);">
   <div style="background: #fff; width: 400px; max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-family: 'Segoe UI', Arial, sans-serif; color: #202124; overflow: hidden; animation: fadeUpIn 0.3s ease forwards;">
     <div style="padding: 30px 24px 20px; text-align: center; border-bottom: 1px solid #e0e0e0;">
@@ -259,7 +250,6 @@
   </div>
 
   <div class="hero-container-v3">
-    
     <!-- ================= HOME VIEW ================= -->
     <div id="viewSplashHome" class="animate-tab-view" style="display: block; width: 100%;">
       <div class="hero-grid-v3">
@@ -328,7 +318,7 @@
           <div class="tr-text"><h4>Instant Rewards</h4><p>Track rewards and<br>earn instantly.</p></div>
         </div>
       </div>
-    </div> 
+    </div> <!-- END HOME VIEW -->
     
     <!-- ================= REWARDS VIEW ================= -->
     <div id="viewSplashRewards" class="animate-tab-view" style="display: none; width: 100%;">
@@ -343,6 +333,7 @@
             &larr; Back to Home
           </button>
         </div>
+        
         <div class="hg-right">
           <div class="earnings-card glass-shimmer anim-3">
             <div class="ec-info">
@@ -371,7 +362,7 @@
           <p style="font-size: 14px;">Use your unique referral dashboard to invite others. Every successful completion grants you a direct 10 SYNX deposit.</p>
         </div>
       </div>
-    </div>
+    </div> <!-- END REWARDS VIEW -->
 
     <!-- ================= ABOUT US VIEW ================= -->
     <div id="viewSplashAbout" class="animate-tab-view" style="display: none; width: 100%;">
@@ -386,6 +377,7 @@
             &larr; Back to Home
           </button>
         </div>
+        
         <div class="hg-right">
           <div class="stats-card glass-shimmer anim-3">
             <div class="stat-item anim-4">
@@ -411,6 +403,7 @@
           </div>
         </div>
       </div>
+
       <div class="f5-grid split-grid anim-5">
         <div class="f5-card">
           <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
@@ -423,7 +416,7 @@
           <p style="font-size: 14px;">Powered by Polygon Mainnet and secure Web3Auth gateways to ensure your data and rewards remain mathematically protected and instantly distributed.</p>
         </div>
       </div>
-    </div> 
+    </div> <!-- END ABOUT VIEW -->
   </div>
 </div>
 
