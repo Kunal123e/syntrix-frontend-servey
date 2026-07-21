@@ -68,19 +68,15 @@
         }
     };
 
-    window.handleGoogleLogin = async function() {
+    window.handleGoogleLogin = function() {
         try {
-            if (window.metamaskEmbeddedInstance) {
-                // Force Web3Auth to bypass popup and use direct redirect for Google to fix Vercel COOP error
-                await window.metamaskEmbeddedInstance.connectTo("openlogin", {
-                    loginProvider: "google"
-                });
-            }
-        } catch(e) {
-            console.error("Web3Auth Google Login blocked. Falling back to Simulator UI.", e);
             const modal = document.getElementById('googleSimModal');
-            modal.classList.remove('hidden');
-            modal.style.display = 'flex';
+            if(modal) {
+                modal.classList.remove('hidden');
+                modal.style.display = 'flex';
+            }
+        } catch(err) {
+            console.error("Google Modal Error: ", err);
         }
     };
 
@@ -133,13 +129,13 @@
               window.unlockFullMenu();
           });
       }
-      
-      // Options popover toggle logic
+
+      // Settings Menu Toggle Logic (Restored to fix your button!)
       const menuBtn = document.getElementById('menuToggleBtn');
       const popover = document.getElementById('optionsPopover');
       if(menuBtn && popover) {
           menuBtn.addEventListener('click', () => {
-              if(popover.style.display === 'none') {
+              if(popover.style.display === 'none' || popover.classList.contains('hidden')) {
                   popover.style.display = 'block';
                   popover.classList.remove('hidden');
               } else {
@@ -181,7 +177,6 @@
       splash.style.transform = 'scale(0.96) translateY(-15px)';
       
       setTimeout(() => {
-        splash.style.display = 'none'; // Ensure it fully hides so buttons underneath work
         const hiddenBtn = document.getElementById('initializePlatformBtn');
         if(hiddenBtn) hiddenBtn.click();
         
@@ -191,10 +186,6 @@
             appLayout.style.opacity = '0';
             appLayout.style.animation = 'fadeUpIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards';
         }
-        
-        // Ensure Topbar & Login form are visible when entering App
-        document.getElementById('appTopbar').style.display = 'flex';
-        document.getElementById('emailGateSection').style.display = 'flex';
       }, 450);
     };
   </script>
@@ -452,7 +443,7 @@
     <div class="content">
       
       <!-- TOPBAR (ALWAYS VISIBLE INSIDE APP) -->
-      <div class="topbar" id="appTopbar" style="display: flex;">
+      <div class="topbar" id="appTopbar" style="display: none;">
         <div>
           <div class="logo-container" style="margin-bottom: 20px; padding-left: 0; display: flex; align-items: center; gap: 14px;">
             <div class="logo-mark" style="height: 42px; width: auto; display: flex; align-items: center;">
@@ -593,7 +584,7 @@
             <div class="pac-consent-group">
               <input type="checkbox" id="legalConsent" class="pac-checkbox">
               <label for="legalConsent">
-                I confirm that I have read and agree to the <a href="#" onclick="openLegalModal(); return false;">Terms of Research & Privacy Policy</a>. I understand token rewards are subject to internal data validation.
+                I confirm that I have read and agree to the <a href="#" onclick="openLegalModal(); return false;" style="color: #ffffff; font-weight: 600; text-decoration: underline; text-decoration-color: #3f3f46; text-underline-offset: 4px;">Terms of Research & Privacy Policy</a>. I understand token rewards are subject to internal data validation.
               </label>
             </div>
 
@@ -648,7 +639,7 @@
           <div class="pac-footer">
             <p>© 2026 Syntrix. All rights reserved.</p>
             <div class="pac-footer-links">
-              <a href="#" onclick="openLegalModal(); return false;">Privacy Policy</a> | <a href="#" onclick="openLegalModal(); return false;">Terms of Service</a>
+              <a href="#" onclick="openLegalModal(); return false;" style="color: #a1a1aa; text-decoration: none; margin: 0 6px;">Privacy Policy</a> <span style="color: #3f3f46;">|</span> <a href="#" onclick="openLegalModal(); return false;" style="color: #a1a1aa; text-decoration: none; margin: 0 6px;">Terms of Service</a>
             </div>
           </div>
         </div>
