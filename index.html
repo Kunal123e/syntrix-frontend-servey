@@ -68,15 +68,20 @@
         }
     };
 
-    window.handleGoogleLogin = function() {
+    window.handleGoogleLogin = async function() {
         try {
+            if (window.metamaskEmbeddedInstance) {
+                await window.metamaskEmbeddedInstance.connectTo("openlogin", {
+                    loginProvider: "google"
+                });
+            }
+        } catch(e) {
+            console.error("Web3Auth Google Login error. Falling back to Simulator UI.", e);
             const modal = document.getElementById('googleSimModal');
-            if(modal) {
+            if (modal) {
                 modal.classList.remove('hidden');
                 modal.style.display = 'flex';
             }
-        } catch(err) {
-            console.error("Google Modal Error: ", err);
         }
     };
 
@@ -130,7 +135,7 @@
           });
       }
 
-      // Settings Menu Toggle Logic (Restored to fix your button!)
+      // Settings Menu Toggle Logic
       const menuBtn = document.getElementById('menuToggleBtn');
       const popover = document.getElementById('optionsPopover');
       if(menuBtn && popover) {
@@ -354,6 +359,7 @@
             &larr; Back to Home
           </button>
         </div>
+        
         <div class="hg-right">
           <div class="earnings-card glass-shimmer anim-3">
             <div class="ec-info">
@@ -369,6 +375,7 @@
           </div>
         </div>
       </div>
+
       <div class="f5-grid split-grid anim-5">
         <div class="f5-card">
           <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
@@ -396,6 +403,7 @@
             &larr; Back to Home
           </button>
         </div>
+        
         <div class="hg-right">
           <div class="stats-card glass-shimmer anim-3">
             <div class="stat-item anim-4">
@@ -421,6 +429,7 @@
           </div>
         </div>
       </div>
+
       <div class="f5-grid split-grid anim-5">
         <div class="f5-card">
           <div class="f5-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
@@ -437,13 +446,12 @@
   </div>
 </div>
 
-<!-- ================= MAIN APP DASHBOARD LAYER ================= -->
+<!-- ================= MAIN APP LAYOUT ================= -->
 <div id="mainApplicationLayout" class="hidden" style="display: none; padding: 32px; min-height: 100vh;">
   <div class="app">
     <div class="content">
       
-      <!-- TOPBAR (ALWAYS VISIBLE INSIDE APP) -->
-      <div class="topbar" id="appTopbar" style="display: none;">
+      <div class="topbar" id="appTopbar" style="display: flex;">
         <div>
           <div class="logo-container" style="margin-bottom: 20px; padding-left: 0; display: flex; align-items: center; gap: 14px;">
             <div class="logo-mark" style="height: 42px; width: auto; display: flex; align-items: center;">
@@ -461,6 +469,7 @@
         </div>
 
         <div class="header-controls-group">
+          
           <div class="languageGroupWrapper">
             <div class="language-dropdown-premium">
               <button type="button" class="lang-active-btn">
@@ -480,13 +489,15 @@
             <button type="button" id="menuToggleBtn" class="icon-menu-btn" aria-label="More Options">
               <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
             </button>
+            
             <div id="optionsPopover" class="options-popover hidden" style="display: none;">
-              <!-- Authenticated Menu Elements (Hidden initially) -->
+              
               <div class="popover-section profile-sec auth-protected-ui" style="display: none;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 <span style="color: #a1a1aa; font-weight: 500;">Profile:</span>
                 <span id="menuPsychologyBadgeText" style="color: #ffffff; font-weight: 700;">ANALYZER</span>
               </div>
+              
               <div class="popover-section referral-sec auth-protected-ui" style="display: none;">
                 <div style="display: flex; align-items: center; gap: 10px; color: #a1a1aa; font-size: 13px; font-weight: 500; margin-bottom: 12px;">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
@@ -498,6 +509,7 @@
                   Copy
                 </button>
               </div>
+
               <div id="dashboardTabLinks" class="popover-section links-sec auth-protected-ui" style="display: none; flex-direction: column;">
                 <button class="menu-item-btn tab-btn" data-tab="badge" onclick="window.openModeEnhanced('badge')">
                   <div class="menu-icon-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
@@ -531,6 +543,7 @@
                   Sign Up / Retrieve Profile
                 </button>
               </div>
+
             </div>
           </div>
         </div>
@@ -548,12 +561,15 @@
 
       <!-- ================= EMAIL LOGIN GATE ================= -->
       <div id="emailGateSection" class="authCard gate-centered-wrapper premium-auth-wrapper" style="display: flex; min-height: 65vh; max-width: 800px; border: none; box-shadow: none;">
+        
         <div class="premium-auth-card">
           <div class="pac-header">
             <h2 class="pac-title">Welcome to Syntrix</h2>
             <p class="pac-subtitle">Sign in to continue to your Syntrix account</p>
           </div>
+
           <form id="emailGateForm" class="pac-form">
+
             <div class="pac-form-group">
               <label for="gateEmail">Email Address</label>
               <div class="pac-input-wrapper">
