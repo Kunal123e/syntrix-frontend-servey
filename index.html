@@ -8,6 +8,7 @@
   <link rel="icon" href="data:,"> 
   <link rel="stylesheet" href="style.css">
 
+  <!-- External Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/base@9/dist/base.umd.min.js"></script>
@@ -40,6 +41,66 @@
             }
         }
     });
+
+    // Native QR Code Generator (Bypasses broken external script.js)
+    window.generateMyQR = function(e) {
+        if(e) e.preventDefault();
+        const wrapper = document.getElementById('qrCodeWrapper');
+        const canvas = document.getElementById('qrCodeCanvas');
+        const refInput = document.getElementById('referralCodeDisplay');
+        
+        if (!wrapper || !canvas || !refInput) return;
+        
+        canvas.innerHTML = ''; // clear previous QR
+        const link = refInput.value || 'https://syntrix.ai';
+        
+        try {
+            new QRCode(canvas, {
+                text: link,
+                width: 180,
+                height: 180,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+            wrapper.style.display = 'flex';
+        } catch(err) {
+            console.error("QR Generation Error:", err);
+        }
+    };
+
+    // Native Copy Link
+    window.copyMyReferral = function(e) {
+        if(e) e.preventDefault();
+        const refInput = document.getElementById('referralCodeDisplay');
+        if(refInput) {
+            refInput.select();
+            document.execCommand('copy');
+            const toast = document.getElementById('customToast');
+            const toastMsg = document.getElementById('toastMessage');
+            if(toast && toastMsg) {
+                toastMsg.innerHTML = "✅ Link copied to clipboard!";
+                toast.style.display = 'flex';
+                toast.classList.add('show');
+                setTimeout(() => { toast.classList.remove('show'); toast.style.display='none'; }, 3000);
+            }
+        }
+    };
+
+    // Native QR Download
+    window.downloadMyQR = function(e) {
+        if(e) e.preventDefault();
+        const canvasEl = document.querySelector('#qrCodeCanvas canvas');
+        if(canvasEl) {
+            const url = canvasEl.toDataURL("image/png");
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Syntrix-Referral-QR.png';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    };
 
     window.unlockFullMenu = function() {
         const authElements = document.querySelectorAll('.auth-protected-ui');
@@ -506,7 +567,7 @@
                 </div>
                 <input type="text" id="menuReferralInputDisplay" value="https://domain.com/?ref=..." readonly style="display: none;">
                 <button type="button" id="menuCopyReferralBtn" class="popover-copy-btn">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2-2v1"></path></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                   Copy
                 </button>
               </div>
@@ -645,6 +706,13 @@
                 <h4>Instant Access</h4>
                 <p>Get started in seconds and explore the full Syntrix experience.</p>
               </div>
+            </div>
+          </div>
+
+          <div class="pac-footer">
+            <p>© 2026 Syntrix. All rights reserved.</p>
+            <div class="pac-footer-links">
+              <a href="#" onclick="openLegalModal(); return false;" style="color: #a1a1aa; text-decoration: none; margin: 0 6px;">Privacy Policy</a> <span style="color: #3f3f46;">|</span> <a href="#" onclick="openLegalModal(); return false;" style="color: #a1a1aa; text-decoration: none; margin: 0 6px;">Terms of Service</a>
             </div>
           </div>
         </div>
@@ -1053,14 +1121,14 @@
 
           <div class="referralLinkBlock" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
             <input type="text" id="referralCodeDisplay" value="https://domain.com/?ref=SYN-AB1234" readonly style="flex: 1; min-width: 200px;">
-            <button type="button" id="copyReferralBtn" class="copyBtn">Copy Link</button>
-            <button type="button" id="generateQrBtn" class="inviteActionBtn">Generate QR</button>
+            <button type="button" id="btnCopyReferralLink" class="copyBtn" onclick="copyMyReferral(event)">Copy Link</button>
+            <button type="button" id="btnGenerateReferralQr" class="inviteActionBtn" onclick="generateMyQR(event)">Generate QR</button>
           </div>
 
           <div id="qrCodeWrapper" style="display: none; flex-direction: column; align-items: center; margin-top: 25px; background: rgba(255, 255, 255, 0.02); border: 1px dashed rgba(99, 102, 241, 0.3); border-radius: 16px; padding: 25px;">
             <h4 style="font-size: 15px; font-weight: 800; color: #ffffff; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px;">Your Unique Dealer QR</h4>
             <div id="qrCodeCanvas" style="background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px;"></div>
-            <button type="button" id="downloadQrBtn" class="executeDistributionBtn" style="max-width: 250px; padding: 14px; margin-top: 0;">
+            <button type="button" id="btnDownloadReferralQr" class="executeDistributionBtn" style="max-width: 250px; padding: 14px; margin-top: 0;" onclick="downloadMyQR(event)">
               ↓ Download to Gallery
             </button>
           </div>
