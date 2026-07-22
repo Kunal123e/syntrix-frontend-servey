@@ -1537,8 +1537,19 @@ select:-webkit-autofill:focus {
   .f5-icon svg { width: 24px; height: 24px; }
   .f5-card h4 { font-size: 18px; }
   .f5-card p { font-size: 14px; margin: 0 0 30px 0;}
-  .f5-arrow { width: 32px; height: 32px; font-size: 14px; bottom: 24px; right: 24px; }
+  .f5-arrow { width: 32px; height: 32px; font-size: 14px; bottom: 24px; right: 24px; position: absolute; border-radius: 50%; background: #18181b; border: 1px solid #27272a; display: flex; align-items: center; justify-content: center; color: white; transition: 0.2s;}
+  .f5-card:hover .f5-arrow { background: white; color: black; }
 
+  .doc-bento-grid { grid-template-columns: 1fr 1fr; }
+  .doc-bento-full { grid-column: span 2; }
+  .doc-checkbox-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  
+  .trust-row-v3 { padding: 35px 20px; border-radius: 24px; margin-bottom: 60px; flex-direction: row; justify-content: space-around;}
+  .tr-badge { gap: 15px; justify-content: center; width: auto;}
+  .tr-icon svg { width: 28px; height: 28px; }
+  .tr-text h4 { font-size: 15px; }
+  .tr-text p { font-size: 13px; }
+  
   .earnings-card { flex-direction: row; align-items: center; text-align: left; padding: 40px; margin: 0;}
   .ec-info { border-bottom: none; border-right: 1px solid rgba(255,255,255,0.1); padding-bottom: 0; padding-right: 40px; width: auto; flex: 1; justify-content: flex-start; }
   .ec-features { align-items: flex-start; padding-left: 40px; justify-content: center; width: auto; flex-shrink: 0;}
@@ -1561,12 +1572,6 @@ select:-webkit-autofill:focus {
   .stat-item svg { color: #ffffff; margin-bottom: 16px; width: 28px; height: 28px; filter: drop-shadow(0 0 8px rgba(255,255,255,0.2)); }
   .stat-item h4 { font-size: 36px; font-weight: 900; color: white; margin: 0 0 6px 0; letter-spacing: -1.5px; }
   .stat-item p { font-size: 11px; color: #a1a1aa; margin: 0; text-transform: uppercase; font-weight: 700; letter-spacing: 1.5px; }
-
-  .trust-row-v3 { padding: 35px 20px; border-radius: 24px; margin-bottom: 60px; flex-direction: row; justify-content: space-around;}
-  .tr-badge { gap: 15px; justify-content: center; width: auto;}
-  .tr-icon svg { width: 28px; height: 28px; }
-  .tr-text h4 { font-size: 15px; }
-  .tr-text p { font-size: 13px; }
 
   .timeline-box-v3 { padding: 60px 40px; text-align: center; }
   .timeline-box-v3 h3 { font-size: 28px; margin-bottom: 60px; text-align: center; }
