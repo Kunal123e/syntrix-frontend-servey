@@ -1434,7 +1434,6 @@ select:-webkit-autofill:focus {
 
 .trust-row-v3 { display: flex; flex-direction: column; gap: 20px; border: 1px solid #27272a; border-radius: 16px; padding: 20px; margin-top: 40px; }
 
-
 /* ================= 🚀 FIXED PREMIUM AUTHENTICATION CARD (LOGIN) ================= */
 .premium-auth-wrapper { padding: 20px 0 !important; width: 100%; display: flex; justify-content: center; align-items: center; }
 .premium-auth-card { background: #09090b; border: 1px solid #27272a; border-radius: 24px; padding: 40px; width: 100%; max-width: 600px; text-align: left !important; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); margin: 0 auto; }
@@ -1453,20 +1452,19 @@ select:-webkit-autofill:focus {
 .pac-input-wrapper input::placeholder { color: #71717a !important; }
 
 .pac-consent-group { display: flex !important; flex-direction: row !important; align-items: flex-start !important; justify-content: flex-start !important; gap: 12px !important; margin-bottom: 25px; width: 100%; }
-.pac-checkbox { width: 20px !important; height: 20px !important; margin-top: 2px !important; accent-color: #6366f1; cursor: pointer; flex-shrink: 0; border-radius: 4px; display: block !important; }
+.pac-checkbox { width: 20px !important; height: 20px !important; margin-top: 2px !important; accent-color: #6366f1; cursor: pointer; flex-shrink: 0 !important; display: block !important; }
 .pac-consent-group label { font-size: 13px; color: #a1a1aa; line-height: 1.5; cursor: pointer; display: block !important; }
 .pac-consent-group label a { color: #ffffff; font-weight: 600; text-decoration: underline; text-decoration-color: #3f3f46; text-underline-offset: 4px; transition: 0.2s; }
-.pac-consent-group label a:hover { text-decoration-color: #ffffff; }
 
-.pac-primary-btn { width: 100% !important; display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: center !important; gap: 12px !important; background: #ffffff !important; color: #000000 !important; font-size: 16px !important; font-weight: 800 !important; padding: 16px !important; border-radius: 12px !important; border: none !important; cursor: pointer; transition: 0.2s; margin-bottom: 24px; box-sizing: border-box; }
+.pac-primary-btn, .pac-google-btn { width: 100% !important; display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: center !important; gap: 12px !important; font-size: 16px !important; font-weight: 800 !important; padding: 16px !important; border-radius: 12px !important; border: none !important; cursor: pointer; transition: 0.2s; box-sizing: border-box; }
+.pac-primary-btn { background: #ffffff !important; color: #000000 !important; margin-bottom: 24px; }
 .pac-primary-btn:hover { background: #f4f4f5 !important; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255,255,255,0.1); }
+.pac-google-btn { background: transparent !important; color: #ffffff !important; font-size: 15px !important; font-weight: 600 !important; padding: 14px !important; border: 1px solid #3f3f46 !important; }
+.pac-google-btn:hover { background: rgba(255, 255, 255, 0.05) !important; }
 
 .pac-divider { display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: center !important; color: #71717a; font-size: 12px; margin-bottom: 24px; font-weight: 500; width: 100%; }
 .pac-divider-line { flex: 1; border-bottom: 1px solid #27272a; height: 1px; }
 .pac-divider span { padding: 0 12px; }
-
-.pac-google-btn { width: 100% !important; display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: center !important; gap: 12px !important; background: transparent !important; color: #ffffff !important; font-size: 15px !important; font-weight: 600 !important; padding: 14px !important; border-radius: 12px !important; border: 1px solid #3f3f46 !important; cursor: pointer; transition: 0.2s; box-sizing: border-box; }
-.pac-google-btn:hover { background: rgba(255, 255, 255, 0.05) !important; }
 
 .pac-trust-badges { display: flex !important; flex-direction: row !important; justify-content: space-between !important; gap: 20px !important; border-top: none; padding-top: 0; width: 100%; }
 .pac-badge { display: flex !important; flex-direction: row !important; align-items: flex-start !important; justify-content: flex-start !important; gap: 12px !important; flex: 1; }
@@ -1495,6 +1493,7 @@ select:-webkit-autofill:focus {
 .pv-text { display: flex; flex-direction: column; text-align: left; }
 .pv-text strong { font-size: 13px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px; margin-bottom: 2px; text-align: left;}
 .pv-text span { font-size: 12px; color: #a1a1aa; font-weight: 500; text-align: left;}
+
 
 /* ================= 4. DASHBOARD RESPONSIVE FIXES (MOBILE) ================= */
 @media(max-width: 900px) {
@@ -1752,4 +1751,36 @@ select:-webkit-autofill:focus {
 .premium-action-btn.outline:hover {
   background: #18181b;
   border-color: #52525b;
+}
+
+/* ================= 🚀 IMAGE PREVIEW LAYOUT FIX ================= */
+.preview-window {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin-top: 20px !important;
+  border-radius: 12px;
+  background: #09090b;
+  overflow: hidden;
+  border: 1px solid #27272a;
+}
+
+#imagePreview, .preview-window img {
+  width: 100% !important;
+  max-height: 260px !important; /* Locks the height so it never pushes the UI down */
+  object-fit: contain !important; /* Keeps the aspect ratio perfect without stretching */
+  border-radius: 8px;
+  display: block;
+}
+
+/* Fallback constraint for the Selfie Mode preview just in case */
+.selfie-scanner-container img {
+  max-width: 100% !important;
+  max-height: 260px !important;
+  object-fit: contain !important;
+  border-radius: 12px;
+  position: relative;
+  z-index: 10;
 }
