@@ -559,7 +559,7 @@
                 </div>
                 <input type="text" id="menuReferralInputDisplay" value="https://domain.com/?ref=..." readonly style="display: none;">
                 <button type="button" id="menuCopyReferralBtn" class="popover-copy-btn">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2-2v1"></path></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                   Copy
                 </button>
               </div>
@@ -1081,7 +1081,6 @@
       <!-- ================= PSYCHOGRAPHIC BADGES SECTION ================= -->
       <div id="tabScreenBadge" class="hidden rewardCard" style="display: none; max-width: 1000px; padding: 40px;">
         <h2 class="rewardTitle" style="margin-bottom: 8px;">Psychographic Analytics Breakdown</h2>
-        <p class="rewardSubtitle" style="margin-bottom: 40px;">Discover your unique consumer persona archetype unlocked through secure AI analysis.</p>
         
         <div id="dashboardPsychologyBadgeCard" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
           
@@ -1172,37 +1171,78 @@
         </div>
       </div>
 
-      <div id="tabScreenReferrals" class="hidden rewardCard" style="display: none;">
+      <!-- ================= NEW REFERRALS SECTION ================= -->
+      <div id="tabScreenReferrals" class="hidden rewardCard" style="display: none; max-width: 550px; padding: 40px; margin: 0 auto;">
         <div class="referralContainer" style="margin-top: 0;">
-          <div class="dividerLine"><span id="referralDashboardTitle">💎 SYNTRIX GROWTH REWARDS</span></div>
+          
+          <div class="premium-glow-divider">
+            <div class="glow-line"></div>
+            <span>💎 SYNTRIX GROWTH REWARDS</span>
+            <div class="glow-line"></div>
+          </div>
+          
           <h3 class="referralTitleText" id="referralTitleText">Your Referrals & Earnings</h3>
           <p class="referralDescription" id="referralSubText">
             Invite friends using your unique referral code. For each colleague who registers and completes the modules, you earn an additional 10 SYNX tokens!
           </p>
 
-          <div class="referralStatsGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; margin: 25px 0;">
-            <div class="statBox" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 15px; text-align: center;">
-              <div id="lblTotalReferrals" style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 5px; letter-spacing: 0.5px;">Total Referrals</div>
-              <div id="statTotalReferrals" style="font-size: 24px; font-weight: 900; color: #ffffff;">0</div>
+          <div class="premium-stats-list">
+            <div class="premium-stat-box">
+              <div class="stat-icon-box">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-label">TOTAL REFERRALS</div>
+                <div class="stat-value text-white" id="statTotalReferrals">0</div>
+              </div>
             </div>
-            <div class="statBox" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 15px; text-align: center;">
-              <div id="lblPendingRewards" style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 5px; letter-spacing: 0.5px;">Pending Rewards</div>
-              <div id="statPendingRewards" style="font-size: 24px; font-weight: 900; color: #6366f1;">0 SYNX</div>
+
+            <div class="premium-stat-box">
+              <div class="stat-icon-box">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-label">PENDING REWARDS</div>
+                <div class="stat-value text-purple" id="statPendingRewards">154 SYNX</div>
+              </div>
             </div>
-            <div class="statBox" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 15px; text-align: center;">
-              <div id="lblClaimedRewards" style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 5px; letter-spacing: 0.5px;">Claimed Rewards</div>
-              <div id="statClaimedRewards" style="font-size: 24px; font-weight: 900; color: #10b981;">0 SYNX</div>
+
+            <div class="premium-stat-box">
+              <div class="stat-icon-box">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-label">CLAIMED REWARDS</div>
+                <div class="stat-value text-green" id="statClaimedRewards">0 SYNX</div>
+              </div>
             </div>
-            <div class="statBox" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 15px; text-align: center;">
-              <div id="lblTotalEarned" style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 5px; letter-spacing: 0.5px;">Total Earned</div>
-              <div id="statTotalEarned" style="font-size: 24px; font-weight: 900; color: #a855f7;">0 SYNX</div>
+
+            <div class="premium-stat-box">
+              <div class="stat-icon-box">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-label">TOTAL EARNED</div>
+                <div class="stat-value text-purple-light" id="statTotalEarned">154 SYNX</div>
+              </div>
             </div>
           </div>
 
-          <div class="referralLinkBlock" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
-            <input type="text" id="referralCodeDisplay" value="https://domain.com/?ref=SYN-AB1234" readonly style="flex: 1; min-width: 200px;">
-            <button type="button" id="btnCopyReferralLink" class="copyBtn" onclick="copyMyReferral(event)">Copy Link</button>
-            <button type="button" id="btnGenerateReferralQr" class="inviteActionBtn" onclick="generateMyQR(event)">Generate QR</button>
+          <div class="premium-link-wrapper">
+            <div class="link-input-box">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+              <input type="text" id="referralCodeDisplay" value="https://syntrix-frontend-servey-8ea88a" readonly>
+            </div>
+            
+            <button type="button" id="btnCopyReferralLink" class="premium-action-btn primary" onclick="copyMyReferral(event)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              Copy Link
+            </button>
+            
+            <button type="button" id="btnGenerateReferralQr" class="premium-action-btn outline" onclick="generateMyQR(event)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><rect x="7" y="7" width="3" height="3"></rect><rect x="14" y="7" width="3" height="3"></rect><rect x="7" y="14" width="3" height="3"></rect><rect x="14" y="14" width="3" height="3"></rect></svg>
+              Generate QR
+            </button>
           </div>
 
           <div id="qrCodeWrapper" style="display: none; flex-direction: column; align-items: center; margin-top: 25px; background: rgba(255, 255, 255, 0.02); border: 1px dashed rgba(99, 102, 241, 0.3); border-radius: 16px; padding: 25px;">
