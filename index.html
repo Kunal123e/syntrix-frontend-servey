@@ -647,6 +647,11 @@
             </div>
 
             <div class="pac-consent-group">
+              <input type="checkbox" id="legalAgeLogin" class="pac-checkbox">
+              <label for="legalAgeLogin">I am 18 years of age or older.</label>
+            </div>
+            
+            <div class="pac-consent-group" style="margin-top: -15px;">
               <input type="checkbox" id="legalConsent" class="pac-checkbox">
               <label for="legalConsent">
                 I confirm that I have read and agree to the <a href="#" onclick="openLegalModal(); return false;" style="color: #ffffff; font-weight: 600; text-decoration: underline; text-decoration-color: #3f3f46; text-underline-offset: 4px;">Terms of Research & Privacy Policy</a>. I understand token rewards are subject to internal data validation.
@@ -871,20 +876,22 @@
               <h4>5. Legal Consent & Data Release</h4>
             </div>
             <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
-              <label class="custom-cb-wrapper" style="border-bottom: 1px solid #27272a; padding-bottom: 16px;">
-                <input type="checkbox" id="selectAllConsent">
-                <div class="custom-cb-box"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-                <span style="font-weight: 700; color: white;">Select All Consents</span>
+              <label class="custom-cb-wrapper" style="align-items: flex-start;">
+                <input type="checkbox" id="consentAgeDoc" class="consent-child">
+                <div class="custom-cb-box" style="margin-top: 2px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                <span>I am 18 years of age or older.</span>
               </label>
+              
               <label class="custom-cb-wrapper" style="align-items: flex-start;">
                 <input type="checkbox" id="consentSensitive" class="consent-child">
                 <div class="custom-cb-box" style="margin-top: 2px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-                <span>I confirm that this image does not contain any sensitive personal information (such as full names, phone numbers, addresses, or private financial details).</span>
+                <span>I confirm that this document does not contain sensitive personal information (such as full names, phone numbers, addresses, or private financial details).</span>
               </label>
+              
               <label class="custom-cb-wrapper" style="align-items: flex-start;">
                 <input type="checkbox" id="consentCommercial" class="consent-child">
                 <div class="custom-cb-box" style="margin-top: 2px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-                <span>I explicitly agree to the <a href="#" onclick="openLegalModal(); return false;" style="color:#6366f1; text-decoration:underline;">Terms of Service</a> and <a href="#" onclick="openLegalModal(); return false;" style="color:#6366f1; text-decoration:underline;">Privacy Policy</a>, and grant Syntrix a perpetual license to anonymize and sell this image for commercial Artificial Intelligence (AI) training.</span>
+                <span>I explicitly agree to the <a href="#" onclick="openLegalModal(); return false;" style="color:#6366f1; text-decoration:underline;">Terms of Service</a> and <a href="#" onclick="openLegalModal(); return false;" style="color:#6366f1; text-decoration:underline;">Privacy Policy</a>, and grant Syntrix a perpetual license to anonymize and sell this image for commercial AI training.</span>
               </label>
             </div>
           </div>
@@ -1007,6 +1014,32 @@
               </div>
             </div>
           </div>
+          
+          <div class="doc-card doc-bento-full">
+            <div class="doc-card-header">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              <h4>Legal Consent & Data Release</h4>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
+              <label class="custom-cb-wrapper" style="align-items: flex-start;">
+                <input type="checkbox" id="consentAgeSelfie" class="consent-child-selfie">
+                <div class="custom-cb-box" style="margin-top: 2px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                <span>I am 18 years of age or older.</span>
+              </label>
+              
+              <label class="custom-cb-wrapper" style="align-items: flex-start;">
+                <input type="checkbox" id="consentSensitiveSelfie" class="consent-child-selfie">
+                <div class="custom-cb-box" style="margin-top: 2px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                <span>I confirm that this image does not contain sensitive personal information (such as background ID cards, addresses, or private financial details).</span>
+              </label>
+              
+              <label class="custom-cb-wrapper" style="align-items: flex-start;">
+                <input type="checkbox" id="consentCommercialSelfie" class="consent-child-selfie">
+                <div class="custom-cb-box" style="margin-top: 2px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                <span>I explicitly agree to the <a href="#" onclick="openLegalModal(); return false;" style="color:#6366f1; text-decoration:underline;">Terms of Service</a> and <a href="#" onclick="openLegalModal(); return false;" style="color:#6366f1; text-decoration:underline;">Privacy Policy</a>, and grant Syntrix a perpetual license to anonymize and sell this image for commercial AI training.</span>
+              </label>
+            </div>
+          </div>
 
           <div class="doc-bento-full" style="text-align: center; margin-top: 10px;">
             <button id="submitSelfieBtn" class="btn-gradient-purple" disabled>
@@ -1081,6 +1114,7 @@
       <!-- ================= PSYCHOGRAPHIC BADGES SECTION ================= -->
       <div id="tabScreenBadge" class="hidden rewardCard" style="display: none; max-width: 1000px; padding: 40px;">
         <h2 class="rewardTitle" style="margin-bottom: 8px;">Psychographic Analytics Breakdown</h2>
+        <p class="rewardSubtitle" style="margin-bottom: 40px;">Discover your unique consumer persona archetype unlocked through secure AI analysis.</p>
         
         <div id="dashboardPsychologyBadgeCard" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
           
@@ -1235,7 +1269,7 @@
             </div>
             
             <button type="button" id="btnCopyReferralLink" class="premium-action-btn primary" onclick="copyMyReferral(event)">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2-2v1"></path></svg>
               Copy Link
             </button>
             
