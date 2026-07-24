@@ -1289,154 +1289,6 @@ select:-webkit-autofill:focus {
 .action-section, .upload-section { width: 100%; }
 .submission-card { background: transparent; border: none; padding: 0;}
 
-
-/* ================= 🚀 FIXED PREMIUM AUTHENTICATION CARD (LOGIN) ================= */
-.premium-auth-wrapper { padding: 20px 0 !important; width: 100%; display: flex; justify-content: center; align-items: center; }
-.premium-auth-card { background: #09090b; border: 1px solid #27272a; border-radius: 24px; padding: 40px; width: 100%; max-width: 600px; text-align: left !important; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); margin: 0 auto; }
-.pac-header { margin-bottom: 30px; text-align: left !important; }
-.pac-title { font-size: 32px; font-weight: 800; color: #ffffff; margin-bottom: 8px; letter-spacing: -1px; text-align: left !important; display: block; }
-.pac-subtitle { font-size: 15px; color: #a1a1aa; font-weight: 500; text-align: left !important; display: block; }
-.pac-form { margin-bottom: 30px; border-bottom: 1px solid #27272a; padding-bottom: 30px; }
-
-/* Forces labels to be left-aligned and stack above the input */
-.pac-form-group { margin-bottom: 20px; display: flex !important; flex-direction: column !important; align-items: flex-start !important; width: 100%; text-align: left !important; }
-.pac-form-group label { display: block !important; font-size: 13px; font-weight: 600; color: #d1d5db; margin-bottom: 8px; text-align: left !important; width: 100%; }
-
-/* 🔥 THE FIX FOR INPUT ICONS: Forces the SVG and Input into a horizontal row */
-.pac-input-wrapper { display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: flex-start !important; gap: 12px !important; background: #18181b; border: 1px solid #3f3f46; border-radius: 12px; padding: 0 16px; transition: 0.2s; width: 100%; box-sizing: border-box; }
-.pac-input-wrapper:focus-within { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15); }
-.pac-input-wrapper svg { flex-shrink: 0 !important; display: block !important; margin: 0 !important; color: #a1a1aa; width: 18px; height: 18px; }
-.pac-input-wrapper input { background: transparent !important; border: none !important; padding: 16px 0 !important; color: #ffffff !important; font-size: 15px !important; outline: none !important; box-shadow: none !important; flex-grow: 1 !important; text-align: left !important; margin: 0 !important; display: block !important; }
-.pac-input-wrapper input::placeholder { color: #71717a !important; }
-
-/* 🔥 THE FIX FOR CHECKBOX: Forces checkbox and text side-by-side */
-.pac-consent-group { display: flex !important; flex-direction: row !important; align-items: flex-start !important; justify-content: flex-start !important; gap: 12px !important; margin-bottom: 25px; width: 100%; text-align: left !important; }
-.pac-checkbox { width: 20px !important; height: 20px !important; margin-top: 2px !important; accent-color: #6366f1; cursor: pointer; flex-shrink: 0 !important; display: block !important; }
-.pac-consent-group label { font-size: 13px; color: #a1a1aa; line-height: 1.5; cursor: pointer; display: block !important; text-align: left !important; }
-.pac-consent-group label a { color: #ffffff; font-weight: 600; text-decoration: underline; text-decoration-color: #3f3f46; text-underline-offset: 4px; transition: 0.2s; }
-
-/* Buttons & Dividers */
-.pac-primary-btn, .pac-google-btn { width: 100% !important; display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: center !important; gap: 12px !important; font-size: 16px !important; font-weight: 800 !important; padding: 16px !important; border-radius: 12px !important; border: none !important; cursor: pointer; transition: 0.2s; box-sizing: border-box; }
-.pac-primary-btn { background: #ffffff !important; color: #000000 !important; margin-bottom: 24px; }
-.pac-primary-btn:hover { background: #f4f4f5 !important; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255,255,255,0.1); }
-.pac-google-btn { background: transparent !important; color: #ffffff !important; font-size: 15px !important; font-weight: 600 !important; padding: 14px !important; border: 1px solid #3f3f46 !important; }
-.pac-google-btn:hover { background: rgba(255, 255, 255, 0.05) !important; }
-
-.pac-divider { display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: center !important; color: #71717a; font-size: 12px; margin-bottom: 24px; font-weight: 500; width: 100%; }
-.pac-divider-line { flex: 1; border-bottom: 1px solid #27272a; height: 1px; }
-.pac-divider span { padding: 0 12px; }
-
-/* 🔥 THE FIX FOR TRUST BADGES: Grid layout side-by-side */
-.pac-trust-badges { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 20px !important; border-top: none; padding-top: 0; width: 100%; }
-.pac-badge { display: flex !important; flex-direction: row !important; align-items: flex-start !important; justify-content: flex-start !important; gap: 12px !important; text-align: left !important; }
-.pac-badge svg { color: #a1a1aa; flex-shrink: 0; margin-top: 2px; display: block; width: 20px; height: 20px; }
-.pac-badge-text { display: flex !important; flex-direction: column !important; align-items: flex-start !important; text-align: left !important; }
-.pac-badge-text h4 { font-size: 13px; font-weight: 700; color: #ffffff; margin-bottom: 4px; text-align: left !important; width: 100%; }
-.pac-badge-text p { font-size: 11px; color: #71717a; line-height: 1.4; margin: 0; text-align: left !important; width: 100%; }
-
-.pac-footer { text-align: center !important; color: #71717a; font-size: 12px; margin-top: 30px; width: 100%; display: block !important; }
-.pac-footer p { margin-bottom: 6px; text-align: center !important; }
-.pac-footer-links { text-align: center !important; display: block !important; }
-  border-bottom: 1px solid #27272a; 
-  height: 1px;
-}
-
-.pac-divider span { 
-  padding: 0 12px; 
-}
-
-.pac-google-btn { 
-  width: 100% !important; 
-  display: flex !important; 
-  flex-direction: row !important; 
-  align-items: center !important; 
-  justify-content: center !important; 
-  gap: 12px !important; 
-  background: transparent; 
-  color: #ffffff; 
-  font-size: 15px; 
-  font-weight: 600; 
-  padding: 14px; 
-  border-radius: 12px; 
-  border: 1px solid #3f3f46; 
-  cursor: pointer; 
-  transition: 0.2s; 
-  box-sizing: border-box;
-}
-
-.pac-google-btn:hover { 
-  background: rgba(255, 255, 255, 0.05); 
-}
-
-.pac-trust-badges { 
-  display: grid !important; 
-  grid-template-columns: repeat(3, 1fr) !important; 
-  gap: 20px !important; 
-  border-top: none; 
-  padding-top: 0; 
-  width: 100%;
-}
-
-.pac-badge { 
-  display: flex !important; 
-  flex-direction: row !important; 
-  align-items: flex-start !important; 
-  justify-content: flex-start !important;
-  gap: 12px !important; 
-  text-align: left !important;
-}
-
-.pac-badge svg { 
-  color: #a1a1aa; 
-  flex-shrink: 0; 
-  margin-top: 2px; 
-  display: block;
-}
-
-.pac-badge-text {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  text-align: left !important;
-}
-
-.pac-badge-text h4 { 
-  font-size: 13px; 
-  font-weight: 700; 
-  color: #ffffff; 
-  margin-bottom: 4px; 
-  text-align: left !important; 
-  width: 100%;
-}
-
-.pac-badge-text p { 
-  font-size: 11px; 
-  color: #71717a; 
-  line-height: 1.4; 
-  margin: 0; 
-  text-align: left !important; 
-  width: 100%;
-}
-
-.pac-footer { 
-  text-align: center !important; 
-  color: #71717a; 
-  font-size: 12px; 
-  margin-top: 30px; 
-  width: 100%; 
-  display: block !important; 
-}
-
-.pac-footer p { 
-  margin-bottom: 6px; 
-  text-align: center !important; 
-}
-
-.pac-footer-links { 
-  text-align: center !important; 
-  display: block !important; 
-}
-
 /* ================= 7. 🚀 NEW: SELFIE MODE STYLES ================= */
 .selfie-scanner-container {
   display: flex;
@@ -1546,6 +1398,64 @@ select:-webkit-autofill:focus {
 
 .trust-row-v3 { display: flex; flex-direction: column; gap: 20px; border: 1px solid #27272a; border-radius: 16px; padding: 20px; margin-top: 40px; }
 
+/* ================= 🚀 FIXED PREMIUM AUTHENTICATION CARD (LOGIN) ================= */
+.premium-auth-wrapper { padding: 20px 0 !important; width: 100%; display: flex; justify-content: center; align-items: center; }
+.premium-auth-card { background: #09090b; border: 1px solid #27272a; border-radius: 24px; padding: 40px; width: 100%; max-width: 600px; text-align: left !important; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); margin: 0 auto; }
+.pac-header { margin-bottom: 30px; text-align: left !important; }
+.pac-title { font-size: 32px; font-weight: 800; color: #ffffff; margin-bottom: 8px; letter-spacing: -1px; text-align: left !important; display: block; }
+.pac-subtitle { font-size: 15px; color: #a1a1aa; font-weight: 500; text-align: left !important; display: block; }
+.pac-form { margin-bottom: 30px; border-bottom: 1px solid #27272a; padding-bottom: 30px; }
+.pac-form-group { margin-bottom: 20px; display: flex !important; flex-direction: column !important; align-items: flex-start !important; width: 100%; text-align: left !important; }
+.pac-form-group label { display: block !important; font-size: 13px; font-weight: 600; color: #d1d5db; margin-bottom: 8px; text-align: left !important; width: 100%; }
+
+.pac-input-wrapper { display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: flex-start !important; gap: 12px !important; background: #18181b; border: 1px solid #3f3f46; border-radius: 12px; padding: 0 16px; transition: 0.2s; width: 100%; box-sizing: border-box; }
+.pac-input-wrapper:focus-within { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15); }
+.pac-input-wrapper svg { flex-shrink: 0 !important; display: block !important; margin: 0 !important; color: #a1a1aa; width: 18px; height: 18px; }
+.pac-input-wrapper input { background: transparent !important; border: none !important; padding: 16px 0 !important; color: #ffffff !important; font-size: 15px !important; outline: none !important; box-shadow: none !important; flex-grow: 1 !important; text-align: left !important; margin: 0 !important; display: block !important; }
+.pac-input-wrapper input::placeholder { color: #71717a !important; }
+
+.pac-consent-group { display: flex !important; flex-direction: row !important; align-items: flex-start !important; justify-content: flex-start !important; gap: 12px !important; margin-bottom: 25px; width: 100%; text-align: left !important; }
+.pac-checkbox { width: 20px !important; height: 20px !important; margin-top: 2px !important; accent-color: #6366f1; cursor: pointer; flex-shrink: 0 !important; display: block !important; }
+.pac-consent-group label { font-size: 13px; color: #a1a1aa; line-height: 1.5; cursor: pointer; display: block !important; text-align: left !important; }
+.pac-consent-group label a { color: #ffffff; font-weight: 600; text-decoration: underline; text-decoration-color: #3f3f46; text-underline-offset: 4px; transition: 0.2s; }
+
+.pac-primary-btn, .pac-google-btn { width: 100% !important; display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: center !important; gap: 12px !important; font-size: 16px !important; font-weight: 800 !important; padding: 16px !important; border-radius: 12px !important; border: none !important; cursor: pointer; transition: 0.2s; box-sizing: border-box; }
+.pac-primary-btn { background: #ffffff !important; color: #000000 !important; margin-bottom: 24px; }
+.pac-primary-btn:hover { background: #f4f4f5 !important; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255,255,255,0.1); }
+.pac-google-btn { background: transparent !important; color: #ffffff !important; font-size: 15px !important; font-weight: 600 !important; padding: 14px !important; border: 1px solid #3f3f46 !important; }
+.pac-google-btn:hover { background: rgba(255, 255, 255, 0.05) !important; }
+
+.pac-divider { display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: center !important; color: #71717a; font-size: 12px; margin-bottom: 24px; font-weight: 500; width: 100%; }
+.pac-divider-line { flex: 1; border-bottom: 1px solid #27272a; height: 1px; }
+.pac-divider span { padding: 0 12px; }
+
+.pac-trust-badges { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 20px !important; border-top: none; padding-top: 0; width: 100%; }
+.pac-badge { display: flex !important; flex-direction: row !important; align-items: flex-start !important; justify-content: flex-start !important; gap: 12px !important; text-align: left !important; }
+.pac-badge svg { color: #a1a1aa; flex-shrink: 0; margin-top: 2px; display: block; width: 20px; height: 20px; }
+.pac-badge-text { display: flex !important; flex-direction: column !important; align-items: flex-start !important; text-align: left !important; }
+.pac-badge-text h4 { font-size: 13px; font-weight: 700; color: #ffffff; margin-bottom: 4px; text-align: left !important; width: 100%; }
+.pac-badge-text p { font-size: 11px; color: #71717a; line-height: 1.4; margin: 0; text-align: left !important; width: 100%; }
+
+.pac-footer { text-align: center !important; color: #71717a; font-size: 12px; margin-top: 30px; width: 100%; display: block !important; }
+.pac-footer p { margin-bottom: 6px; text-align: center !important; }
+.pac-footer-links { text-align: center !important; display: block !important; }
+
+/* ================= 🚀 PERSONA BADGE CARD STYLES ================= */
+.persona-card-premium { background: linear-gradient(180deg, rgba(20,20,22,1) 0%, rgba(9,9,11,1) 100%); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 40px 30px; text-align: center; display: flex; flex-direction: column; align-items: center; box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.persona-card-premium:hover { transform: translateY(-5px); box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1); border-color: rgba(255, 255, 255, 0.2); }
+.persona-header-top { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #a1a1aa; margin-bottom: 12px; text-align: center !important; }
+.persona-title-main { font-size: 36px; font-weight: 900; color: #ffffff; letter-spacing: -1px; margin-bottom: 4px; line-height: 1.1; text-align: center !important; }
+.persona-subtitle { font-size: 18px; font-weight: 500; color: #d1d5db; margin-bottom: 30px; text-align: center !important; }
+.persona-icon-wrapper { width: 140px; height: 140px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.15); display: flex; align-items: center; justify-content: center; margin-bottom: 30px; background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%); box-shadow: inset 0 0 20px rgba(255,255,255,0.02); }
+.persona-icon-wrapper svg { color: #ffffff; width: 64px; height: 64px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); }
+.persona-description { font-size: 15px; line-height: 1.7; color: #a1a1aa; margin-bottom: 40px; max-width: 90%; text-align: center !important; }
+.persona-verified-badge { display: flex; align-items: center; justify-content: center; gap: 16px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 16px 24px; width: 100%; text-align: left; }
+.pv-icon { display: flex; align-items: center; justify-content: center; color: #ffffff; }
+.pv-text { display: flex; flex-direction: column; text-align: left; }
+.pv-text strong { font-size: 13px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px; margin-bottom: 2px; text-align: left;}
+.pv-text span { font-size: 12px; color: #a1a1aa; font-weight: 500; text-align: left;}
+
+
 /* ================= 4. DASHBOARD RESPONSIVE FIXES (MOBILE) ================= */
 @media(max-width: 900px) {
   body { padding: 12px; }
@@ -1575,7 +1485,7 @@ select:-webkit-autofill:focus {
   /* Mobile Premium Auth Card Adjustments */
   .premium-auth-card { padding: 30px 20px; border-radius: 20px; border: none; border-top: 1px solid #27272a; border-bottom: 1px solid #27272a; }
   .pac-title { font-size: 28px; }
-  .pac-trust-badges { grid-template-columns: 1fr !important; gap: 20px !important; }
+  .pac-trust-badges { grid-template-columns: 1fr !important; gap: 20px !important; display: grid !important; }
   
   /* Doc Mode Mobile Grid */
   .doc-bento-grid { grid-template-columns: 1fr; }
