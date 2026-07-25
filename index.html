@@ -260,6 +260,22 @@
         }
       }, 450);
     };
+
+    window.openLegalModal = function() {
+        const modal = document.getElementById('legalModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+        }
+    };
+
+    window.closeLegalModal = function() {
+        const modal = document.getElementById('legalModal');
+        if (modal) {
+            modal.style.display = 'none';
+            modal.classList.add('hidden');
+        }
+    };
   </script>
 </head>
 <body class="dark-theme" style="background-color: #000000; color: #ffffff; overflow-x: hidden; margin: 0;">
@@ -654,7 +670,7 @@
             <div class="pac-consent-group" style="margin-top: -15px;">
               <input type="checkbox" id="legalConsent" class="pac-checkbox">
               <label for="legalConsent">
-                I confirm that I have read and agree to the <a href="#" onclick="openLegalModal(); return false;" style="color: #ffffff; font-weight: 600; text-decoration: underline; text-decoration-color: #3f3f46; text-underline-offset: 4px;">Terms of Research & Privacy Policy</a>. I understand token rewards are subject to internal data validation.
+                I explicitly agree to the <a href="#" onclick="openLegalModal(); return false;" style="color: #ffffff; font-weight: 600; text-decoration: underline; text-decoration-color: #3f3f46; text-underline-offset: 4px;">Terms of Service</a> and <a href="#" onclick="openLegalModal(); return false;" style="color: #ffffff; font-weight: 600; text-decoration: underline; text-decoration-color: #3f3f46; text-underline-offset: 4px;">Privacy Policy</a>, and understand that token rewards are speculative and non-guaranteed.
               </label>
             </div>
 
@@ -988,7 +1004,36 @@
 
           <div class="doc-card doc-bento-full">
             <div class="doc-card-header">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              <h4 style="color: #ef4444;">Selfie Guidelines</h4>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <div class="guide-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <p style="color: #d1d5db;">Clear front-facing selfie.</p>
+              </div>
+              <div class="guide-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                <p style="color: #d1d5db;"><strong>NO</strong> group photos.</p>
+              </div>
+              <div class="guide-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                <p style="color: #d1d5db;"><strong>NO</strong> filters or face edits.</p>
+              </div>
+              <div class="guide-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                <p style="color: #d1d5db;"><strong>NO</strong> hats, masks, or sunglasses.</p>
+              </div>
+              <div class="guide-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <p style="color: #d1d5db;">Well-lit background.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="doc-card doc-bento-full">
+            <div class="doc-card-header">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
               <h4>Legal Consent & Data Release</h4>
             </div>
             <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
@@ -1240,7 +1285,7 @@
             </div>
             
             <button type="button" id="btnCopyReferralLink" class="premium-action-btn primary" onclick="copyMyReferral(event)">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2-2v1"></path></svg>
               Copy Link
             </button>
             
@@ -1397,31 +1442,58 @@
     </div>
     
     <div class="modal-body" style="overflow-y: auto; padding: 24px; color: #a1a1aa; font-size: 14px; line-height: 1.7; flex: 1;">
-      <p style="margin-bottom: 15px; color: #ffffff; font-weight: bold;">By participating in the Syntrix Consumer Analytics platform, you explicitly agree to the following binding terms:</p>
+      <h3 style="color: #ffffff; margin-bottom: 15px;">📜 1. Terms of Service</h3>
       
       <div class="extra-details-box" style="margin-bottom: 15px;">
-        <h4 style="color: #6366f1;">1. Data Commercialization & AI Training</h4>
-        <p style="margin: 0; color: #a1a1aa;">By completing the research modules, you grant Syntrix an irrevocable, permanent license to utilize your raw textual responses for B2B commercialization and AI model training. You waive all future rights to financial claims or royalties beyond the initial platform reward allocated at completion.</p>
+        <h4 style="color: #6366f1;">Irrevocable Sale & Licensing of Contributed Data</h4>
+        <p style="margin: 0; color: #a1a1aa;">By submitting text responses, document scans, notes, or media files to Syntrix, users permanently and irrevocably grant Syntrix a worldwide, perpetual, royalty-free license to clean, anonymize, package, and commercialize such content for B2B enterprise sales and Artificial Intelligence (AI) model training. Users explicitly waive all future rights to financial claims or royalties beyond the initial Synx tokens issued.</p>
       </div>
 
       <div class="extra-details-box" style="margin-bottom: 15px;">
-        <h4 style="color: #6366f1;">2. Non-Financial Utility of SYNX Token</h4>
-        <p style="margin: 0; color: #a1a1aa;">The SYNX token is an off-chain digital reward issued strictly for platform participation. Syntrix makes no guarantees that SYNX will hold monetary value, be tradable on open exchanges, or possess market liquidity. The distribution and future utility of tokens are entirely speculative and subject to the platform's operational and commercial viability.</p>
+        <h4 style="color: #6366f1;">The "No-Revenue" Token Disclaimer</h4>
+        <p style="margin: 0; color: #a1a1aa;">The Synx token is strictly an off-chain digital reward issued for platform participation. Syntrix operates as an early-stage startup in an unpredictable market. If B2B enterprise clients or AI labs do not purchase datasets, or if Syntrix generates zero revenue, the company is under no financial or legal obligation to provide cash-outs, fiat conversions, or market liquidity.</p>
       </div>
 
       <div class="extra-details-box" style="margin-bottom: 15px;">
-        <h4 style="color: #6366f1;">3. Data Anonymization Firewall & Deletion Lock</h4>
-        <p style="margin: 0; color: #a1a1aa;">We collect minimal data: an email address (for ledger mapping) and your survey responses. Personal identifiers are strictly isolated from B2B clients, who only receive anonymized, alphanumeric-hashed psychographic packages. While you may delete your personal account, once your anonymized text strings are aggregated into historical datasets, they cannot be recalled or deleted.</p>
+        <h4 style="color: #6366f1;">Speculative and Non-Guaranteed Utility</h4>
+        <p style="margin: 0; color: #a1a1aa;">Syntrix makes zero guarantees that Synx will ever hold external monetary value, be listable on public crypto exchanges, or be tradeable for fiat currency. Synx is an internal reward meant to be held within the platform dashboard only.</p>
       </div>
 
       <div class="extra-details-box" style="margin-bottom: 15px;">
-        <h4 style="color: #6366f1;">4. Platform Integrity & Anti-Fraud</h4>
-        <p style="margin: 0; color: #a1a1aa;">Syntrix retains the absolute right to instantly terminate profiles and forfeit all accumulated ledger tokens if an entry triggers automated fraud flags, including completion speeds under 45 seconds, the use of automated scripting, or gibberish inputs.</p>
+        <h4 style="color: #6366f1;">Anti-Fraud Kill Switch</h4>
+        <p style="margin: 0; color: #a1a1aa;">Syntrix retains the absolute right to instantly terminate user profiles and permanently forfeit or burn accumulated ledger tokens if an entry triggers fraud flags (including completion speeds under 45 seconds, duplicate photo uploads, automated scripting, or gibberish inputs).</p>
+      </div>
+
+      <div class="extra-details-box" style="margin-bottom: 25px;">
+        <h4 style="color: #6366f1;">Ahmedabad Arbitration Jurisdiction</h4>
+        <p style="margin: 0; color: #a1a1aa;">Users completely waive their rights to class-action lawsuits or court trials. All legal disputes must be settled strictly through binding individual arbitration anchored in Ahmedabad, Gujarat, India.</p>
+      </div>
+
+      <h3 style="color: #ffffff; margin-bottom: 15px;">🔐 2. Privacy Policy</h3>
+
+      <div class="extra-details-box" style="margin-bottom: 15px;">
+        <h4 style="color: #10b981;">Multi-Modal Data Collection</h4>
+        <p style="margin: 0; color: #a1a1aa;">Syntrix collects email addresses (for account security), off-chain token ledger balances, text survey responses, uploaded document files (for OCR processing), and facial camera images (for liveness verification and biometric dataset training).</p>
+      </div>
+
+      <div class="extra-details-box" style="margin-bottom: 15px;">
+        <h4 style="color: #10b981;">The Anonymization Fire-Wall</h4>
+        <p style="margin: 0; color: #a1a1aa;">Personal identifiers (such as user emails and IP addresses) are isolated entirely in a secure backend database. B2B enterprise clients and AI purchasers never receive personal identities; they only acquire clean, anonymized datasets tagged by non-identifiable alphanumeric hashes.</p>
+      </div>
+
+      <div class="extra-details-box" style="margin-bottom: 15px;">
+        <h4 style="color: #10b981;">Biometric Data Handling</h4>
+        <p style="margin: 0; color: #a1a1aa;">Facial images collected during Selfie Mode are processed to verify liveness and anti-spoofing. Where user consent is granted, anonymized facial data is packaged into structured computer vision training datasets. Raw personal identifiers are stripped from biometric files prior to dataset compilation.</p>
+      </div>
+
+      <div class="extra-details-box" style="margin-bottom: 15px;">
+        <h4 style="color: #10b981;">The Deletion Lock (No Data Clawbacks)</h4>
+        <p style="margin: 0; color: #a1a1aa;">Users retain the right to terminate their accounts and delete their personal account records from the live system. However, once contributed content or survey responses have been anonymized and integrated into historical dataset bundles, those anonymized records cannot be clawed back or recalled from past sales.</p>
       </div>
 
       <div class="extra-details-box" style="margin-bottom: 0;">
-        <h4 style="color: #6366f1;">5. Governing Law & Jurisdiction</h4>
-        <p style="margin: 0; color: #a1a1aa;">Access is restricted to individuals aged 16 and older. By using this platform, you waive the right to participate in class-action lawsuits. All legal disputes shall be governed by and settled exclusively through binding individual arbitration located in Ahmedabad, Gujarat, India.</p>
+        <h4 style="color: #10b981;">Global Age Limit (18+ Only)</h4>
+        <p style="margin: 0; color: #a1a1aa;">Access to the Syntrix protocol and data contribution modes is strictly restricted to individuals who are 18 years of age or older.</p>
       </div>
     </div>
     
