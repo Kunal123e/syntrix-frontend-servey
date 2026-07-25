@@ -872,7 +872,7 @@ select:-webkit-autofill:focus {
   align-items: center;
   justify-content: center;
   z-index: 9999;
-  padding: 20px;
+  padding: 16px;
 }
 
 .modal-card {
@@ -884,6 +884,9 @@ select:-webkit-autofill:focus {
   box-shadow: 0 24px 50px rgba(0, 0, 0, 0.8);
   overflow: hidden;
   text-align: left;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
 }
 
 @keyframes fadeInModal {
@@ -905,6 +908,7 @@ select:-webkit-autofill:focus {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .modal-header h2 {
@@ -927,6 +931,8 @@ select:-webkit-autofill:focus {
 
 .modal-body {
   padding: 24px;
+  overflow-y: auto;
+  flex: 1;
 }
 
 .modal-subtitle {
@@ -1010,6 +1016,7 @@ select:-webkit-autofill:focus {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .btn-secondary {
@@ -1434,6 +1441,7 @@ select:-webkit-autofill:focus {
 
 .trust-row-v3 { display: flex; flex-direction: column; gap: 20px; border: 1px solid #27272a; border-radius: 16px; padding: 20px; margin-top: 40px; }
 
+
 /* ================= 🚀 FIXED PREMIUM AUTHENTICATION CARD (LOGIN) ================= */
 .premium-auth-wrapper { padding: 20px 0 !important; width: 100%; display: flex; justify-content: center; align-items: center; }
 .premium-auth-card { background: #09090b; border: 1px solid #27272a; border-radius: 24px; padding: 40px; width: 100%; max-width: 600px; text-align: left !important; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); margin: 0 auto; }
@@ -1455,6 +1463,7 @@ select:-webkit-autofill:focus {
 .pac-checkbox { width: 20px !important; height: 20px !important; margin-top: 2px !important; accent-color: #6366f1; cursor: pointer; flex-shrink: 0 !important; display: block !important; }
 .pac-consent-group label { font-size: 13px; color: #a1a1aa; line-height: 1.5; cursor: pointer; display: block !important; }
 .pac-consent-group label a { color: #ffffff; font-weight: 600; text-decoration: underline; text-decoration-color: #3f3f46; text-underline-offset: 4px; transition: 0.2s; }
+.pac-consent-group label a:hover { text-decoration-color: #ffffff; }
 
 .pac-primary-btn, .pac-google-btn { width: 100% !important; display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: center !important; gap: 12px !important; font-size: 16px !important; font-weight: 800 !important; padding: 16px !important; border-radius: 12px !important; border: none !important; cursor: pointer; transition: 0.2s; box-sizing: border-box; }
 .pac-primary-btn { background: #ffffff !important; color: #000000 !important; margin-bottom: 24px; }
@@ -1788,8 +1797,13 @@ select:-webkit-autofill:focus {
 .premium-retrieve-modal {
   padding: 0 !important;
   max-width: 480px !important;
+  width: 100% !important;
+  max-height: 90vh !important; /* Lock maximum height */
+  display: flex !important;
+  flex-direction: column !important; /* Stack children */
   background: #09090b !important;
   border: 1px solid #27272a !important;
+  border-radius: 24px !important;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
 }
 
@@ -1797,8 +1811,9 @@ select:-webkit-autofill:focus {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px 30px;
+  padding: 20px 24px;
   border-bottom: 1px solid #27272a;
+  flex-shrink: 0; /* Never shrink header */
 }
 
 .prm-title-group {
@@ -1820,7 +1835,7 @@ select:-webkit-autofill:focus {
 }
 
 .prm-title-group h2 {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 800;
   color: #ffffff;
   margin: 0;
@@ -1839,28 +1854,32 @@ select:-webkit-autofill:focus {
 }
 .prm-close-btn:hover { color: #ffffff; }
 
-.prm-body { padding: 30px; }
+.prm-body { 
+  padding: 24px; 
+  overflow-y: auto; /* Enable scrolling if content is too long */
+  flex: 1; /* Take up available space */
+}
 
 .prm-drag-line {
   width: 40px;
   height: 4px;
   background: #27272a;
   border-radius: 4px;
-  margin: -10px auto 25px;
+  margin: 0 auto 20px;
 }
 
 .prm-subtitle {
-  font-size: 15px;
+  font-size: 14px;
   color: #a1a1aa;
   line-height: 1.6;
-  margin-bottom: 30px;
+  margin-bottom: 24px;
 }
 
 .prm-registry-box {
   border: 1px solid #27272a;
   border-radius: 16px;
   background: #0f0f11;
-  margin-bottom: 30px;
+  margin-bottom: 24px;
   overflow: hidden;
 }
 
@@ -1868,7 +1887,7 @@ select:-webkit-autofill:focus {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 16px 20px;
+  padding: 14px 18px;
   border-bottom: 1px solid #27272a;
   color: #ffffff;
 }
@@ -1881,14 +1900,14 @@ select:-webkit-autofill:focus {
 }
 
 .prm-registry-list {
-  padding: 0 20px;
+  padding: 0 18px;
 }
 
 .prm-reg-item {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 20px 0;
+  gap: 14px;
+  padding: 16px 0;
   border-bottom: 1px solid #27272a;
 }
 
@@ -1901,8 +1920,8 @@ select:-webkit-autofill:focus {
 }
 
 .prm-reg-icon {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   background: #18181b;
   border: 1px solid #27272a;
   border-radius: 12px;
@@ -1914,7 +1933,7 @@ select:-webkit-autofill:focus {
 }
 
 .prm-reg-item p {
-  font-size: 14px;
+  font-size: 13px;
   color: #d1d5db;
   line-height: 1.5;
   margin: 0;
@@ -1923,7 +1942,7 @@ select:-webkit-autofill:focus {
 .prm-input-group {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .prm-input-group label {
@@ -1936,10 +1955,10 @@ select:-webkit-autofill:focus {
 .prm-input-group input {
   background: #0f0f11;
   border: 1px solid #27272a;
-  padding: 18px 20px;
-  border-radius: 14px;
+  padding: 16px;
+  border-radius: 12px;
   color: #ffffff;
-  font-size: 15px;
+  font-size: 14px;
   outline: none;
   transition: all 0.2s;
   width: 100%;
@@ -1952,16 +1971,19 @@ select:-webkit-autofill:focus {
 .prm-footer {
   display: flex;
   gap: 12px;
-  padding: 24px 30px;
+  padding: 20px 24px;
   border-top: 1px solid #27272a;
   background: #000000;
+  flex-shrink: 0; /* Never shrink footer */
+  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 24px;
 }
 
 .prm-btn-cancel, .prm-btn-submit {
   flex: 1;
-  padding: 16px;
-  border-radius: 14px;
-  font-size: 15px;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
