@@ -15,6 +15,9 @@
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@9/dist/modal.umd.min.js"></script>
 
   <script>
+    /* 🔥 Global Flag to track if user already filled the survey */
+    window.hasCompletedSurvey = false;
+
     window.toggleSettingsMenu = function() {
         const popover = document.getElementById('optionsPopover');
         if (popover) {
@@ -113,6 +116,8 @@
             console.error("Logout Error:", e);
         }
         
+        window.hasCompletedSurvey = false; /* Reset flag on logout */
+        
         const appLayout = document.getElementById('mainApplicationLayout');
         if(appLayout) {
             appLayout.style.display = 'none';
@@ -127,7 +132,7 @@
         const popover = document.getElementById('optionsPopover');
         if(popover) { popover.style.display = 'none'; popover.classList.add('hidden'); }
         
-        const sections = ['gatewayScreenSection', 'documentModeSection', 'selfieModeSection', 'claimForm', 'rewardDashboardScreen', 'tabScreenBadge', 'tabScreenReferrals', 'tabScreenMoreSurveys'];
+        const sections = ['gatewayScreenSection', 'documentModeSection', 'selfieModeSection', 'claimForm', 'rewardDashboardScreen', 'tabScreenBadge', 'tabScreenReferrals', 'tabScreenMoreSurveys', 'claimScreenSection'];
         sections.forEach(id => {
             const el = document.getElementById(id);
             if(el) { el.style.display = 'none'; el.classList.add('hidden'); }
@@ -166,7 +171,6 @@
         }
     };
 
-    /* 🔥 THE FIX: Routes perfectly to gateway and hides everything else */
     window.executeGoogleSimLogin = function(email) {
         document.getElementById('googleSimModal').style.display = 'none';
         
@@ -176,6 +180,7 @@
             emailGate.classList.add('hidden');
         }
         
+        window.hasCompletedSurvey = true; /* Existing profile retrieved */
         window.unlockFullMenu();
         window.openModeEnhanced('gateway'); 
     };
@@ -205,17 +210,29 @@
               document.getElementById('emailGateSection').style.display = 'none';
               
               window.unlockFullMenu();
-              window.openModeEnhanced('gateway'); /* 🔥 THE FIX */
+              window.openModeEnhanced('gateway');
           });
       }
     });
 
-    /* 🔥 THE FIX: Super Kill-Switch to hide all possible screens before opening the new one */
     window.openModeEnhanced = function(modeName) {
       if(window.openMode) { try { window.openMode(modeName); } catch(e) {} }
       
       const popover = document.getElementById('optionsPopover');
       if(popover) { popover.style.display = 'none'; popover.classList.add('hidden'); }
+
+      /* 🔥 THE FIX: If trying to open Survey but it's already filled, redirect to More Surveys */
+      if (modeName === 'survey' && window.hasCompletedSurvey) {
+          const toast = document.getElementById('customToast');
+          const toastMsg = document.getElementById('toastMessage');
+          if(toast && toastMsg) {
+              toastMsg.innerHTML = "✅ Survey already completed. Redirecting to Survey Matrix...";
+              toast.style.display = 'flex';
+              toast.classList.add('show');
+              setTimeout(() => { toast.classList.remove('show'); toast.style.display='none'; }, 3000);
+          }
+          modeName = 'more';
+      }
       
       const allScreens = [
         'gatewayScreenSection', 
@@ -753,23 +770,28 @@
 
       <!-- ================= GATEWAY SCREEN ================= -->
       <div id="gatewayScreenSection" class="hidden authCard gate-centered-wrapper" style="display: none;">
-        <h2 class="sectionTitle" style="font-size: 38px; margin-bottom: 15px;">Choose Your Path</h2>
-        <p class="cardDescription" style="margin-bottom: 40px; font-size: 17px;">How would you like to earn your tokens today?</p>
-        <div class="options" style="justify-content: center; gap: 20px; width: 100%; display: flex; flex-wrap: wrap;">
+        <h2 class="sectionTitle" style="font-size: 48px; margin-bottom: 10px;">Choose Your Path</h2>
+        <p class="cardDescription" style="margin-bottom: 30px; font-size: 16px;">How would you like to earn your tokens today?</p>
+        
+        <div class="gate-decorative-divider">
+          <span class="gate-decorative-star">✦</span>
+        </div>
+
+        <div class="options" style="justify-content: center; gap: 24px; width: 100%; display: flex; flex-wrap: wrap;">
           <div class="gateway-card" onclick="window.openModeEnhanced('survey')">
-            <div class="card-icon" style="font-size: 40px; margin-bottom: 15px;">📝</div>
-            <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 8px;">Take the Survey</h3>
-            <p style="color: #6b7280; font-size: 14px; line-height: 1.5;">Complete our onboarding questionnaire to earn tokens.</p>
+            <div class="card-icon">📝</div>
+            <h3>Take the Survey</h3>
+            <p>Complete our onboarding questionnaire to earn tokens.</p>
           </div>
           <div class="gateway-card" onclick="window.openModeEnhanced('document')">
-            <div class="card-icon" style="font-size: 40px; margin-bottom: 15px;">📄</div>
-            <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 8px;">Upload Documents</h3>
-            <p style="color: #6b7280; font-size: 14px; line-height: 1.5;">Upload your school notes or study materials for AI verification.</p>
+            <div class="card-icon">📄</div>
+            <h3>Upload Documents</h3>
+            <p>Upload your school notes or study materials for AI verification.</p>
           </div>
           <div class="gateway-card" onclick="window.openModeEnhanced('selfie')">
-            <div class="card-icon" style="font-size: 40px; margin-bottom: 15px;">🤳</div>
-            <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 8px;">Take a Selfie</h3>
-            <p style="color: #6b7280; font-size: 14px; line-height: 1.5;">Verify your identity to secure premium tier allocations.</p>
+            <div class="card-icon">🤳</div>
+            <h3>Take a Selfie</h3>
+            <p>Verify your identity to secure premium tier allocations.</p>
           </div>
         </div>
       </div>
@@ -1478,6 +1500,7 @@
           document.getElementById('retrieveModal').classList.add('hidden');
       ">Cancel</button>
       <button type="button" id="confirmRetrieveBtn" class="prm-btn-submit" onclick="
+          window.hasCompletedSurvey = true; /* 🔥 Existing profile implies survey filled */
           document.getElementById('retrieveModal').style.display='none';
           document.getElementById('retrieveModal').classList.add('hidden');
           document.getElementById('emailGateSection').style.display='none';
