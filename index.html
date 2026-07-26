@@ -220,6 +220,9 @@
     window.openModeEnhanced = function(modeName) {
       if(window.openMode) { try { window.openMode(modeName); } catch(e) {} }
       
+      const popover = document.getElementById('optionsPopover');
+      if(popover) { popover.style.display = 'none'; popover.classList.add('hidden'); }
+      
       const sections = ['gatewayScreenSection', 'documentModeSection', 'selfieModeSection', 'claimForm'];
       sections.forEach(id => {
           const el = document.getElementById(id);
@@ -607,7 +610,12 @@
               </div>
               
               <div class="popover-section" id="signupSectionOnly" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
-                <button type="button" class="menu-item-btn" id="menuRecoverBtn" onclick="document.getElementById('retrieveModal').style.display='flex'; document.getElementById('retrieveModal').classList.remove('hidden');">
+                <button type="button" class="menu-item-btn" id="menuRecoverBtn" onclick="
+                    document.getElementById('retrieveModal').style.display='flex';
+                    document.getElementById('retrieveModal').classList.remove('hidden');
+                    document.getElementById('optionsPopover').style.display='none';
+                    document.getElementById('optionsPopover').classList.add('hidden');
+                ">
                   <div class="menu-icon-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg></div>
                   Sign Up / Retrieve Profile
                 </button>
@@ -1256,7 +1264,7 @@
             </div>
             
             <button type="button" id="btnCopyReferralLink" class="premium-action-btn primary" onclick="copyMyReferral(event)">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2-2v1"></path></svg>
               Copy Link
             </button>
             
@@ -1378,7 +1386,7 @@
         <div class="prm-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
         <h2>Sign Up / Retrieve Profile</h2>
       </div>
-      <button type="button" id="closeModalBtn" class="prm-close-btn">
+      <button type="button" id="closeModalBtn" class="prm-close-btn" onclick="document.getElementById('retrieveModal').style.display='none';">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
     </div>
@@ -1421,8 +1429,13 @@
     </div>
     
     <div class="prm-footer">
-      <button type="button" id="cancelModalBtn" class="prm-btn-cancel">Cancel</button>
-      <button type="button" id="confirmRetrieveBtn" class="prm-btn-submit">Search Ledger &rarr;</button>
+      <button type="button" id="cancelModalBtn" class="prm-btn-cancel" onclick="document.getElementById('retrieveModal').style.display='none';">Cancel</button>
+      <button type="button" id="confirmRetrieveBtn" class="prm-btn-submit" onclick="
+          document.getElementById('retrieveModal').style.display='none';
+          document.getElementById('emailGateSection').style.display='none';
+          document.getElementById('gatewayScreenSection').style.display='flex';
+          window.unlockFullMenu();
+      ">Search Ledger &rarr;</button>
     </div>
   </div>
 </div>
