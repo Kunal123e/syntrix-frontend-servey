@@ -14,7 +14,7 @@ html, body {
   min-height: 100vh; 
   color: #ffffff; 
   overflow-x: hidden;
-  overflow-y: auto; /* 🚀 FIX: Forces vertical scrolling to be enabled everywhere */
+  overflow-y: auto; 
 }
 
 /* ================= 🚀 UI ANIMATIONS & INTERACTIONS ================= */
@@ -1026,7 +1026,7 @@ select:-webkit-autofill:focus {
   border: 1px solid #27272a !important;
   border-radius: 24px !important;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
-  overflow: hidden !important; /* CRITICAL FOR FORCING SCROLL */
+  overflow: hidden !important;
 }
 
 .prm-header {
@@ -1358,7 +1358,8 @@ select:-webkit-autofill:focus {
   .unified-nav-links a.active { background: rgba(255, 255, 255, 0.08); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
   .btn-solid-v3 { border: 1px solid rgba(255, 255, 255, 0.2); background: transparent; color: white; padding: 12px 32px; font-size: 14px; border-radius: 30px; cursor: pointer;}
   .btn-solid-v3:hover { border-color: white; background: rgba(255,255,255,0.1);}
-  .hero-container-v3 { padding: 100px 40px; }
+  
+  .hero-container-v3 { width: 100%; max-width: 1200px; margin: 0 auto; padding: 100px 40px; z-index: 5; }
   .hero-grid-v3 { display: flex; flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 80px; }
   .hg-left { width: 55%; text-align: left; position: relative; z-index: 2;}
   .hero-title-v3 { font-size: 84px !important; margin-bottom: 10px; line-height: 1; }
@@ -1368,11 +1369,14 @@ select:-webkit-autofill:focus {
   .btn-glow-v3 { padding: 18px 42px; font-size: 16px; }
   .hg-right { position: relative; right: auto; top: auto; width: 45%; display: flex; justify-content: flex-end; margin-top: 0;}
   .galaxy-wrapper { width: 100%; max-width: 500px; transform: scale(1.15); margin-right: -5%; }
+  
+  /* f5-grid structural overrides to protect against missing HTML classes */
   .f5-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 24px; margin-bottom: 60px; }
-  .f5-c1, .f5-c2, .f5-c3 { grid-column: span 2; }
-  .f5-c4, .f5-c5 { grid-column: span 3; }
-  .f5-grid > :nth-child(4) { max-width: 90%; margin-left: auto; }
-  .f5-grid > :nth-child(5) { max-width: 90%; margin-right: auto; }
+  .f5-grid > .f5-card:nth-child(1), .f5-grid > .f5-card:nth-child(2), .f5-grid > .f5-card:nth-child(3) { grid-column: span 2; }
+  .f5-grid > .f5-card:nth-child(4), .f5-grid > .f5-card:nth-child(5) { grid-column: span 3; }
+  .f5-grid > .f5-card:nth-child(4) { max-width: 90%; margin-left: auto; }
+  .f5-grid > .f5-card:nth-child(5) { max-width: 90%; margin-right: auto; }
+  
   .f5-card { padding: 30px; border-radius: 24px;}
   .f5-icon { width: 48px; height: 48px; margin-bottom: 20px; }
   .f5-icon svg { width: 24px; height: 24px; }
@@ -1380,14 +1384,17 @@ select:-webkit-autofill:focus {
   .f5-card p { font-size: 14px; margin: 0 0 30px 0;}
   .f5-arrow { width: 32px; height: 32px; font-size: 14px; bottom: 24px; right: 24px; position: absolute; border-radius: 50%; background: #18181b; border: 1px solid #27272a; display: flex; align-items: center; justify-content: center; color: white; transition: 0.2s;}
   .f5-card:hover .f5-arrow { background: white; color: black; }
+  
   .doc-bento-grid { grid-template-columns: 1fr 1fr; }
   .doc-bento-full { grid-column: span 2; }
   .doc-checkbox-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  
   .trust-row-v3 { flex-direction: row; justify-content: space-around; padding: 30px; }
   .tr-badge { gap: 15px; justify-content: center; width: auto;}
   .tr-icon svg { width: 28px; height: 28px; }
   .tr-text h4 { font-size: 15px; }
   .tr-text p { font-size: 13px; }
+  
   .earnings-card { flex-direction: row; align-items: center; text-align: left; padding: 40px; margin: 0;}
   .ec-info { border-bottom: none; border-right: 1px solid rgba(255,255,255,0.1); padding-bottom: 0; padding-right: 40px; width: auto; flex: 1; justify-content: flex-start; }
   .ec-features { align-items: flex-start; padding-left: 40px; justify-content: center; width: auto; flex-shrink: 0;}
