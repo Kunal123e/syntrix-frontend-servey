@@ -62,6 +62,7 @@ const submitClaimBtn = document.getElementById("submitClaimBtn");
 // Gateway & Document Selectors
 const gatewayScreenSection = document.getElementById("gatewayScreenSection");
 const documentModeSection = document.getElementById("documentModeSection");
+const selfieModeSection = document.getElementById("selfieModeSection");
 
 // Dashboard Selectors
 const rewardDashboardScreen = document.getElementById("rewardDashboardScreen");
@@ -193,7 +194,7 @@ if (initializePlatformBtn) {
       }
       runProfileLedgerVerification(userEmailAddress, false);
     } else {
-      const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "gatewayScreenSection", "documentModeSection"];
+      const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "gatewayScreenSection", "documentModeSection", "selfieModeSection"];
       dashboardCards.forEach(id => {
         const el = document.getElementById(id);
         if (el) { el.style.display = "none"; el.classList.add("hidden"); }
@@ -350,8 +351,10 @@ function routeDashboardTabs(targetTab) {
     document.getElementById("tabScreenMoreSurveys"),
     document.getElementById("claimScreenSection"),
     document.getElementById("documentModeSection"),
+    document.getElementById("selfieModeSection"),
     document.getElementById("gatewayScreenSection"),
-    document.getElementById("claimForm")
+    document.getElementById("claimForm"),
+    document.getElementById("topProgressBox")
   ];
   
   cards.forEach(card => {
@@ -372,22 +375,37 @@ function routeDashboardTabs(targetTab) {
     const el = document.getElementById("rewardDashboardScreen");
     if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
   }
-  if (targetTab === "badge") {
+  else if (targetTab === "badge") {
     const el = document.getElementById("tabScreenBadge");
     if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
   }
-  if (targetTab === "referrals") {
+  else if (targetTab === "referrals") {
     const el = document.getElementById("tabScreenReferrals");
     if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
   }
-  if (targetTab === "more-surveys") {
+  else if (targetTab === "more-surveys" || targetTab === "more") {
     const el = document.getElementById("tabScreenMoreSurveys");
     if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
   }
-  if (targetTab === "document") {
+  else if (targetTab === "document") {
     const el = document.getElementById("documentModeSection");
     if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
     if(mainSubtitle) mainSubtitle.style.display = "none"; 
+  }
+  else if (targetTab === "selfie") {
+    const el = document.getElementById("selfieModeSection");
+    if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
+    if(mainSubtitle) mainSubtitle.style.display = "none"; 
+  }
+  else if (targetTab === "gateway") {
+    const el = document.getElementById("gatewayScreenSection");
+    if(el) { el.classList.remove("hidden"); el.style.display = "flex"; }
+  }
+  else if (targetTab === "survey") {
+    const form = document.getElementById("claimForm");
+    const progress = document.getElementById("topProgressBox");
+    if(form) { form.classList.remove("hidden"); form.style.display = "block"; }
+    if(progress) { progress.classList.remove("hidden"); progress.style.display = "block"; }
   }
 }
 
@@ -603,17 +621,17 @@ function renderSection() {
     if (progressText) progressText.innerText = `Progress ${currentSection + 1}/${sections.length}`;
 
     let htmlStr = `<div class="survey-section-card animate-fade-in">
-      <h2 class="surveySectionTitle" style="font-size: 26px; font-weight: 800; color: #111827; margin-bottom: 5px;">${getSectionTitle(currentData)}</h2>`;
+      <h2 class="surveySectionTitle" style="font-size: 26px; font-weight: 800; color: #ffffff; margin-bottom: 5px;">${getSectionTitle(currentData)}</h2>`;
 
     if (currentData && currentData.questions) {
         currentData.questions.forEach((q) => {
           const savedAnswer = answers[q.id] || "";
           htmlStr += `<div class="question-block" style="margin-top:30px; text-align:left;">
-            <p class="questionText" style="font-weight:800; margin-bottom:16px; font-size:17px; color:#1f1f1f;">${getQuestionText(q)}</p>
+            <p class="questionText" style="font-weight:800; margin-bottom:16px; font-size:17px; color:#d1d5db;">${getQuestionText(q)}</p>
             <div class="options">`; 
 
           if (q.type === "textarea") {
-               htmlStr += `<textarea id="${q.id}" placeholder="Type your answer here..." onchange="recordSelection('${q.id}', this.value)" style="width:100%; border:2px solid #e2e8f0; border-radius:14px; padding:16px; font-size:15px; font-family:inherit;">${savedAnswer}</textarea>`;
+               htmlStr += `<textarea id="${q.id}" placeholder="Type your answer here..." onchange="recordSelection('${q.id}', this.value)" style="width:100%; border:1px solid #3f3f46; border-radius:14px; padding:16px; font-size:15px; font-family:inherit; background: #18181b; color: #ffffff;">${savedAnswer}</textarea>`;
           } 
           else if (q.options && Array.isArray(q.options)) {
               q.options.forEach((opt) => {
@@ -726,6 +744,7 @@ async function runProfileLedgerVerification(email, isFromModal = false, isBackgr
       if (menuReferralWrapper) menuReferralWrapper.style.display = "flex";
 
       if (statusResult.exists === true) {
+        window.hasCompletedSurvey = true; /* 🔥 Ensure flag is set so we can intercept future survey clicks */
         displayConsumerBadgesUI(statusResult.badge || "Analyzer");
 
         if (!isBackgroundSync) {
@@ -734,6 +753,7 @@ async function runProfileLedgerVerification(email, isFromModal = false, isBackgr
             if (topProgressBox) { topProgressBox.classList.add("hidden"); topProgressBox.style.display = "none"; }
             if (gatewayScreenSection) { gatewayScreenSection.classList.add("hidden"); gatewayScreenSection.style.display = "none"; }
             if (documentModeSection) { documentModeSection.classList.add("hidden"); documentModeSection.style.display = "none"; }
+            if (selfieModeSection) { selfieModeSection.classList.add("hidden"); selfieModeSection.style.display = "none"; }
             
             const tabLinksContainer = document.getElementById("dashboardTabLinks");
             if (tabLinksContainer) { tabLinksContainer.classList.remove("hidden"); tabLinksContainer.style.display = "flex"; }
@@ -742,13 +762,14 @@ async function runProfileLedgerVerification(email, isFromModal = false, isBackgr
         }
         if (!isBackgroundSync) outputTarget.innerHTML = "";
       } else {
+        window.hasCompletedSurvey = false; 
         const menuPsychologyBadgeWrapper = document.getElementById("menuPsychologyBadgeWrapper");
         if (menuPsychologyBadgeWrapper) menuPsychologyBadgeWrapper.style.display = "none";
 
         if (!isBackgroundSync) {
             if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
             
-            const cards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "claimForm", "topProgressBox", "documentModeSection"];
+            const cards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "claimForm", "topProgressBox", "documentModeSection", "selfieModeSection"];
             cards.forEach(id => {
               const el = document.getElementById(id);
               if (el) { el.classList.add("hidden"); el.style.display = "none"; }
@@ -757,7 +778,7 @@ async function runProfileLedgerVerification(email, isFromModal = false, isBackgr
             const tabLinksContainer = document.getElementById("dashboardTabLinks");
             if (tabLinksContainer) { tabLinksContainer.classList.add("hidden"); tabLinksContainer.style.display = "none"; }
 
-            window.openMode('gateway');
+            routeDashboardTabs("gateway");
             outputTarget.innerHTML = "";
         }
       }
@@ -765,7 +786,7 @@ async function runProfileLedgerVerification(email, isFromModal = false, isBackgr
       if (!isFromModal) {
         if (!isBackgroundSync) {
             if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
-            const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "claimForm", "topProgressBox", "documentModeSection"];
+            const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "claimForm", "topProgressBox", "documentModeSection", "selfieModeSection"];
             dashboardCards.forEach(id => {
               const el = document.getElementById(id);
               if (el) { el.style.display = "none"; el.classList.add("hidden"); }
@@ -773,7 +794,7 @@ async function runProfileLedgerVerification(email, isFromModal = false, isBackgr
             const tabLinksContainer = document.getElementById("dashboardTabLinks");
             if (tabLinksContainer) { tabLinksContainer.classList.add("hidden"); tabLinksContainer.style.display = "none"; }
             
-            window.openMode('gateway');
+            routeDashboardTabs("gateway");
             outputTarget.innerHTML = "";
         }
       } else {
@@ -868,6 +889,7 @@ async function handleSurveySubmission(e) {
       if (animOverlay) animOverlay.style.display = "none";
       if (result.success) {
         if (statusDiv) statusDiv.innerHTML = "";
+        window.hasCompletedSurvey = true; /* 🔥 Ensure this triggers so they can't do it again */
         await runProfileLedgerVerification(userEmailAddress, false);
       } else {
         if (claimForm) { claimForm.classList.remove("hidden"); claimForm.style.display = "block"; }
@@ -966,6 +988,7 @@ function resetApplicationFlowState() {
   isOtpSent = false;
   legalConsentTimestamp = "";
   clientUserAgent = ""; 
+  window.hasCompletedSurvey = false;
   
   const otpSection = document.getElementById("otpSection");
   if (otpSection) {
@@ -987,7 +1010,7 @@ function resetApplicationFlowState() {
       emailGateSection.style.display = "flex";
   }
   
-  const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "gatewayScreenSection", "documentModeSection"];
+  const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "gatewayScreenSection", "documentModeSection", "selfieModeSection"];
   dashboardCards.forEach(id => {
     const el = document.getElementById(id);
     if (el) { el.classList.add("hidden"); el.style.display = "none"; }
@@ -1039,7 +1062,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     btn.addEventListener("click", (e) => {
       const target = e.target.dataset.tab;
       if (target) {
-        routeDashboardTabs(target);
+        if (target === 'survey' && window.hasCompletedSurvey) {
+            showToast("✅ Survey already completed. Redirecting to Survey Matrix...", "✅");
+            routeDashboardTabs('more-surveys');
+        } else {
+            routeDashboardTabs(target);
+        }
         if(optionsPopover) {
           optionsPopover.classList.add("hidden");
           optionsPopover.style.display = "none";
@@ -1054,6 +1082,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (topProgressBox) { topProgressBox.classList.add("hidden"); topProgressBox.style.display = "none"; }
     if (gatewayScreenSection) { gatewayScreenSection.classList.add("hidden"); gatewayScreenSection.style.display = "none"; }
     if (documentModeSection) { documentModeSection.classList.add("hidden"); documentModeSection.style.display = "none"; }
+    if (selfieModeSection) { selfieModeSection.classList.add("hidden"); selfieModeSection.style.display = "none"; }
     
     const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys"];
     dashboardCards.forEach(id => {
