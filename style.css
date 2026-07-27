@@ -9,11 +9,12 @@
   font-family: 'Plus Jakarta Sans', sans-serif; 
 }
 
-body { 
-  background: #000000; 
-  min-height: 100vh; 
-  color: #ffffff; 
-  overflow-x: hidden;
+html, body { 
+  background: #000000; 
+  min-height: 100vh; 
+  color: #ffffff; 
+  overflow-x: clip;
+  overflow-y: auto !important; 
 }
 
 /* ================= 🚀 UI ANIMATIONS & INTERACTIONS ================= */
@@ -1550,7 +1551,7 @@ select:-webkit-autofill:focus {
 }
 
 /* ================= 🚀 SPLASH VISUAL SCREEN RULES ================= */
-#splashLandingGate { background: #000000; width: 100%; min-height: 100vh; display: flex; flex-direction: column; position: absolute; top: 0; left: 0; z-index: 10000; overflow-x: hidden;}
+#splashLandingGate { background: #000000; width: 100%; min-height: 100vh; display: flex; flex-direction: column; position: relative; z-index: 10000; overflow-x: clip;}
 .desktop-only { display: none !important; }
 .mobile-only { display: flex !important; }
 
@@ -2164,12 +2165,13 @@ select:-webkit-autofill:focus {
 }
 .prm-close-btn:hover { color: #ffffff; }
 
-.prm-body { 
-  padding: 24px; 
-  overflow-y: auto; 
-  flex: 1; 
+.prm-body { 
+  padding: 24px; 
+  overflow-y: auto !important; 
+  flex: 1 1 auto !important; 
+  min-height: 0 !important;
+  -webkit-overflow-scrolling: touch !important;
 }
-
 .prm-drag-line {
   width: 40px;
   height: 4px;
@@ -2316,3 +2318,27 @@ select:-webkit-autofill:focus {
   background: #f4f4f5;
   transform: translateY(-2px);
 }
+
+/* ================= 🚀 DESKTOP LAYOUT (FIXES THE SQUISHED CARDS) ================= */
+@media (min-width: 900px) {
+  .desktop-only { display: flex !important; }
+  .mobile-only { display: none !important; }
+  
+  .splash-header-v3 { padding: 30px 40px; border-bottom: none; display: flex; flex-direction: row; justify-content: space-between; align-items: center;}
+  
+  .hero-container-v3 { padding: 100px 40px; }
+  .hero-grid-v3 { display: flex; flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 80px; text-align: left;}
+  .hg-left { width: 55%; text-align: left; }
+  .hero-title-v3 { font-size: 84px !important; }
+  .hg-right { width: 45%; display: flex; justify-content: flex-end; }
+  
+  /* THIS FIXES THE 5 CARDS */
+  .f5-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 24px; margin-bottom: 60px; }
+  .f5-grid > .f5-card:nth-child(1), .f5-grid > .f5-card:nth-child(2), .f5-grid > .f5-card:nth-child(3) { grid-column: span 2; }
+  .f5-grid > .f5-card:nth-child(4), .f5-grid > .f5-card:nth-child(5) { grid-column: span 3; }
+  .f5-grid > .f5-card:nth-child(4) { max-width: 90%; margin-left: auto; }
+  .f5-grid > .f5-card:nth-child(5) { max-width: 90%; margin-right: auto; }
+}
+
+/* ================= 🚀 KILL SWITCH ================= */
+.hidden { display: none !important; }
