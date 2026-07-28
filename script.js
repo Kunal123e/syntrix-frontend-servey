@@ -1338,14 +1338,17 @@ function resetUploadState(keepInputs = false) {
       
       if (previewContainer) {
           previewContainer.style.display = 'none';
-          previewContainer.classList.add('hidden'); // Hide container
+          previewContainer.classList.add('hidden'); 
       }
       if (imagePreview) {
           imagePreview.src = '';
-          imagePreview.classList.add('hidden'); // Hide image
+          imagePreview.classList.add('hidden'); 
       }
       
-      // Restore scanner rings if they were hidden
+      // 🚀 FIX: Clear the selfie image and restore the scanner rings
+      const selfieImg = document.getElementById('selfieResultImg');
+      if (selfieImg) selfieImg.style.display = 'none';
+
       const scannerOuter = document.querySelector('.scanner-circle-outer');
       const scannerInner = document.querySelector('.scanner-circle-inner');
       if (scannerOuter) scannerOuter.style.display = 'flex';
@@ -1355,7 +1358,7 @@ function resetUploadState(keepInputs = false) {
     if (submitDocBtn) {
         submitDocBtn.disabled = true;
         submitDocBtn.innerText = 'Approve & Submit to Waiting Room';
-        submitDocBtn.classList.remove('hidden'); // Unblock submit button
+        submitDocBtn.classList.remove('hidden');
         submitDocBtn.style.display = 'flex'; 
     }
     
@@ -1413,7 +1416,7 @@ function handleFileSelection(e) {
     
     if (submitDocBtn) {
         submitDocBtn.disabled = false;
-        submitDocBtn.classList.remove('hidden'); // 🚀 FIX: Prevent CSS block
+        submitDocBtn.classList.remove('hidden'); 
         submitDocBtn.style.display = 'flex';
     }
     
@@ -1422,21 +1425,37 @@ function handleFileSelection(e) {
       
       if (imagePreview) {
           imagePreview.src = url;
-          imagePreview.classList.remove('hidden'); // 🚀 FIX: Show image
+          imagePreview.classList.remove('hidden'); 
           imagePreview.style.display = 'block';
       }
-      
       if (previewContainer) {
-          previewContainer.classList.remove('hidden'); // 🚀 FIX: Show container
+          previewContainer.classList.remove('hidden'); 
           previewContainer.style.display = 'flex';
       }
       
-      // 🚀 FIX: Hide the purple glowing scanner rings so your face is perfectly clear!
-      const scannerOuter = document.querySelector('.scanner-circle-outer');
-      const scannerInner = document.querySelector('.scanner-circle-inner');
-      if (scannerOuter) scannerOuter.style.display = 'none';
-      if (scannerInner) scannerInner.style.display = 'none';
-      
+      // 🚀 FIX: Force the selfie image to render right in the middle of the scanner box
+      const selfieContainer = document.querySelector('.selfie-scanner-container');
+      if (selfieContainer) {
+          const scannerOuter = selfieContainer.querySelector('.scanner-circle-outer');
+          const scannerInner = selfieContainer.querySelector('.scanner-circle-inner');
+          if (scannerOuter) scannerOuter.style.display = 'none';
+          if (scannerInner) scannerInner.style.display = 'none';
+          
+          let selfieImg = document.getElementById('selfieResultImg');
+          if (!selfieImg) {
+              selfieImg = document.createElement('img');
+              selfieImg.id = 'selfieResultImg';
+              selfieImg.style.maxWidth = '100%';
+              selfieImg.style.maxHeight = '260px';
+              selfieImg.style.borderRadius = '12px';
+              selfieImg.style.objectFit = 'contain';
+              selfieImg.style.position = 'relative';
+              selfieImg.style.zIndex = '10';
+              selfieContainer.appendChild(selfieImg);
+          }
+          selfieImg.src = url;
+          selfieImg.style.display = 'block';
+      }
     } catch(err) {
       console.error("Preview generation failed:", err);
     }
@@ -1661,42 +1680,27 @@ function requestDevicePermissionUX(type) {
 }
 
 // Listeners for the dynamic permission modal
-document.addEventListener('click', async (e) => {
+// 🚀 FIX: Sync Button Click so Mobile Browsers don't block the Camera
+document.addEventListener('click', (e) => {
     if (e.target.id === 'permCancelBtn') {
         const modal = document.getElementById('sysPermissionModal');
         if (modal) { modal.classList.add('hidden'); modal.style.display = 'none'; }
     }
     
     if (e.target.id === 'permAllowBtn') {
-        const allowBtn = e.target;
-        const errorAlert = document.getElementById('permErrorAlert');
         const modal = document.getElementById('sysPermissionModal');
         
-        allowBtn.innerText = 'Verifying...';
-        allowBtn.disabled = true;
-
+        // Open the camera natively instantly (No await delay allowed)
         if (pendingTriggerAction === 'camera') {
-            try {
-                // Pre-flight check for camera permission (catches denied state)
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                stream.getTracks().forEach(track => track.stop()); // Immediately release hardware
-                
-                modal.classList.add('hidden');
-                modal.style.display = 'none';
-                if (fileInputCamera) fileInputCamera.click(); // Proceed with native capture
-            } catch (err) {
-                // If blocked by OS or browser settings
-                errorAlert.classList.remove('hidden');
-                errorAlert.style.display = 'block';
-            }
+            if (fileInputCamera) fileInputCamera.click();
         } else {
-            modal.classList.add('hidden');
-            modal.style.display = 'none';
             if (fileInputGallery) fileInputGallery.click();
         }
         
-        allowBtn.innerText = 'Allow Access';
-        allowBtn.disabled = false;
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+        }
     }
 });
 
