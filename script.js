@@ -1329,20 +1329,34 @@ const docLanguageInput = document.getElementById('docLanguageInput');
 let selectedFile = null;
 let currentPollInterval = null;
 
-// 🚀 FIX: FULL FRONTEND STATE RESET FUNCTION (Clears old errors safely without wiping file inputs if called during selection)
+// 🚀 FIX: FULL FRONTEND STATE RESET FUNCTION (Clears old errors safely)
 function resetUploadState(keepInputs = false) {
     if (!keepInputs) {
       selectedFile = null;
       if (fileInputCamera) fileInputCamera.value = '';
       if (fileInputGallery) fileInputGallery.value = '';
-      if (previewContainer) previewContainer.style.display = 'none';
-      if (imagePreview) imagePreview.src = '';
+      
+      if (previewContainer) {
+          previewContainer.style.display = 'none';
+          previewContainer.classList.add('hidden'); // Hide container
+      }
+      if (imagePreview) {
+          imagePreview.src = '';
+          imagePreview.classList.add('hidden'); // Hide image
+      }
+      
+      // Restore scanner rings if they were hidden
+      const scannerOuter = document.querySelector('.scanner-circle-outer');
+      const scannerInner = document.querySelector('.scanner-circle-inner');
+      if (scannerOuter) scannerOuter.style.display = 'flex';
+      if (scannerInner) scannerInner.style.display = 'flex';
     }
     
     if (submitDocBtn) {
         submitDocBtn.disabled = true;
         submitDocBtn.innerText = 'Approve & Submit to Waiting Room';
-        submitDocBtn.style.display = 'block';
+        submitDocBtn.classList.remove('hidden'); // Unblock submit button
+        submitDocBtn.style.display = 'flex'; 
     }
     
     if (statusMessage) {
@@ -1352,11 +1366,16 @@ function resetUploadState(keepInputs = false) {
     
     if (detailedReasonBox) {
         detailedReasonBox.style.display = 'none';
+        detailedReasonBox.classList.add('hidden');
         detailedReasonBox.innerText = '';
         detailedReasonBox.className = 'dynamic-reason-box';
     }
     
-    if (retryUploadBtn) retryUploadBtn.style.display = 'none';
+    if (retryUploadBtn) {
+        retryUploadBtn.style.display = 'none';
+        retryUploadBtn.classList.add('hidden');
+    }
+    
     if (currentPollInterval) clearInterval(currentPollInterval);
 }
 
@@ -1389,15 +1408,35 @@ if (taskTypeSelect) {
 function handleFileSelection(e) {
   if (e.target.files && e.target.files.length > 0) {
     const newFile = e.target.files[0];
-    resetUploadState(true); // 🚀 FIX: keepInputs = true so it doesn't crash the browser objectURL!
+    resetUploadState(true); 
     selectedFile = newFile;
     
-    if (submitDocBtn) submitDocBtn.disabled = false;
+    if (submitDocBtn) {
+        submitDocBtn.disabled = false;
+        submitDocBtn.classList.remove('hidden'); // 🚀 FIX: Prevent CSS block
+        submitDocBtn.style.display = 'flex';
+    }
     
     try {
       const url = URL.createObjectURL(selectedFile);
-      if (imagePreview) imagePreview.src = url;
-      if (previewContainer) previewContainer.style.display = 'block';
+      
+      if (imagePreview) {
+          imagePreview.src = url;
+          imagePreview.classList.remove('hidden'); // 🚀 FIX: Show image
+          imagePreview.style.display = 'block';
+      }
+      
+      if (previewContainer) {
+          previewContainer.classList.remove('hidden'); // 🚀 FIX: Show container
+          previewContainer.style.display = 'flex';
+      }
+      
+      // 🚀 FIX: Hide the purple glowing scanner rings so your face is perfectly clear!
+      const scannerOuter = document.querySelector('.scanner-circle-outer');
+      const scannerInner = document.querySelector('.scanner-circle-inner');
+      if (scannerOuter) scannerOuter.style.display = 'none';
+      if (scannerInner) scannerInner.style.display = 'none';
+      
     } catch(err) {
       console.error("Preview generation failed:", err);
     }
