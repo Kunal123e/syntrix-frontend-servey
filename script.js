@@ -1416,6 +1416,36 @@ function convertToBase64(file) {
   });
 }
 
+// 🚀 FIX 1: AI-SAFE IMAGE COMPRESSION (Prevents Backend Crash on Large Selfies)
+function compressImageForBackend(file, maxWidth = 1080, quality = 0.8) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality)); // AI-optimized payload
+      };
+      img.onerror = (err) => reject(err);
+    };
+    reader.onerror = (err) => reject(err);
+  });
+}
+
 // 🚀 UI PROGRESS HELPER (Dynamic Progress Steps)
 function updateProgressUI(stepText, percent) {
     if (!statusMessage) return;
@@ -1449,7 +1479,7 @@ if (submitDocBtn) {
     if (taskType === 'notes') {
       const consentSensitive = document.getElementById('consentSensitive');
       const consentCommercial = document.getElementById('consentCommercial');
-      if (!consentSensitive.checked || !consentCommercial.checked) { 
+      if (consentSensitive && !consentSensitive.checked || consentCommercial && !consentCommercial.checked) { 
           if (statusMessage) statusMessage.innerHTML = '<span style="color:#ef4444;">⚠️ You must agree to the Legal Consents before uploading.</span>';
           return; 
       }
@@ -1466,10 +1496,11 @@ if (submitDocBtn) {
     }
 
     submitDocBtn.disabled = true;
-    updateProgressUI('📤 Uploading securely...', 15);
+    updateProgressUI('📤 Compressing and securing payload...', 15);
 
     try {
-      const base64String = await convertToBase64(selectedFile);
+      // 🚀 USE COMPRESSION HERE INSTEAD OF RAW FileReader
+      const base64String = await compressImageForBackend(selectedFile);
       const payload = {
         userEmail: userEmailAddress, taskType: taskType, fileName: selectedFile.name || 'capture.jpg', imageBase64: base64String,
         contentTags: contentTags.length > 0 ? contentTags : ['none']
@@ -1480,19 +1511,14 @@ if (submitDocBtn) {
       });
 
       if (response.ok) {
-        
         let attempts = 0;
-        const maxAttempts = 15; // 45 seconds total check
-        
+        const maxAttempts = 15;
         updateProgressUI('🤖 AI is verifying parameters...', 35);
 
-        // 🚀 DYNAMIC PROGRESS INDICATOR UX
         currentPollInterval = setInterval(async () => {
             attempts++;
-            
-            // Visual UX Swapping
-            if(attempts === 2) updateProgressUI('📄 Checking quality and embeddings...', 60);
-            if(attempts === 5) updateProgressUI('🔐 Security verification...', 85);
+            if(attempts === 2) updateProgressUI('📄 Analyzing vectors and embeddings...', 60);
+            if(attempts === 5) updateProgressUI('🔐 Security & anti-spoofing verification...', 85);
 
             try {
                 const res = await fetch(`${BACKEND_URL}/api/check-submission?email=${encodeURIComponent(userEmailAddress)}`);
@@ -1505,21 +1531,19 @@ if (submitDocBtn) {
                     if (status === 'verified' || status === 'approved') {
                         clearInterval(currentPollInterval);
                         await runProfileLedgerVerification(userEmailAddress, false, true); 
-                        
                         submitDocBtn.style.display = 'none';
                         statusMessage.innerHTML = `
                             <div style="font-size:40px; margin-bottom:10px;">✅</div>
-                            <div style="font-weight:900; color:#166534; font-size:18px;">Document Verified</div>
-                            <div style="color:#111827; font-size:14px; margin-top:8px;"><strong>+48 SYNX Tokens</strong><br>Tokens will be credited after final approval.</div>
+                            <div style="font-weight:900; color:#166534; font-size:18px;">Verification Successful</div>
+                            <div style="color:#111827; font-size:14px; margin-top:8px;"><strong>+48 SYNX Tokens</strong><br>Tokens successfully assigned to profile.</div>
                         `;
                         showDetailedReason(reason, true);
                         retryUploadBtn.style.display = 'block'; 
                     } 
                     else if (status === 'rejected' || status === 'rejected_pii' || status === 'fraud' || status === 'duplicate') {
                         clearInterval(currentPollInterval);
-                        
                         submitDocBtn.style.display = 'none';
-                        statusMessage.innerHTML = '<span style="font-weight:800; font-size:16px; color:#9f1239;">❌ Verification Failed</span>';
+                        statusMessage.innerHTML = '<span style="font-weight:800; font-size:16px; color:#9f1239;">❌ AI Verification Failed</span>';
                         showDetailedReason(reason, false); 
                         retryUploadBtn.style.display = 'block';
                     }
@@ -1527,7 +1551,7 @@ if (submitDocBtn) {
                 
                 if (attempts >= maxAttempts) {
                     clearInterval(currentPollInterval);
-                    statusMessage.innerHTML = '<span style="color:#ea580c; font-weight:700;">⚠️ AI timed out. Please try again.</span>';
+                    statusMessage.innerHTML = '<span style="color:#ea580c; font-weight:700;">⚠️ AI timed out. Please check network and try again.</span>';
                     submitDocBtn.disabled = false;
                     submitDocBtn.innerText = 'Approve & Submit to Waiting Room';
                     retryUploadBtn.style.display = 'block';
@@ -1541,8 +1565,121 @@ if (submitDocBtn) {
         submitDocBtn.disabled = false;
       }
     } catch (error) {
-      statusMessage.innerHTML = '<span style="color:#ef4444;">⚠️ Network error. Could not connect to waiting room.</span>';
+      statusMessage.innerHTML = '<span style="color:#ef4444;">⚠️ Network error. Could not establish connection.</span>';
       submitDocBtn.disabled = false;
     }
   });
 }
+
+// 🚀 FIX 2: PROPER UX PERMISSION FLOW MODAL (Solves OS Blocking and Confusing UX)
+function injectPermissionModal() {
+    if (document.getElementById('sysPermissionModal')) return;
+    const modalHtml = `
+    <div id="sysPermissionModal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 99999; padding: 20px;">
+        <div style="background: #09090b; border: 1px solid #27272a; border-radius: 24px; padding: 30px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5);">
+            <div id="permIcon" style="font-size: 48px; margin-bottom: 15px;">📷</div>
+            <h2 id="permTitle" style="font-size: 22px; font-weight: 800; color: #ffffff; margin-bottom: 10px;">Camera Access Required</h2>
+            <p id="permDesc" style="font-size: 14px; color: #a1a1aa; line-height: 1.6; margin-bottom: 25px;">To securely verify your identity, we need temporary access to your camera for a real-time selfie capture.</p>
+            <div id="permErrorAlert" class="hidden" style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 12px; padding: 12px; color: #fca5a5; font-size: 13px; margin-bottom: 20px; display: none;">
+                Camera access was blocked by your browser. Please enable it in your browser settings to continue.
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <button id="permCancelBtn" style="flex: 1; padding: 14px; background: transparent; border: 1px solid #3f3f46; color: #ffffff; border-radius: 12px; font-weight: 600; cursor: pointer;">Cancel</button>
+                <button id="permAllowBtn" style="flex: 1; padding: 14px; background: #ffffff; color: #000000; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;">Allow Access</button>
+            </div>
+        </div>
+    </div>`;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+let pendingTriggerAction = null;
+
+function requestDevicePermissionUX(type) {
+    injectPermissionModal();
+    pendingTriggerAction = type;
+    
+    const modal = document.getElementById('sysPermissionModal');
+    const title = document.getElementById('permTitle');
+    const desc = document.getElementById('permDesc');
+    const icon = document.getElementById('permIcon');
+    const errorAlert = document.getElementById('permErrorAlert');
+    
+    errorAlert.classList.add('hidden');
+    errorAlert.style.display = 'none';
+
+    if (type === 'camera') {
+        icon.innerText = '🤳';
+        title.innerText = 'Camera Access Required';
+        desc.innerText = 'Syntrix requires secure camera access to capture a live verification photo.';
+    } else {
+        icon.innerText = '📁';
+        title.innerText = 'File Access Required';
+        desc.innerText = 'Syntrix needs access to your gallery or files to securely upload your selected document.';
+    }
+    
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+}
+
+// Listeners for the dynamic permission modal
+document.addEventListener('click', async (e) => {
+    if (e.target.id === 'permCancelBtn') {
+        const modal = document.getElementById('sysPermissionModal');
+        if (modal) { modal.classList.add('hidden'); modal.style.display = 'none'; }
+    }
+    
+    if (e.target.id === 'permAllowBtn') {
+        const allowBtn = e.target;
+        const errorAlert = document.getElementById('permErrorAlert');
+        const modal = document.getElementById('sysPermissionModal');
+        
+        allowBtn.innerText = 'Verifying...';
+        allowBtn.disabled = true;
+
+        if (pendingTriggerAction === 'camera') {
+            try {
+                // Pre-flight check for camera permission (catches denied state)
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                stream.getTracks().forEach(track => track.stop()); // Immediately release hardware
+                
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+                if (fileInputCamera) fileInputCamera.click(); // Proceed with native capture
+            } catch (err) {
+                // If blocked by OS or browser settings
+                errorAlert.classList.remove('hidden');
+                errorAlert.style.display = 'block';
+            }
+        } else {
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+            if (fileInputGallery) fileInputGallery.click();
+        }
+        
+        allowBtn.innerText = 'Allow Access';
+        allowBtn.disabled = false;
+    }
+});
+
+// Intercept existing UI buttons to route through the permission gate
+window.addEventListener('DOMContentLoaded', () => {
+    // Override the native label behavior by listening to the UI buttons explicitly
+    const cameraUI = document.querySelector('.doc-btn-white') || document.getElementById('btnCameraText')?.parentElement;
+    const galleryUI = document.getElementById('btnGallery');
+
+    if (cameraUI) {
+        cameraUI.addEventListener('click', (e) => {
+            e.preventDefault(); 
+            e.stopPropagation();
+            requestDevicePermissionUX('camera');
+        }, true);
+    }
+    
+    if (galleryUI) {
+        galleryUI.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            requestDevicePermissionUX('gallery');
+        }, true);
+    }
+});
