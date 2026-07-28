@@ -1312,22 +1312,20 @@ document.addEventListener("DOMContentLoaded", async () => {
 const taskTypeSelect = document.getElementById('taskType');
 const fileInputCamera = document.getElementById('fileInputCamera');
 const fileInputGallery = document.getElementById('fileInputGallery');
+const fileInputSelfie = document.getElementById('fileInputSelfie'); // 🚀 FIX: Actually target the selfie input
 const previewContainer = document.getElementById('previewContainer');
 const imagePreview = document.getElementById('imagePreview');
+
 const submitDocBtn = document.getElementById('submitDocBtn');
+const submitSelfieBtn = document.getElementById('submitSelfieBtn'); // 🚀 FIX: Connect the Selfie Submit button
+
 const statusMessage = document.getElementById('statusMessage');
 const detailedReasonBox = document.getElementById('detailedReasonBox');
 const retryUploadBtn = document.getElementById('retryUploadBtn');
 
-const btnGallery = document.getElementById('btnGallery');
-const btnCameraText = document.getElementById('btnCameraText');
-const strictRulesBox = document.getElementById('strictRulesBox');
-const notesSpecificUI = document.getElementById('notesSpecificUI');
-const uploadTitle = document.getElementById('uploadTitle');
-const docLanguageInput = document.getElementById('docLanguageInput');
-
 let selectedFile = null;
 let currentPollInterval = null;
+let isUploadingSelfie = false;
 
 // 🚀 FIX: FULL FRONTEND STATE RESET FUNCTION (Clears old errors safely)
 function resetUploadState(keepInputs = false) {
@@ -1335,6 +1333,7 @@ function resetUploadState(keepInputs = false) {
       selectedFile = null;
       if (fileInputCamera) fileInputCamera.value = '';
       if (fileInputGallery) fileInputGallery.value = '';
+      if (fileInputSelfie) fileInputSelfie.value = '';
       
       if (previewContainer) {
           previewContainer.style.display = 'none';
@@ -1347,7 +1346,11 @@ function resetUploadState(keepInputs = false) {
       
       // 🚀 FIX: Clear the selfie image and restore the scanner rings
       const selfieImg = document.getElementById('selfieResultImg');
-      if (selfieImg) selfieImg.style.display = 'none';
+      if (selfieImg) {
+          selfieImg.src = '';
+          selfieImg.classList.add('hidden');
+          selfieImg.style.display = 'none';
+      }
 
       const scannerOuter = document.querySelector('.scanner-circle-outer');
       const scannerInner = document.querySelector('.scanner-circle-inner');
@@ -1360,6 +1363,13 @@ function resetUploadState(keepInputs = false) {
         submitDocBtn.innerText = 'Approve & Submit to Waiting Room';
         submitDocBtn.classList.remove('hidden');
         submitDocBtn.style.display = 'flex'; 
+    }
+
+    if (submitSelfieBtn) {
+        submitSelfieBtn.disabled = true;
+        submitSelfieBtn.innerText = 'Verify & Submit to Waiting Room';
+        submitSelfieBtn.classList.remove('hidden');
+        submitSelfieBtn.style.display = 'flex'; 
     }
     
     if (statusMessage) {
@@ -1386,75 +1396,57 @@ if (retryUploadBtn) {
     retryUploadBtn.addEventListener('click', () => resetUploadState(false));
 }
 
-if (taskTypeSelect) {
-  taskTypeSelect.addEventListener('change', function(e) {
-    resetUploadState(false);
-    
-    if (e.target.value === 'selfie') {
-      if (btnGallery) btnGallery.style.display = 'none';
-      if (strictRulesBox) strictRulesBox.style.display = 'none';
-      if (notesSpecificUI) notesSpecificUI.style.display = 'none';
-      if (btnCameraText) btnCameraText.innerText = '🤳 Take Selfie';
-      if (fileInputCamera) fileInputCamera.setAttribute('capture', 'user'); 
-      if (uploadTitle) uploadTitle.innerText = "Provide your Human Selfie";
-    } else {
-      if (btnGallery) btnGallery.style.display = 'inline-block';
-      if (strictRulesBox) strictRulesBox.style.display = 'flex';
-      if (notesSpecificUI) notesSpecificUI.style.display = 'block';
-      if (btnCameraText) btnCameraText.innerText = '📷 Take Photo';
-      if (fileInputCamera) fileInputCamera.setAttribute('capture', 'environment'); 
-      if (uploadTitle) uploadTitle.innerText = "Provide your document";
-    }
-  });
-}
-
+// 🚀 FIX: Make sure the file selection handles both Document and Selfie scenarios
 function handleFileSelection(e) {
   if (e.target.files && e.target.files.length > 0) {
     const newFile = e.target.files[0];
     resetUploadState(true); 
     selectedFile = newFile;
     
-    if (submitDocBtn) {
-        submitDocBtn.disabled = false;
-        submitDocBtn.classList.remove('hidden'); 
-        submitDocBtn.style.display = 'flex';
+    // Check which input was triggered
+    const isSelfieUpload = e.target.id === 'fileInputSelfie';
+    isUploadingSelfie = isSelfieUpload;
+
+    if (isSelfieUpload) {
+        if (submitSelfieBtn) {
+            submitSelfieBtn.disabled = false;
+            submitSelfieBtn.classList.remove('hidden');
+        }
+    } else {
+        if (submitDocBtn) {
+            submitDocBtn.disabled = false;
+            submitDocBtn.classList.remove('hidden'); 
+            submitDocBtn.style.display = 'flex';
+        }
     }
     
     try {
       const url = URL.createObjectURL(selectedFile);
       
-      if (imagePreview) {
-          imagePreview.src = url;
-          imagePreview.classList.remove('hidden'); 
-          imagePreview.style.display = 'block';
-      }
-      if (previewContainer) {
-          previewContainer.classList.remove('hidden'); 
-          previewContainer.style.display = 'flex';
-      }
-      
-      // 🚀 FIX: Force the selfie image to render right in the middle of the scanner box
-      const selfieContainer = document.querySelector('.selfie-scanner-container');
-      if (selfieContainer) {
-          const scannerOuter = selfieContainer.querySelector('.scanner-circle-outer');
-          const scannerInner = selfieContainer.querySelector('.scanner-circle-inner');
+      if (isSelfieUpload) {
+          // Hide rings, show selfie image
+          const scannerOuter = document.querySelector('.scanner-circle-outer');
+          const scannerInner = document.querySelector('.scanner-circle-inner');
           if (scannerOuter) scannerOuter.style.display = 'none';
           if (scannerInner) scannerInner.style.display = 'none';
           
-          let selfieImg = document.getElementById('selfieResultImg');
-          if (!selfieImg) {
-              selfieImg = document.createElement('img');
-              selfieImg.id = 'selfieResultImg';
-              selfieImg.style.maxWidth = '100%';
-              selfieImg.style.maxHeight = '260px';
-              selfieImg.style.borderRadius = '12px';
-              selfieImg.style.objectFit = 'contain';
-              selfieImg.style.position = 'relative';
-              selfieImg.style.zIndex = '10';
-              selfieContainer.appendChild(selfieImg);
+          const selfieImg = document.getElementById('selfieResultImg');
+          if (selfieImg) {
+              selfieImg.src = url;
+              selfieImg.classList.remove('hidden');
+              selfieImg.style.display = 'block';
           }
-          selfieImg.src = url;
-          selfieImg.style.display = 'block';
+      } else {
+          // Show document preview container
+          if (imagePreview) {
+              imagePreview.src = url;
+              imagePreview.classList.remove('hidden'); 
+              imagePreview.style.display = 'block';
+          }
+          if (previewContainer) {
+              previewContainer.classList.remove('hidden'); 
+              previewContainer.style.display = 'flex';
+          }
       }
     } catch(err) {
       console.error("Preview generation failed:", err);
@@ -1464,15 +1456,7 @@ function handleFileSelection(e) {
 
 if (fileInputCamera) fileInputCamera.addEventListener('change', handleFileSelection);
 if (fileInputGallery) fileInputGallery.addEventListener('change', handleFileSelection);
-
-function convertToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-  });
-}
+if (fileInputSelfie) fileInputSelfie.addEventListener('change', handleFileSelection);
 
 // 🚀 FIX 1: AI-SAFE IMAGE COMPRESSION (Prevents Backend Crash on Large Selfies)
 function compressImageForBackend(file, maxWidth = 1080, quality = 0.8) {
@@ -1524,14 +1508,14 @@ function showDetailedReason(reasonText, isSuccess) {
     }
 }
 
-if (submitDocBtn) {
-  submitDocBtn.addEventListener('click', async function() {
+// Unified upload handler for both documents and selfies
+async function executeUploadLogic(e) {
     if (!selectedFile || !userEmailAddress) { 
       if (statusMessage) statusMessage.innerHTML = '<span style="color:#ef4444;">⚠️ Please select a file and ensure you are logged in.</span>';
       return;
     }
 
-    const taskType = taskTypeSelect ? taskTypeSelect.value : 'notes';
+    const taskType = isUploadingSelfie ? 'selfie' : (taskTypeSelect ? taskTypeSelect.value : 'notes');
     let contentTags = [];
     
     if (taskType === 'notes') {
@@ -1541,6 +1525,7 @@ if (submitDocBtn) {
           if (statusMessage) statusMessage.innerHTML = '<span style="color:#ef4444;">⚠️ You must agree to the Legal Consents before uploading.</span>';
           return; 
       }
+      const docLanguageInput = document.getElementById('docLanguageInput');
       if (docLanguageInput && docLanguageInput.value.trim() === "") { 
           if (statusMessage) statusMessage.innerHTML = '<span style="color:#ef4444;">⚠️ Please specify the language used in the notes.</span>';
           return; 
@@ -1551,9 +1536,22 @@ if (submitDocBtn) {
           if (statusMessage) statusMessage.innerHTML = '<span style="color:#ef4444;">⚠️ Please select at least one content tag.</span>';
           return; 
       }
+    } else if (taskType === 'selfie') {
+      const consentAgeSelfie = document.getElementById('consentAgeSelfie');
+      const consentSensitiveSelfie = document.getElementById('consentSensitiveSelfie');
+      const consentCommercialSelfie = document.getElementById('consentCommercialSelfie');
+      
+      if ((consentAgeSelfie && !consentAgeSelfie.checked) || 
+          (consentSensitiveSelfie && !consentSensitiveSelfie.checked) || 
+          (consentCommercialSelfie && !consentCommercialSelfie.checked)) {
+          if (statusMessage) statusMessage.innerHTML = '<span style="color:#ef4444;">⚠️ You must agree to the Legal Consents before uploading.</span>';
+          return; 
+      }
     }
 
-    submitDocBtn.disabled = true;
+    if (submitDocBtn) submitDocBtn.disabled = true;
+    if (submitSelfieBtn) submitSelfieBtn.disabled = true;
+
     updateProgressUI('📤 Compressing and securing payload...', 15);
 
     try {
@@ -1589,30 +1587,36 @@ if (submitDocBtn) {
                     if (status === 'verified' || status === 'approved') {
                         clearInterval(currentPollInterval);
                         await runProfileLedgerVerification(userEmailAddress, false, true); 
-                        submitDocBtn.style.display = 'none';
+                        
+                        if (submitDocBtn) submitDocBtn.style.display = 'none';
+                        if (submitSelfieBtn) submitSelfieBtn.style.display = 'none';
+                        
                         statusMessage.innerHTML = `
                             <div style="font-size:40px; margin-bottom:10px;">✅</div>
                             <div style="font-weight:900; color:#166534; font-size:18px;">Verification Successful</div>
                             <div style="color:#111827; font-size:14px; margin-top:8px;"><strong>+48 SYNX Tokens</strong><br>Tokens successfully assigned to profile.</div>
                         `;
                         showDetailedReason(reason, true);
-                        retryUploadBtn.style.display = 'block'; 
+                        if (retryUploadBtn) retryUploadBtn.style.display = 'block'; 
                     } 
                     else if (status === 'rejected' || status === 'rejected_pii' || status === 'fraud' || status === 'duplicate') {
                         clearInterval(currentPollInterval);
-                        submitDocBtn.style.display = 'none';
+                        
+                        if (submitDocBtn) submitDocBtn.style.display = 'none';
+                        if (submitSelfieBtn) submitSelfieBtn.style.display = 'none';
+                        
                         statusMessage.innerHTML = '<span style="font-weight:800; font-size:16px; color:#9f1239;">❌ AI Verification Failed</span>';
                         showDetailedReason(reason, false); 
-                        retryUploadBtn.style.display = 'block';
+                        if (retryUploadBtn) retryUploadBtn.style.display = 'block';
                     }
                 }
                 
                 if (attempts >= maxAttempts) {
                     clearInterval(currentPollInterval);
                     statusMessage.innerHTML = '<span style="color:#ea580c; font-weight:700;">⚠️ AI timed out. Please check network and try again.</span>';
-                    submitDocBtn.disabled = false;
-                    submitDocBtn.innerText = 'Approve & Submit to Waiting Room';
-                    retryUploadBtn.style.display = 'block';
+                    if (submitDocBtn) { submitDocBtn.disabled = false; submitDocBtn.innerText = 'Approve & Submit to Waiting Room'; }
+                    if (submitSelfieBtn) { submitSelfieBtn.disabled = false; submitSelfieBtn.innerText = 'Verify & Submit to Waiting Room'; }
+                    if (retryUploadBtn) retryUploadBtn.style.display = 'block';
                 }
             } catch (e) { console.error("Polling error", e); }
         }, 3000); 
@@ -1620,14 +1624,18 @@ if (submitDocBtn) {
       } else {
         const data = await response.json();
         statusMessage.innerHTML = `<span style="color:#ef4444;">❌ ${data.error || 'Upload failed.'}</span>`;
-        submitDocBtn.disabled = false;
+        if (submitDocBtn) submitDocBtn.disabled = false;
+        if (submitSelfieBtn) submitSelfieBtn.disabled = false;
       }
     } catch (error) {
       statusMessage.innerHTML = '<span style="color:#ef4444;">⚠️ Network error. Could not establish connection.</span>';
-      submitDocBtn.disabled = false;
+      if (submitDocBtn) submitDocBtn.disabled = false;
+      if (submitSelfieBtn) submitSelfieBtn.disabled = false;
     }
-  });
 }
+
+if (submitDocBtn) submitDocBtn.addEventListener('click', executeUploadLogic);
+if (submitSelfieBtn) submitSelfieBtn.addEventListener('click', executeUploadLogic);
 
 // 🚀 FIX 2: PROPER UX PERMISSION FLOW MODAL (Solves OS Blocking and Confusing UX)
 function injectPermissionModal() {
@@ -1662,10 +1670,12 @@ function requestDevicePermissionUX(type) {
     const icon = document.getElementById('permIcon');
     const errorAlert = document.getElementById('permErrorAlert');
     
-    errorAlert.classList.add('hidden');
-    errorAlert.style.display = 'none';
+    if (errorAlert) {
+        errorAlert.classList.add('hidden');
+        errorAlert.style.display = 'none';
+    }
 
-    if (type === 'camera') {
+    if (type === 'camera' || type === 'selfie') {
         icon.innerText = '🤳';
         title.innerText = 'Camera Access Required';
         desc.innerText = 'Syntrix requires secure camera access to capture a live verification photo.';
@@ -1675,8 +1685,10 @@ function requestDevicePermissionUX(type) {
         desc.innerText = 'Syntrix needs access to your gallery or files to securely upload your selected document.';
     }
     
-    modal.classList.remove('hidden');
-    modal.style.display = 'flex';
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+    }
 }
 
 // Listeners for the dynamic permission modal
@@ -1693,6 +1705,8 @@ document.addEventListener('click', (e) => {
         // Open the camera natively instantly (No await delay allowed)
         if (pendingTriggerAction === 'camera') {
             if (fileInputCamera) fileInputCamera.click();
+        } else if (pendingTriggerAction === 'selfie') {
+            if (fileInputSelfie) fileInputSelfie.click();
         } else {
             if (fileInputGallery) fileInputGallery.click();
         }
@@ -1709,8 +1723,9 @@ window.addEventListener('DOMContentLoaded', () => {
     // Override the native label behavior by listening to the UI buttons explicitly
     const cameraUI = document.querySelector('.doc-btn-white') || document.getElementById('btnCameraText')?.parentElement;
     const galleryUI = document.getElementById('btnGallery');
+    const selfieUI = document.getElementById('btnSelfieCamera');
 
-    if (cameraUI) {
+    if (cameraUI && cameraUI.id !== 'btnSelfieCamera') {
         cameraUI.addEventListener('click', (e) => {
             e.preventDefault(); 
             e.stopPropagation();
@@ -1723,6 +1738,14 @@ window.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             e.stopPropagation();
             requestDevicePermissionUX('gallery');
+        }, true);
+    }
+
+    if (selfieUI) {
+        selfieUI.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            requestDevicePermissionUX('selfie');
         }, true);
     }
 });
