@@ -1333,6 +1333,7 @@ let selectedFile = null;
 let currentPollInterval = null;
 let isUploadingSelfie = false;
 
+// 🚀 FIX: FULL FRONTEND STATE RESET FUNCTION (Clears old errors safely)
 function resetUploadState(keepInputs = false) {
     if (!keepInputs) {
       selectedFile = null;
@@ -1349,6 +1350,7 @@ function resetUploadState(keepInputs = false) {
           imagePreview.classList.add('hidden'); 
       }
       
+      // 🚀 FIX: Clear the selfie image and restore the scanner rings
       const selfieImg = document.getElementById('selfieResultImg');
       if (selfieImg) {
           selfieImg.src = '';
@@ -1360,6 +1362,11 @@ function resetUploadState(keepInputs = false) {
       const scannerInner = document.querySelector('.scanner-circle-inner');
       if (scannerOuter) scannerOuter.style.display = 'flex';
       if (scannerInner) scannerInner.style.display = 'flex';
+
+      const btnSelfieTextContent = document.getElementById('btnSelfieTextContent');
+      if (btnSelfieTextContent) {
+          btnSelfieTextContent.innerText = "Take a Photo";
+      }
     }
     
     if (submitDocBtn) {
@@ -1400,12 +1407,14 @@ if (retryUploadBtn) {
     retryUploadBtn.addEventListener('click', () => resetUploadState(false));
 }
 
+// 🚀 FIX: Make sure the file selection handles both Document and Selfie scenarios
 function handleFileSelection(e) {
   if (e.target.files && e.target.files.length > 0) {
     const newFile = e.target.files[0];
     resetUploadState(true); 
     selectedFile = newFile;
     
+    // Check which input was triggered
     const isSelfieUpload = e.target.id === 'fileInputSelfie';
     isUploadingSelfie = isSelfieUpload;
 
@@ -1413,6 +1422,10 @@ function handleFileSelection(e) {
         if (submitSelfieBtn) {
             submitSelfieBtn.disabled = false;
             submitSelfieBtn.classList.remove('hidden');
+        }
+        const btnSelfieTextContent = document.getElementById('btnSelfieTextContent');
+        if (btnSelfieTextContent) {
+            btnSelfieTextContent.innerText = "Retake Photo";
         }
     } else {
         if (submitDocBtn) {
@@ -1426,6 +1439,7 @@ function handleFileSelection(e) {
       const url = URL.createObjectURL(selectedFile);
       
       if (isSelfieUpload) {
+          // Hide rings, show selfie image
           const scannerOuter = document.querySelector('.scanner-circle-outer');
           const scannerInner = document.querySelector('.scanner-circle-inner');
           if (scannerOuter) scannerOuter.style.display = 'none';
@@ -1452,6 +1466,7 @@ function handleFileSelection(e) {
               selfieImg.style.display = 'block';
           }
       } else {
+          // Show document preview container
           if (imagePreview) {
               imagePreview.src = url;
               imagePreview.classList.remove('hidden'); 
@@ -1472,8 +1487,8 @@ if (fileInputCamera) fileInputCamera.addEventListener('change', handleFileSelect
 if (fileInputGallery) fileInputGallery.addEventListener('change', handleFileSelection);
 if (fileInputSelfie) fileInputSelfie.addEventListener('change', handleFileSelection);
 
-// 🚀 FIX: Aggressively compress the payload and add redundant identity keys to bypass 403 blocks
-function compressImageForBackend(file, maxWidth = 800, quality = 0.6) {
+// 🚀 FIX: Aggressively compress payload to 600px / 50% quality to bypass backend 403 size limits
+function compressImageForBackend(file, maxWidth = 600, quality = 0.5) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -1527,7 +1542,6 @@ async function executeUploadLogic(e) {
       return;
     }
 
-    // 🚀 FIX: Detect task directly from the clicked button to prevent mixed-state bugs
     const isSelfieSubmit = (e.target && e.target.id === 'submitSelfieBtn') || (this.id === 'submitSelfieBtn');
     const taskType = isSelfieSubmit ? 'selfie' : (taskTypeSelect ? taskTypeSelect.value : 'notes');
     let contentTags = [];
@@ -1569,9 +1583,7 @@ async function executeUploadLogic(e) {
     updateProgressUI('📤 Compressing and securing payload...', 15);
 
     try {
-      const base64String = await compressImageForBackend(selectedFile, 800, 0.6);
-      
-      // 🚀 FIX: Sending redundant identity keys to bypass backend rejection
+      const base64String = await compressImageForBackend(selectedFile, 600, 0.5);
       const payload = {
         email: userEmailAddress,
         userEmail: userEmailAddress, 
@@ -1586,7 +1598,6 @@ async function executeUploadLogic(e) {
       });
 
       if (!response.ok) {
-        // 🚀 FIX: Aggressive 403 error parsing to show exactly what broke
         let errorMsg = 'Upload rejected by server.';
         try {
             const data = await response.json();
@@ -1594,7 +1605,7 @@ async function executeUploadLogic(e) {
         } catch(err) {
             errorMsg = `Server blocked request (Status ${response.status}).`;
         }
-        if (statusMessage) statusMessage.innerHTML = `<span style="color:#ef4444;">❌ ${errorMsg}</span>`;
+        if (statusMessage) statusMessage.innerHTML = `<span style="color:#ef4444;">❌ <strong>${errorMsg}</strong></span>`;
         if (submitDocBtn) submitDocBtn.disabled = false;
         if (submitSelfieBtn) submitSelfieBtn.disabled = false;
         return;
@@ -1664,6 +1675,7 @@ async function executeUploadLogic(e) {
 if (submitDocBtn) submitDocBtn.addEventListener('click', executeUploadLogic);
 if (submitSelfieBtn) submitSelfieBtn.addEventListener('click', executeUploadLogic);
 
+// 🚀 FIX: Bypass mobile camera trapping using native labels and tracking flags
 function injectPermissionModal() {
     if (document.getElementById('sysPermissionModal')) return;
     const modalHtml = `
