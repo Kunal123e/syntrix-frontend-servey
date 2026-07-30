@@ -209,6 +209,13 @@ if (initializePlatformBtn) {
 
 // ================= GATEWAY LOGIC =================
 window.openMode = function(mode) {
+  // 🚀 FIX: Prevent Survey Loop - Stop them immediately and route to More Surveys
+  if (mode === 'survey' && window.hasCompletedSurvey) {
+      showToast("✅ Survey already completed. Redirecting to Survey Matrix...", "✅");
+      routeDashboardTabs('more-surveys');
+      return; 
+  }
+
   const gateway = document.getElementById("gatewayScreenSection");
   const survey = document.getElementById("claimForm");
   const topProgress = document.getElementById("topProgressBox");
@@ -1324,8 +1331,8 @@ const retryUploadBtn = document.getElementById('retryUploadBtn');
 
 let selectedFile = null;
 let currentPollInterval = null;
+let isUploadingSelfie = false;
 
-// 🚀 FIX: FULL FRONTEND STATE RESET FUNCTION (Clears old errors safely)
 function resetUploadState(keepInputs = false) {
     if (!keepInputs) {
       selectedFile = null;
@@ -1400,6 +1407,7 @@ function handleFileSelection(e) {
     selectedFile = newFile;
     
     const isSelfieUpload = e.target.id === 'fileInputSelfie';
+    isUploadingSelfie = isSelfieUpload;
 
     if (isSelfieUpload) {
         if (submitSelfieBtn) {
@@ -1464,6 +1472,7 @@ if (fileInputCamera) fileInputCamera.addEventListener('change', handleFileSelect
 if (fileInputGallery) fileInputGallery.addEventListener('change', handleFileSelection);
 if (fileInputSelfie) fileInputSelfie.addEventListener('change', handleFileSelection);
 
+// 🚀 FIX: Aggressively compress the payload and add redundant identity keys to bypass 403 blocks
 function compressImageForBackend(file, maxWidth = 800, quality = 0.6) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -1518,6 +1527,7 @@ async function executeUploadLogic(e) {
       return;
     }
 
+    // 🚀 FIX: Detect task directly from the clicked button to prevent mixed-state bugs
     const isSelfieSubmit = (e.target && e.target.id === 'submitSelfieBtn') || (this.id === 'submitSelfieBtn');
     const taskType = isSelfieSubmit ? 'selfie' : (taskTypeSelect ? taskTypeSelect.value : 'notes');
     let contentTags = [];
@@ -1560,6 +1570,8 @@ async function executeUploadLogic(e) {
 
     try {
       const base64String = await compressImageForBackend(selectedFile, 800, 0.6);
+      
+      // 🚀 FIX: Sending redundant identity keys to bypass backend rejection
       const payload = {
         email: userEmailAddress,
         userEmail: userEmailAddress, 
@@ -1574,6 +1586,7 @@ async function executeUploadLogic(e) {
       });
 
       if (!response.ok) {
+        // 🚀 FIX: Aggressive 403 error parsing to show exactly what broke
         let errorMsg = 'Upload rejected by server.';
         try {
             const data = await response.json();
@@ -1662,7 +1675,7 @@ function injectPermissionModal() {
             <div id="permErrorAlert" class="hidden" style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 12px; padding: 12px; color: #fca5a5; font-size: 13px; margin-bottom: 20px; display: none;">
                 Camera access was blocked by your browser. Please enable it in your browser settings to continue.
             </div>
-            <div style="display: flex; gap: 12px;">
+            <div id="permActionButtons" style="display: flex; gap: 12px;">
                 <button type="button" id="permCancelBtn" style="flex: 1; padding: 14px; background: transparent; border: 1px solid #3f3f46; color: #ffffff; border-radius: 12px; font-weight: 600; cursor: pointer;">Cancel</button>
                 <label id="permAllowBtn" for="" style="flex: 1; padding: 14px; background: #ffffff; color: #000000; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; display: block; margin: 0; text-align: center;">Allow Access</label>
             </div>
@@ -1672,6 +1685,8 @@ function injectPermissionModal() {
 }
 
 let pendingTriggerAction = null;
+let isApproving = false;
+let permissionGranted = { camera: false, gallery: false, selfie: false };
 
 function requestDevicePermissionUX(type) {
     injectPermissionModal();
@@ -1712,19 +1727,32 @@ function requestDevicePermissionUX(type) {
     }
 }
 
+document.addEventListener('mousedown', (e) => {
+    if (e.target.id === 'permAllowBtn') isApproving = true;
+});
+document.addEventListener('touchstart', (e) => {
+    if (e.target.id === 'permAllowBtn') isApproving = true;
+}, {passive: true});
+
 document.addEventListener('click', (e) => {
     if (e.target.id === 'permCancelBtn') {
         const modal = document.getElementById('sysPermissionModal');
         if (modal) { modal.classList.add('hidden'); modal.style.display = 'none'; }
+        isApproving = false;
     }
     
     if (e.target.id === 'permAllowBtn') {
+        isApproving = true;
+        if (pendingTriggerAction) {
+            permissionGranted[pendingTriggerAction] = true;
+        }
         const modal = document.getElementById('sysPermissionModal');
         setTimeout(() => {
             if (modal) {
                 modal.classList.add('hidden');
                 modal.style.display = 'none';
             }
+            isApproving = false;
         }, 800);
     }
 });
@@ -1736,25 +1764,34 @@ window.addEventListener('DOMContentLoaded', () => {
 
     if (cameraUI && cameraUI.id !== 'btnSelfieCamera') {
         cameraUI.addEventListener('click', (e) => {
-            e.preventDefault(); 
-            e.stopPropagation();
-            requestDevicePermissionUX('camera');
+            if (isApproving || permissionGranted.camera) return; 
+            if (!document.getElementById('fileInputCamera').value) {
+                e.preventDefault(); 
+                e.stopPropagation();
+                requestDevicePermissionUX('camera');
+            }
         }, true);
     }
     
     if (galleryUI) {
         galleryUI.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            requestDevicePermissionUX('gallery');
+            if (isApproving || permissionGranted.gallery) return; 
+            if (!document.getElementById('fileInputGallery').value) {
+                e.preventDefault();
+                e.stopPropagation();
+                requestDevicePermissionUX('gallery');
+            }
         }, true);
     }
 
     if (selfieUI) {
         selfieUI.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            requestDevicePermissionUX('selfie');
+            if (isApproving || permissionGranted.selfie) return; 
+            if (!document.getElementById('fileInputSelfie').value) {
+                e.preventDefault();
+                e.stopPropagation();
+                requestDevicePermissionUX('selfie');
+            }
         }, true);
     }
 });
