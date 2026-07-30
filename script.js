@@ -232,7 +232,6 @@ window.openMode = function(mode) {
   }
 };
 
-// 🚀 FIXED: Explicitly URL encoded paths to bypass space formatting errors in browsers
 const BADGE_PROFILES = {
   Analyzer: { 
     title: "ANALYZER", sub: "The Mindful Shopper",
@@ -1312,12 +1311,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 const taskTypeSelect = document.getElementById('taskType');
 const fileInputCamera = document.getElementById('fileInputCamera');
 const fileInputGallery = document.getElementById('fileInputGallery');
-const fileInputSelfie = document.getElementById('fileInputSelfie'); // 🚀 FIX: Actually target the selfie input
 const previewContainer = document.getElementById('previewContainer');
 const imagePreview = document.getElementById('imagePreview');
 
 const submitDocBtn = document.getElementById('submitDocBtn');
-const submitSelfieBtn = document.getElementById('submitSelfieBtn'); // 🚀 FIX: Connect the Selfie Submit button
+const submitSelfieBtn = document.getElementById('submitSelfieBtn'); 
 
 const statusMessage = document.getElementById('statusMessage');
 const detailedReasonBox = document.getElementById('detailedReasonBox');
@@ -1326,14 +1324,22 @@ const retryUploadBtn = document.getElementById('retryUploadBtn');
 let selectedFile = null;
 let currentPollInterval = null;
 let isUploadingSelfie = false;
+let liveCameraStream = null;
+let pendingTriggerAction = null;
 
 // 🚀 FIX: FULL FRONTEND STATE RESET FUNCTION (Clears old errors safely)
 function resetUploadState(keepInputs = false) {
+    if (liveCameraStream) {
+        liveCameraStream.getTracks().forEach(t => t.stop());
+        liveCameraStream = null;
+    }
+    const liveVideo = document.getElementById('liveCameraVideo');
+    if (liveVideo) liveVideo.style.display = 'none';
+
     if (!keepInputs) {
       selectedFile = null;
       if (fileInputCamera) fileInputCamera.value = '';
       if (fileInputGallery) fileInputGallery.value = '';
-      if (fileInputSelfie) fileInputSelfie.value = '';
       
       if (previewContainer) {
           previewContainer.style.display = 'none';
@@ -1344,7 +1350,6 @@ function resetUploadState(keepInputs = false) {
           imagePreview.classList.add('hidden'); 
       }
       
-      // 🚀 FIX: Clear the selfie image and restore the scanner rings
       const selfieImg = document.getElementById('selfieResultImg');
       if (selfieImg) {
           selfieImg.src = '';
@@ -1354,8 +1359,17 @@ function resetUploadState(keepInputs = false) {
 
       const scannerOuter = document.querySelector('.scanner-circle-outer');
       const scannerInner = document.querySelector('.scanner-circle-inner');
+      const icon = document.querySelector('.scanner-icon');
       if (scannerOuter) scannerOuter.style.display = 'flex';
       if (scannerInner) scannerInner.style.display = 'flex';
+      if (icon) icon.style.display = 'block';
+
+      const btnSelfie = document.getElementById('btnSelfieCamera');
+      if(btnSelfie) {
+          btnSelfie.dataset.streaming = 'false';
+          const textNodes = Array.from(btnSelfie.childNodes).filter(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim() !== "");
+          if(textNodes.length > 0) textNodes[0].textContent = " Take a Photo";
+      }
     }
     
     if (submitDocBtn) {
@@ -1396,14 +1410,12 @@ if (retryUploadBtn) {
     retryUploadBtn.addEventListener('click', () => resetUploadState(false));
 }
 
-// 🚀 FIX: Make sure the file selection handles both Document and Selfie scenarios
 function handleFileSelection(e) {
   if (e.target.files && e.target.files.length > 0) {
     const newFile = e.target.files[0];
     resetUploadState(true); 
     selectedFile = newFile;
     
-    // Check which input was triggered
     const isSelfieUpload = e.target.id === 'fileInputSelfie';
     isUploadingSelfie = isSelfieUpload;
 
@@ -1424,7 +1436,6 @@ function handleFileSelection(e) {
       const url = URL.createObjectURL(selectedFile);
       
       if (isSelfieUpload) {
-          // Hide rings, show selfie image
           const scannerOuter = document.querySelector('.scanner-circle-outer');
           const scannerInner = document.querySelector('.scanner-circle-inner');
           if (scannerOuter) scannerOuter.style.display = 'none';
@@ -1437,7 +1448,6 @@ function handleFileSelection(e) {
               selfieImg.style.display = 'block';
           }
       } else {
-          // Show document preview container
           if (imagePreview) {
               imagePreview.src = url;
               imagePreview.classList.remove('hidden'); 
@@ -1456,9 +1466,17 @@ function handleFileSelection(e) {
 
 if (fileInputCamera) fileInputCamera.addEventListener('change', handleFileSelection);
 if (fileInputGallery) fileInputGallery.addEventListener('change', handleFileSelection);
-if (fileInputSelfie) fileInputSelfie.addEventListener('change', handleFileSelection);
 
-// 🚀 FIX 1: AI-SAFE IMAGE COMPRESSION (Prevents Backend Crash on Large Selfies)
+function convertToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+}
+
+// 🚀 FIX 1: AI-SAFE IMAGE COMPRESSION
 function compressImageForBackend(file, maxWidth = 1080, quality = 0.8) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -1480,7 +1498,7 @@ function compressImageForBackend(file, maxWidth = 1080, quality = 0.8) {
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL('image/jpeg', quality)); // AI-optimized payload
+        resolve(canvas.toDataURL('image/jpeg', quality)); 
       };
       img.onerror = (err) => reject(err);
     };
@@ -1488,7 +1506,6 @@ function compressImageForBackend(file, maxWidth = 1080, quality = 0.8) {
   });
 }
 
-// 🚀 UI PROGRESS HELPER (Dynamic Progress Steps)
 function updateProgressUI(stepText, percent) {
     if (!statusMessage) return;
     statusMessage.innerHTML = `
@@ -1508,7 +1525,6 @@ function showDetailedReason(reasonText, isSuccess) {
     }
 }
 
-// Unified upload handler for both documents and selfies
 async function executeUploadLogic(e) {
     if (!selectedFile || !userEmailAddress) { 
       if (statusMessage) statusMessage.innerHTML = '<span style="color:#ef4444;">⚠️ Please select a file and ensure you are logged in.</span>';
@@ -1555,7 +1571,6 @@ async function executeUploadLogic(e) {
     updateProgressUI('📤 Compressing and securing payload...', 15);
 
     try {
-      // 🚀 USE COMPRESSION HERE INSTEAD OF RAW FileReader
       const base64String = await compressImageForBackend(selectedFile);
       const payload = {
         userEmail: userEmailAddress, taskType: taskType, fileName: selectedFile.name || 'capture.jpg', imageBase64: base64String,
@@ -1637,7 +1652,7 @@ async function executeUploadLogic(e) {
 if (submitDocBtn) submitDocBtn.addEventListener('click', executeUploadLogic);
 if (submitSelfieBtn) submitSelfieBtn.addEventListener('click', executeUploadLogic);
 
-// 🚀 FIX 2: PROPER UX PERMISSION FLOW MODAL (Solves OS Blocking and Confusing UX)
+// 🚀 FIX 2: PROPER UX PERMISSION FLOW MODAL & NATIVE WEBRTC LIVE CAMERA
 function injectPermissionModal() {
     if (document.getElementById('sysPermissionModal')) return;
     const modalHtml = `
@@ -1645,21 +1660,25 @@ function injectPermissionModal() {
         <div style="background: #09090b; border: 1px solid #27272a; border-radius: 24px; padding: 30px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5);">
             <div id="permIcon" style="font-size: 48px; margin-bottom: 15px;">📷</div>
             <h2 id="permTitle" style="font-size: 22px; font-weight: 800; color: #ffffff; margin-bottom: 10px;">Camera Access Required</h2>
-            <p id="permDesc" style="font-size: 14px; color: #a1a1aa; line-height: 1.6; margin-bottom: 25px;">To securely verify your identity, we need temporary access to your camera for a real-time selfie capture.</p>
+            <p id="permDesc" style="font-size: 14px; color: #a1a1aa; line-height: 1.6; margin-bottom: 20px;">Syntrix requires secure camera access to capture a live verification photo.</p>
+            
             <div id="permErrorAlert" class="hidden" style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 12px; padding: 12px; color: #fca5a5; font-size: 13px; margin-bottom: 20px; display: none;">
-                Camera access was blocked by your browser. Please enable it in your browser settings to continue.
+                Camera access was denied or failed. Please check your browser settings and try again.
             </div>
-            <div style="display: flex; gap: 12px;">
+            
+            <div id="permActionButtons" style="display: flex; gap: 12px;">
                 <button type="button" id="permCancelBtn" style="flex: 1; padding: 14px; background: transparent; border: 1px solid #3f3f46; color: #ffffff; border-radius: 12px; font-weight: 600; cursor: pointer;">Cancel</button>
-                <!-- 🚀 FIX: This is now a LABEL. Mobile phones will open the camera natively without blocking it! -->
-                <label id="permAllowBtn" for="" style="flex: 1; padding: 14px; background: #ffffff; color: #000000; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; display: block; margin: 0; text-align: center;">Allow Access</label>
+                <button type="button" id="permAllowBtn" style="flex: 1; padding: 14px; background: #ffffff; color: #000000; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;">Allow Access</button>
+            </div>
+
+            <div id="permDeniedButtons" class="hidden" style="display: none; gap: 12px;">
+                <button type="button" id="permTryAgainBtn" style="flex: 1; padding: 14px; background: #ffffff; color: #000000; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;">Try Again</button>
+                <button type="button" id="permSettingsBtn" style="flex: 1; padding: 14px; background: transparent; border: 1px solid #3f3f46; color: #ffffff; border-radius: 12px; font-weight: 600; cursor: pointer;">Close</button>
             </div>
         </div>
     </div>`;
     document.body.insertAdjacentHTML('beforeend', modalHtml);
 }
-
-let pendingTriggerAction = null;
 
 function requestDevicePermissionUX(type) {
     injectPermissionModal();
@@ -1670,29 +1689,21 @@ function requestDevicePermissionUX(type) {
     const desc = document.getElementById('permDesc');
     const icon = document.getElementById('permIcon');
     const errorAlert = document.getElementById('permErrorAlert');
-    const allowBtn = document.getElementById('permAllowBtn'); // This is our new label
+    const actionBtns = document.getElementById('permActionButtons');
+    const deniedBtns = document.getElementById('permDeniedButtons');
     
-    if (errorAlert) {
-        errorAlert.classList.add('hidden');
-        errorAlert.style.display = 'none';
-    }
+    if (errorAlert) { errorAlert.style.display = 'none'; errorAlert.classList.add('hidden'); }
+    if (actionBtns) { actionBtns.style.display = 'flex'; actionBtns.classList.remove('hidden'); }
+    if (deniedBtns) { deniedBtns.style.display = 'none'; deniedBtns.classList.add('hidden'); }
 
-    // 🚀 FIX: Connect the label directly to the hidden file inputs using 'for' attribute
-    if (type === 'camera') {
+    if (type === 'camera' || type === 'selfie') {
         icon.innerText = '🤳';
         title.innerText = 'Camera Access Required';
-        desc.innerText = 'Syntrix requires secure camera access to capture a live verification photo.';
-        allowBtn.setAttribute('for', 'fileInputCamera');
-    } else if (type === 'selfie') {
-        icon.innerText = '🤳';
-        title.innerText = 'Camera Access Required';
-        desc.innerText = 'Syntrix requires secure camera access to capture a live verification photo.';
-        allowBtn.setAttribute('for', 'fileInputSelfie');
+        desc.innerText = 'Camera access is required to verify your identity.';
     } else {
         icon.innerText = '📁';
         title.innerText = 'File Access Required';
         desc.innerText = 'Syntrix needs access to your gallery or files to securely upload your selected document.';
-        allowBtn.setAttribute('for', 'fileInputGallery');
     }
     
     if (modal) {
@@ -1701,28 +1712,160 @@ function requestDevicePermissionUX(type) {
     }
 }
 
-// Listeners for the dynamic permission modal
-document.addEventListener('click', (e) => {
-    if (e.target.id === 'permCancelBtn') {
+function showCameraErrorState(errorMsg) {
+    const errorAlert = document.getElementById('permErrorAlert');
+    const actionBtns = document.getElementById('permActionButtons');
+    const deniedBtns = document.getElementById('permDeniedButtons');
+    
+    if (errorAlert) {
+        errorAlert.innerText = errorMsg || "Camera access is required to verify your identity.";
+        errorAlert.style.display = 'block';
+        errorAlert.classList.remove('hidden');
+    }
+    if (actionBtns) { actionBtns.style.display = 'none'; actionBtns.classList.add('hidden'); }
+    if (deniedBtns) { deniedBtns.style.display = 'flex'; deniedBtns.classList.remove('hidden'); }
+}
+
+async function startLiveSelfieStream() {
+    const scannerInner = document.querySelector('.scanner-circle-inner');
+    const icon = document.querySelector('.scanner-icon');
+    const btnSelfie = document.getElementById('btnSelfieCamera');
+    
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+        liveCameraStream = stream;
+        
+        let video = document.getElementById('liveCameraVideo');
+        if (!video) {
+            video = document.createElement('video');
+            video.id = 'liveCameraVideo';
+            video.autoplay = true;
+            video.playsInline = true;
+            video.style.width = '100%';
+            video.style.height = '100%';
+            video.style.objectFit = 'cover';
+            video.style.borderRadius = '50%';
+            video.style.position = 'absolute';
+            video.style.top = '0';
+            video.style.left = '0';
+            video.style.zIndex = '5';
+            if(scannerInner) {
+                scannerInner.style.position = 'relative';
+                scannerInner.style.overflow = 'hidden';
+                scannerInner.appendChild(video);
+            }
+        }
+        video.srcObject = stream;
+        video.style.display = 'block';
+
+        if(icon) icon.style.display = 'none';
+        
+        if(btnSelfie) {
+            btnSelfie.dataset.streaming = 'true';
+            const textNodes = Array.from(btnSelfie.childNodes).filter(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim() !== "");
+            if(textNodes.length > 0) textNodes[0].textContent = " 📸 Snap Photo";
+        }
+        
+        const modal = document.getElementById('sysPermissionModal');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+        }
+    } catch(err) {
+        console.error("Camera Setup Failed:", err);
+        requestDevicePermissionUX('selfie'); 
+        showCameraErrorState(`Access denied: ${err.message || "Camera blocked by system."}`);
+    }
+}
+
+function captureSelfieFrame() {
+    const video = document.getElementById('liveCameraVideo');
+    if (!video || !liveCameraStream) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    canvas.toBlob((blob) => {
+        const file = new File([blob], "selfie_capture.jpg", { type: "image/jpeg" });
+        
+        liveCameraStream.getTracks().forEach(t => t.stop());
+        liveCameraStream = null;
+        video.style.display = 'none';
+        
+        resetUploadState(true);
+        selectedFile = file;
+        isUploadingSelfie = true;
+        
+        if (submitSelfieBtn) {
+            submitSelfieBtn.disabled = false;
+            submitSelfieBtn.classList.remove('hidden');
+        }
+        
+        const url = URL.createObjectURL(file);
+        const scannerOuter = document.querySelector('.scanner-circle-outer');
+        const scannerInner = document.querySelector('.scanner-circle-inner');
+        if (scannerOuter) scannerOuter.style.display = 'none';
+        if (scannerInner) scannerInner.style.display = 'none';
+        
+        const selfieImg = document.getElementById('selfieResultImg');
+        if (selfieImg) {
+            selfieImg.src = url;
+            selfieImg.classList.remove('hidden');
+            selfieImg.style.display = 'block';
+        }
+        
+        const btnSelfie = document.getElementById('btnSelfieCamera');
+        if(btnSelfie) {
+            btnSelfie.dataset.streaming = 'false';
+            const textNodes = Array.from(btnSelfie.childNodes).filter(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim() !== "");
+            if(textNodes.length > 0) textNodes[0].textContent = " Retake Photo";
+        }
+    }, 'image/jpeg', 0.9);
+}
+
+async function checkAndStartSelfie() {
+    try {
+        const perm = await navigator.permissions.query({ name: 'camera' });
+        if (perm.state === 'granted') {
+            startLiveSelfieStream();
+        } else {
+            requestDevicePermissionUX('selfie');
+        }
+    } catch(e) {
+        requestDevicePermissionUX('selfie');
+    }
+}
+
+document.addEventListener('click', async (e) => {
+    if (e.target.id === 'permCancelBtn' || e.target.id === 'permSettingsBtn') {
         const modal = document.getElementById('sysPermissionModal');
         if (modal) { modal.classList.add('hidden'); modal.style.display = 'none'; }
     }
     
-    if (e.target.id === 'permAllowBtn') {
-        const modal = document.getElementById('sysPermissionModal');
+    if (e.target.id === 'permAllowBtn' || e.target.id === 'permTryAgainBtn') {
+        const allowBtn = document.getElementById('permAllowBtn');
+        const tryAgainBtn = document.getElementById('permTryAgainBtn');
+        const activeBtn = e.target.id === 'permAllowBtn' ? allowBtn : tryAgainBtn;
         
-        // 🚀 FIX: We don't use JS to click the input anymore. The browser does it for us via the label!
-        // We just wait a fraction of a second for the native camera prompt to open, then hide our modal.
-        setTimeout(() => {
-            if (modal) {
-                modal.classList.add('hidden');
-                modal.style.display = 'none';
-            }
-        }, 800);
+        const originalText = activeBtn.innerText;
+        if(activeBtn) activeBtn.innerText = 'Requesting...';
+        
+        if (pendingTriggerAction === 'selfie') {
+            await startLiveSelfieStream();
+            if(activeBtn) activeBtn.innerText = originalText;
+        } else {
+            const modal = document.getElementById('sysPermissionModal');
+            if (pendingTriggerAction === 'camera' && fileInputCamera) fileInputCamera.click();
+            if (pendingTriggerAction === 'gallery' && fileInputGallery) fileInputGallery.click();
+            if (modal) { modal.classList.add('hidden'); modal.style.display = 'none'; }
+            if(activeBtn) activeBtn.innerText = originalText;
+        }
     }
 });
 
-// Intercept existing UI buttons to route through the permission gate
 window.addEventListener('DOMContentLoaded', () => {
     const cameraUI = document.querySelector('.doc-btn-white') || document.getElementById('btnCameraText')?.parentElement;
     const galleryUI = document.getElementById('btnGallery');
@@ -1730,25 +1873,26 @@ window.addEventListener('DOMContentLoaded', () => {
 
     if (cameraUI && cameraUI.id !== 'btnSelfieCamera') {
         cameraUI.addEventListener('click', (e) => {
-            e.preventDefault(); 
-            e.stopPropagation();
+            e.preventDefault(); e.stopPropagation();
             requestDevicePermissionUX('camera');
         }, true);
     }
     
     if (galleryUI) {
         galleryUI.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
+            e.preventDefault(); e.stopPropagation();
             requestDevicePermissionUX('gallery');
         }, true);
     }
 
     if (selfieUI) {
         selfieUI.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            requestDevicePermissionUX('selfie');
+            e.preventDefault(); e.stopPropagation();
+            if (selfieUI.dataset.streaming === 'true') {
+                captureSelfieFrame();
+            } else {
+                checkAndStartSelfie();
+            }
         }, true);
     }
 });
