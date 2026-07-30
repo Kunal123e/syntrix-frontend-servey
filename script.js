@@ -1311,6 +1311,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 const taskTypeSelect = document.getElementById('taskType');
 const fileInputCamera = document.getElementById('fileInputCamera');
 const fileInputGallery = document.getElementById('fileInputGallery');
+const fileInputSelfie = document.getElementById('fileInputSelfie'); // 🚀 FIX: Actually target the selfie input
 const previewContainer = document.getElementById('previewContainer');
 const imagePreview = document.getElementById('imagePreview');
 
@@ -1340,6 +1341,7 @@ function resetUploadState(keepInputs = false) {
       selectedFile = null;
       if (fileInputCamera) fileInputCamera.value = '';
       if (fileInputGallery) fileInputGallery.value = '';
+      if (fileInputSelfie) fileInputSelfie.value = '';
       
       if (previewContainer) {
           previewContainer.style.display = 'none';
@@ -1441,7 +1443,21 @@ function handleFileSelection(e) {
           if (scannerOuter) scannerOuter.style.display = 'none';
           if (scannerInner) scannerInner.style.display = 'none';
           
-          const selfieImg = document.getElementById('selfieResultImg');
+          let selfieImg = document.getElementById('selfieResultImg');
+          if (!selfieImg) {
+              const container = document.querySelector('.selfie-scanner-container');
+              if (container) {
+                  selfieImg = document.createElement('img');
+                  selfieImg.id = 'selfieResultImg';
+                  selfieImg.style.maxWidth = '100%';
+                  selfieImg.style.maxHeight = '260px';
+                  selfieImg.style.borderRadius = '12px';
+                  selfieImg.style.objectFit = 'contain';
+                  selfieImg.style.position = 'relative';
+                  selfieImg.style.zIndex = '10';
+                  container.appendChild(selfieImg);
+              }
+          }
           if (selfieImg) {
               selfieImg.src = url;
               selfieImg.classList.remove('hidden');
@@ -1731,6 +1747,13 @@ async function startLiveSelfieStream() {
     const icon = document.querySelector('.scanner-icon');
     const btnSelfie = document.getElementById('btnSelfieCamera');
     
+    // Make sure we hide the static image when restarting the stream!
+    const selfieImg = document.getElementById('selfieResultImg');
+    if (selfieImg) {
+        selfieImg.style.display = 'none';
+        selfieImg.classList.add('hidden');
+    }
+    
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
         liveCameraStream = stream;
@@ -1810,7 +1833,23 @@ function captureSelfieFrame() {
         if (scannerOuter) scannerOuter.style.display = 'none';
         if (scannerInner) scannerInner.style.display = 'none';
         
-        const selfieImg = document.getElementById('selfieResultImg');
+        // DYNAMICALLY CREATE THE IMAGE IF MISSING
+        let selfieImg = document.getElementById('selfieResultImg');
+        if (!selfieImg) {
+            const container = document.querySelector('.selfie-scanner-container');
+            if (container) {
+                selfieImg = document.createElement('img');
+                selfieImg.id = 'selfieResultImg';
+                selfieImg.style.maxWidth = '100%';
+                selfieImg.style.maxHeight = '260px';
+                selfieImg.style.borderRadius = '12px';
+                selfieImg.style.objectFit = 'contain';
+                selfieImg.style.position = 'relative';
+                selfieImg.style.zIndex = '10';
+                container.appendChild(selfieImg);
+            }
+        }
+        
         if (selfieImg) {
             selfieImg.src = url;
             selfieImg.classList.remove('hidden');
@@ -1828,15 +1867,17 @@ function captureSelfieFrame() {
 
 async function checkAndStartSelfie() {
     try {
-        const perm = await navigator.permissions.query({ name: 'camera' });
-        if (perm.state === 'granted') {
-            startLiveSelfieStream();
-        } else {
-            requestDevicePermissionUX('selfie');
+        if (navigator.permissions && navigator.permissions.query) {
+            const perm = await navigator.permissions.query({ name: 'camera' });
+            if (perm.state === 'granted') {
+                startLiveSelfieStream();
+                return;
+            }
         }
     } catch(e) {
-        requestDevicePermissionUX('selfie');
+        // Fallback for browsers that don't support permissions.query (like Safari on iOS)
     }
+    requestDevicePermissionUX('selfie');
 }
 
 document.addEventListener('click', async (e) => {
@@ -1850,7 +1891,7 @@ document.addEventListener('click', async (e) => {
         const tryAgainBtn = document.getElementById('permTryAgainBtn');
         const activeBtn = e.target.id === 'permAllowBtn' ? allowBtn : tryAgainBtn;
         
-        const originalText = activeBtn.innerText;
+        const originalText = activeBtn ? activeBtn.innerText : "Allow Access";
         if(activeBtn) activeBtn.innerText = 'Requesting...';
         
         if (pendingTriggerAction === 'selfie') {
@@ -1891,7 +1932,7 @@ window.addEventListener('DOMContentLoaded', () => {
             if (selfieUI.dataset.streaming === 'true') {
                 captureSelfieFrame();
             } else {
-                checkAndStartSelfie();
+                startLiveSelfieStream(); 
             }
         }, true);
     }
