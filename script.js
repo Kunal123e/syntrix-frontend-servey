@@ -1311,7 +1311,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 const taskTypeSelect = document.getElementById('taskType');
 const fileInputCamera = document.getElementById('fileInputCamera');
 const fileInputGallery = document.getElementById('fileInputGallery');
-const fileInputSelfie = document.getElementById('fileInputSelfie'); // 🚀 FIX: Actually target the selfie input
+const fileInputSelfie = document.getElementById('fileInputSelfie'); 
 const previewContainer = document.getElementById('previewContainer');
 const imagePreview = document.getElementById('imagePreview');
 
@@ -1324,19 +1324,9 @@ const retryUploadBtn = document.getElementById('retryUploadBtn');
 
 let selectedFile = null;
 let currentPollInterval = null;
-let isUploadingSelfie = false;
-let liveCameraStream = null;
-let pendingTriggerAction = null;
 
 // 🚀 FIX: FULL FRONTEND STATE RESET FUNCTION (Clears old errors safely)
 function resetUploadState(keepInputs = false) {
-    if (liveCameraStream) {
-        liveCameraStream.getTracks().forEach(t => t.stop());
-        liveCameraStream = null;
-    }
-    const liveVideo = document.getElementById('liveCameraVideo');
-    if (liveVideo) liveVideo.style.display = 'none';
-
     if (!keepInputs) {
       selectedFile = null;
       if (fileInputCamera) fileInputCamera.value = '';
@@ -1361,17 +1351,8 @@ function resetUploadState(keepInputs = false) {
 
       const scannerOuter = document.querySelector('.scanner-circle-outer');
       const scannerInner = document.querySelector('.scanner-circle-inner');
-      const icon = document.querySelector('.scanner-icon');
       if (scannerOuter) scannerOuter.style.display = 'flex';
       if (scannerInner) scannerInner.style.display = 'flex';
-      if (icon) icon.style.display = 'block';
-
-      const btnSelfie = document.getElementById('btnSelfieCamera');
-      if(btnSelfie) {
-          btnSelfie.dataset.streaming = 'false';
-          const textNodes = Array.from(btnSelfie.childNodes).filter(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim() !== "");
-          if(textNodes.length > 0) textNodes[0].textContent = " Take a Photo";
-      }
     }
     
     if (submitDocBtn) {
@@ -1419,7 +1400,6 @@ function handleFileSelection(e) {
     selectedFile = newFile;
     
     const isSelfieUpload = e.target.id === 'fileInputSelfie';
-    isUploadingSelfie = isSelfieUpload;
 
     if (isSelfieUpload) {
         if (submitSelfieBtn) {
@@ -1482,18 +1462,9 @@ function handleFileSelection(e) {
 
 if (fileInputCamera) fileInputCamera.addEventListener('change', handleFileSelection);
 if (fileInputGallery) fileInputGallery.addEventListener('change', handleFileSelection);
+if (fileInputSelfie) fileInputSelfie.addEventListener('change', handleFileSelection);
 
-function convertToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-  });
-}
-
-// 🚀 FIX 1: AI-SAFE IMAGE COMPRESSION
-function compressImageForBackend(file, maxWidth = 1080, quality = 0.8) {
+function compressImageForBackend(file, maxWidth = 800, quality = 0.6) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -1547,7 +1518,8 @@ async function executeUploadLogic(e) {
       return;
     }
 
-    const taskType = isUploadingSelfie ? 'selfie' : (taskTypeSelect ? taskTypeSelect.value : 'notes');
+    const isSelfieSubmit = (e.target && e.target.id === 'submitSelfieBtn') || (this.id === 'submitSelfieBtn');
+    const taskType = isSelfieSubmit ? 'selfie' : (taskTypeSelect ? taskTypeSelect.value : 'notes');
     let contentTags = [];
     
     if (taskType === 'notes') {
@@ -1587,9 +1559,13 @@ async function executeUploadLogic(e) {
     updateProgressUI('📤 Compressing and securing payload...', 15);
 
     try {
-      const base64String = await compressImageForBackend(selectedFile);
+      const base64String = await compressImageForBackend(selectedFile, 800, 0.6);
       const payload = {
-        userEmail: userEmailAddress, taskType: taskType, fileName: selectedFile.name || 'capture.jpg', imageBase64: base64String,
+        email: userEmailAddress,
+        userEmail: userEmailAddress, 
+        taskType: taskType, 
+        fileName: selectedFile.name || 'capture.jpg', 
+        imageBase64: base64String,
         contentTags: contentTags.length > 0 ? contentTags : ['none']
       };
 
@@ -1597,67 +1573,74 @@ async function executeUploadLogic(e) {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
       });
 
-      if (response.ok) {
-        let attempts = 0;
-        const maxAttempts = 15;
-        updateProgressUI('🤖 AI is verifying parameters...', 35);
-
-        currentPollInterval = setInterval(async () => {
-            attempts++;
-            if(attempts === 2) updateProgressUI('📄 Analyzing vectors and embeddings...', 60);
-            if(attempts === 5) updateProgressUI('🔐 Security & anti-spoofing verification...', 85);
-
-            try {
-                const res = await fetch(`${BACKEND_URL}/api/check-submission?email=${encodeURIComponent(userEmailAddress)}`);
-                const checkData = await res.json();
-                
-                if (checkData.success && checkData.submission) {
-                    const status = checkData.submission.status;
-                    const reason = checkData.submission.reason || "System processing error.";
-                    
-                    if (status === 'verified' || status === 'approved') {
-                        clearInterval(currentPollInterval);
-                        await runProfileLedgerVerification(userEmailAddress, false, true); 
-                        
-                        if (submitDocBtn) submitDocBtn.style.display = 'none';
-                        if (submitSelfieBtn) submitSelfieBtn.style.display = 'none';
-                        
-                        statusMessage.innerHTML = `
-                            <div style="font-size:40px; margin-bottom:10px;">✅</div>
-                            <div style="font-weight:900; color:#166534; font-size:18px;">Verification Successful</div>
-                            <div style="color:#111827; font-size:14px; margin-top:8px;"><strong>+48 SYNX Tokens</strong><br>Tokens successfully assigned to profile.</div>
-                        `;
-                        showDetailedReason(reason, true);
-                        if (retryUploadBtn) retryUploadBtn.style.display = 'block'; 
-                    } 
-                    else if (status === 'rejected' || status === 'rejected_pii' || status === 'fraud' || status === 'duplicate') {
-                        clearInterval(currentPollInterval);
-                        
-                        if (submitDocBtn) submitDocBtn.style.display = 'none';
-                        if (submitSelfieBtn) submitSelfieBtn.style.display = 'none';
-                        
-                        statusMessage.innerHTML = '<span style="font-weight:800; font-size:16px; color:#9f1239;">❌ AI Verification Failed</span>';
-                        showDetailedReason(reason, false); 
-                        if (retryUploadBtn) retryUploadBtn.style.display = 'block';
-                    }
-                }
-                
-                if (attempts >= maxAttempts) {
-                    clearInterval(currentPollInterval);
-                    statusMessage.innerHTML = '<span style="color:#ea580c; font-weight:700;">⚠️ AI timed out. Please check network and try again.</span>';
-                    if (submitDocBtn) { submitDocBtn.disabled = false; submitDocBtn.innerText = 'Approve & Submit to Waiting Room'; }
-                    if (submitSelfieBtn) { submitSelfieBtn.disabled = false; submitSelfieBtn.innerText = 'Verify & Submit to Waiting Room'; }
-                    if (retryUploadBtn) retryUploadBtn.style.display = 'block';
-                }
-            } catch (e) { console.error("Polling error", e); }
-        }, 3000); 
-
-      } else {
-        const data = await response.json();
-        statusMessage.innerHTML = `<span style="color:#ef4444;">❌ ${data.error || 'Upload failed.'}</span>`;
+      if (!response.ok) {
+        let errorMsg = 'Upload rejected by server.';
+        try {
+            const data = await response.json();
+            errorMsg = data.error || data.message || `Server error ${response.status}`;
+        } catch(err) {
+            errorMsg = `Server blocked request (Status ${response.status}).`;
+        }
+        if (statusMessage) statusMessage.innerHTML = `<span style="color:#ef4444;">❌ ${errorMsg}</span>`;
         if (submitDocBtn) submitDocBtn.disabled = false;
         if (submitSelfieBtn) submitSelfieBtn.disabled = false;
+        return;
       }
+
+      let attempts = 0;
+      const maxAttempts = 15;
+      updateProgressUI('🤖 AI is verifying parameters...', 35);
+
+      currentPollInterval = setInterval(async () => {
+          attempts++;
+          if(attempts === 2) updateProgressUI('📄 Analyzing vectors and embeddings...', 60);
+          if(attempts === 5) updateProgressUI('🔐 Security & anti-spoofing verification...', 85);
+
+          try {
+              const res = await fetch(`${BACKEND_URL}/api/check-submission?email=${encodeURIComponent(userEmailAddress)}`);
+              const checkData = await res.json();
+              
+              if (checkData.success && checkData.submission) {
+                  const status = checkData.submission.status;
+                  const reason = checkData.submission.reason || "System processing error.";
+                  
+                  if (status === 'verified' || status === 'approved') {
+                      clearInterval(currentPollInterval);
+                      await runProfileLedgerVerification(userEmailAddress, false, true); 
+                      
+                      if (submitDocBtn) submitDocBtn.style.display = 'none';
+                      if (submitSelfieBtn) submitSelfieBtn.style.display = 'none';
+                      
+                      statusMessage.innerHTML = `
+                          <div style="font-size:40px; margin-bottom:10px;">✅</div>
+                          <div style="font-weight:900; color:#166534; font-size:18px;">Verification Successful</div>
+                          <div style="color:#111827; font-size:14px; margin-top:8px;"><strong>+48 SYNX Tokens</strong><br>Tokens successfully assigned to profile.</div>
+                      `;
+                      showDetailedReason(reason, true);
+                      if (retryUploadBtn) retryUploadBtn.style.display = 'block'; 
+                  } 
+                  else if (status === 'rejected' || status === 'rejected_pii' || status === 'fraud' || status === 'duplicate') {
+                      clearInterval(currentPollInterval);
+                      
+                      if (submitDocBtn) submitDocBtn.style.display = 'none';
+                      if (submitSelfieBtn) submitSelfieBtn.style.display = 'none';
+                      
+                      statusMessage.innerHTML = '<span style="font-weight:800; font-size:16px; color:#9f1239;">❌ AI Verification Failed</span>';
+                      showDetailedReason(reason, false); 
+                      if (retryUploadBtn) retryUploadBtn.style.display = 'block';
+                  }
+              }
+              
+              if (attempts >= maxAttempts) {
+                  clearInterval(currentPollInterval);
+                  statusMessage.innerHTML = '<span style="color:#ea580c; font-weight:700;">⚠️ AI timed out. Please check network and try again.</span>';
+                  if (submitDocBtn) { submitDocBtn.disabled = false; submitDocBtn.innerText = 'Approve & Submit to Waiting Room'; }
+                  if (submitSelfieBtn) { submitSelfieBtn.disabled = false; submitSelfieBtn.innerText = 'Verify & Submit to Waiting Room'; }
+                  if (retryUploadBtn) retryUploadBtn.style.display = 'block';
+              }
+          } catch (e) { console.error("Polling error", e); }
+      }, 3000); 
+
     } catch (error) {
       statusMessage.innerHTML = '<span style="color:#ef4444;">⚠️ Network error. Could not establish connection.</span>';
       if (submitDocBtn) submitDocBtn.disabled = false;
@@ -1668,7 +1651,6 @@ async function executeUploadLogic(e) {
 if (submitDocBtn) submitDocBtn.addEventListener('click', executeUploadLogic);
 if (submitSelfieBtn) submitSelfieBtn.addEventListener('click', executeUploadLogic);
 
-// 🚀 FIX 2: PROPER UX PERMISSION FLOW MODAL & NATIVE WEBRTC LIVE CAMERA
 function injectPermissionModal() {
     if (document.getElementById('sysPermissionModal')) return;
     const modalHtml = `
@@ -1676,25 +1658,20 @@ function injectPermissionModal() {
         <div style="background: #09090b; border: 1px solid #27272a; border-radius: 24px; padding: 30px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5);">
             <div id="permIcon" style="font-size: 48px; margin-bottom: 15px;">📷</div>
             <h2 id="permTitle" style="font-size: 22px; font-weight: 800; color: #ffffff; margin-bottom: 10px;">Camera Access Required</h2>
-            <p id="permDesc" style="font-size: 14px; color: #a1a1aa; line-height: 1.6; margin-bottom: 20px;">Syntrix requires secure camera access to capture a live verification photo.</p>
-            
+            <p id="permDesc" style="font-size: 14px; color: #a1a1aa; line-height: 1.6; margin-bottom: 25px;">To securely verify your identity, we need temporary access to your camera for a real-time selfie capture.</p>
             <div id="permErrorAlert" class="hidden" style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 12px; padding: 12px; color: #fca5a5; font-size: 13px; margin-bottom: 20px; display: none;">
-                Camera access was denied or failed. Please check your browser settings and try again.
+                Camera access was blocked by your browser. Please enable it in your browser settings to continue.
             </div>
-            
-            <div id="permActionButtons" style="display: flex; gap: 12px;">
+            <div style="display: flex; gap: 12px;">
                 <button type="button" id="permCancelBtn" style="flex: 1; padding: 14px; background: transparent; border: 1px solid #3f3f46; color: #ffffff; border-radius: 12px; font-weight: 600; cursor: pointer;">Cancel</button>
-                <button type="button" id="permAllowBtn" style="flex: 1; padding: 14px; background: #ffffff; color: #000000; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;">Allow Access</button>
-            </div>
-
-            <div id="permDeniedButtons" class="hidden" style="display: none; gap: 12px;">
-                <button type="button" id="permTryAgainBtn" style="flex: 1; padding: 14px; background: #ffffff; color: #000000; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;">Try Again</button>
-                <button type="button" id="permSettingsBtn" style="flex: 1; padding: 14px; background: transparent; border: 1px solid #3f3f46; color: #ffffff; border-radius: 12px; font-weight: 600; cursor: pointer;">Close</button>
+                <label id="permAllowBtn" for="" style="flex: 1; padding: 14px; background: #ffffff; color: #000000; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; display: block; margin: 0; text-align: center;">Allow Access</label>
             </div>
         </div>
     </div>`;
     document.body.insertAdjacentHTML('beforeend', modalHtml);
 }
+
+let pendingTriggerAction = null;
 
 function requestDevicePermissionUX(type) {
     injectPermissionModal();
@@ -1705,21 +1682,28 @@ function requestDevicePermissionUX(type) {
     const desc = document.getElementById('permDesc');
     const icon = document.getElementById('permIcon');
     const errorAlert = document.getElementById('permErrorAlert');
-    const actionBtns = document.getElementById('permActionButtons');
-    const deniedBtns = document.getElementById('permDeniedButtons');
+    const allowBtn = document.getElementById('permAllowBtn'); 
     
-    if (errorAlert) { errorAlert.style.display = 'none'; errorAlert.classList.add('hidden'); }
-    if (actionBtns) { actionBtns.style.display = 'flex'; actionBtns.classList.remove('hidden'); }
-    if (deniedBtns) { deniedBtns.style.display = 'none'; deniedBtns.classList.add('hidden'); }
+    if (errorAlert) {
+        errorAlert.classList.add('hidden');
+        errorAlert.style.display = 'none';
+    }
 
-    if (type === 'camera' || type === 'selfie') {
+    if (type === 'camera') {
         icon.innerText = '🤳';
         title.innerText = 'Camera Access Required';
-        desc.innerText = 'Camera access is required to verify your identity.';
+        desc.innerText = 'Syntrix requires secure camera access to capture a live verification photo.';
+        allowBtn.setAttribute('for', 'fileInputCamera');
+    } else if (type === 'selfie') {
+        icon.innerText = '🤳';
+        title.innerText = 'Camera Access Required';
+        desc.innerText = 'Syntrix requires secure camera access to capture a live verification photo.';
+        allowBtn.setAttribute('for', 'fileInputSelfie');
     } else {
         icon.innerText = '📁';
         title.innerText = 'File Access Required';
         desc.innerText = 'Syntrix needs access to your gallery or files to securely upload your selected document.';
+        allowBtn.setAttribute('for', 'fileInputGallery');
     }
     
     if (modal) {
@@ -1728,182 +1712,20 @@ function requestDevicePermissionUX(type) {
     }
 }
 
-function showCameraErrorState(errorMsg) {
-    const errorAlert = document.getElementById('permErrorAlert');
-    const actionBtns = document.getElementById('permActionButtons');
-    const deniedBtns = document.getElementById('permDeniedButtons');
-    
-    if (errorAlert) {
-        errorAlert.innerText = errorMsg || "Camera access is required to verify your identity.";
-        errorAlert.style.display = 'block';
-        errorAlert.classList.remove('hidden');
-    }
-    if (actionBtns) { actionBtns.style.display = 'none'; actionBtns.classList.add('hidden'); }
-    if (deniedBtns) { deniedBtns.style.display = 'flex'; deniedBtns.classList.remove('hidden'); }
-}
-
-async function startLiveSelfieStream() {
-    const scannerInner = document.querySelector('.scanner-circle-inner');
-    const icon = document.querySelector('.scanner-icon');
-    const btnSelfie = document.getElementById('btnSelfieCamera');
-    
-    // Make sure we hide the static image when restarting the stream!
-    const selfieImg = document.getElementById('selfieResultImg');
-    if (selfieImg) {
-        selfieImg.style.display = 'none';
-        selfieImg.classList.add('hidden');
-    }
-    
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
-        liveCameraStream = stream;
-        
-        let video = document.getElementById('liveCameraVideo');
-        if (!video) {
-            video = document.createElement('video');
-            video.id = 'liveCameraVideo';
-            video.autoplay = true;
-            video.playsInline = true;
-            video.style.width = '100%';
-            video.style.height = '100%';
-            video.style.objectFit = 'cover';
-            video.style.borderRadius = '50%';
-            video.style.position = 'absolute';
-            video.style.top = '0';
-            video.style.left = '0';
-            video.style.zIndex = '5';
-            if(scannerInner) {
-                scannerInner.style.position = 'relative';
-                scannerInner.style.overflow = 'hidden';
-                scannerInner.appendChild(video);
-            }
-        }
-        video.srcObject = stream;
-        video.style.display = 'block';
-
-        if(icon) icon.style.display = 'none';
-        
-        if(btnSelfie) {
-            btnSelfie.dataset.streaming = 'true';
-            const textNodes = Array.from(btnSelfie.childNodes).filter(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim() !== "");
-            if(textNodes.length > 0) textNodes[0].textContent = " 📸 Snap Photo";
-        }
-        
-        const modal = document.getElementById('sysPermissionModal');
-        if (modal) {
-            modal.classList.add('hidden');
-            modal.style.display = 'none';
-        }
-    } catch(err) {
-        console.error("Camera Setup Failed:", err);
-        requestDevicePermissionUX('selfie'); 
-        showCameraErrorState(`Access denied: ${err.message || "Camera blocked by system."}`);
-    }
-}
-
-function captureSelfieFrame() {
-    const video = document.getElementById('liveCameraVideo');
-    if (!video || !liveCameraStream) return;
-
-    const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    
-    canvas.toBlob((blob) => {
-        const file = new File([blob], "selfie_capture.jpg", { type: "image/jpeg" });
-        
-        liveCameraStream.getTracks().forEach(t => t.stop());
-        liveCameraStream = null;
-        video.style.display = 'none';
-        
-        resetUploadState(true);
-        selectedFile = file;
-        isUploadingSelfie = true;
-        
-        if (submitSelfieBtn) {
-            submitSelfieBtn.disabled = false;
-            submitSelfieBtn.classList.remove('hidden');
-        }
-        
-        const url = URL.createObjectURL(file);
-        const scannerOuter = document.querySelector('.scanner-circle-outer');
-        const scannerInner = document.querySelector('.scanner-circle-inner');
-        if (scannerOuter) scannerOuter.style.display = 'none';
-        if (scannerInner) scannerInner.style.display = 'none';
-        
-        // DYNAMICALLY CREATE THE IMAGE IF MISSING
-        let selfieImg = document.getElementById('selfieResultImg');
-        if (!selfieImg) {
-            const container = document.querySelector('.selfie-scanner-container');
-            if (container) {
-                selfieImg = document.createElement('img');
-                selfieImg.id = 'selfieResultImg';
-                selfieImg.style.maxWidth = '100%';
-                selfieImg.style.maxHeight = '260px';
-                selfieImg.style.borderRadius = '12px';
-                selfieImg.style.objectFit = 'contain';
-                selfieImg.style.position = 'relative';
-                selfieImg.style.zIndex = '10';
-                container.appendChild(selfieImg);
-            }
-        }
-        
-        if (selfieImg) {
-            selfieImg.src = url;
-            selfieImg.classList.remove('hidden');
-            selfieImg.style.display = 'block';
-        }
-        
-        const btnSelfie = document.getElementById('btnSelfieCamera');
-        if(btnSelfie) {
-            btnSelfie.dataset.streaming = 'false';
-            const textNodes = Array.from(btnSelfie.childNodes).filter(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim() !== "");
-            if(textNodes.length > 0) textNodes[0].textContent = " Retake Photo";
-        }
-    }, 'image/jpeg', 0.9);
-}
-
-async function checkAndStartSelfie() {
-    try {
-        if (navigator.permissions && navigator.permissions.query) {
-            const perm = await navigator.permissions.query({ name: 'camera' });
-            if (perm.state === 'granted') {
-                startLiveSelfieStream();
-                return;
-            }
-        }
-    } catch(e) {
-        // Fallback for browsers that don't support permissions.query (like Safari on iOS)
-    }
-    requestDevicePermissionUX('selfie');
-}
-
-document.addEventListener('click', async (e) => {
-    if (e.target.id === 'permCancelBtn' || e.target.id === 'permSettingsBtn') {
+document.addEventListener('click', (e) => {
+    if (e.target.id === 'permCancelBtn') {
         const modal = document.getElementById('sysPermissionModal');
         if (modal) { modal.classList.add('hidden'); modal.style.display = 'none'; }
     }
     
-    if (e.target.id === 'permAllowBtn' || e.target.id === 'permTryAgainBtn') {
-        const allowBtn = document.getElementById('permAllowBtn');
-        const tryAgainBtn = document.getElementById('permTryAgainBtn');
-        const activeBtn = e.target.id === 'permAllowBtn' ? allowBtn : tryAgainBtn;
-        
-        const originalText = activeBtn ? activeBtn.innerText : "Allow Access";
-        if(activeBtn) activeBtn.innerText = 'Requesting...';
-        
-        if (pendingTriggerAction === 'selfie') {
-            await startLiveSelfieStream();
-            if(activeBtn) activeBtn.innerText = originalText;
-        } else {
-            const modal = document.getElementById('sysPermissionModal');
-            if (pendingTriggerAction === 'camera' && fileInputCamera) fileInputCamera.click();
-            if (pendingTriggerAction === 'gallery' && fileInputGallery) fileInputGallery.click();
-            if (modal) { modal.classList.add('hidden'); modal.style.display = 'none'; }
-            if(activeBtn) activeBtn.innerText = originalText;
-        }
+    if (e.target.id === 'permAllowBtn') {
+        const modal = document.getElementById('sysPermissionModal');
+        setTimeout(() => {
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+            }
+        }, 800);
     }
 });
 
@@ -1914,26 +1736,25 @@ window.addEventListener('DOMContentLoaded', () => {
 
     if (cameraUI && cameraUI.id !== 'btnSelfieCamera') {
         cameraUI.addEventListener('click', (e) => {
-            e.preventDefault(); e.stopPropagation();
+            e.preventDefault(); 
+            e.stopPropagation();
             requestDevicePermissionUX('camera');
         }, true);
     }
     
     if (galleryUI) {
         galleryUI.addEventListener('click', (e) => {
-            e.preventDefault(); e.stopPropagation();
+            e.preventDefault();
+            e.stopPropagation();
             requestDevicePermissionUX('gallery');
         }, true);
     }
 
     if (selfieUI) {
         selfieUI.addEventListener('click', (e) => {
-            e.preventDefault(); e.stopPropagation();
-            if (selfieUI.dataset.streaming === 'true') {
-                captureSelfieFrame();
-            } else {
-                startLiveSelfieStream(); 
-            }
+            e.preventDefault();
+            e.stopPropagation();
+            requestDevicePermissionUX('selfie');
         }, true);
     }
 });
