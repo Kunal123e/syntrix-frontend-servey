@@ -1650,8 +1650,9 @@ function injectPermissionModal() {
                 Camera access was blocked by your browser. Please enable it in your browser settings to continue.
             </div>
             <div style="display: flex; gap: 12px;">
-                <button id="permCancelBtn" style="flex: 1; padding: 14px; background: transparent; border: 1px solid #3f3f46; color: #ffffff; border-radius: 12px; font-weight: 600; cursor: pointer;">Cancel</button>
-                <button id="permAllowBtn" style="flex: 1; padding: 14px; background: #ffffff; color: #000000; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;">Allow Access</button>
+                <button type="button" id="permCancelBtn" style="flex: 1; padding: 14px; background: transparent; border: 1px solid #3f3f46; color: #ffffff; border-radius: 12px; font-weight: 600; cursor: pointer;">Cancel</button>
+                <!-- 🚀 FIX: This is now a LABEL. Mobile phones will open the camera natively without blocking it! -->
+                <label id="permAllowBtn" for="" style="flex: 1; padding: 14px; background: #ffffff; color: #000000; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; display: block; margin: 0; text-align: center;">Allow Access</label>
             </div>
         </div>
     </div>`;
@@ -1669,20 +1670,29 @@ function requestDevicePermissionUX(type) {
     const desc = document.getElementById('permDesc');
     const icon = document.getElementById('permIcon');
     const errorAlert = document.getElementById('permErrorAlert');
+    const allowBtn = document.getElementById('permAllowBtn'); // This is our new label
     
     if (errorAlert) {
         errorAlert.classList.add('hidden');
         errorAlert.style.display = 'none';
     }
 
-    if (type === 'camera' || type === 'selfie') {
+    // 🚀 FIX: Connect the label directly to the hidden file inputs using 'for' attribute
+    if (type === 'camera') {
         icon.innerText = '🤳';
         title.innerText = 'Camera Access Required';
         desc.innerText = 'Syntrix requires secure camera access to capture a live verification photo.';
+        allowBtn.setAttribute('for', 'fileInputCamera');
+    } else if (type === 'selfie') {
+        icon.innerText = '🤳';
+        title.innerText = 'Camera Access Required';
+        desc.innerText = 'Syntrix requires secure camera access to capture a live verification photo.';
+        allowBtn.setAttribute('for', 'fileInputSelfie');
     } else {
         icon.innerText = '📁';
         title.innerText = 'File Access Required';
         desc.innerText = 'Syntrix needs access to your gallery or files to securely upload your selected document.';
+        allowBtn.setAttribute('for', 'fileInputGallery');
     }
     
     if (modal) {
@@ -1692,7 +1702,6 @@ function requestDevicePermissionUX(type) {
 }
 
 // Listeners for the dynamic permission modal
-// 🚀 FIX: Sync Button Click so Mobile Browsers don't block the Camera
 document.addEventListener('click', (e) => {
     if (e.target.id === 'permCancelBtn') {
         const modal = document.getElementById('sysPermissionModal');
@@ -1702,25 +1711,19 @@ document.addEventListener('click', (e) => {
     if (e.target.id === 'permAllowBtn') {
         const modal = document.getElementById('sysPermissionModal');
         
-        // Open the camera natively instantly (No await delay allowed)
-        if (pendingTriggerAction === 'camera') {
-            if (fileInputCamera) fileInputCamera.click();
-        } else if (pendingTriggerAction === 'selfie') {
-            if (fileInputSelfie) fileInputSelfie.click();
-        } else {
-            if (fileInputGallery) fileInputGallery.click();
-        }
-        
-        if (modal) {
-            modal.classList.add('hidden');
-            modal.style.display = 'none';
-        }
+        // 🚀 FIX: We don't use JS to click the input anymore. The browser does it for us via the label!
+        // We just wait a fraction of a second for the native camera prompt to open, then hide our modal.
+        setTimeout(() => {
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+            }
+        }, 800);
     }
 });
 
 // Intercept existing UI buttons to route through the permission gate
 window.addEventListener('DOMContentLoaded', () => {
-    // Override the native label behavior by listening to the UI buttons explicitly
     const cameraUI = document.querySelector('.doc-btn-white') || document.getElementById('btnCameraText')?.parentElement;
     const galleryUI = document.getElementById('btnGallery');
     const selfieUI = document.getElementById('btnSelfieCamera');
