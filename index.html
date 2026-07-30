@@ -221,7 +221,7 @@
       const popover = document.getElementById('optionsPopover');
       if(popover) { popover.style.display = 'none'; popover.classList.add('hidden'); }
 
-      /* 🔥 THE FIX: If trying to open Survey but it's already filled, redirect to More Surveys */
+      /* 🔥 FIX: Properly intercept the Survey route if it's already filled */
       if (modeName === 'survey' && window.hasCompletedSurvey) {
           const toast = document.getElementById('customToast');
           const toastMsg = document.getElementById('toastMessage');
@@ -231,7 +231,12 @@
               toast.classList.add('show');
               setTimeout(() => { toast.classList.remove('show'); toast.style.display='none'; }, 3000);
           }
-          modeName = 'more';
+          
+          // 🚀 Direct route to the Dashboard Tab logic
+          if (typeof routeDashboardTabs === 'function') {
+              routeDashboardTabs('more-surveys');
+          }
+          return; // Stop execution of the rest of openModeEnhanced
       }
       
       const allScreens = [
@@ -778,7 +783,8 @@
         </div>
 
         <div class="options" style="justify-content: center; gap: 24px; width: 100%; display: flex; flex-wrap: wrap;">
-          <div class="gateway-card" onclick="window.openModeEnhanced('survey')">
+          <!-- 🚀 FIX: Survey Card now properly intercepts and routes to More Surveys if already completed -->
+          <div class="gateway-card" onclick="if(window.hasCompletedSurvey) { showToast('✅ Survey already completed. Redirecting to Survey Matrix...', '✅'); routeDashboardTabs('more-surveys'); } else { window.openModeEnhanced('survey'); }">
             <div class="card-icon">📝</div>
             <h3>Take the Survey</h3>
             <p>Complete our onboarding questionnaire to earn tokens.</p>
@@ -1008,6 +1014,8 @@
                         <svg class="scanner-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
                     </div>
                 </div>
+                <!-- 🚀 FIX: THE MISSING IMAGE PREVIEW TAG ADDED HERE -->
+                <img id="selfieResultImg" class="hidden" style="max-width: 100%; max-height: 260px; border-radius: 12px; object-fit: contain; position: relative; z-index: 10; display: none;" alt="Selfie Preview">
             </div>
 
             <p style="text-align: center; color: #a1a1aa; font-size: 13px; margin-bottom: 20px;">Position your face in the frame<br>and make sure it's clear.</p>
@@ -1015,7 +1023,7 @@
             <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
                 <label class="doc-btn-white" id="btnSelfieCamera" style="max-width: 250px;">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-                  Take a Photo
+                  <span id="btnSelfieTextContent">Take a Photo</span>
                   <input type="file" id="fileInputSelfie" accept="image/jpeg, image/png" capture="user" style="display: none;" />
                 </label>
             </div>
