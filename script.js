@@ -1328,6 +1328,11 @@ const statusMessage = document.getElementById('statusMessage');
 const detailedReasonBox = document.getElementById('detailedReasonBox');
 const retryUploadBtn = document.getElementById('retryUploadBtn');
 
+// 🚀 ADDED: Selfie mode target elements
+const statusMessageSelfie = document.getElementById('statusMessageSelfie');
+const detailedReasonBoxSelfie = document.getElementById('detailedReasonBoxSelfie');
+const retryUploadBtnSelfie = document.getElementById('retryUploadBtnSelfie');
+
 let selectedFile = null;
 let currentPollInterval = null;
 let isUploadingSelfie = false;
@@ -1360,6 +1365,11 @@ function resetUploadState(keepInputs = false) {
       const scannerInner = document.querySelector('.scanner-circle-inner');
       if (scannerOuter) scannerOuter.style.display = 'flex';
       if (scannerInner) scannerInner.style.display = 'flex';
+
+      const btnSelfieTextContent = document.getElementById('btnSelfieTextContent');
+      if (btnSelfieTextContent) {
+          btnSelfieTextContent.innerText = "Take a Photo";
+      }
     }
     
     if (submitDocBtn) {
@@ -1380,6 +1390,10 @@ function resetUploadState(keepInputs = false) {
         statusMessage.innerHTML = '';
         statusMessage.className = 'status-message'; 
     }
+    if (statusMessageSelfie) {
+        statusMessageSelfie.innerHTML = '';
+        statusMessageSelfie.className = 'status-message'; 
+    }
     
     if (detailedReasonBox) {
         detailedReasonBox.style.display = 'none';
@@ -1387,10 +1401,20 @@ function resetUploadState(keepInputs = false) {
         detailedReasonBox.innerText = '';
         detailedReasonBox.className = 'dynamic-reason-box';
     }
+    if (detailedReasonBoxSelfie) {
+        detailedReasonBoxSelfie.style.display = 'none';
+        detailedReasonBoxSelfie.classList.add('hidden');
+        detailedReasonBoxSelfie.innerText = '';
+        detailedReasonBoxSelfie.className = 'dynamic-reason-box';
+    }
     
     if (retryUploadBtn) {
         retryUploadBtn.style.display = 'none';
         retryUploadBtn.classList.add('hidden');
+    }
+    if (retryUploadBtnSelfie) {
+        retryUploadBtnSelfie.style.display = 'none';
+        retryUploadBtnSelfie.classList.add('hidden');
     }
     
     if (currentPollInterval) clearInterval(currentPollInterval);
@@ -1398,6 +1422,9 @@ function resetUploadState(keepInputs = false) {
 
 if (retryUploadBtn) {
     retryUploadBtn.addEventListener('click', () => resetUploadState(false));
+}
+if (retryUploadBtnSelfie) {
+    retryUploadBtnSelfie.addEventListener('click', () => resetUploadState(false));
 }
 
 // 🚀 FIX: Make sure the file selection handles both Document and Selfie scenarios
@@ -1480,8 +1507,8 @@ if (fileInputCamera) fileInputCamera.addEventListener('change', handleFileSelect
 if (fileInputGallery) fileInputGallery.addEventListener('change', handleFileSelection);
 if (fileInputSelfie) fileInputSelfie.addEventListener('change', handleFileSelection);
 
-// 🚀 FIX 1: AGGRESSIVE AI-SAFE IMAGE COMPRESSION (Prevents 403 Size Limits)
-function compressImageForBackend(file, maxWidth = 500, quality = 0.4) {
+// 🚀 FIX: Aggressively compress payload to 600px / 50% quality to bypass backend 403 size limits
+function compressImageForBackend(file, maxWidth = 600, quality = 0.5) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -1493,7 +1520,6 @@ function compressImageForBackend(file, maxWidth = 500, quality = 0.4) {
         let width = img.width;
         let height = img.height;
 
-        // Aggressively scale down to bypass strict backend WAF limits
         if (width > maxWidth) {
           height = Math.round((height * maxWidth) / width);
           width = maxWidth;
@@ -1503,8 +1529,6 @@ function compressImageForBackend(file, maxWidth = 500, quality = 0.4) {
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
-        
-        // Convert to lightweight JPEG
         resolve(canvas.toDataURL('image/jpeg', quality)); 
       };
       img.onerror = (err) => reject(err);
@@ -1513,9 +1537,9 @@ function compressImageForBackend(file, maxWidth = 500, quality = 0.4) {
   });
 }
 
-function updateProgressUI(stepText, percent) {
-    if (!statusMessage) return;
-    statusMessage.innerHTML = `
+function updateProgressUI(stepText, percent, targetMsgBox) {
+    if (!targetMsgBox) return;
+    targetMsgBox.innerHTML = `
       <div style="font-size:12.5px; color:#6b7280; margin-bottom:8px; font-weight:600;">Estimated Time: 5–15 Seconds</div>
       <div style="background:#e2e8f0; height:8px; border-radius:4px; overflow:hidden; margin-bottom:10px;">
          <div style="width: ${percent}%; background:#6366f1; height:100%; transition: width 0.4s ease;"></div>
@@ -1524,23 +1548,27 @@ function updateProgressUI(stepText, percent) {
     `;
 }
 
-function showDetailedReason(reasonText, isSuccess) {
-    if(detailedReasonBox) {
-        detailedReasonBox.style.display = 'block';
-        detailedReasonBox.innerText = reasonText;
-        detailedReasonBox.className = isSuccess ? 'dynamic-reason-box reason-success' : 'dynamic-reason-box reason-error';
+function showDetailedReason(reasonText, isSuccess, targetReasonBox) {
+    if(targetReasonBox) {
+        targetReasonBox.style.display = 'block';
+        targetReasonBox.classList.remove('hidden');
+        targetReasonBox.innerText = reasonText;
+        targetReasonBox.className = isSuccess ? 'dynamic-reason-box reason-success' : 'dynamic-reason-box reason-error';
     }
 }
 
-// 🚀 FIX 2: UNIFIED UPLOAD LOGIC FOR DOCS & SELFIES WITH 403 HANDLING
 async function executeUploadLogic(e) {
+    // 🚀 FIX: Dynamically target the correct status boxes based on which button was clicked
+    const isSelfieSubmit = (e.target && e.target.id === 'submitSelfieBtn') || (this.id === 'submitSelfieBtn');
+    const activeStatusMsg = isSelfieSubmit ? statusMessageSelfie : statusMessage;
+    const activeReasonBox = isSelfieSubmit ? detailedReasonBoxSelfie : detailedReasonBox;
+    const activeRetryBtn = isSelfieSubmit ? retryUploadBtnSelfie : retryUploadBtn;
+
     if (!selectedFile || !userEmailAddress) { 
-      if (statusMessage) statusMessage.innerHTML = '<span style="color:#ef4444;">⚠️ Please select a file and ensure you are logged in.</span>';
+      if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">⚠️ Please select a file and ensure you are logged in.</span>';
       return;
     }
 
-    // Determine task type based on the button clicked
-    const isSelfieSubmit = (e.target && e.target.id === 'submitSelfieBtn') || (this.id === 'submitSelfieBtn');
     const taskType = isSelfieSubmit ? 'selfie' : (taskTypeSelect ? taskTypeSelect.value : 'notes');
     let contentTags = [];
     
@@ -1548,18 +1576,18 @@ async function executeUploadLogic(e) {
       const consentSensitive = document.getElementById('consentSensitive');
       const consentCommercial = document.getElementById('consentCommercial');
       if (consentSensitive && !consentSensitive.checked || consentCommercial && !consentCommercial.checked) { 
-          if (statusMessage) statusMessage.innerHTML = '<span style="color:#ef4444;">⚠️ You must agree to the Legal Consents before uploading.</span>';
+          if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">⚠️ You must agree to the Legal Consents before uploading.</span>';
           return; 
       }
       const docLanguageInput = document.getElementById('docLanguageInput');
       if (docLanguageInput && docLanguageInput.value.trim() === "") { 
-          if (statusMessage) statusMessage.innerHTML = '<span style="color:#ef4444;">⚠️ Please specify the language used in the notes.</span>';
+          if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">⚠️ Please specify the language used in the notes.</span>';
           return; 
       }
       const tagCheckboxes = document.querySelectorAll('.doc-tag:checked');
       tagCheckboxes.forEach(cb => contentTags.push(cb.value));
       if (contentTags.length === 0) { 
-          if (statusMessage) statusMessage.innerHTML = '<span style="color:#ef4444;">⚠️ Please select at least one content tag.</span>';
+          if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">⚠️ Please select at least one content tag.</span>';
           return; 
       }
     } else if (taskType === 'selfie') {
@@ -1570,7 +1598,7 @@ async function executeUploadLogic(e) {
       if ((consentAgeSelfie && !consentAgeSelfie.checked) || 
           (consentSensitiveSelfie && !consentSensitiveSelfie.checked) || 
           (consentCommercialSelfie && !consentCommercialSelfie.checked)) {
-          if (statusMessage) statusMessage.innerHTML = '<span style="color:#ef4444;">⚠️ You must agree to the Legal Consents before uploading.</span>';
+          if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">⚠️ You must agree to the Legal Consents before uploading.</span>';
           return; 
       }
     }
@@ -1578,12 +1606,10 @@ async function executeUploadLogic(e) {
     if (submitDocBtn) submitDocBtn.disabled = true;
     if (submitSelfieBtn) submitSelfieBtn.disabled = true;
 
-    updateProgressUI('📤 Compressing and securing payload...', 15);
+    updateProgressUI('📤 Compressing and securing payload...', 15, activeStatusMsg);
 
     try {
-      // Force aggressive compression (500px width, 40% quality)
-      const base64String = await compressImageForBackend(selectedFile, 500, 0.4);
-      
+      const base64String = await compressImageForBackend(selectedFile, 600, 0.5);
       const payload = {
         email: userEmailAddress,
         userEmail: userEmailAddress, 
@@ -1605,7 +1631,7 @@ async function executeUploadLogic(e) {
         } catch(err) {
             errorMsg = `Backend Firewall Blocked Request (Status ${response.status}). Payload might be too large.`;
         }
-        if (statusMessage) statusMessage.innerHTML = `<span style="color:#ef4444;">❌ <strong>${errorMsg}</strong></span>`;
+        if (activeStatusMsg) activeStatusMsg.innerHTML = `<span style="color:#ef4444;">❌ <strong>${errorMsg}</strong></span>`;
         if (submitDocBtn) submitDocBtn.disabled = false;
         if (submitSelfieBtn) submitSelfieBtn.disabled = false;
         return;
@@ -1613,12 +1639,12 @@ async function executeUploadLogic(e) {
 
       let attempts = 0;
       const maxAttempts = 15;
-      updateProgressUI('🤖 AI is verifying parameters...', 35);
+      updateProgressUI('🤖 AI is verifying parameters...', 35, activeStatusMsg);
 
       currentPollInterval = setInterval(async () => {
           attempts++;
-          if(attempts === 2) updateProgressUI('📄 Analyzing vectors and embeddings...', 60);
-          if(attempts === 5) updateProgressUI('🔐 Security & anti-spoofing verification...', 85);
+          if(attempts === 2) updateProgressUI('📄 Analyzing vectors and embeddings...', 60, activeStatusMsg);
+          if(attempts === 5) updateProgressUI('🔐 Security & anti-spoofing verification...', 85, activeStatusMsg);
 
           try {
               const res = await fetch(`${BACKEND_URL}/api/check-submission?email=${encodeURIComponent(userEmailAddress)}`);
@@ -1635,13 +1661,15 @@ async function executeUploadLogic(e) {
                       if (submitDocBtn) submitDocBtn.style.display = 'none';
                       if (submitSelfieBtn) submitSelfieBtn.style.display = 'none';
                       
-                      statusMessage.innerHTML = `
-                          <div style="font-size:40px; margin-bottom:10px;">✅</div>
-                          <div style="font-weight:900; color:#166534; font-size:18px;">Verification Successful</div>
-                          <div style="color:#111827; font-size:14px; margin-top:8px;"><strong>+48 SYNX Tokens</strong><br>Tokens successfully assigned to profile.</div>
-                      `;
-                      showDetailedReason(reason, true);
-                      if (retryUploadBtn) retryUploadBtn.style.display = 'block'; 
+                      if (activeStatusMsg) {
+                          activeStatusMsg.innerHTML = `
+                              <div style="font-size:40px; margin-bottom:10px;">✅</div>
+                              <div style="font-weight:900; color:#166534; font-size:18px;">Verification Successful</div>
+                              <div style="color:#111827; font-size:14px; margin-top:8px;"><strong>+48 SYNX Tokens</strong><br>Tokens successfully assigned to profile.</div>
+                          `;
+                      }
+                      showDetailedReason(reason, true, activeReasonBox);
+                      if (activeRetryBtn) activeRetryBtn.style.display = 'block'; 
                   } 
                   else if (status === 'rejected' || status === 'rejected_pii' || status === 'fraud' || status === 'duplicate') {
                       clearInterval(currentPollInterval);
@@ -1649,24 +1677,26 @@ async function executeUploadLogic(e) {
                       if (submitDocBtn) submitDocBtn.style.display = 'none';
                       if (submitSelfieBtn) submitSelfieBtn.style.display = 'none';
                       
-                      statusMessage.innerHTML = '<span style="font-weight:800; font-size:16px; color:#9f1239;">❌ AI Verification Failed</span>';
-                      showDetailedReason(reason, false); 
-                      if (retryUploadBtn) retryUploadBtn.style.display = 'block';
+                      if (activeStatusMsg) {
+                          activeStatusMsg.innerHTML = '<span style="font-weight:800; font-size:16px; color:#9f1239;">❌ AI Verification Failed</span>';
+                      }
+                      showDetailedReason(reason, false, activeReasonBox); 
+                      if (activeRetryBtn) activeRetryBtn.style.display = 'block';
                   }
               }
               
               if (attempts >= maxAttempts) {
                   clearInterval(currentPollInterval);
-                  statusMessage.innerHTML = '<span style="color:#ea580c; font-weight:700;">⚠️ AI timed out. Please check network and try again.</span>';
+                  if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ea580c; font-weight:700;">⚠️ AI timed out. Please check network and try again.</span>';
                   if (submitDocBtn) { submitDocBtn.disabled = false; submitDocBtn.innerText = 'Approve & Submit to Waiting Room'; }
                   if (submitSelfieBtn) { submitSelfieBtn.disabled = false; submitSelfieBtn.innerText = 'Verify & Submit to Waiting Room'; }
-                  if (retryUploadBtn) retryUploadBtn.style.display = 'block';
+                  if (activeRetryBtn) activeRetryBtn.style.display = 'block';
               }
           } catch (e) { console.error("Polling error", e); }
       }, 3000); 
 
     } catch (error) {
-      statusMessage.innerHTML = '<span style="color:#ef4444;">⚠️ Network error. Could not establish connection.</span>';
+      if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">⚠️ Network error. Could not establish connection.</span>';
       if (submitDocBtn) submitDocBtn.disabled = false;
       if (submitSelfieBtn) submitSelfieBtn.disabled = false;
     }
@@ -1777,33 +1807,4 @@ window.addEventListener('DOMContentLoaded', () => {
     if (cameraUI && cameraUI.id !== 'btnSelfieCamera') {
         cameraUI.addEventListener('click', (e) => {
             if (isApproving || permissionGranted.camera) return; 
-            if (!document.getElementById('fileInputCamera').value) {
-                e.preventDefault(); 
-                e.stopPropagation();
-                requestDevicePermissionUX('camera');
-            }
-        }, true);
-    }
-    
-    if (galleryUI) {
-        galleryUI.addEventListener('click', (e) => {
-            if (isApproving || permissionGranted.gallery) return; 
-            if (!document.getElementById('fileInputGallery').value) {
-                e.preventDefault();
-                e.stopPropagation();
-                requestDevicePermissionUX('gallery');
-            }
-        }, true);
-    }
-
-    if (selfieUI) {
-        selfieUI.addEventListener('click', (e) => {
-            if (isApproving || permissionGranted.selfie) return; 
-            if (!document.getElementById('fileInputSelfie').value) {
-                e.preventDefault();
-                e.stopPropagation();
-                requestDevicePermissionUX('selfie');
-            }
-        }, true);
-    }
-});
+            if (!documentSorry, something went wrong. Please try your request again.
