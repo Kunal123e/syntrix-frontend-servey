@@ -1018,7 +1018,7 @@ function resetApplicationFlowState() {
   const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "gatewayScreenSection", "documentModeSection", "selfieModeSection"];
   dashboardCards.forEach(id => {
     const el = document.getElementById(id);
-    if (el) { el.style.display = "none"; el.classList.add("hidden"); }
+    if (el) { el.classList.add("hidden"); el.style.display = "none"; }
   });
 
   if (claimForm) {
@@ -1349,7 +1349,6 @@ function resetUploadState(keepInputs = false) {
           imagePreview.classList.add('hidden'); 
       }
       
-      // 🚀 FIX: Clear the selfie image and restore the scanner rings
       const selfieImg = document.getElementById('selfieResultImg');
       if (selfieImg) {
           selfieImg.src = '';
@@ -1361,11 +1360,6 @@ function resetUploadState(keepInputs = false) {
       const scannerInner = document.querySelector('.scanner-circle-inner');
       if (scannerOuter) scannerOuter.style.display = 'flex';
       if (scannerInner) scannerInner.style.display = 'flex';
-
-      const btnSelfieTextContent = document.getElementById('btnSelfieTextContent');
-      if (btnSelfieTextContent) {
-          btnSelfieTextContent.innerText = "Take a Photo";
-      }
     }
     
     if (submitDocBtn) {
@@ -1486,8 +1480,8 @@ if (fileInputCamera) fileInputCamera.addEventListener('change', handleFileSelect
 if (fileInputGallery) fileInputGallery.addEventListener('change', handleFileSelection);
 if (fileInputSelfie) fileInputSelfie.addEventListener('change', handleFileSelection);
 
-// 🚀 FIX: Aggressively compress payload to 600px / 50% quality to bypass backend 403 size limits
-function compressImageForBackend(file, maxWidth = 600, quality = 0.5) {
+// 🚀 FIX 1: AGGRESSIVE AI-SAFE IMAGE COMPRESSION (Prevents 403 Size Limits)
+function compressImageForBackend(file, maxWidth = 500, quality = 0.4) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -1499,6 +1493,7 @@ function compressImageForBackend(file, maxWidth = 600, quality = 0.5) {
         let width = img.width;
         let height = img.height;
 
+        // Aggressively scale down to bypass strict backend WAF limits
         if (width > maxWidth) {
           height = Math.round((height * maxWidth) / width);
           width = maxWidth;
@@ -1508,6 +1503,8 @@ function compressImageForBackend(file, maxWidth = 600, quality = 0.5) {
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
+        
+        // Convert to lightweight JPEG
         resolve(canvas.toDataURL('image/jpeg', quality)); 
       };
       img.onerror = (err) => reject(err);
@@ -1535,12 +1532,14 @@ function showDetailedReason(reasonText, isSuccess) {
     }
 }
 
+// 🚀 FIX 2: UNIFIED UPLOAD LOGIC FOR DOCS & SELFIES WITH 403 HANDLING
 async function executeUploadLogic(e) {
     if (!selectedFile || !userEmailAddress) { 
       if (statusMessage) statusMessage.innerHTML = '<span style="color:#ef4444;">⚠️ Please select a file and ensure you are logged in.</span>';
       return;
     }
 
+    // Determine task type based on the button clicked
     const isSelfieSubmit = (e.target && e.target.id === 'submitSelfieBtn') || (this.id === 'submitSelfieBtn');
     const taskType = isSelfieSubmit ? 'selfie' : (taskTypeSelect ? taskTypeSelect.value : 'notes');
     let contentTags = [];
@@ -1582,7 +1581,9 @@ async function executeUploadLogic(e) {
     updateProgressUI('📤 Compressing and securing payload...', 15);
 
     try {
-      const base64String = await compressImageForBackend(selectedFile, 600, 0.5);
+      // Force aggressive compression (500px width, 40% quality)
+      const base64String = await compressImageForBackend(selectedFile, 500, 0.4);
+      
       const payload = {
         email: userEmailAddress,
         userEmail: userEmailAddress, 
@@ -1600,9 +1601,9 @@ async function executeUploadLogic(e) {
         let errorMsg = 'Upload rejected by server.';
         try {
             const data = await response.json();
-            errorMsg = data.error || data.message || `Server error ${response.status}`;
+            errorMsg = data.error || data.message || `Server blocked request (Status ${response.status})`;
         } catch(err) {
-            errorMsg = `Server blocked request (Status ${response.status}).`;
+            errorMsg = `Backend Firewall Blocked Request (Status ${response.status}). Payload might be too large.`;
         }
         if (statusMessage) statusMessage.innerHTML = `<span style="color:#ef4444;">❌ <strong>${errorMsg}</strong></span>`;
         if (submitDocBtn) submitDocBtn.disabled = false;
