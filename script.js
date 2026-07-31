@@ -209,7 +209,6 @@ if (initializePlatformBtn) {
 
 // ================= GATEWAY LOGIC =================
 window.openMode = function(mode) {
-  // 🚀 FIX: Prevent Survey Loop - Stop them immediately and route to More Surveys
   if (mode === 'survey' && window.hasCompletedSurvey) {
       showToast("✅ Survey already completed. Redirecting to Survey Matrix...", "✅");
       routeDashboardTabs('more-surveys');
@@ -1019,7 +1018,7 @@ function resetApplicationFlowState() {
   const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "gatewayScreenSection", "documentModeSection", "selfieModeSection"];
   dashboardCards.forEach(id => {
     const el = document.getElementById(id);
-    if (el) { el.classList.add("hidden"); el.style.display = "none"; }
+    if (el) { el.style.display = "none"; el.classList.add("hidden"); }
   });
 
   if (claimForm) {
