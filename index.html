@@ -232,11 +232,10 @@
               setTimeout(() => { toast.classList.remove('show'); toast.style.display='none'; }, 3000);
           }
           
-          // 🚀 Direct route to the Dashboard Tab logic
           if (typeof routeDashboardTabs === 'function') {
               routeDashboardTabs('more-surveys');
           }
-          return; // Stop execution of the rest of openModeEnhanced
+          return; 
       }
       
       const allScreens = [
@@ -1455,73 +1454,64 @@
   </div>
 </div>
 
-<div id="retrieveModal" class="modal-overlay hidden" style="display: none;">
-  <div class="modal-card animate-fade-in premium-retrieve-modal">
-    <div class="prm-header">
-      <div class="prm-title-group">
-        <div class="prm-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
-        <h2>Sign Up / Retrieve Profile</h2>
+<div id="retrieveModal" class="modal-overlay hidden" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 99999; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;">
+  <div class="animate-fade-in" style="background: #09090b; border: 1px solid #27272a; border-radius: 24px; width: 100%; max-width: 480px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7); display: flex; flex-direction: column;">
+    
+    <!-- Premium Header -->
+    <div style="padding: 24px 24px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #27272a;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <h2 style="margin: 0; font-size: 20px; font-weight: 800; color: #ffffff;">Sign Up / Retrieve Profile</h2>
       </div>
-      <button type="button" id="closeModalBtn" class="prm-close-btn" onclick="
-          document.getElementById('retrieveModal').style.display='none'; 
-          document.getElementById('retrieveModal').classList.add('hidden');
-      ">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      <button type="button" id="closeModalBtn" onclick="document.getElementById('retrieveModal').style.display='none'; document.getElementById('retrieveModal').classList.add('hidden');" style="background: transparent; border: none; color: #a1a1aa; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
     </div>
-    
-    <div class="prm-body">
-      <div class="prm-drag-line"></div>
-      <p class="prm-subtitle">Enter your authorized communication profile to bypass the questionnaire matrix and open the Web3 settlement gateway.</p>
-      
-      <div class="prm-registry-box">
-        <div class="prm-registry-header">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-          <h4>DYNAMIC REGISTRY DETAILS</h4>
+
+    <!-- Premium Body -->
+    <div style="padding: 24px; text-align: left;">
+      <p style="margin: 0 0 24px 0; font-size: 14.5px; color: #a1a1aa; line-height: 1.6;">Enter your authorized communication profile to bypass the questionnaire matrix and open the Web3 settlement gateway.</p>
+
+      <div style="background: #18181b; border: 1px solid #27272a; border-radius: 16px; padding: 20px; margin-bottom: 24px;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          <h4 style="margin: 0; font-size: 12px; font-weight: 800; color: #eab308; letter-spacing: 0.5px;">DYNAMIC REGISTRY DETAILS</h4>
         </div>
-        
-        <div class="prm-registry-list">
-          <div class="prm-reg-item">
-            <div class="prm-reg-bullet"></div>
-            <div class="prm-reg-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
-            <p>Verification searches real-time<br>historical database blocks.</p>
+
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div style="display: flex; gap: 14px; align-items: flex-start;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top: 1px; flex-shrink: 0;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <p style="margin: 0; font-size: 13.5px; color: #d1d5db; line-height: 1.5;">Verification searches real-time historical database blocks.</p>
           </div>
-          <div class="prm-reg-item">
-            <div class="prm-reg-bullet"></div>
-            <div class="prm-reg-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg></div>
-            <p>Ensure your MetaMask extension is<br>configured to the Polygon Mainnet network.</p>
+          <div style="display: flex; gap: 14px; align-items: flex-start;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top: 1px; flex-shrink: 0;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            <p style="margin: 0; font-size: 13.5px; color: #d1d5db; line-height: 1.5;">Ensure your MetaMask extension is configured to the Polygon Mainnet network.</p>
           </div>
-          <div class="prm-reg-item" style="border-bottom: none; padding-bottom: 0;">
-            <div class="prm-reg-bullet"></div>
-            <div class="prm-reg-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></div>
-            <p>Wallet balances are automatically evaluated<br>by smart contract protocols.</p>
+          <div style="display: flex; gap: 14px; align-items: flex-start;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top: 1px; flex-shrink: 0;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            <p style="margin: 0; font-size: 13.5px; color: #d1d5db; line-height: 1.5;">Wallet balances are automatically evaluated by smart contract protocols.</p>
           </div>
         </div>
       </div>
 
-      <div class="prm-input-group">
-        <label for="modalEmailInput">REGISTERED EMAIL ADDRESS</label>
-        <input type="email" id="modalEmailInput" placeholder="name@example.com" autocomplete="off">
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <label for="modalEmailInput" style="font-size: 12px; font-weight: 700; color: #a1a1aa; letter-spacing: 0.5px;">REGISTERED EMAIL ADDRESS</label>
+        <input type="email" id="modalEmailInput" placeholder="name@example.com" autocomplete="off" style="width: 100%; box-sizing: border-box; background: #18181b; border: 1px solid #3f3f46; border-radius: 12px; padding: 14px 16px; color: #ffffff; font-size: 15px; outline: none; font-family: inherit;">
       </div>
       
-      <div id="modalStatus" class="modal-status"></div>
+      <div id="modalStatus" style="margin-top: 12px; font-size: 13px; font-weight: 600; text-align: center; color: #ef4444; min-height: 18px;"></div>
     </div>
-    
-    <div class="prm-footer">
-      <button type="button" id="cancelModalBtn" class="prm-btn-cancel" onclick="
-          document.getElementById('retrieveModal').style.display='none'; 
-          document.getElementById('retrieveModal').classList.add('hidden');
-      ">Cancel</button>
-      <button type="button" id="confirmRetrieveBtn" class="prm-btn-submit" onclick="
-          window.hasCompletedSurvey = true; /* 🔥 Existing profile implies survey filled */
-          document.getElementById('retrieveModal').style.display='none';
-          document.getElementById('retrieveModal').classList.add('hidden');
-          document.getElementById('emailGateSection').style.display='none';
-          document.getElementById('emailGateSection').classList.add('hidden');
-          window.unlockFullMenu();
-          window.openModeEnhanced('gateway');
-      ">Search Ledger &rarr;</button>
+
+    <!-- Premium Footer -->
+    <div style="padding: 16px 24px; display: flex; gap: 12px; justify-content: flex-end; background: #18181b; border-top: 1px solid #27272a;">
+      <button type="button" id="cancelModalBtn" onclick="document.getElementById('retrieveModal').style.display='none'; document.getElementById('retrieveModal').classList.add('hidden');" style="flex: 1; padding: 14px 20px; background: transparent; border: 1px solid #3f3f46; color: #ffffff; border-radius: 12px; font-weight: 600; font-size: 15px; cursor: pointer;">
+        Cancel
+      </button>
+      <button type="button" id="confirmRetrieveBtn" style="display: flex; align-items: center; justify-content: center; gap: 6px; flex: 1; padding: 14px 24px; background: #ffffff; color: #000000; border: none; border-radius: 12px; font-weight: 800; font-size: 15px; cursor: pointer;">
+        Search Ledger &rarr;
+      </button>
     </div>
+
   </div>
 </div>
 
