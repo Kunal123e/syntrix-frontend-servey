@@ -839,9 +839,9 @@
                 </label>
               </div>
 
-              <!-- 🚀 FIX: Restricted max-height to 280px so it doesn't stretch the page -->
-              <div id="previewContainer" class="preview-window" style="display: none; margin-top: 20px; width: 100%; display: flex; justify-content: center;">
-                <img id="imagePreview" src="" alt="Snapped Preview" style="max-height: 280px; max-width: 100%; object-fit: contain; border-radius: 12px; border: 1px solid #3f3f46;" />
+              <!-- 🚀 FIX: Restricted max-height to 280px and properly hidden by default -->
+              <div id="previewContainer" class="preview-window" style="display: none; margin-top: 20px; width: 100%; justify-content: center;">
+                <img id="imagePreview" src="" alt="" style="max-height: 280px; max-width: 100%; object-fit: contain; border-radius: 12px; border: 1px solid #3f3f46;" />
               </div>
             </div>
           </div>
@@ -1118,7 +1118,6 @@
               Your data is encrypted and secure.
             </p>
             
-            <!-- 🚀 ADDED: Missing Selfie Mode Status Messages and Retry Button -->
             <div id="statusMessageSelfie" class="status-message" style="margin-top: 15px;"></div>
             <div id="detailedReasonBoxSelfie" class="dynamic-reason-box" style="margin-top: 15px; display: none;"></div>
             <button id="retryUploadBtnSelfie" class="btn-retry" style="margin-top: 15px; margin-left: auto; margin-right: auto; max-width: 400px; display: none;">🔄 Clear & Retry Upload</button>
