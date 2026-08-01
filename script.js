@@ -1507,8 +1507,8 @@ if (fileInputCamera) fileInputCamera.addEventListener('change', handleFileSelect
 if (fileInputGallery) fileInputGallery.addEventListener('change', handleFileSelection);
 if (fileInputSelfie) fileInputSelfie.addEventListener('change', handleFileSelection);
 
-// 🚀 FIX: Aggressively compress payload to 600px / 50% quality to bypass backend 403 size limits
-function compressImageForBackend(file, maxWidth = 600, quality = 0.5) {
+// 🚀 FIX: Aggressively compress payload to 500px / 40% quality to bypass backend WAF size limits
+function compressImageForBackend(file, maxWidth = 500, quality = 0.4) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -1609,7 +1609,7 @@ async function executeUploadLogic(e) {
     updateProgressUI('📤 Compressing and securing payload...', 15, activeStatusMsg);
 
     try {
-      const base64String = await compressImageForBackend(selectedFile, 600, 0.5);
+      const base64String = await compressImageForBackend(selectedFile, 500, 0.4);
       const payload = {
         email: userEmailAddress,
         userEmail: userEmailAddress, 
@@ -1807,4 +1807,33 @@ window.addEventListener('DOMContentLoaded', () => {
     if (cameraUI && cameraUI.id !== 'btnSelfieCamera') {
         cameraUI.addEventListener('click', (e) => {
             if (isApproving || permissionGranted.camera) return; 
-            if (!documentSorry, something went wrong. Please try your request again.
+            if (!document.getElementById('fileInputCamera').value) {
+                e.preventDefault(); 
+                e.stopPropagation();
+                requestDevicePermissionUX('camera');
+            }
+        }, true);
+    }
+    
+    if (galleryUI) {
+        galleryUI.addEventListener('click', (e) => {
+            if (isApproving || permissionGranted.gallery) return; 
+            if (!document.getElementById('fileInputGallery').value) {
+                e.preventDefault();
+                e.stopPropagation();
+                requestDevicePermissionUX('gallery');
+            }
+        }, true);
+    }
+
+    if (selfieUI) {
+        selfieUI.addEventListener('click', (e) => {
+            if (isApproving || permissionGranted.selfie) return; 
+            if (!document.getElementById('fileInputSelfie').value) {
+                e.preventDefault();
+                e.stopPropagation();
+                requestDevicePermissionUX('selfie');
+            }
+        }, true);
+    }
+});
