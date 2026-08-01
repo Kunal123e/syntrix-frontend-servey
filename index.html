@@ -838,8 +838,10 @@
                   <input type="file" id="fileInputGallery" accept="image/jpeg, image/png" style="display: none;" />
                 </label>
               </div>
-              <div id="previewContainer" class="preview-window" style="display: none; margin-top: 15px;">
-                <img id="imagePreview" src="" alt="Snapped Preview" />
+
+              <!-- 🚀 FIX: Restricted max-height to 280px so it doesn't stretch the page -->
+              <div id="previewContainer" class="preview-window" style="display: none; margin-top: 20px; width: 100%; display: flex; justify-content: center;">
+                <img id="imagePreview" src="" alt="Snapped Preview" style="max-height: 280px; max-width: 100%; object-fit: contain; border-radius: 12px; border: 1px solid #3f3f46;" />
               </div>
             </div>
           </div>
