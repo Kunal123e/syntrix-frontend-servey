@@ -1837,3 +1837,236 @@ window.addEventListener('DOMContentLoaded', () => {
         }, true);
     }
 });
+
+// =========================================================================
+// 🚀 PREMIUM XP PROGRESSION FRONTEND ENGINE
+// =========================================================================
+
+const XPAnimator = {
+  currentLevel: null,
+  lastProfile: null, // Tracks state to detect new XP
+  RANKS: [
+    { level: 1, rank: 'Explorer', xpRequired: 0 },
+    { level: 2, rank: 'Contributor', xpRequired: 200 },
+    { level: 3, rank: 'Analyst', xpRequired: 500 },
+    { level: 4, rank: 'Verifier', xpRequired: 900 },
+    { level: 5, rank: 'Researcher', xpRequired: 1500 },
+    { level: 6, rank: 'Specialist', xpRequired: 2300 },
+    { level: 7, rank: 'Strategist', xpRequired: 3300 },
+    { level: 8, rank: 'Expert', xpRequired: 4600 },
+    { level: 9, rank: 'Innovator', xpRequired: 6200 },
+    { level: 10, rank: 'AI Pioneer', xpRequired: 8000 }
+  ],
+
+  async fetchAndRenderXP(email) {
+    if (!email) return;
+    try {
+      const BACKEND = window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1") 
+          ? "http://localhost:5000" 
+          : "https://syntrix-airdrop.onrender.com";
+
+      const response = await fetch(`${BACKEND}/api/xp-profile?email=${encodeURIComponent(email)}`);
+      const result = await response.json();
+
+      if (result.success && result.profile) {
+        // 🚀 DETECT REAL-TIME XP GAINS FOR TOAST ANIMATION!
+        if (this.lastProfile && result.profile.totalXP > this.lastProfile.totalXP) {
+            const diff = result.profile.totalXP - this.lastProfile.totalXP;
+            const latestItem = result.profile.recentHistory[0];
+            this.showXPToast(diff, latestItem ? latestItem.reason : "XP Earned!");
+        } else if (!this.lastProfile && result.profile.recentHistory && result.profile.recentHistory.length > 0) {
+            // Check if they JUST got Daily Login XP right now (within last 15 seconds)
+            const latestItem = result.profile.recentHistory[0];
+            const itemTime = new Date(latestItem.created_at).getTime();
+            if (Date.now() - itemTime < 15000) {
+                this.showXPToast(latestItem.amount, latestItem.reason);
+            }
+        }
+
+        this.lastProfile = result.profile;
+        this.updateUI(result.profile, false);
+      }
+    } catch (err) {
+      console.error("[XP Engine] Failed to sync progression data:", err);
+    }
+  },
+
+  updateUI(profile, forceAnimate = true) {
+    // 1. Check Level Up
+    if (this.currentLevel !== null && profile.currentLevel > this.currentLevel) {
+      this.triggerLevelUpPopup(profile.currentLevel, profile.currentRank);
+    }
+    this.currentLevel = profile.currentLevel;
+
+    // 2. Map Core Texts
+    const textMap = {
+        "bentoCurrentLevel": profile.currentLevel,
+        "bentoCurrentRank": profile.currentRank,
+        "bentoTargetAmount": profile.xpRequiredNextLevel,
+        "bentoRemainingAmount": profile.xpRemaining,
+        "bentoNextLevelNum": profile.currentLevel + 1,
+        "bentoTotalXp": profile.totalXP.toLocaleString(),
+        "bentoHighestLevel": profile.highestLevel,
+        "bentoContributions": (profile.surveyCount + profile.documentCount + profile.selfieCount).toLocaleString(),
+        "bentoBadgeNumber": profile.currentLevel,
+        "bentoBadgeRank": profile.currentRank,
+        "bentoStreakDays": profile.dailyStreak,
+        "bentoStatSurveys": profile.surveyCount,
+        "bentoStatDocs": profile.documentCount,
+        "bentoStatSelfies": profile.selfieCount,
+        "bentoStatReferrals": profile.referralCount,
+        "bentoStatTotalXp": profile.totalXP.toLocaleString()
+    };
+
+    for (const [id, val] of Object.entries(textMap)) {
+        const el = document.getElementById(id);
+        if (el) el.innerText = val;
+    }
+
+    // 3. Smooth Number Animations & Progress Bar
+    if (forceAnimate || document.getElementById("tabScreenXP").style.display === "block") {
+        // Reset to 0 before animating for maximum satisfaction
+        document.getElementById("bentoCurrentAmount").innerText = "0";
+        document.getElementById("bentoProgressPercent").innerText = "0";
+        
+        const bar = document.getElementById("bentoProgressBar");
+        if (bar) {
+            bar.style.transition = 'none';
+            bar.style.width = '0%';
+            void bar.offsetWidth; // Force CSS Reflow
+            bar.style.transition = 'width 1.5s cubic-bezier(0.16, 1, 0.3, 1)';
+            setTimeout(() => { bar.style.width = `${profile.levelProgressPercentage}%`; }, 50);
+        }
+
+        this.animateValue("bentoCurrentAmount", 0, profile.totalXP, 1500);
+        this.animateValue("bentoProgressPercent", 0, profile.levelProgressPercentage, 1500);
+    } else {
+        // Just set values silently in background
+        document.getElementById("bentoCurrentAmount").innerText = profile.totalXP;
+        document.getElementById("bentoProgressPercent").innerText = profile.levelProgressPercentage;
+        const bar = document.getElementById("bentoProgressBar");
+        if (bar) bar.style.width = `${profile.levelProgressPercentage}%`;
+    }
+
+    // 4. Build History List
+    const historyList = document.getElementById("bentoHistoryList");
+    if (historyList && profile.recentHistory) {
+      historyList.innerHTML = profile.recentHistory.length > 0 ? profile.recentHistory.map(item => {
+        let icon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 6 6 1-4 4 1 6-6-3-6 3 1-6-4-4 6-1z"></path></svg>';
+        let title = item.reason;
+        let desc = "XP Earned";
+        if(item.reason.includes("Survey")) { icon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>'; desc="You have completed a survey"; }
+        if(item.reason.includes("Document")) { icon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>'; desc="AI verified your document"; }
+        if(item.reason.includes("Selfie")) { icon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"></circle><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path></svg>'; desc="AI verified your selfie"; }
+        if(item.reason.includes("Referral")) { icon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>'; desc="Your referral completed the survey"; }
+        if(item.reason.includes("Login")) { icon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>'; desc="You logged in today"; }
+        
+        return `<div class="xp-hist-item">
+            <div class="xp-hist-left">
+                <div class="xp-hist-icon">${icon}</div>
+                <div class="xp-hist-text"><h4>${title}</h4><p>${desc}</p></div>
+            </div>
+            <div class="xp-hist-right">
+                <div class="xp-hist-amount">+${item.amount} XP</div>
+                <div class="xp-hist-time">Recently</div>
+            </div>
+        </div>`;
+      }).join('') : `<div style="font-size:13px; color:#71717a; text-align:left;">No recent activity yet. Complete a task to earn XP!</div>`;
+    }
+
+    // 5. Build Roadmap Timeline dynamically
+    const roadmapEl = document.getElementById("bentoRoadmap");
+    if(roadmapEl) {
+        let roadmapHTML = '';
+        let startLvl = Math.max(1, profile.currentLevel - 1);
+        let endLvl = Math.min(10, profile.currentLevel + 3);
+        
+        for(let i = startLvl; i <= endLvl; i++) {
+            const rankObj = this.RANKS[i-1] || { level: i, rank: 'AI Pioneer', xpRequired: 8000 + ((i-10)*2000) };
+            let statusClass = 'locked';
+            let statusText = `${rankObj.xpRequired} XP`;
+            
+            if(i < profile.currentLevel) {
+                statusClass = 'completed'; statusText = 'COMPLETED';
+            } else if (i === profile.currentLevel) {
+                statusClass = 'current'; statusText = `${profile.totalXP} / ${profile.xpRequiredNextLevel} XP<br><span style="color:#a1a1aa; font-weight:600; font-size:11px;">Current Level</span>`;
+            }
+
+            roadmapHTML += `
+            <div class="xp-road-item ${statusClass}">
+                <div class="xp-road-dot">${statusClass === 'completed' ? '✓' : (statusClass === 'current' ? '↑' : '')}</div>
+                <div class="xp-road-left"><h4>Level ${i}</h4><p>${rankObj.rank}</p></div>
+                <div class="xp-road-right"><div class="xp-road-xp" style="${statusClass==='current' ? 'color:#a855f7;' : ''}">${statusText}</div></div>
+            </div>`;
+        }
+        roadmapEl.innerHTML = roadmapHTML;
+    }
+
+    // 6. Update Daily Streak Checks
+    const streakUI = document.getElementById("bentoStreakUI");
+    if(streakUI) {
+        const days = Array.from(streakUI.children);
+        let count = profile.dailyStreak > 7 ? 7 : profile.dailyStreak;
+        days.forEach((dayEl, idx) => {
+            if(idx < count) dayEl.classList.add('active');
+            else dayEl.classList.remove('active');
+        });
+    }
+  },
+
+  replayAnimations() {
+     if (this.lastProfile) this.updateUI(this.lastProfile, true);
+  },
+
+  showXPToast(amount, reason) {
+    const toast = document.getElementById("xpFloatingToast");
+    if (!toast) return;
+    document.getElementById("xpToastAmount").innerText = `+${amount} XP`;
+    document.getElementById("xpToastReason").innerText = reason;
+    toast.classList.remove("hidden");
+    
+    setTimeout(() => { toast.classList.add("show"); }, 10);
+    
+    setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.classList.add("hidden"), 600);
+    }, 4000);
+  },
+
+  animateValue(id, start, end, duration) {
+    if (start === end) return;
+    const obj = document.getElementById(id);
+    if(!obj) return;
+    let startTimestamp = null;
+    const step = (timestamp) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      const easeProgress = 1 - Math.pow(1 - progress, 3);
+      obj.innerHTML = Math.floor(easeProgress * (end - start) + start).toLocaleString();
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      } else {
+        obj.innerHTML = end.toLocaleString();
+      }
+    };
+    window.requestAnimationFrame(step);
+  },
+
+  triggerLevelUpPopup(newLevel, newRank) {
+    const overlay = document.getElementById("xpLevelUpOverlay");
+    const rankText = document.getElementById("levelUpNewRank");
+    const numText = document.getElementById("levelUpBadgeNumber");
+    if (overlay && rankText && numText) {
+      rankText.innerText = newRank;
+      numText.innerText = newLevel;
+      overlay.classList.add("active");
+    }
+  }
+};
+
+// 🚀 HOOK INTO EXISTING LOGIN:
+const originalLedgerVerificationXP = runProfileLedgerVerification;
+runProfileLedgerVerification = async function(email, isFromModal = false, isBackgroundSync = false) {
+  await originalLedgerVerificationXP(email, isFromModal, isBackgroundSync);
+  XPAnimator.fetchAndRenderXP(email);
+};
