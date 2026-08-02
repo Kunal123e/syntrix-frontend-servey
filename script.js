@@ -269,31 +269,40 @@ const BADGE_PROFILES = {
   }
 };
 
+// 🚀 FIX: Updated to match mobile-friendly UI layout
 function displayConsumerBadgesUI(badgeKey) {
   const profile = BADGE_PROFILES[badgeKey] || BADGE_PROFILES.Analyzer;
   const badgeCard = document.getElementById("dashboardPsychologyBadgeCard");
 
   if (badgeCard) {
     badgeCard.style.display = "flex";
-    badgeCard.style.background = "#ffffff";
-    badgeCard.style.border = `2px solid ${profile.color}30`;
-    badgeCard.style.boxShadow = `0 15px 35px -5px rgba(0, 0, 0, 0.05), 0 0 20px ${profile.color}15`;
+    badgeCard.style.flexDirection = "column";
+    badgeCard.style.background = "linear-gradient(180deg, rgba(20,20,25,1) 0%, rgba(9,9,11,1) 100%)";
+    badgeCard.style.border = `1px solid ${profile.color}50`;
+    badgeCard.style.boxShadow = `0 20px 40px rgba(0, 0, 0, 0.6), 0 0 25px ${profile.color}20`;
     badgeCard.style.borderRadius = "24px";
-    badgeCard.style.padding = "30px";
+    badgeCard.style.padding = "35px 25px";
     badgeCard.style.marginBottom = "35px";
     badgeCard.style.alignItems = "center";
-    badgeCard.style.gap = "30px";
-    badgeCard.style.textAlign = "left";
+    badgeCard.style.textAlign = "center";
+    badgeCard.style.color = "#ffffff";
 
     badgeCard.innerHTML = `
-      <div style="position: relative; flex-shrink: 0; width: 100px; height: 100px; border-radius: 50%; background: #ffffff; border: 3px solid ${profile.color}60; display: block; box-shadow: 0 0 30px ${profile.color}30; overflow: hidden;">
+      <div class="persona-header-top" style="color: ${profile.color}; letter-spacing: 2px; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 12px;">CONSUMER PERSONA UNLOCKED</div>
+      <h2 class="persona-title-main" style="font-size: 36px; font-weight: 900; color: #ffffff; letter-spacing: -1px; margin: 0 0 4px 0;">${profile.title}</h2>
+      <h4 class="persona-subtitle" style="font-size: 17px; font-weight: 600; color: #d1d5db; margin-bottom: 25px;">${profile.sub}</h4>
+      <div class="persona-icon-wrapper" style="width: 120px; height: 120px; border-radius: 50%; border: 2px solid ${profile.color}60; display: flex; align-items: center; justify-content: center; margin-bottom: 25px; background: radial-gradient(circle, ${profile.color}20 0%, transparent 70%); box-shadow: inset 0 0 20px ${profile.color}20, 0 0 20px ${profile.color}20; overflow: hidden;">
          ${profile.iconHTML}
       </div>
-      <div>
-        <div style="font-size: 11px; text-transform: uppercase; color: ${profile.color}; font-weight: 900; letter-spacing: 2px; margin-bottom: 8px;">Consumer Persona Unlocked</div>
-        <h3 style="font-size: 32px; font-weight: 900; color: ${profile.textColor}; margin: 0 0 8px 0; letter-spacing: -1px;">${profile.title}</h3>
-        <div style="font-size: 16px; font-weight: 800; color: #475569; margin-bottom: 12px;">${profile.sub}</div>
-        <p style="font-size: 15px; color: #64748b; line-height: 1.7; margin: 0; font-weight: 500;">${profile.desc}</p>
+      <p class="persona-description" style="font-size: 15px; line-height: 1.7; color: #a1a1aa; margin: 0 0 30px 0; max-width: 650px;">${profile.desc}</p>
+      <div class="persona-verified-badge" style="display: flex; align-items: center; justify-content: center; gap: 12px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 14px 20px; width: 100%; max-width: 450px; text-align: left;">
+        <div class="pv-icon" style="color: ${profile.color}; display: flex; align-items: center; justify-content: center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        </div>
+        <div class="pv-text" style="display: flex; flex-direction: column;">
+          <strong style="font-size: 12px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px;">VERIFIED BY SYNTRIX AI</strong>
+          <span style="font-size: 11px; color: #a1a1aa; font-weight: 500;">100% Authentic Analysis</span>
+        </div>
       </div>
     `;
   }
@@ -1799,45 +1808,6 @@ document.addEventListener('click', (e) => {
     }
 });
 
-window.addEventListener('DOMContentLoaded', () => {
-    const cameraUI = document.querySelector('.doc-btn-white') || document.getElementById('btnCameraText')?.parentElement;
-    const galleryUI = document.getElementById('btnGallery');
-    const selfieUI = document.getElementById('btnSelfieCamera');
-
-    if (cameraUI && cameraUI.id !== 'btnSelfieCamera') {
-        cameraUI.addEventListener('click', (e) => {
-            if (isApproving || permissionGranted.camera) return; 
-            if (!document.getElementById('fileInputCamera').value) {
-                e.preventDefault(); 
-                e.stopPropagation();
-                requestDevicePermissionUX('camera');
-            }
-        }, true);
-    }
-    
-    if (galleryUI) {
-        galleryUI.addEventListener('click', (e) => {
-            if (isApproving || permissionGranted.gallery) return; 
-            if (!document.getElementById('fileInputGallery').value) {
-                e.preventDefault();
-                e.stopPropagation();
-                requestDevicePermissionUX('gallery');
-            }
-        }, true);
-    }
-
-    if (selfieUI) {
-        selfieUI.addEventListener('click', (e) => {
-            if (isApproving || permissionGranted.selfie) return; 
-            if (!document.getElementById('fileInputSelfie').value) {
-                e.preventDefault();
-                e.stopPropagation();
-                requestDevicePermissionUX('selfie');
-            }
-        }, true);
-    }
-});
-
 // =========================================================================
 // 🚀 PREMIUM XP PROGRESSION FRONTEND ENGINE
 // =========================================================================
@@ -1869,6 +1839,7 @@ const XPAnimator = {
       const result = await response.json();
 
       if (result.success && result.profile) {
+        
         // 🚀 DETECT REAL-TIME XP GAINS FOR TOAST ANIMATION!
         if (this.lastProfile && result.profile.totalXP > this.lastProfile.totalXP) {
             const diff = result.profile.totalXP - this.lastProfile.totalXP;
@@ -2025,11 +1996,12 @@ const XPAnimator = {
     document.getElementById("xpToastReason").innerText = reason;
     toast.classList.remove("hidden");
     
+    // Tiny delay to allow CSS transition to apply
     setTimeout(() => { toast.classList.add("show"); }, 10);
     
     setTimeout(() => {
         toast.classList.remove("show");
-        setTimeout(() => toast.classList.add("hidden"), 600);
+        setTimeout(() => toast.classList.add("hidden"), 600); // wait for fade out
     }, 4000);
   },
 
@@ -2065,8 +2037,49 @@ const XPAnimator = {
 };
 
 // 🚀 HOOK INTO EXISTING LOGIN:
-const originalLedgerVerificationXP = runProfileLedgerVerification;
-runProfileLedgerVerification = async function(email, isFromModal = false, isBackgroundSync = false) {
-  await originalLedgerVerificationXP(email, isFromModal, isBackgroundSync);
-  XPAnimator.fetchAndRenderXP(email);
-};
+const originalLedgerVerificationXP = window.runProfileLedgerVerification;
+if (typeof originalLedgerVerificationXP === "function") {
+  window.runProfileLedgerVerification = async function(email, isFromModal, isBackgroundSync) {
+    await originalLedgerVerificationXP(email, isFromModal, isBackgroundSync);
+    XPAnimator.fetchAndRenderXP(email);
+  };
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    const cameraUI = document.querySelector('.doc-btn-white') || document.getElementById('btnCameraText')?.parentElement;
+    const galleryUI = document.getElementById('btnGallery');
+    const selfieUI = document.getElementById('btnSelfieCamera');
+
+    if (cameraUI && cameraUI.id !== 'btnSelfieCamera') {
+        cameraUI.addEventListener('click', (e) => {
+            if (isApproving || permissionGranted.camera) return; 
+            if (!document.getElementById('fileInputCamera').value) {
+                e.preventDefault(); 
+                e.stopPropagation();
+                requestDevicePermissionUX('camera');
+            }
+        }, true);
+    }
+    
+    if (galleryUI) {
+        galleryUI.addEventListener('click', (e) => {
+            if (isApproving || permissionGranted.gallery) return; 
+            if (!document.getElementById('fileInputGallery').value) {
+                e.preventDefault();
+                e.stopPropagation();
+                requestDevicePermissionUX('gallery');
+            }
+        }, true);
+    }
+
+    if (selfieUI) {
+        selfieUI.addEventListener('click', (e) => {
+            if (isApproving || permissionGranted.selfie) return; 
+            if (!document.getElementById('fileInputSelfie').value) {
+                e.preventDefault();
+                e.stopPropagation();
+                requestDevicePermissionUX('selfie');
+            }
+        }, true);
+    }
+});
