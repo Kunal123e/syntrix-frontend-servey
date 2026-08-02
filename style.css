@@ -1962,3 +1962,231 @@ form.hidden,
     display: block !important;
     margin-bottom: 8px !important;
 }
+
+
+/* ========================================================================
+   🚀 PREMIUM XP PROGRESSION SYSTEM UI
+   ======================================================================== */
+
+.xp-card-premium {
+  background: linear-gradient(180deg, #0f0f11 0%, #09090b 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  margin-bottom: 24px;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 1000px;
+  margin: 0 auto 30px auto;
+}
+.xp-card-premium:hover {
+  border-color: rgba(99, 102, 241, 0.3);
+  transform: translateY(-2px);
+}
+
+.xp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.xp-badge-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  background: #18181b;
+  border: 1px solid #27272a;
+}
+
+.xp-rank-info {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}
+
+.xp-level-text {
+  font-size: 13px;
+  font-weight: 700;
+  color: #a1a1aa;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 4px;
+}
+
+.xp-rank-title {
+  font-size: 26px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+}
+
+.xp-progress-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.xp-bar-track {
+  width: 100%;
+  height: 12px;
+  background: #18181b;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid #27272a;
+}
+
+.xp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #a855f7);
+  border-radius: 999px;
+  width: 0%; /* JS will animate this */
+  transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+}
+
+.xp-stats-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 600;
+  color: #a1a1aa;
+}
+
+.xp-stats-row span strong {
+  color: #ffffff;
+}
+
+.xp-recent-activity {
+  border-top: 1px solid #27272a;
+  padding-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.xp-history-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #71717a;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+  text-align: left;
+}
+
+.xp-history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+}
+
+.xp-history-reason {
+  font-size: 14px;
+  font-weight: 600;
+  color: #d1d5db;
+  text-align: left;
+}
+
+.xp-history-amount {
+  font-size: 15px;
+  font-weight: 800;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
+/* ================= 🚀 XP LEVEL UP OVERLAY MODAL ================= */
+.level-up-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(12px);
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.level-up-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.level-up-content {
+  text-align: center;
+  transform: scale(0.9) translateY(20px);
+  opacity: 0;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.level-up-overlay.active .level-up-content {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+.level-up-badge-container {
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 30px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, transparent 70%);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  border-radius: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  box-shadow: 0 0 40px rgba(99, 102, 241, 0.3), inset 0 0 20px rgba(168, 85, 247, 0.2);
+  animation: floatOrb 4s ease-in-out infinite;
+}
+
+.level-up-title {
+  font-size: 56px;
+  font-weight: 900;
+  color: #ffffff;
+  margin-bottom: 8px;
+  letter-spacing: -1.5px;
+  background: linear-gradient(to right, #ffffff, #a1a1aa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.level-up-subtitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #a855f7;
+  margin-bottom: 40px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.btn-level-continue {
+  background: #ffffff;
+  color: #000000;
+  border: none;
+  padding: 18px 42px;
+  font-size: 16px;
+  font-weight: 800;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-level-continue:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
+}
