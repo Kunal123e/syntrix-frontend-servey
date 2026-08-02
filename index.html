@@ -301,14 +301,81 @@
       }
 
       const emailForm = document.getElementById('emailGateForm');
-      if(emailForm) {
-          emailForm.addEventListener('submit', function(e) {
+      const preVerifyBtn = document.getElementById('preVerifyBtn');
+
+      if (preVerifyBtn) {
+          // 🚀 FIX: Actually call the backend to send the OTP email
+          preVerifyBtn.addEventListener('click', async function() {
+              const emailInput = document.getElementById('gateEmail').value;
+              if (!emailInput) return alert("Please enter your email first.");
+
+              preVerifyBtn.innerText = "Sending Code...";
+              preVerifyBtn.disabled = true;
+
+              try {
+                  const BACKEND = window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1") ? "http://localhost:5000" : "https://syntrix-airdrop.onrender.com";
+                  const res = await fetch(`${BACKEND}/api/send-otp`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ email: emailInput })
+                  });
+                  const data = await res.json();
+                  
+                  if (data.success) {
+                      document.getElementById('otpSection').style.display = 'flex';
+                      preVerifyBtn.style.display = 'none';
+                      document.getElementById('startSurveyBtn').style.display = 'flex';
+                  } else {
+                      alert(data.error || "Failed to send code.");
+                      preVerifyBtn.innerText = "Send Verification Code \u2192";
+                      preVerifyBtn.disabled = false;
+                  }
+              } catch(err) {
+                  alert("Network error. Make sure backend is running.");
+                  preVerifyBtn.innerText = "Send Verification Code \u2192";
+                  preVerifyBtn.disabled = false;
+              }
+          });
+      }
+
+      if (emailForm) {
+          // 🚀 FIX: Actually verify the OTP against the backend before logging in
+          emailForm.addEventListener('submit', async function(e) {
               e.preventDefault(); 
-              document.getElementById('emailGateSection').classList.add('hidden');
-              document.getElementById('emailGateSection').style.display = 'none';
               
-              window.unlockFullMenu();
-              window.openModeEnhanced('gateway');
+              const emailInput = document.getElementById('gateEmail').value;
+              const otpInput = document.getElementById('gateOtp').value;
+              if (!otpInput) return alert("Please enter the 6-digit code.");
+
+              const submitBtn = document.getElementById('startSurveyBtn');
+              submitBtn.innerText = "Verifying...";
+              submitBtn.disabled = true;
+
+              try {
+                  const BACKEND = window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1") ? "http://localhost:5000" : "https://syntrix-airdrop.onrender.com";
+                  const res = await fetch(`${BACKEND}/api/verify-otp`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ email: emailInput, otp: otpInput })
+                  });
+                  const data = await res.json();
+
+                  if (data.success) {
+                      // Success! Safe to enter the dashboard
+                      document.getElementById('emailGateSection').classList.add('hidden');
+                      document.getElementById('emailGateSection').style.display = 'none';
+                      window.unlockFullMenu();
+                      window.openModeEnhanced('gateway');
+                  } else {
+                      alert(data.error || "Invalid Code.");
+                      submitBtn.innerText = "Verify & Enter \u2192";
+                      submitBtn.disabled = false;
+                  }
+              } catch(err) {
+                  alert("Network error during verification.");
+                  submitBtn.innerText = "Verify & Enter \u2192";
+                  submitBtn.disabled = false;
+              }
           });
       }
     });
@@ -345,7 +412,7 @@
         'tabScreenReferrals',
         'tabScreenMoreSurveys',
         'claimScreenSection',
-        'tabScreenXP' /* 🚀 ADDED XP TAB TO CLEAR LIST */
+        'tabScreenXP' 
       ];
       
       allScreens.forEach(id => {
@@ -365,7 +432,7 @@
       else if (modeName === 'hub') targetId = 'rewardDashboardScreen';
       else if (modeName === 'referrals') targetId = 'tabScreenReferrals';
       else if (modeName === 'more') targetId = 'tabScreenMoreSurveys';
-      else if (modeName === 'xp') targetId = 'tabScreenXP'; /* 🚀 ADDED XP ROUTE */
+      else if (modeName === 'xp') targetId = 'tabScreenXP'; 
       
       if(targetId) {
           const targetEl = document.getElementById(targetId);
@@ -821,7 +888,8 @@
               </label>
             </div>
 
-            <button type="button" id="preVerifyBtn" class="pac-primary-btn" onclick="document.getElementById('otpSection').style.display='block'; this.style.display='none'; document.getElementById('startSurveyBtn').style.display='flex';">
+            <!-- 🚀 FIX: Removed the blind UI bypass. The Javascript now safely handles the API flow. -->
+            <button type="button" id="preVerifyBtn" class="pac-primary-btn">
               Send Verification Code &rarr;
             </button>
             <button type="submit" id="startSurveyBtn" class="pac-primary-btn" style="display: none;">
