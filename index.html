@@ -304,7 +304,7 @@
       const preVerifyBtn = document.getElementById('preVerifyBtn');
 
       if (preVerifyBtn) {
-          // 🚀 FIX: Actually call the backend to send the OTP email
+          // 🚀 FIX: Secure Backend Request for OTP
           preVerifyBtn.addEventListener('click', async function() {
               const emailInput = document.getElementById('gateEmail').value;
               if (!emailInput) return alert("Please enter your email first.");
@@ -323,8 +323,14 @@
                   
                   if (data.success) {
                       document.getElementById('otpSection').style.display = 'flex';
-                      preVerifyBtn.style.display = 'none';
-                      document.getElementById('startSurveyBtn').style.display = 'flex';
+                      
+                      // 🚀 FIX: Fully hide Send Code button and show Verify & Enter button securely
+                      preVerifyBtn.classList.add('hidden');
+                      preVerifyBtn.style.setProperty('display', 'none', 'important');
+                      
+                      const startBtn = document.getElementById('startSurveyBtn');
+                      startBtn.classList.remove('hidden');
+                      startBtn.style.setProperty('display', 'flex', 'important');
                   } else {
                       alert(data.error || "Failed to send code.");
                       preVerifyBtn.innerText = "Send Verification Code \u2192";
@@ -339,7 +345,7 @@
       }
 
       if (emailForm) {
-          // 🚀 FIX: Actually verify the OTP against the backend before logging in
+          // 🚀 FIX: Secure Backend Verification before unlocking Dashboard
           emailForm.addEventListener('submit', async function(e) {
               e.preventDefault(); 
               
@@ -892,6 +898,7 @@
               </label>
             </div>
 
+            <!-- 🚀 FIX: Removed the blind UI bypass. The Javascript now safely handles the API flow. -->
             <button type="button" id="preVerifyBtn" class="pac-primary-btn">
               Send Verification Code &rarr;
             </button>
