@@ -214,6 +214,10 @@
             console.error("Logout Error:", e);
         }
         
+        // 🚀 FIX: Destroy the local storage memory so you actually stay logged out on refresh!
+        localStorage.removeItem("syntrix_user_email");
+        localStorage.removeItem("referralCode");
+        
         window.hasCompletedSurvey = false; 
         
         const appLayout = document.getElementById('mainApplicationLayout');
@@ -299,9 +303,91 @@
               });
           });
       }
-      
-      // 🚀 FIX: Removed the duplicate inline event listeners that were fighting script.js. 
-      // Everything is perfectly routed to the single 'startSurveyBtn' now.
+
+      const emailForm = document.getElementById('emailGateForm');
+      const preVerifyBtn = document.getElementById('preVerifyBtn');
+
+      if (preVerifyBtn) {
+          // 🚀 FIX: Secure Backend Request for OTP
+          preVerifyBtn.addEventListener('click', async function() {
+              const emailInput = document.getElementById('gateEmail').value;
+              if (!emailInput) return alert("Please enter your email first.");
+
+              preVerifyBtn.innerText = "Sending Code...";
+              preVerifyBtn.disabled = true;
+
+              try {
+                  const BACKEND = window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1") ? "http://localhost:5000" : "https://syntrix-airdrop.onrender.com";
+                  const res = await fetch(`${BACKEND}/api/send-otp`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ email: emailInput })
+                  });
+                  const data = await res.json();
+                  
+                  if (data.success) {
+                      document.getElementById('otpSection').style.display = 'flex';
+                      
+                      // 🚀 FIX: Fully hide Send Code button and show Verify & Enter button securely
+                      preVerifyBtn.classList.add('hidden');
+                      preVerifyBtn.style.setProperty('display', 'none', 'important');
+                      
+                      const startBtn = document.getElementById('startSurveyBtn');
+                      startBtn.classList.remove('hidden');
+                      startBtn.style.setProperty('display', 'flex', 'important');
+                  } else {
+                      alert(data.error || "Failed to send code.");
+                      preVerifyBtn.innerText = "Send Verification Code \u2192";
+                      preVerifyBtn.disabled = false;
+                  }
+              } catch(err) {
+                  alert("Network error. Make sure backend is running.");
+                  preVerifyBtn.innerText = "Send Verification Code \u2192";
+                  preVerifyBtn.disabled = false;
+              }
+          });
+      }
+
+      if (emailForm) {
+          // 🚀 FIX: Secure Backend Verification before unlocking Dashboard
+          emailForm.addEventListener('submit', async function(e) {
+              e.preventDefault(); 
+              
+              const emailInput = document.getElementById('gateEmail').value;
+              const otpInput = document.getElementById('gateOtp').value;
+              if (!otpInput) return alert("Please enter the 6-digit code.");
+
+              const submitBtn = document.getElementById('startSurveyBtn');
+              submitBtn.innerText = "Verifying...";
+              submitBtn.disabled = true;
+
+              try {
+                  const BACKEND = window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1") ? "http://localhost:5000" : "https://syntrix-airdrop.onrender.com";
+                  const res = await fetch(`${BACKEND}/api/verify-otp`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ email: emailInput, otp: otpInput })
+                  });
+                  const data = await res.json();
+
+                  if (data.success) {
+                      // Success! Safe to enter the dashboard
+                      document.getElementById('emailGateSection').classList.add('hidden');
+                      document.getElementById('emailGateSection').style.display = 'none';
+                      window.unlockFullMenu();
+                      window.openModeEnhanced('gateway');
+                  } else {
+                      alert(data.error || "Invalid Code.");
+                      submitBtn.innerText = "Verify & Enter \u2192";
+                      submitBtn.disabled = false;
+                  }
+              } catch(err) {
+                  alert("Network error during verification.");
+                  submitBtn.innerText = "Verify & Enter \u2192";
+                  submitBtn.disabled = false;
+              }
+          });
+      }
     });
 
     window.openModeEnhanced = function(modeName) {
@@ -937,8 +1023,11 @@
                 </label>
               </div>
 
-              <!-- 🚀 FIX: Restricted max-height to 280px and properly hidden by default -->
-              <div id="previewContainer" class="preview-window" style="display: none; margin-top: 20px; width: 100%; justify-content: center;">
+              <!-- 🚀 FIX: Restricted max-height to 280px, properly hidden, and added the Cancel 'X' Button -->
+              <div id="previewContainer" class="preview-window" style="display: none; margin-top: 20px; width: 100%; justify-content: center; position: relative;">
+                
+                <button type="button" onclick="resetUploadState(false)" style="position: absolute; top: 10px; right: 10px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 50%; width: 32px; height: 32px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(0,0,0,0.3); z-index: 20; transition: 0.2s;" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='rgba(239, 68, 68, 0.9)'">✕</button>
+                
                 <img id="imagePreview" src="" alt="" style="max-height: 280px; max-width: 100%; object-fit: contain; border-radius: 12px; border: 1px solid #3f3f46;" />
               </div>
             </div>
@@ -1102,7 +1191,8 @@
               <h4>1. Take a Selfie</h4>
             </div>
             
-            <div class="selfie-scanner-container">
+            <!-- 🚀 FIX: Added position: relative and the Cancel 'X' button inside the Selfie Container -->
+            <div class="selfie-scanner-container" style="position: relative;">
                 <div class="scanner-corner tl"></div>
                 <div class="scanner-corner tr"></div>
                 <div class="scanner-corner bl"></div>
@@ -1113,7 +1203,9 @@
                         <svg class="scanner-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
                     </div>
                 </div>
-                <!-- 🚀 FIX: THE MISSING IMAGE PREVIEW TAG ADDED HERE -->
+                
+                <button type="button" id="clearSelfieBtn" onclick="resetUploadState(false)" style="display: none; position: absolute; top: 10px; right: 10px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 50%; width: 32px; height: 32px; font-weight: bold; cursor: pointer; align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(0,0,0,0.3); z-index: 20; transition: 0.2s;" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='rgba(239, 68, 68, 0.9)'">✕</button>
+                
                 <img id="selfieResultImg" class="hidden" style="max-width: 100%; max-height: 260px; border-radius: 12px; object-fit: contain; position: relative; z-index: 10; display: none;" alt="Selfie Preview">
             </div>
 
