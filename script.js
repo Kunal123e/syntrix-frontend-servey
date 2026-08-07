@@ -2,6 +2,16 @@
 // SYNTRIX CORE PLATFORM APPLICATION LOGIC ENGINE
 // =========================================================================
 
+// 🚀 INJECT PREMIUM AI ANIMATION CSS DYNAMICALLY
+const styleSheet = document.createElement("style");
+styleSheet.innerText = `
+@keyframes aiSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes slideUpFade { 0% { opacity: 0; transform: translateY(15px); } 100% { opacity: 1; transform: translateY(0); } }
+.status-text-pulse { animation: textPulse 1.5s infinite; }
+@keyframes textPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+`;
+document.head.appendChild(styleSheet);
+
 const BACKEND_URL = window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1")
   ? "http://localhost:5000"
   : "https://syntrix-airdrop.onrender.com";
@@ -12,7 +22,7 @@ const DEFAULT_TIMEOUT_MS = 90000;
 
 // 🚀 QUALITY GATE: Start time tracker
 let surveyStartTime = 0;
-const QUALITY_THRESHOLD_MS = 120000; // 2 minutes strict data validation
+const QUALITY_THRESHOLD_MS = 120000; 
 
 let userEmailAddress = "";
 let currentSection = 0;
@@ -757,7 +767,7 @@ async function runProfileLedgerVerification(email, isFromModal = false, isBackgr
       if (menuReferralWrapper) menuReferralWrapper.style.display = "flex";
 
       if (statusResult.exists === true) {
-        window.hasCompletedSurvey = true; /* 🔥 Ensure flag is set so we can intercept future survey clicks */
+        window.hasCompletedSurvey = true; 
         displayConsumerBadgesUI(statusResult.badge || "Analyzer");
 
         if (!isBackgroundSync) {
@@ -902,7 +912,7 @@ async function handleSurveySubmission(e) {
       if (animOverlay) animOverlay.style.display = "none";
       if (result.success) {
         if (statusDiv) statusDiv.innerHTML = "";
-        window.hasCompletedSurvey = true; /* 🔥 Ensure this triggers so they can't do it again */
+        window.hasCompletedSurvey = true; 
         await runProfileLedgerVerification(userEmailAddress, false);
       } else {
         if (claimForm) { claimForm.classList.remove("hidden"); claimForm.style.display = "block"; }
@@ -1122,7 +1132,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
   
-  // 🚀 HARD LOCK: Dynamic button overrides wrapped permanently across all interfaces
   if (connectWalletBtn) connectWalletBtn.addEventListener("click", interceptClaimGateActions);
   if (claimConnectWalletBtn) claimConnectWalletBtn.addEventListener("click", interceptClaimGateActions);
   if (executeClaimBtn) executeClaimBtn.addEventListener("click", interceptClaimGateActions);
@@ -1336,7 +1345,6 @@ const statusMessage = document.getElementById('statusMessage');
 const detailedReasonBox = document.getElementById('detailedReasonBox');
 const retryUploadBtn = document.getElementById('retryUploadBtn');
 
-// 🚀 ADDED: Selfie mode target elements
 const statusMessageSelfie = document.getElementById('statusMessageSelfie');
 const detailedReasonBoxSelfie = document.getElementById('detailedReasonBoxSelfie');
 const retryUploadBtnSelfie = document.getElementById('retryUploadBtnSelfie');
@@ -1345,7 +1353,6 @@ let selectedFile = null;
 let currentPollInterval = null;
 let isUploadingSelfie = false;
 
-// 🚀 FIX: FULL FRONTEND STATE RESET FUNCTION (Clears old errors safely)
 window.resetUploadState = function(keepInputs = false) {
     if (!keepInputs) {
       selectedFile = null;
@@ -1379,7 +1386,6 @@ window.resetUploadState = function(keepInputs = false) {
           btnSelfieTextContent.innerText = "Take a Photo";
       }
 
-      // 🚀 FIX: Hide the 'X' button when the state is cleared
       const clearSelfieBtn = document.getElementById('clearSelfieBtn');
       if (clearSelfieBtn) clearSelfieBtn.style.display = 'none';
     }
@@ -1439,14 +1445,12 @@ if (retryUploadBtnSelfie) {
     retryUploadBtnSelfie.addEventListener('click', () => resetUploadState(false));
 }
 
-// 🚀 FIX: Make sure the file selection handles both Document and Selfie scenarios
 function handleFileSelection(e) {
   if (e.target.files && e.target.files.length > 0) {
     const newFile = e.target.files[0];
     resetUploadState(true); 
     selectedFile = newFile;
     
-    // Check which input was triggered
     const isSelfieUpload = e.target.id === 'fileInputSelfie';
     isUploadingSelfie = isSelfieUpload;
 
@@ -1471,7 +1475,6 @@ function handleFileSelection(e) {
       const url = URL.createObjectURL(selectedFile);
       
       if (isSelfieUpload) {
-          // Hide rings, show selfie image
           const scannerOuter = document.querySelector('.scanner-circle-outer');
           const scannerInner = document.querySelector('.scanner-circle-inner');
           if (scannerOuter) scannerOuter.style.display = 'none';
@@ -1498,13 +1501,11 @@ function handleFileSelection(e) {
               selfieImg.style.display = 'block';
           }
 
-          // 🚀 FIX: Reveal the 'X' button when selfie is loaded
           const clearSelfieBtn = document.getElementById('clearSelfieBtn');
           if (clearSelfieBtn) {
               clearSelfieBtn.style.display = 'flex';
           }
       } else {
-          // Show document preview container
           if (imagePreview) {
               imagePreview.src = url;
               imagePreview.classList.remove('hidden'); 
@@ -1525,7 +1526,6 @@ if (fileInputCamera) fileInputCamera.addEventListener('change', handleFileSelect
 if (fileInputGallery) fileInputGallery.addEventListener('change', handleFileSelection);
 if (fileInputSelfie) fileInputSelfie.addEventListener('change', handleFileSelection);
 
-// 🚀 FIX: Aggressively compress payload to 500px / 40% quality to bypass backend WAF size limits
 function compressImageForBackend(file, maxWidth = 500, quality = 0.4) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -1558,25 +1558,20 @@ function compressImageForBackend(file, maxWidth = 500, quality = 0.4) {
 function updateProgressUI(stepText, percent, targetMsgBox) {
     if (!targetMsgBox) return;
     targetMsgBox.innerHTML = `
-      <div style="font-size:12.5px; color:#6b7280; margin-bottom:8px; font-weight:600;">Estimated Time: 5–15 Seconds</div>
-      <div style="background:#e2e8f0; height:8px; border-radius:4px; overflow:hidden; margin-bottom:10px;">
-         <div style="width: ${percent}%; background:#6366f1; height:100%; transition: width 0.4s ease;"></div>
+      <div style="background: #18181b; border: 1px solid #27272a; border-radius: 16px; padding: 20px; text-align: center; margin-top: 10px;">
+          <div style="display: flex; justify-content: center; margin-bottom: 15px;">
+              <div style="width: 40px; height: 40px; border: 3px solid rgba(99, 102, 241, 0.2); border-top-color: #6366f1; border-radius: 50%; animation: aiSpin 1s linear infinite;"></div>
+          </div>
+          <div style="font-size:12px; color:#a1a1aa; font-weight:700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">AI Processing Pipeline</div>
+          <div style="background:#09090b; height:6px; border-radius:4px; overflow:hidden; margin-bottom:15px; border: 1px solid #27272a;">
+             <div style="width: ${percent}%; background: linear-gradient(90deg, #6366f1, #a855f7); height:100%; transition: width 0.4s ease; box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);"></div>
+          </div>
+          <div style="font-weight:800; color:#f4f4f5; font-size:15px;" class="status-text-pulse">${stepText}</div>
       </div>
-      <div style="font-weight:800; color:#4f46e5; font-size:15px;" class="status-text-pulse">${stepText}</div>
     `;
 }
 
-function showDetailedReason(reasonText, isSuccess, targetReasonBox) {
-    if(targetReasonBox) {
-        targetReasonBox.style.display = 'block';
-        targetReasonBox.classList.remove('hidden');
-        targetReasonBox.innerText = reasonText;
-        targetReasonBox.className = isSuccess ? 'dynamic-reason-box reason-success' : 'dynamic-reason-box reason-error';
-    }
-}
-
 async function executeUploadLogic(e) {
-    // 🚀 FIX: Dynamically target the correct status boxes based on which button was clicked
     const isSelfieSubmit = (e.target && e.target.id === 'submitSelfieBtn') || (this.id === 'submitSelfieBtn');
     const activeStatusMsg = isSelfieSubmit ? statusMessageSelfie : statusMessage;
     const activeReasonBox = isSelfieSubmit ? detailedReasonBoxSelfie : detailedReasonBox;
@@ -1679,14 +1674,24 @@ async function executeUploadLogic(e) {
                       if (submitDocBtn) submitDocBtn.style.display = 'none';
                       if (submitSelfieBtn) submitSelfieBtn.style.display = 'none';
                       
+                      const cleanReason = reason.split('|')[0].trim();
+                      
                       if (activeStatusMsg) {
                           activeStatusMsg.innerHTML = `
-                              <div style="font-size:40px; margin-bottom:10px;">✅</div>
-                              <div style="font-weight:900; color:#166534; font-size:18px;">Verification Successful</div>
-                              <div style="color:#111827; font-size:14px; margin-top:8px;"><strong>+48 SYNX Tokens</strong><br>Tokens successfully assigned to profile.</div>
+                              <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 16px; padding: 25px 20px; text-align: center; animation: slideUpFade 0.5s ease-out; margin-top: 15px;">
+                                  <div style="width: 56px; height: 56px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);">
+                                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                  </div>
+                                  <div style="font-weight: 900; color: #10b981; font-size: 20px; margin-bottom: 5px; letter-spacing: -0.5px;">VERIFICATION SUCCESSFUL</div>
+                                  <div style="color: #a1a1aa; font-size: 14px; margin-bottom: 20px;">${cleanReason}</div>
+                                  <div style="background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 12px; display: inline-block;">
+                                      <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">+48 SYNX</span>
+                                      <span style="color: #71717a; font-size: 11px; display: block; margin-top: 3px; font-weight: 600; text-transform: uppercase;">Tokens Assigned to Ledger</span>
+                                  </div>
+                              </div>
                           `;
                       }
-                      showDetailedReason(reason, true, activeReasonBox);
+                      if(activeReasonBox) activeReasonBox.style.display = 'none'; 
                       if (activeRetryBtn) activeRetryBtn.style.display = 'block'; 
                   } 
                   else if (status === 'rejected' || status === 'rejected_pii' || status === 'fraud' || status === 'duplicate') {
@@ -1696,9 +1701,17 @@ async function executeUploadLogic(e) {
                       if (submitSelfieBtn) submitSelfieBtn.style.display = 'none';
                       
                       if (activeStatusMsg) {
-                          activeStatusMsg.innerHTML = '<span style="font-weight:800; font-size:16px; color:#9f1239;">❌ AI Verification Failed</span>';
+                          activeStatusMsg.innerHTML = `
+                              <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 16px; padding: 25px 20px; text-align: center; animation: slideUpFade 0.5s ease-out; margin-top: 15px;">
+                                  <div style="width: 56px; height: 56px; background: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);">
+                                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                  </div>
+                                  <div style="font-weight: 900; color: #ef4444; font-size: 20px; margin-bottom: 5px; letter-spacing: -0.5px;">VERIFICATION FAILED</div>
+                                  <div style="color: #fca5a5; font-size: 14px; background: rgba(239, 68, 68, 0.1); padding: 10px; border-radius: 8px; margin-top: 15px;">${reason}</div>
+                              </div>
+                          `;
                       }
-                      showDetailedReason(reason, false, activeReasonBox); 
+                      if(activeReasonBox) activeReasonBox.style.display = 'none';
                       if (activeRetryBtn) activeRetryBtn.style.display = 'block';
                   }
               }
@@ -1723,7 +1736,6 @@ async function executeUploadLogic(e) {
 if (submitDocBtn) submitDocBtn.addEventListener('click', executeUploadLogic);
 if (submitSelfieBtn) submitSelfieBtn.addEventListener('click', executeUploadLogic);
 
-// 🚀 FIX: Bypass mobile camera trapping using native labels and tracking flags
 function injectPermissionModal() {
     if (document.getElementById('sysPermissionModal')) return;
     const modalHtml = `
@@ -1823,7 +1835,7 @@ document.addEventListener('click', (e) => {
 
 const XPAnimator = {
   currentLevel: null,
-  lastProfile: null, // Tracks state to detect new XP
+  lastProfile: null, 
   RANKS: [
     { level: 1, rank: 'Explorer', xpRequired: 0 },
     { level: 2, rank: 'Contributor', xpRequired: 200 },
@@ -1840,22 +1852,15 @@ const XPAnimator = {
   async fetchAndRenderXP(email) {
     if (!email) return;
     try {
-      const BACKEND = window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1") 
-          ? "http://localhost:5000" 
-          : "https://syntrix-airdrop.onrender.com";
-
-      const response = await fetch(`${BACKEND}/api/xp-profile?email=${encodeURIComponent(email)}`);
+      const response = await fetch(`${BACKEND_URL}/api/xp-profile?email=${encodeURIComponent(email)}`);
       const result = await response.json();
 
       if (result.success && result.profile) {
-        
-        // 🚀 DETECT REAL-TIME XP GAINS FOR TOAST ANIMATION!
         if (this.lastProfile && result.profile.totalXP > this.lastProfile.totalXP) {
             const diff = result.profile.totalXP - this.lastProfile.totalXP;
             const latestItem = result.profile.recentHistory[0];
             this.showXPToast(diff, latestItem ? latestItem.reason : "XP Earned!");
         } else if (!this.lastProfile && result.profile.recentHistory && result.profile.recentHistory.length > 0) {
-            // Check if they JUST got Daily Login XP right now (within last 15 seconds)
             const latestItem = result.profile.recentHistory[0];
             const itemTime = new Date(latestItem.created_at).getTime();
             if (Date.now() - itemTime < 15000) {
@@ -1872,13 +1877,11 @@ const XPAnimator = {
   },
 
   updateUI(profile, forceAnimate = true) {
-    // 1. Check Level Up
     if (this.currentLevel !== null && profile.currentLevel > this.currentLevel) {
       this.triggerLevelUpPopup(profile.currentLevel, profile.currentRank);
     }
     this.currentLevel = profile.currentLevel;
 
-    // 2. Map Core Texts
     const textMap = {
         "bentoCurrentLevel": profile.currentLevel,
         "bentoCurrentRank": profile.currentRank,
@@ -1903,17 +1906,18 @@ const XPAnimator = {
         if (el) el.innerText = val;
     }
 
-    // 3. Smooth Number Animations & Progress Bar
-    if (forceAnimate || document.getElementById("tabScreenXP").style.display === "block") {
-        // Reset to 0 before animating for maximum satisfaction
-        document.getElementById("bentoCurrentAmount").innerText = "0";
-        document.getElementById("bentoProgressPercent").innerText = "0";
+    const tabScreenXP = document.getElementById("tabScreenXP");
+    if (forceAnimate || (tabScreenXP && tabScreenXP.style.display === "block")) {
+        const amt = document.getElementById("bentoCurrentAmount");
+        const pct = document.getElementById("bentoProgressPercent");
+        if(amt) amt.innerText = "0";
+        if(pct) pct.innerText = "0";
         
         const bar = document.getElementById("bentoProgressBar");
         if (bar) {
             bar.style.transition = 'none';
             bar.style.width = '0%';
-            void bar.offsetWidth; // Force CSS Reflow
+            void bar.offsetWidth; 
             bar.style.transition = 'width 1.5s cubic-bezier(0.16, 1, 0.3, 1)';
             setTimeout(() => { bar.style.width = `${profile.levelProgressPercentage}%`; }, 50);
         }
@@ -1921,14 +1925,14 @@ const XPAnimator = {
         this.animateValue("bentoCurrentAmount", 0, profile.totalXP, 1500);
         this.animateValue("bentoProgressPercent", 0, profile.levelProgressPercentage, 1500);
     } else {
-        // Just set values silently in background
-        document.getElementById("bentoCurrentAmount").innerText = profile.totalXP;
-        document.getElementById("bentoProgressPercent").innerText = profile.levelProgressPercentage;
+        const amt = document.getElementById("bentoCurrentAmount");
+        const pct = document.getElementById("bentoProgressPercent");
+        if(amt) amt.innerText = profile.totalXP;
+        if(pct) pct.innerText = profile.levelProgressPercentage;
         const bar = document.getElementById("bentoProgressBar");
         if (bar) bar.style.width = `${profile.levelProgressPercentage}%`;
     }
 
-    // 4. Build History List
     const historyList = document.getElementById("bentoHistoryList");
     if (historyList && profile.recentHistory) {
       historyList.innerHTML = profile.recentHistory.length > 0 ? profile.recentHistory.map(item => {
@@ -1954,7 +1958,6 @@ const XPAnimator = {
       }).join('') : `<div style="font-size:13px; color:#71717a; text-align:left;">No recent activity yet. Complete a task to earn XP!</div>`;
     }
 
-    // 5. Build Roadmap Timeline dynamically
     const roadmapEl = document.getElementById("bentoRoadmap");
     if(roadmapEl) {
         let roadmapHTML = '';
@@ -1982,7 +1985,6 @@ const XPAnimator = {
         roadmapEl.innerHTML = roadmapHTML;
     }
 
-    // 6. Update Daily Streak Checks
     const streakUI = document.getElementById("bentoStreakUI");
     if(streakUI) {
         const days = Array.from(streakUI.children);
@@ -2005,12 +2007,11 @@ const XPAnimator = {
     document.getElementById("xpToastReason").innerText = reason;
     toast.classList.remove("hidden");
     
-    // Tiny delay to allow CSS transition to apply
     setTimeout(() => { toast.classList.add("show"); }, 10);
     
     setTimeout(() => {
         toast.classList.remove("show");
-        setTimeout(() => toast.classList.add("hidden"), 600); // wait for fade out
+        setTimeout(() => toast.classList.add("hidden"), 600); 
     }, 4000);
   },
 
@@ -2045,7 +2046,6 @@ const XPAnimator = {
   }
 };
 
-// 🚀 HOOK INTO EXISTING LOGIN:
 const originalLedgerVerificationXP = window.runProfileLedgerVerification;
 if (typeof originalLedgerVerificationXP === "function") {
   window.runProfileLedgerVerification = async function(email, isFromModal, isBackgroundSync) {
