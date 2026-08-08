@@ -1674,6 +1674,7 @@ async function executeUploadLogic(e) {
                       if (submitDocBtn) submitDocBtn.style.display = 'none';
                       if (submitSelfieBtn) submitSelfieBtn.style.display = 'none';
                       
+                      // Strip out the ugly hash string from the UI
                       const cleanReason = reason.split('|')[0].trim();
                       
                       if (activeStatusMsg) {
