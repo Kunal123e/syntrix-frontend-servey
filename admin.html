@@ -4,18 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Syntrix | God Mode Mainframe</title>
-  <meta name="description" content="Syntrix Network Operations Mainframe — Real-time AI verification monitoring and manual override controls.">
+  <meta name="description" content="Syntrix Network Operations Mainframe â€” Real-time AI verification monitoring and manual override controls.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%238b5cf6'/%3E%3Cpath d='M50 20 L70 35 L70 55 C70 70 50 80 50 80 C50 80 30 70 30 55 L30 35 Z' fill='none' stroke='white' stroke-width='5'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
   <style>
     /* =============================================================
-       SYNTRIX GOD MODE — DESIGN SYSTEM TOKENS
+       SYNTRIX GOD MODE â€” DESIGN SYSTEM TOKENS
        Premium dark-mode palette inspired by Linear/Vercel aesthetics
        ============================================================= */
     :root {
-      /* ── Core Surfaces ── */
+      /* â”€â”€ Core Surfaces â”€â”€ */
       --bg-root:       #050505;
       --bg-primary:    #0a0a0c;
       --bg-card:       #111114;
@@ -23,18 +24,18 @@
       --bg-elevated:   #1a1a1f;
       --bg-input:      #0e0e11;
 
-      /* ── Borders ── */
+      /* â”€â”€ Borders â”€â”€ */
       --border-subtle:  #1f1f23;
       --border-default: #27272a;
       --border-hover:   #3f3f46;
 
-      /* ── Text Hierarchy ── */
+      /* â”€â”€ Text Hierarchy â”€â”€ */
       --text-primary:   #fafafa;
       --text-secondary: #a1a1aa;
       --text-tertiary:  #71717a;
       --text-ghost:     #52525b;
 
-      /* ── Accent Palette ── */
+      /* â”€â”€ Accent Palette â”€â”€ */
       --accent-purple:     #8b5cf6;
       --accent-purple-dim: rgba(139, 92, 246, 0.12);
       --accent-purple-glow:rgba(139, 92, 246, 0.25);
@@ -47,7 +48,7 @@
       --accent-blue:       #3b82f6;
       --accent-blue-dim:   rgba(59, 130, 246, 0.12);
 
-      /* ── Radii & Spacing ── */
+      /* â”€â”€ Radii & Spacing â”€â”€ */
       --radius-sm:  8px;
       --radius-md:  12px;
       --radius-lg:  16px;
@@ -55,15 +56,15 @@
       --radius-2xl: 24px;
       --radius-pill: 999px;
 
-      /* ── Typography ── */
+      /* â”€â”€ Typography â”€â”€ */
       --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
       --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
 
-      /* ── Transitions ── */
+      /* â”€â”€ Transitions â”€â”€ */
       --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
       --ease-spring:   cubic-bezier(0.34, 1.56, 0.64, 1);
 
-      /* ── Glass Effect ── */
+      /* â”€â”€ Glass Effect â”€â”€ */
       --glass-bg:     rgba(10, 10, 12, 0.82);
       --glass-border: rgba(255, 255, 255, 0.06);
       --glass-blur:   16px;
@@ -95,7 +96,7 @@
       min-height: 100vh;
     }
 
-    /* ── Custom Scrollbar ── */
+    /* â”€â”€ Custom Scrollbar â”€â”€ */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb {
@@ -105,7 +106,7 @@
     ::-webkit-scrollbar-thumb:hover { background: var(--border-hover); }
 
     /* =============================================================
-       APP SHELL — Mobile-First Container
+       APP SHELL â€” Mobile-First Container
        ============================================================= */
     .app-container {
       width: 100%;
@@ -116,7 +117,7 @@
       padding-bottom: 100px; /* nav clearance */
     }
 
-    /* ── Ambient background noise texture ── */
+    /* â”€â”€ Ambient background noise texture â”€â”€ */
     .app-container::before {
       content: '';
       position: fixed;
@@ -482,7 +483,7 @@
 
     .bento-sub.neutral { color: var(--text-ghost); }
 
-    /* ── Full-width analytics trigger ── */
+    /* â”€â”€ Full-width analytics trigger â”€â”€ */
     .bento-full {
       grid-column: 1 / -1;
     }
@@ -636,7 +637,7 @@
       color: var(--text-ghost);
     }
 
-    /* ── Individual Feed Item ── */
+    /* â”€â”€ Individual Feed Item â”€â”€ */
     .feed-item {
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
@@ -646,7 +647,7 @@
       align-items: center;
       gap: 12px;
       transition: all 0.25s var(--ease-out-expo);
-      /* Stagger animation — set via JS */
+      /* Stagger animation â€” set via JS */
       opacity: 0;
       transform: translateY(12px);
       animation: feedSlideIn 0.5s var(--ease-out-expo) forwards;
@@ -661,7 +662,7 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── Feed Thumbnail ── */
+    /* â”€â”€ Feed Thumbnail â”€â”€ */
     .feed-thumb {
       position: relative;
       width: 44px;
@@ -692,7 +693,7 @@
       justify-content: center;
     }
 
-    /* ── Feed Info ── */
+    /* â”€â”€ Feed Info â”€â”€ */
     .feed-info {
       flex: 1;
       min-width: 0; /* allow truncation */
@@ -726,7 +727,7 @@
       color: var(--text-ghost);
     }
 
-    /* ── Status Pill ── */
+    /* â”€â”€ Status Pill â”€â”€ */
     .status-pill {
       padding: 4px 8px;
       border-radius: 5px;
@@ -756,7 +757,7 @@
       border: 1px solid rgba(239, 68, 68, 0.2);
     }
 
-    /* ── Action Buttons ── */
+    /* â”€â”€ Action Buttons â”€â”€ */
     .actions {
       display: flex;
       gap: 5px;
@@ -859,7 +860,7 @@
     }
 
     /* =============================================================
-       BOTTOM NAV — Glassmorphic
+       BOTTOM NAV â€” Glassmorphic
        ============================================================= */
     .bottom-nav {
       position: fixed;
@@ -956,7 +957,7 @@
     }
 
     /* =============================================================
-       ANALYTICS MODAL — Slide-up Bottom Sheet (Mobile) / Center (Desktop)
+       ANALYTICS MODAL â€” Slide-up Bottom Sheet (Mobile) / Center (Desktop)
        ============================================================= */
     .modal-overlay {
       position: fixed;
@@ -1129,7 +1130,7 @@
     }
 
     /* =============================================================
-       RIPPLE EFFECT — Applied via JS to interactive elements
+       RIPPLE EFFECT â€” Applied via JS to interactive elements
        ============================================================= */
     .ripple-host {
       position: relative;
@@ -1288,7 +1289,7 @@
       50%      { transform: translateY(-8px); }
     }
 
-    /* Stagger helpers — applied in JS via style attribute */
+    /* Stagger helpers â€” applied in JS via style attribute */
     .delay-1 { animation-delay: 0.05s; }
     .delay-2 { animation-delay: 0.1s; }
     .delay-3 { animation-delay: 0.15s; }
@@ -1326,9 +1327,9 @@
 
 <body>
 
-  <!-- ═══════════════════════════════════════════════
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
        TOAST NOTIFICATION
-       ═══════════════════════════════════════════════ -->
+       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
   <div id="toast" class="toast">
     <span class="toast-icon" id="toastIcon">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
@@ -1336,9 +1337,9 @@
     <span id="toastMsg">Action completed.</span>
   </div>
 
-  <!-- ═══════════════════════════════════════════════
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
        CONFIRM DIALOG (Override Actions)
-       ═══════════════════════════════════════════════ -->
+       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
   <div class="confirm-overlay" id="confirmOverlay">
     <div class="confirm-card">
       <div class="confirm-icon" id="confirmIconWrap">
@@ -1354,14 +1355,14 @@
     </div>
   </div>
 
-  <!-- ═══════════════════════════════════════════════
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
        APP CONTAINER
-       ═══════════════════════════════════════════════ -->
+       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
   <div class="app-container">
 
-    <!-- ─────────────────────────────────────────────
-         🔐 LOGIN SCREEN
-         ───────────────────────────────────────────── -->
+    <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+         ðŸ” LOGIN SCREEN
+         â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
     <div id="loginScreen">
       <div class="login-card">
         <div class="login-logo">
@@ -1376,22 +1377,22 @@
           type="password"
           id="adminPassword"
           class="login-input"
-          placeholder="••••••"
+          placeholder="â€¢â€¢â€¢â€¢â€¢â€¢"
           autocomplete="off"
           onkeydown="if(event.key==='Enter') loginAdmin()"
         >
 
         <button class="login-btn ripple-host" onclick="loginAdmin()">
-          Authenticate →
+          Authenticate â†’
         </button>
 
         <p class="login-error" id="loginError">Authentication denied.</p>
       </div>
     </div>
 
-    <!-- ─────────────────────────────────────────────
-         🎛️ DASHBOARD SCREEN
-         ───────────────────────────────────────────── -->
+    <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+         ðŸŽ›ï¸ DASHBOARD SCREEN
+         â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
     <div id="dashboardScreen" style="display: none;">
 
       <!-- Glassmorphic Header -->
@@ -1412,13 +1413,13 @@
         </div>
       </header>
 
-      <!-- ── Section: Network Overview ── -->
+      <!-- â”€â”€ Section: Network Overview â”€â”€ -->
       <div class="section-head anim-slide-up" style="animation-delay: 0.05s">
         <div class="section-title">Network Overview</div>
         <div class="live-badge"><div class="live-dot"></div> Live</div>
       </div>
 
-      <!-- ── Bento Stats Grid ── -->
+      <!-- â”€â”€ Bento Stats Grid â”€â”€ -->
       <div class="bento-grid anim-slide-up" style="animation-delay: 0.1s">
 
         <!-- Card: Total Users -->
@@ -1486,10 +1487,10 @@
         </div>
       </div>
 
-      <!-- ── Section: Live Feed ── -->
+      <!-- â”€â”€ Section: Live Feed â”€â”€ -->
       <div class="section-head anim-slide-up" style="animation-delay: 0.2s">
         <div class="section-title">Verification Feed</div>
-        <div style="font-size: 11px; font-weight: 700; color: var(--text-ghost); cursor: pointer;" onclick="loadDashboardData()">Refresh ↻</div>
+        <div style="font-size: 11px; font-weight: 700; color: var(--text-ghost); cursor: pointer;" onclick="loadDashboardData()">Refresh â†»</div>
       </div>
 
       <!-- Tabs -->
@@ -1510,7 +1511,7 @@
         <div class="skeleton skeleton-feed-item" style="opacity: 0.4"></div>
       </div>
 
-      <!-- ── Section: Quick Actions ── -->
+      <!-- â”€â”€ Section: Quick Actions â”€â”€ -->
       <div class="section-head" style="margin-top: 16px;">
         <div class="section-title">Quick Actions</div>
       </div>
@@ -1536,7 +1537,7 @@
 
     </div><!-- /dashboardScreen -->
 
-    <!-- ── Bottom Nav ── -->
+    <!-- â”€â”€ Bottom Nav â”€â”€ -->
     <nav class="bottom-nav" id="bottomNav" style="display: none;">
       <div class="nav-item active" onclick="setNavActive(this); showToast('Dashboard', 'info')">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
@@ -1553,9 +1554,9 @@
 
   </div><!-- /app-container -->
 
-  <!-- ═══════════════════════════════════════════════
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
        ANALYTICS MODAL
-       ═══════════════════════════════════════════════ -->
+       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
   <div class="modal-overlay" id="modalOverlay" onclick="toggleAnalyticsModal()"></div>
   <div class="analytics-modal" id="analyticsModal">
     <div class="modal-handle-bar"></div>
@@ -1593,12 +1594,12 @@
     <button class="modal-close-btn" onclick="toggleAnalyticsModal()">Close Panel</button>
   </div>
 
-  <!-- ═══════════════════════════════════════════════
-       JAVASCRIPT — Core Logic
-       ═══════════════════════════════════════════════ -->
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       JAVASCRIPT â€” Core Logic
+       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
   <script>
     // =============================================================
-    // ⚡ BACKEND URL — CONFIGURE FOR DEPLOYMENT
+    // âš¡ BACKEND URL â€” CONFIGURE FOR DEPLOYMENT
     // =============================================================
     const BACKEND_URL = window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1")
       ? "http://localhost:5000"
@@ -1613,7 +1614,7 @@
     let pendingOverride = null;     // { id, newStatus, reason }
 
     // =============================================================
-    // INITIALIZATION — Check for existing session
+    // INITIALIZATION â€” Check for existing session
     // =============================================================
     if (sessionToken) {
       showDashboard();
@@ -1669,11 +1670,11 @@
     function truncateEmail(email) {
       if (!email) return 'Unknown';
       if (email.length <= 22) return email;
-      return email.substring(0, 12) + '…' + email.substring(email.length - 8);
+      return email.substring(0, 12) + 'â€¦' + email.substring(email.length - 8);
     }
 
     /**
-     * Animated counter — smoothly counts up a number in a DOM element.
+     * Animated counter â€” smoothly counts up a number in a DOM element.
      */
     function animateCounter(element, target, duration = 800) {
       const start = parseInt(element.textContent) || 0;
@@ -1692,7 +1693,7 @@
     }
 
     /**
-     * Ripple effect — call on any element with .ripple-host class.
+     * Ripple effect â€” call on any element with .ripple-host class.
      */
     document.addEventListener('click', (e) => {
       const host = e.target.closest('.ripple-host');
@@ -1792,7 +1793,7 @@
           errorEl.style.display = 'block';
         }
       } catch (err) {
-        errorEl.textContent = 'Network error — target unreachable.';
+        errorEl.textContent = 'Network error â€” target unreachable.';
         errorEl.style.display = 'block';
       }
     }
@@ -1811,7 +1812,7 @@
 
     async function loadDashboardData() {
       try {
-        // ── Fetch Stats ──
+        // â”€â”€ Fetch Stats â”€â”€
         const statsRes = await fetch(`${BACKEND_URL}/api/admin/stats`, {
           headers: { 'x-admin-key': sessionToken }
         });
@@ -1838,19 +1839,25 @@
             : 'Queue clear';
         }
 
-        // ── Fetch Submissions ──
+        // â”€â”€ Fetch Submissions â”€â”€
         const subRes = await fetch(`${BACKEND_URL}/api/admin/submissions`, {
           headers: { 'x-admin-key': sessionToken }
         });
 
         const subData = await subRes.json();
 
-        if (subData.success) {
+        // Handle both raw array and { success, submissions } response formats
+        if (Array.isArray(subData)) {
+          allSubmissions = subData;
+        } else if (subData.success) {
           allSubmissions = subData.submissions || [];
-          updateTabCounts();
-          renderFeed(currentFilter);
-          updateModalStats();
+        } else if (subData.submissions) {
+          allSubmissions = subData.submissions;
         }
+
+        updateTabCounts();
+        renderFeed(currentFilter);
+        updateModalStats();
 
       } catch (err) {
         console.error('Dashboard data fetch error:', err);
@@ -1945,7 +1952,7 @@
           ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'
           : '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
 
-        // Image source — use storage_url if available, else a placeholder SVG
+        // Image source â€” use storage_url if available, else a placeholder SVG
         const imgSrc = sub.storage_url || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect width='48' height='48' fill='%23111114'/%3E%3C/svg%3E";
 
         // Build action buttons based on status
@@ -1973,7 +1980,7 @@
             </button>`;
         }
 
-        // Stagger delay — each item gets an additional 60ms
+        // Stagger delay â€” each item gets an additional 60ms
         const delay = i * 0.06;
 
         const itemHTML = `
@@ -2027,7 +2034,7 @@
         execBtn.textContent = 'Reject';
       }
 
-      taskId.textContent = 'Task: ' + id.substring(0, 20) + (id.length > 20 ? '…' : '');
+      taskId.textContent = 'Task: ' + id.substring(0, 20) + (id.length > 20 ? 'â€¦' : '');
 
       pendingOverride = {
         id,
@@ -2052,7 +2059,7 @@
       if (!pendingOverride) return;
 
       closeConfirm();
-      showToast('Executing override…', 'info');
+      showToast('Executing overrideâ€¦', 'info');
 
       try {
         const res = await fetch(`${BACKEND_URL}/api/admin/override`, {
@@ -2080,7 +2087,7 @@
     }
 
     // =============================================================
-    // MODAL ANALYTICS — Computed from submission data
+    // MODAL ANALYTICS â€” Computed from submission data
     // =============================================================
 
     function updateModalStats() {
