@@ -126,7 +126,7 @@
         radial-gradient(ellipse 600px 400px at 20% 10%, rgba(139, 92, 246, 0.04) 0%, transparent 70%),
         radial-gradient(ellipse 500px 350px at 80% 80%, rgba(16, 185, 129, 0.03) 0%, transparent 70%);
       pointer-events: none;
-      z-index: 0;
+      z-index: -1;
     }
 
     /* =============================================================
@@ -140,7 +140,7 @@
       height: 100vh;
       padding: 24px;
       position: relative;
-      z-index: 1;
+      z-index: 10;
     }
 
     .login-card {
@@ -1377,13 +1377,13 @@
           type="password"
           id="adminPassword"
           class="login-input"
-          placeholder="â€¢â€¢â€¢â€¢â€¢â€¢"
+          placeholder="******"
           autocomplete="off"
           onkeydown="if(event.key==='Enter') loginAdmin()"
         >
 
         <button class="login-btn ripple-host" onclick="loginAdmin()">
-          Authenticate â†’
+          Authenticate &rarr;
         </button>
 
         <p class="login-error" id="loginError">Authentication denied.</p>
