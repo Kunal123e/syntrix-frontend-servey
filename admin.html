@@ -4,546 +4,2108 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Syntrix | God Mode Mainframe</title>
+  <meta name="description" content="Syntrix Network Operations Mainframe — Real-time AI verification monitoring and manual override controls.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
   <style>
+    /* =============================================================
+       SYNTRIX GOD MODE — DESIGN SYSTEM TOKENS
+       Premium dark-mode palette inspired by Linear/Vercel aesthetics
+       ============================================================= */
     :root {
-      --bg-color: #0b0c10;
-      --card-bg: #14151a;
-      --border-color: #222329;
-      --text-main: #ffffff;
-      --text-muted: #8b8d98;
-      --accent-purple: #8b5cf6;
-      --accent-green: #10b981;
-      --accent-yellow: #f59e0b;
-      --accent-red: #ef4444;
+      /* ── Core Surfaces ── */
+      --bg-root:       #050505;
+      --bg-primary:    #0a0a0c;
+      --bg-card:       #111114;
+      --bg-card-hover: #16161a;
+      --bg-elevated:   #1a1a1f;
+      --bg-input:      #0e0e11;
+
+      /* ── Borders ── */
+      --border-subtle:  #1f1f23;
+      --border-default: #27272a;
+      --border-hover:   #3f3f46;
+
+      /* ── Text Hierarchy ── */
+      --text-primary:   #fafafa;
+      --text-secondary: #a1a1aa;
+      --text-tertiary:  #71717a;
+      --text-ghost:     #52525b;
+
+      /* ── Accent Palette ── */
+      --accent-purple:     #8b5cf6;
+      --accent-purple-dim: rgba(139, 92, 246, 0.12);
+      --accent-purple-glow:rgba(139, 92, 246, 0.25);
+      --accent-green:      #10b981;
+      --accent-green-dim:  rgba(16, 185, 129, 0.12);
+      --accent-yellow:     #f59e0b;
+      --accent-yellow-dim: rgba(245, 158, 11, 0.12);
+      --accent-red:        #ef4444;
+      --accent-red-dim:    rgba(239, 68, 68, 0.12);
+      --accent-blue:       #3b82f6;
+      --accent-blue-dim:   rgba(59, 130, 246, 0.12);
+
+      /* ── Radii & Spacing ── */
+      --radius-sm:  8px;
+      --radius-md:  12px;
+      --radius-lg:  16px;
+      --radius-xl:  20px;
+      --radius-2xl: 24px;
+      --radius-pill: 999px;
+
+      /* ── Typography ── */
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+
+      /* ── Transitions ── */
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-spring:   cubic-bezier(0.34, 1.56, 0.64, 1);
+
+      /* ── Glass Effect ── */
+      --glass-bg:     rgba(10, 10, 12, 0.82);
+      --glass-border: rgba(255, 255, 255, 0.06);
+      --glass-blur:   16px;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
-    
-    body { background-color: #000000; color: var(--text-main); display: flex; justify-content: center; }
+    /* =============================================================
+       RESET & BASE
+       ============================================================= */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-    /* Mobile App Container */
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-root);
+      color: var(--text-primary);
+      display: flex;
+      justify-content: center;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* ── Custom Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-default);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover { background: var(--border-hover); }
+
+    /* =============================================================
+       APP SHELL — Mobile-First Container
+       ============================================================= */
     .app-container {
       width: 100%;
-      max-width: 480px;
+      max-width: 520px;
       min-height: 100vh;
-      background-color: var(--bg-color);
+      background: var(--bg-root);
       position: relative;
-      padding-bottom: 90px; /* Space for bottom nav */
-      box-shadow: 0 0 50px rgba(139, 92, 246, 0.05);
+      padding-bottom: 100px; /* nav clearance */
     }
 
-    /* --- LOGIN SCREEN --- */
-    #loginScreen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; padding: 20px; }
-    .login-card { background: var(--card-bg); padding: 40px 30px; border-radius: 24px; border: 1px solid var(--border-color); width: 100%; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
-    .login-logo { width: 60px; height: 60px; background: rgba(139, 92, 246, 0.1); border-radius: 16px; border: 1px solid rgba(139, 92, 246, 0.3); color: var(--accent-purple); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 28px; }
-    .login-input { width: 100%; padding: 16px; margin: 25px 0; background: var(--bg-color); border: 1px solid var(--border-color); color: white; border-radius: 14px; font-size: 16px; outline: none; transition: 0.3s; text-align: center; letter-spacing: 2px; }
-    .login-input:focus { border-color: var(--accent-purple); box-shadow: 0 0 15px rgba(139, 92, 246, 0.2); }
-    .login-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 1px; }
-    .login-btn:active { transform: scale(0.98); }
+    /* ── Ambient background noise texture ── */
+    .app-container::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 600px 400px at 20% 10%, rgba(139, 92, 246, 0.04) 0%, transparent 70%),
+        radial-gradient(ellipse 500px 350px at 80% 80%, rgba(16, 185, 129, 0.03) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
 
-    /* --- DASHBOARD HEADER --- */
-    .header { display: flex; justify-content: space-between; align-items: center; padding: 20px; position: sticky; top: 0; background: rgba(11, 12, 16, 0.9); backdrop-filter: blur(12px); z-index: 50; border-bottom: 1px solid var(--border-color); }
-    .logo-area { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 16px; letter-spacing: 1px; }
-    .logo-icon { color: var(--text-main); }
-    .header-icons { display: flex; gap: 15px; color: var(--text-muted); align-items: center; }
+    /* =============================================================
+       LOGIN SCREEN
+       ============================================================= */
+    #loginScreen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 24px;
+      position: relative;
+      z-index: 1;
+    }
 
-    /* --- SECTION TITLES --- */
-    .section-head { display: flex; justify-content: space-between; align-items: center; padding: 25px 20px 15px; }
-    .section-title { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; }
-    .live-status { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: var(--accent-purple); }
-    .pulse { width: 6px; height: 6px; background: var(--accent-purple); border-radius: 50%; animation: blink 1.5s infinite; }
-    @keyframes blink { 0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--accent-purple); } 50% { opacity: 0.4; box-shadow: none; } }
+    .login-card {
+      background: var(--bg-card);
+      padding: 48px 32px 40px;
+      border-radius: var(--radius-2xl);
+      border: 1px solid var(--border-subtle);
+      width: 100%;
+      text-align: center;
+      box-shadow:
+        0 0 0 1px var(--border-subtle),
+        0 24px 48px -12px rgba(0, 0, 0, 0.6),
+        0 0 80px -20px rgba(139, 92, 246, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
 
-    /* --- STATS BENTO GRID --- */
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 20px; }
-    .stat-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 6px; }
-    .stat-label { font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
-    .stat-val { font-size: 22px; font-weight: 900; color: var(--text-main); }
-    .stat-sub { font-size: 10px; font-weight: 600; color: var(--accent-green); }
-    .stat-sub.neutral { color: var(--text-muted); }
-    .full-width { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; padding: 16px; background: rgba(139, 92, 246, 0.05); border-color: rgba(139, 92, 246, 0.2); cursor: pointer; }
+    /* Decorative gradient shimmer at top of login card */
+    .login-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--accent-purple) 50%, transparent 100%);
+      opacity: 0.5;
+    }
 
-    /* --- FEED TABS --- */
-    .tabs { display: flex; padding: 0 20px; gap: 20px; border-bottom: 1px solid var(--border-color); margin-bottom: 15px; }
-    .tab { font-size: 13px; font-weight: 600; color: var(--text-muted); padding: 12px 0; cursor: pointer; position: relative; transition: 0.2s; }
-    .tab.active { color: var(--accent-purple); }
-    .tab.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px; background: var(--accent-purple); border-radius: 2px 2px 0 0; }
+    .login-logo {
+      width: 64px;
+      height: 64px;
+      background: var(--accent-purple-dim);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      color: var(--accent-purple);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      position: relative;
+    }
 
-    /* --- FEED LIST --- */
-    .feed { padding: 0 20px; display: flex; flex-direction: column; gap: 12px; }
-    .feed-item { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 12px; display: flex; align-items: center; gap: 12px; }
-    
-    .feed-img-wrapper { position: relative; width: 44px; height: 44px; flex-shrink: 0; }
-    .feed-img { width: 100%; height: 100%; border-radius: 10px; background: #1f1f23; object-fit: cover; border: 1px solid #2a2a30; }
-    .feed-type-icon { position: absolute; bottom: -4px; right: -4px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 6px; padding: 3px; font-size: 10px; display: flex; align-items: center; justify-content: center; }
+    /* Pulsing ring around logo */
+    .login-logo::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: var(--radius-xl);
+      border: 1px solid rgba(139, 92, 246, 0.15);
+      animation: logoPulse 3s ease-in-out infinite;
+    }
 
-    .feed-info { flex: 1; overflow: hidden; }
-    .feed-title { font-size: 13px; font-weight: 800; margin-bottom: 3px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .feed-user { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .feed-time { font-size: 10px; font-weight: 600; color: #555; }
+    @keyframes logoPulse {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50%      { opacity: 0.7; transform: scale(1.05); }
+    }
 
-    .status-pill { padding: 4px 8px; border-radius: 6px; font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
-    .pill-pending { background: rgba(245, 158, 11, 0.1); color: var(--accent-yellow); border: 1px solid rgba(245, 158, 11, 0.2); }
-    .pill-approved { background: rgba(16, 185, 129, 0.1); color: var(--accent-green); border: 1px solid rgba(16, 185, 129, 0.2); }
-    .pill-rejected { background: rgba(239, 68, 68, 0.1); color: var(--accent-red); border: 1px solid rgba(239, 68, 68, 0.2); }
+    .login-title {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+      color: var(--text-primary);
+    }
 
-    .action-group { display: flex; gap: 6px; }
-    .btn-action { width: 32px; height: 32px; border-radius: 10px; background: transparent; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); transition: 0.2s; }
-    .btn-action:active { transform: scale(0.9); }
-    .btn-view:hover { color: var(--text-main); border-color: #444; }
-    .btn-approve:hover { color: var(--accent-green); border-color: var(--accent-green); background: rgba(16, 185, 129, 0.1); }
-    .btn-reject:hover { color: var(--accent-red); border-color: var(--accent-red); background: rgba(239, 68, 68, 0.1); }
+    .login-subtitle {
+      color: var(--text-tertiary);
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 32px;
+    }
 
-    /* --- QUICK ACTIONS --- */
-    .quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 0 20px 20px; }
-    .quick-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 15px 5px; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: 0.2s; }
-    .quick-box:hover { border-color: #444; }
-    .quick-icon { color: var(--text-muted); }
-    .quick-text { font-size: 10px; font-weight: 700; color: var(--text-muted); text-align: center; }
+    .login-input {
+      width: 100%;
+      padding: 16px 20px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      border-radius: var(--radius-md);
+      font-size: 18px;
+      font-family: var(--font-mono);
+      font-weight: 500;
+      outline: none;
+      transition: all 0.3s var(--ease-out-expo);
+      text-align: center;
+      letter-spacing: 4px;
+      margin-bottom: 20px;
+    }
 
-    /* --- BOTTOM NAV --- */
-    .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: rgba(20, 21, 26, 0.95); backdrop-filter: blur(15px); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; align-items: center; padding: 15px 10px 25px; z-index: 100; }
-    .nav-icon { color: var(--text-muted); cursor: pointer; transition: 0.2s; }
-    .nav-icon.active { color: var(--text-main); }
-    .nav-center { width: 48px; height: 48px; background: var(--accent-purple); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; margin-top: -20px; box-shadow: 0 10px 20px rgba(139, 92, 246, 0.4); border: 4px solid var(--bg-color); cursor: pointer; }
-    .nav-center:active { transform: scale(0.95); box-shadow: none; }
+    .login-input:focus {
+      border-color: var(--accent-purple);
+      box-shadow: 0 0 0 3px var(--accent-purple-dim), 0 0 20px -4px rgba(139, 92, 246, 0.15);
+    }
 
-    /* --- Custom Toast --- */
-    .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px); background: rgba(20, 20, 25, 0.95); backdrop-filter: blur(10px); border: 1px solid var(--accent-purple); color: white; padding: 12px 24px; border-radius: 99px; font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none; transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index: 9999; box-shadow: 0 10px 30px rgba(139, 92, 246, 0.2); }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .login-input::placeholder {
+      color: var(--text-ghost);
+      letter-spacing: 6px;
+    }
 
-    /* --- Animations --- */
-    @keyframes slideUpFade { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-    .animate-slide-up { animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-    .animate-feed-item { opacity: 0; animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .login-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      transition: all 0.25s var(--ease-out-expo);
+      position: relative;
+      overflow: hidden;
+    }
 
-    /* --- Analytics Modal --- */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 999; display: none; opacity: 0; transition: opacity 0.3s; }
-    .modal-overlay.show { display: block; opacity: 1; }
-    .analytics-modal { position: fixed; bottom: -100%; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; background: var(--card-bg); border-top: 1px solid var(--border-color); border-radius: 30px 30px 0 0; padding: 30px 20px 40px; z-index: 1000; transition: bottom 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 -20px 50px rgba(0,0,0,0.5); }
-    .analytics-modal.show { bottom: 0; }
-    .modal-handle { width: 40px; height: 5px; background: #333; border-radius: 10px; margin: 0 auto 20px; }
-    .modal-title { font-size: 18px; font-weight: 800; margin-bottom: 20px; }
-    .chart-placeholder { height: 150px; background: linear-gradient(180deg, rgba(139, 92, 246, 0.1) 0%, transparent 100%); border: 1px dashed rgba(139, 92, 246, 0.3); border-radius: 16px; display: flex; align-items: center; justify-content: center; color: var(--accent-purple); font-weight: 600; font-size: 13px; margin-bottom: 20px; }
+    .login-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px -4px rgba(139, 92, 246, 0.4);
+    }
 
+    .login-btn:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    .login-error {
+      color: var(--accent-red);
+      font-size: 13px;
+      margin-top: 16px;
+      font-weight: 600;
+      display: none;
+      animation: shakeX 0.5s var(--ease-out-expo);
+    }
+
+    @keyframes shakeX {
+      0%, 100% { transform: translateX(0); }
+      20%      { transform: translateX(-8px); }
+      40%      { transform: translateX(6px); }
+      60%      { transform: translateX(-4px); }
+      80%      { transform: translateX(2px); }
+    }
+
+    /* =============================================================
+       GLASSMORPHIC HEADER
+       ============================================================= */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      position: sticky;
+      top: 0;
+      background: var(--glass-bg);
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      z-index: 50;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      background: var(--accent-purple-dim);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-purple);
+    }
+
+    .logo-text {
+      font-weight: 900;
+      font-size: 15px;
+      letter-spacing: 1.5px;
+      color: var(--text-primary);
+    }
+
+    .logo-text span {
+      color: var(--text-tertiary);
+      font-weight: 600;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .header-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-tertiary);
+      transition: all 0.2s ease;
+    }
+
+    .header-btn:hover {
+      color: var(--text-primary);
+      border-color: var(--border-hover);
+      background: var(--bg-card);
+    }
+
+    /* =============================================================
+       SECTION HEADERS
+       ============================================================= */
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 28px 20px 16px;
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-ghost);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent-purple);
+      background: var(--accent-purple-dim);
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(139, 92, 246, 0.15);
+    }
+
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent-purple);
+      border-radius: 50%;
+      animation: livePulse 2s ease-in-out infinite;
+    }
+
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.5); }
+      50%      { opacity: 0.6; box-shadow: 0 0 0 6px rgba(139, 92, 246, 0); }
+    }
+
+    /* =============================================================
+       BENTO STATS GRID
+       ============================================================= */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 10px;
+      padding: 0 16px;
+    }
+
+    .bento-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s var(--ease-out-expo);
+    }
+
+    .bento-card:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-card-hover);
+    }
+
+    /* Subtle gradient shimmer on hover */
+    .bento-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.02) 50%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .bento-card:hover::after { opacity: 1; }
+
+    .bento-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+    }
+
+    .bento-icon.purple  { background: var(--accent-purple-dim); color: var(--accent-purple); }
+    .bento-icon.green   { background: var(--accent-green-dim);  color: var(--accent-green); }
+    .bento-icon.yellow  { background: var(--accent-yellow-dim); color: var(--accent-yellow); }
+    .bento-icon.blue    { background: var(--accent-blue-dim);   color: var(--accent-blue); }
+
+    .bento-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-ghost);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .bento-value {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--text-primary);
+      letter-spacing: -1px;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .bento-sub {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent-green);
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .bento-sub.neutral { color: var(--text-ghost); }
+
+    /* ── Full-width analytics trigger ── */
+    .bento-full {
+      grid-column: 1 / -1;
+    }
+
+    .analytics-trigger {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 18px;
+      background: var(--bg-card);
+      border: 1px solid rgba(139, 92, 246, 0.12);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: all 0.25s var(--ease-out-expo);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .analytics-trigger:hover {
+      border-color: rgba(139, 92, 246, 0.3);
+      background: rgba(139, 92, 246, 0.04);
+      transform: translateY(-1px);
+    }
+
+    .analytics-trigger:active {
+      transform: translateY(0) scale(0.99);
+    }
+
+    .at-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-secondary);
+    }
+
+    .at-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--accent-purple-dim);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-purple);
+    }
+
+    .at-right {
+      color: var(--text-ghost);
+      transition: transform 0.2s ease;
+    }
+
+    .analytics-trigger:hover .at-right {
+      transform: translateX(3px);
+      color: var(--accent-purple);
+    }
+
+    /* =============================================================
+       FEED TABS
+       ============================================================= */
+    .tabs-wrapper {
+      padding: 0 16px;
+      margin-bottom: 16px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 4px;
+    }
+
+    .tab {
+      flex: 1;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-ghost);
+      padding: 10px 0;
+      cursor: pointer;
+      text-align: center;
+      border-radius: var(--radius-sm);
+      transition: all 0.25s var(--ease-out-expo);
+      position: relative;
+      user-select: none;
+    }
+
+    .tab:hover {
+      color: var(--text-secondary);
+    }
+
+    .tab.active {
+      color: var(--text-primary);
+      background: var(--bg-elevated);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 0 1px var(--border-default);
+    }
+
+    /* Tab count badge */
+    .tab-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      font-size: 10px;
+      font-weight: 800;
+      border-radius: var(--radius-pill);
+      margin-left: 5px;
+      vertical-align: middle;
+    }
+
+    .tab.active .tab-count {
+      background: var(--accent-purple-dim);
+      color: var(--accent-purple);
+    }
+
+    /* =============================================================
+       FEED LIST
+       ============================================================= */
+    .feed {
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .feed-empty {
+      text-align: center;
+      color: var(--text-ghost);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .feed-empty-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-ghost);
+    }
+
+    /* ── Individual Feed Item ── */
+    .feed-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.25s var(--ease-out-expo);
+      /* Stagger animation — set via JS */
+      opacity: 0;
+      transform: translateY(12px);
+      animation: feedSlideIn 0.5s var(--ease-out-expo) forwards;
+    }
+
+    .feed-item:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-card-hover);
+    }
+
+    @keyframes feedSlideIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Feed Thumbnail ── */
+    .feed-thumb {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+    }
+
+    .feed-thumb img {
+      width: 100%;
+      height: 100%;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .feed-type-badge {
+      position: absolute;
+      bottom: -3px;
+      right: -3px;
+      width: 20px;
+      height: 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── Feed Info ── */
+    .feed-info {
+      flex: 1;
+      min-width: 0; /* allow truncation */
+    }
+
+    .feed-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+      text-transform: capitalize;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .feed-user {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-tertiary);
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: var(--font-mono);
+    }
+
+    .feed-time {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-ghost);
+    }
+
+    /* ── Status Pill ── */
+    .status-pill {
+      padding: 4px 8px;
+      border-radius: 5px;
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .pill-pending  {
+      background: var(--accent-yellow-dim);
+      color: var(--accent-yellow);
+      border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+
+    .pill-approved {
+      background: var(--accent-green-dim);
+      color: var(--accent-green);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .pill-rejected {
+      background: var(--accent-red-dim);
+      color: var(--accent-red);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    /* ── Action Buttons ── */
+    .actions {
+      display: flex;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    .btn-action {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-ghost);
+      transition: all 0.2s var(--ease-out-expo);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-action:hover {
+      color: var(--text-primary);
+      border-color: var(--border-hover);
+    }
+
+    .btn-action:active {
+      transform: scale(0.9);
+    }
+
+    .btn-action.approve:hover {
+      color: var(--accent-green);
+      border-color: var(--accent-green);
+      background: var(--accent-green-dim);
+      box-shadow: 0 0 12px -2px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-action.reject:hover {
+      color: var(--accent-red);
+      border-color: var(--accent-red);
+      background: var(--accent-red-dim);
+      box-shadow: 0 0 12px -2px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-action.view:hover {
+      color: var(--accent-blue);
+      border-color: var(--accent-blue);
+      background: var(--accent-blue-dim);
+    }
+
+    /* =============================================================
+       QUICK ACTIONS GRID
+       ============================================================= */
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      padding: 0 16px 24px;
+    }
+
+    .quick-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.25s var(--ease-out-expo);
+    }
+
+    .quick-card:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-card-hover);
+      transform: translateY(-2px);
+    }
+
+    .quick-card:active {
+      transform: translateY(0) scale(0.97);
+    }
+
+    .quick-card svg {
+      color: var(--text-tertiary);
+      transition: color 0.2s ease;
+    }
+
+    .quick-card:hover svg {
+      color: var(--accent-purple);
+    }
+
+    .quick-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-ghost);
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    /* =============================================================
+       BOTTOM NAV — Glassmorphic
+       ============================================================= */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      max-width: 520px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--glass-border);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+      z-index: 100;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      color: var(--text-ghost);
+      transition: color 0.2s ease;
+      padding: 4px 12px;
+    }
+
+    .nav-item:hover, .nav-item.active {
+      color: var(--text-primary);
+    }
+
+    .nav-item-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .nav-center-btn {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      margin-top: -24px;
+      box-shadow: 0 8px 24px -4px rgba(139, 92, 246, 0.5);
+      border: 3px solid var(--bg-root);
+      cursor: pointer;
+      transition: all 0.2s var(--ease-out-expo);
+    }
+
+    .nav-center-btn:active {
+      transform: scale(0.92);
+      box-shadow: 0 4px 12px -2px rgba(139, 92, 246, 0.3);
+    }
+
+    /* =============================================================
+       TOAST NOTIFICATION
+       ============================================================= */
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-24px);
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-default);
+      color: var(--text-primary);
+      padding: 12px 20px;
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.4s var(--ease-out-expo);
+      z-index: 9999;
+      box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      max-width: calc(100vw - 40px);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .toast-icon {
+      flex-shrink: 0;
+    }
+
+    /* =============================================================
+       ANALYTICS MODAL — Slide-up Bottom Sheet (Mobile) / Center (Desktop)
+       ============================================================= */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.show {
+      display: block;
+      opacity: 1;
+    }
+
+    .analytics-modal {
+      position: fixed;
+      bottom: -100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 520px;
+      max-height: 85vh;
+      overflow-y: auto;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-subtle);
+      border-bottom: none;
+      border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+      padding: 0 20px 40px;
+      z-index: 201;
+      transition: bottom 0.5s var(--ease-out-expo);
+      box-shadow: 0 -20px 60px -10px rgba(0, 0, 0, 0.6);
+    }
+
+    .analytics-modal.show {
+      bottom: 0;
+    }
+
+    .modal-handle-bar {
+      width: 36px;
+      height: 4px;
+      background: var(--border-hover);
+      border-radius: 2px;
+      margin: 12px auto 24px;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .modal-subtitle {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      margin-bottom: 24px;
+      font-weight: 500;
+    }
+
+    .chart-placeholder {
+      height: 180px;
+      background: linear-gradient(180deg, var(--accent-purple-dim) 0%, transparent 100%);
+      border: 1px dashed rgba(139, 92, 246, 0.2);
+      border-radius: var(--radius-lg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .chart-placeholder svg { color: var(--accent-purple); opacity: 0.6; }
+    .chart-placeholder p {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent-purple);
+      opacity: 0.8;
+    }
+
+    /* Modal stat cards */
+    .modal-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .modal-stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+
+    .modal-stat-card .bento-label { margin-bottom: 4px; }
+    .modal-stat-card .bento-value { font-size: 22px; }
+
+    .modal-close-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-default);
+      color: var(--text-secondary);
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .modal-close-btn:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+    }
+
+    /* Desktop: centered modal instead of bottom sheet */
+    @media (min-width: 768px) {
+      .analytics-modal {
+        bottom: auto;
+        top: 50%;
+        transform: translate(-50%, -50%) scale(0.95);
+        border-radius: var(--radius-2xl);
+        border-bottom: 1px solid var(--border-subtle);
+        max-height: 80vh;
+        opacity: 0;
+        transition: all 0.4s var(--ease-out-expo);
+      }
+
+      .analytics-modal.show {
+        bottom: auto;
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+
+      .modal-handle-bar { display: none; }
+    }
+
+    /* =============================================================
+       SKELETON LOADING STATES
+       ============================================================= */
+    .skeleton {
+      background: linear-gradient(90deg,
+        var(--bg-card) 25%,
+        var(--bg-elevated) 50%,
+        var(--bg-card) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: var(--radius-sm);
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .skeleton-value {
+      height: 28px;
+      width: 60%;
+      margin-top: 6px;
+    }
+
+    .skeleton-feed-item {
+      height: 72px;
+      border-radius: var(--radius-lg);
+      margin-bottom: 8px;
+    }
+
+    /* =============================================================
+       RIPPLE EFFECT — Applied via JS to interactive elements
+       ============================================================= */
+    .ripple-host {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      transform: scale(0);
+      animation: rippleExpand 0.6s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes rippleExpand {
+      to { transform: scale(4); opacity: 0; }
+    }
+
+    /* =============================================================
+       CONFIRM MODAL
+       ============================================================= */
+    .confirm-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(6px);
+      z-index: 300;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .confirm-overlay.show {
+      display: flex;
+    }
+
+    .confirm-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 28px 24px;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.6);
+      animation: modalPopIn 0.35s var(--ease-spring);
+    }
+
+    @keyframes modalPopIn {
+      from { transform: scale(0.9) translateY(10px); opacity: 0; }
+      to   { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    .confirm-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+
+    .confirm-icon.green { background: var(--accent-green-dim); color: var(--accent-green); }
+    .confirm-icon.red   { background: var(--accent-red-dim); color: var(--accent-red); }
+
+    .confirm-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      letter-spacing: -0.3px;
+    }
+
+    .confirm-desc {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .confirm-id {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-ghost);
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 20px;
+      display: inline-block;
+      word-break: break-all;
+    }
+
+    .confirm-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .confirm-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+    }
+
+    .confirm-btn.cancel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-default);
+      color: var(--text-secondary);
+    }
+
+    .confirm-btn.cancel:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+    }
+
+    .confirm-btn.execute {
+      color: white;
+    }
+
+    .confirm-btn.execute.green-action {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+
+    .confirm-btn.execute.red-action {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .confirm-btn.execute:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    /* =============================================================
+       UTILITY & ANIMATION CLASSES
+       ============================================================= */
+    .hidden { display: none !important; }
+
+    .anim-slide-up {
+      animation: slideUpFade 0.6s var(--ease-out-expo) both;
+    }
+
+    @keyframes slideUpFade {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes floatOrb {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-8px); }
+    }
+
+    /* Stagger helpers — applied in JS via style attribute */
+    .delay-1 { animation-delay: 0.05s; }
+    .delay-2 { animation-delay: 0.1s; }
+    .delay-3 { animation-delay: 0.15s; }
+    .delay-4 { animation-delay: 0.2s; }
+    .delay-5 { animation-delay: 0.25s; }
+
+    /* =============================================================
+       DESKTOP RESPONSIVE ADJUSTMENTS
+       ============================================================= */
+    @media (min-width: 600px) {
+      .app-container {
+        max-width: 600px;
+        margin: 0 auto;
+        border-left: 1px solid var(--border-subtle);
+        border-right: 1px solid var(--border-subtle);
+      }
+
+      .bottom-nav {
+        max-width: 600px;
+      }
+
+      .bento-grid {
+        gap: 12px;
+        padding: 0 20px;
+      }
+
+      .bento-value { font-size: 32px; }
+
+      .feed { padding: 0 20px; }
+      .tabs-wrapper { padding: 0 20px; }
+      .quick-grid { padding: 0 20px 24px; gap: 10px; }
+    }
   </style>
 </head>
+
 <body>
 
-  <!-- Dynamic Toast Notification -->
-  <div id="toast" class="toast">Action completed.</div>
+  <!-- ═══════════════════════════════════════════════
+       TOAST NOTIFICATION
+       ═══════════════════════════════════════════════ -->
+  <div id="toast" class="toast">
+    <span class="toast-icon" id="toastIcon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    </span>
+    <span id="toastMsg">Action completed.</span>
+  </div>
 
+  <!-- ═══════════════════════════════════════════════
+       CONFIRM DIALOG (Override Actions)
+       ═══════════════════════════════════════════════ -->
+  <div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-card">
+      <div class="confirm-icon" id="confirmIconWrap">
+        <svg id="confirmIconSvg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"></svg>
+      </div>
+      <h3 class="confirm-title" id="confirmTitle">Confirm Override</h3>
+      <p class="confirm-desc" id="confirmDesc">Are you sure you want to proceed?</p>
+      <div class="confirm-id" id="confirmTaskId">ID: --</div>
+      <div class="confirm-actions">
+        <button class="confirm-btn cancel" onclick="closeConfirm()">Cancel</button>
+        <button class="confirm-btn execute" id="confirmExecBtn" onclick="executeConfirmedOverride()">Execute</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       APP CONTAINER
+       ═══════════════════════════════════════════════ -->
   <div class="app-container">
 
-    <!-- 🔐 LOGIN SCREEN -->
+    <!-- ─────────────────────────────────────────────
+         🔐 LOGIN SCREEN
+         ───────────────────────────────────────────── -->
     <div id="loginScreen">
       <div class="login-card">
         <div class="login-logo">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
         </div>
-        <h2 style="font-size: 22px; font-weight: 900; margin-bottom: 8px; letter-spacing: -0.5px;">Syntrix Mainframe</h2>
-        <p style="color: var(--text-muted); font-size: 12px; font-weight: 500;">Provide master credentials to access system.</p>
-        
-        <input type="password" id="adminPassword" class="login-input" placeholder="••••••••" onkeydown="if(event.key==='Enter') loginAdmin()">
-        
-        <button onclick="loginAdmin()" class="login-btn">Authenticate &rarr;</button>
-        <p id="loginError" style="color: var(--accent-red); font-size: 12px; margin-top: 15px; display: none; font-weight: 600;">Authentication Failed.</p>
+        <h2 class="login-title">Syntrix Mainframe</h2>
+        <p class="login-subtitle">Enter master credentials to authenticate.</p>
+
+        <input
+          type="password"
+          id="adminPassword"
+          class="login-input"
+          placeholder="••••••"
+          autocomplete="off"
+          onkeydown="if(event.key==='Enter') loginAdmin()"
+        >
+
+        <button class="login-btn ripple-host" onclick="loginAdmin()">
+          Authenticate →
+        </button>
+
+        <p class="login-error" id="loginError">Authentication denied.</p>
       </div>
     </div>
 
-    <!-- 🎛️ DASHBOARD SCREEN -->
+    <!-- ─────────────────────────────────────────────
+         🎛️ DASHBOARD SCREEN
+         ───────────────────────────────────────────── -->
     <div id="dashboardScreen" style="display: none;">
-      
-      <!-- Top Header -->
-      <div class="header">
+
+      <!-- Glassmorphic Header -->
+      <header class="header">
         <div class="logo-area">
-          <svg class="logo-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-          NETWORK
+          <div class="logo-mark">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          </div>
+          <div class="logo-text">SYNTRIX <span>NETWORK</span></div>
         </div>
-        <div class="header-icons">
-          <svg onclick="loadDashboardData()" style="cursor:pointer;" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <svg onclick="logoutAdmin()" style="cursor:pointer;" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <div class="header-actions">
+          <button class="header-btn" onclick="loadDashboardData()" title="Refresh Data">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+          </button>
+          <button class="header-btn" onclick="logoutAdmin()" title="Sign Out">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </button>
         </div>
-      </div>
+      </header>
 
-      <!-- Network Overview -->
-      <div class="section-head animate-slide-up" style="animation-delay: 0.1s;">
+      <!-- ── Section: Network Overview ── -->
+      <div class="section-head anim-slide-up" style="animation-delay: 0.05s">
         <div class="section-title">Network Overview</div>
-        <div class="live-status"><div class="pulse"></div> Live</div>
+        <div class="live-badge"><div class="live-dot"></div> Live</div>
       </div>
 
-      <!-- Master Card -->
-      <div class="master-card animate-slide-up" style="animation-delay: 0.2s;">
-        <div class="stats-grid">
-          <div class="stat-block">
-            <div class="stat-label">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> 
-              Total Users
-            </div>
-            <div class="stat-val" id="statUsers">--</div>
+      <!-- ── Bento Stats Grid ── -->
+      <div class="bento-grid anim-slide-up" style="animation-delay: 0.1s">
+
+        <!-- Card: Total Users -->
+        <div class="bento-card">
+          <div class="bento-icon purple">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           </div>
-          <div class="stat-block">
-            <div class="stat-label">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-              Submissions
-            </div>
-            <div class="stat-val" id="statTotal">--</div>
-          </div>
-          <div class="stat-block" style="margin-top: 10px;">
-            <div class="stat-label">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              Pending Verification
-            </div>
-            <div class="stat-val" id="statPending">--</div>
-          </div>
-          <div class="stat-block" style="margin-top: 10px;">
-            <div class="stat-label">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-              Tokens Distributed
-            </div>
-            <div class="stat-val" id="statTokens">--</div>
+          <div class="bento-label">Total Users</div>
+          <div class="bento-value" id="statUsers">
+            <div class="skeleton skeleton-value"></div>
           </div>
         </div>
-        
-        <!-- Fully Animated Analytics Button -->
-        <button class="analytics-btn" onclick="toggleAnalyticsModal()">
-          <div style="display:flex; align-items:center; gap:10px;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="8" y2="16"/><line x1="16" y1="14" x2="16" y2="16"/></svg>
-            View Detailed Analytics
+
+        <!-- Card: Submissions -->
+        <div class="bento-card">
+          <div class="bento-icon blue">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           </div>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
+          <div class="bento-label">Submissions</div>
+          <div class="bento-value" id="statTotal">
+            <div class="skeleton skeleton-value"></div>
+          </div>
+        </div>
+
+        <!-- Card: Pending -->
+        <div class="bento-card">
+          <div class="bento-icon yellow">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="bento-label">Pending Review</div>
+          <div class="bento-value" id="statPending">
+            <div class="skeleton skeleton-value"></div>
+          </div>
+          <div class="bento-sub neutral" id="pendingSub">Awaiting AI</div>
+        </div>
+
+        <!-- Card: Tokens -->
+        <div class="bento-card">
+          <div class="bento-icon green">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="12" y1="2" x2="12" y2="6"/></svg>
+          </div>
+          <div class="bento-label">SYNX Distributed</div>
+          <div class="bento-value" id="statTokens">
+            <div class="skeleton skeleton-value"></div>
+          </div>
+          <div class="bento-sub">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+            On-chain
+          </div>
+        </div>
+
+        <!-- Full-width: Analytics Button -->
+        <div class="bento-full">
+          <div class="analytics-trigger ripple-host" onclick="toggleAnalyticsModal()">
+            <div class="at-left">
+              <div class="at-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="8" y2="16"/><line x1="16" y1="10" x2="16" y2="16"/></svg>
+              </div>
+              View Detailed Analytics
+            </div>
+            <div class="at-right">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Feed Header & Tabs -->
-      <div class="section-head animate-slide-up" style="animation-delay: 0.3s; margin-top: 10px;">
-        <div class="section-title">Live Verification Feed</div>
-        <div class="view-all" onclick="loadDashboardData()">View All &gt;</div>
+      <!-- ── Section: Live Feed ── -->
+      <div class="section-head anim-slide-up" style="animation-delay: 0.2s">
+        <div class="section-title">Verification Feed</div>
+        <div style="font-size: 11px; font-weight: 700; color: var(--text-ghost); cursor: pointer;" onclick="loadDashboardData()">Refresh ↻</div>
       </div>
 
-      <div class="tabs animate-slide-up" style="animation-delay: 0.4s;">
-        <div class="tab active" onclick="switchTab('all', this)">All</div>
-        <div class="tab" onclick="switchTab('pending', this)">Pending</div>
-        <div class="tab" onclick="switchTab('verified', this)">Approved</div>
-        <div class="tab" onclick="switchTab('rejected', this)">Rejected</div>
+      <!-- Tabs -->
+      <div class="tabs-wrapper anim-slide-up" style="animation-delay: 0.25s">
+        <div class="tabs" id="tabsBar">
+          <div class="tab active" data-filter="all" onclick="switchTab('all', this)">All <span class="tab-count" id="countAll"></span></div>
+          <div class="tab" data-filter="pending" onclick="switchTab('pending', this)">Pending <span class="tab-count" id="countPending"></span></div>
+          <div class="tab" data-filter="verified" onclick="switchTab('verified', this)">Approved <span class="tab-count" id="countApproved"></span></div>
+          <div class="tab" data-filter="rejected" onclick="switchTab('rejected', this)">Rejected <span class="tab-count" id="countRejected"></span></div>
+        </div>
       </div>
 
-      <!-- Dynamic Feed Container -->
-      <div class="feed-container" id="feedContainer">
-        <div style="text-align: center; color: var(--text-muted); font-size: 13px; padding: 20px;">Fetching secure uplink...</div>
+      <!-- Feed Container -->
+      <div class="feed" id="feedContainer">
+        <!-- Skeleton loading placeholders -->
+        <div class="skeleton skeleton-feed-item"></div>
+        <div class="skeleton skeleton-feed-item" style="opacity: 0.7"></div>
+        <div class="skeleton skeleton-feed-item" style="opacity: 0.4"></div>
       </div>
-      
-      <!-- Quick Actions -->
-      <div class="section-head" style="margin-top: 20px;">
+
+      <!-- ── Section: Quick Actions ── -->
+      <div class="section-head" style="margin-top: 16px;">
         <div class="section-title">Quick Actions</div>
       </div>
+
       <div class="quick-grid">
-        <div class="quick-box" onclick="showToast('Select a task from the feed to Force Approve.')">
-          <svg class="quick-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-          <div class="quick-text">Force<br>Approve</div>
+        <div class="quick-card ripple-host" onclick="showToast('Select a task from the feed to Force Approve.', 'info')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <div class="quick-label">Force<br>Approve</div>
         </div>
-        <div class="quick-box" onclick="showToast('Select a task from the feed to Force Reject.')">
-          <svg class="quick-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-          <div class="quick-text">Force<br>Reject</div>
+        <div class="quick-card ripple-host" onclick="showToast('Select a task from the feed to Force Reject.', 'info')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+          <div class="quick-label">Force<br>Reject</div>
         </div>
-        <div class="quick-box" onclick="loadDashboardData(); showToast('Re-running AI checks...');">
-          <svg class="quick-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 22v-6h6"/></svg>
-          <div class="quick-text">Re-run<br>AI</div>
+        <div class="quick-card ripple-host" onclick="loadDashboardData(); showToast('Re-running data sync...', 'info')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+          <div class="quick-label">Re-sync<br>Feed</div>
         </div>
-        <div class="quick-box" onclick="showToast('User Lookup tool coming soon.')">
-          <svg class="quick-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          <div class="quick-text">User<br>Lookup</div>
+        <div class="quick-card ripple-host" onclick="showToast('User lookup coming soon.', 'info')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <div class="quick-label">User<br>Lookup</div>
         </div>
       </div>
 
+    </div><!-- /dashboardScreen -->
+
+    <!-- ── Bottom Nav ── -->
+    <nav class="bottom-nav" id="bottomNav" style="display: none;">
+      <div class="nav-item active" onclick="setNavActive(this); showToast('Dashboard', 'info')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span class="nav-item-label">Dashboard</span>
+      </div>
+      <div class="nav-center-btn" onclick="loadDashboardData(); showToast('Syncing feed...', 'info')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+      </div>
+      <div class="nav-item" onclick="setNavActive(this); logoutAdmin()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span class="nav-item-label">Sign Out</span>
+      </div>
+    </nav>
+
+  </div><!-- /app-container -->
+
+  <!-- ═══════════════════════════════════════════════
+       ANALYTICS MODAL
+       ═══════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="modalOverlay" onclick="toggleAnalyticsModal()"></div>
+  <div class="analytics-modal" id="analyticsModal">
+    <div class="modal-handle-bar"></div>
+    <h3 class="modal-title">System Analytics</h3>
+    <p class="modal-subtitle">Real-time performance metrics for the Syntrix verification pipeline.</p>
+
+    <!-- Chart Placeholder -->
+    <div class="chart-placeholder">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+      </svg>
+      <p>Chart.js integration ready</p>
     </div>
 
-    <!-- 📱 INTERACTIVE BOTTOM NAV -->
-    <div class="bottom-nav">
-      <div class="nav-icon active" onclick="navAction(this, 'Menu Opened')">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    <!-- Modal Stats -->
+    <div class="modal-stats">
+      <div class="modal-stat-card">
+        <div class="bento-label">Approval Rate</div>
+        <div class="bento-value" id="modalApprovalRate">--%</div>
       </div>
-      
-      <div class="nav-center-glow" onclick="navAction(this, 'AI Copilot Activated')">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      <div class="modal-stat-card">
+        <div class="bento-label">Rejection Rate</div>
+        <div class="bento-value" id="modalRejectionRate">--%</div>
       </div>
-      
-      <div class="nav-icon" onclick="navAction(this, 'Profile Accessed')">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <div class="modal-stat-card">
+        <div class="bento-label">Avg Process Time</div>
+        <div class="bento-value" style="font-size: 18px;">~20s</div>
+      </div>
+      <div class="modal-stat-card">
+        <div class="bento-label">AI Engine</div>
+        <div class="bento-value" style="font-size: 14px; color: var(--accent-green);">Gemini 2.5</div>
       </div>
     </div>
 
-    <!-- 📊 ANALYTICS SLIDE-UP MODAL -->
-    <div class="modal-overlay" id="modalOverlay" onclick="toggleAnalyticsModal()"></div>
-    <div class="analytics-modal" id="analyticsModal">
-      <div class="modal-handle"></div>
-      <h3 class="modal-title">System Analytics</h3>
-      <div class="chart-placeholder">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        Streaming Live Database Metrics...
-      </div>
-      <button class="login-btn" onclick="toggleAnalyticsModal()">Close Panel</button>
-    </div>
-
+    <button class="modal-close-btn" onclick="toggleAnalyticsModal()">Close Panel</button>
   </div>
 
+  <!-- ═══════════════════════════════════════════════
+       JAVASCRIPT — Core Logic
+       ═══════════════════════════════════════════════ -->
   <script>
-    // =======================================================
-    // ⚠️ HARDCODED SECURE BACKEND LINK
-    // =======================================================
+    // =============================================================
+    // ⚡ BACKEND URL — CONFIGURE FOR DEPLOYMENT
+    // =============================================================
     const BACKEND_URL = window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1")
       ? "http://localhost:5000"
-      : "https://syntrix-airdrop.onrender.com"; // CONNECTED SECURELY TO YOUR LIVE SERVER
+      : "https://syntrix-airdrop.onrender.com";
 
+    // =============================================================
+    // STATE MANAGEMENT
+    // =============================================================
     let sessionToken = localStorage.getItem("syntrix_admin_key");
-    let allSubmissionsData = [];
-    let currentFilterState = 'all';
+    let allSubmissions = [];        // Raw API data
+    let currentFilter  = 'all';     // Active tab filter
+    let pendingOverride = null;     // { id, newStatus, reason }
 
-    // UI Utilities
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      t.innerText = msg;
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 3000);
-    }
-
-    function toggleAnalyticsModal() {
-      const overlay = document.getElementById('modalOverlay');
-      const modal = document.getElementById('analyticsModal');
-      
-      if (modal.classList.contains('show')) {
-        modal.classList.remove('show');
-        overlay.classList.remove('show');
-        setTimeout(() => overlay.style.display = 'none', 300);
-      } else {
-        overlay.style.display = 'block';
-        setTimeout(() => {
-          overlay.classList.add('show');
-          modal.classList.add('show');
-        }, 10);
-      }
-    }
-
-    function navAction(el, msg) {
-      document.querySelectorAll('.nav-icon').forEach(n => n.classList.remove('active'));
-      if(el.classList.contains('nav-icon')) el.classList.add('active');
-      showToast(msg);
-    }
-
-    // Init Check
+    // =============================================================
+    // INITIALIZATION — Check for existing session
+    // =============================================================
     if (sessionToken) {
-      document.getElementById('loginScreen').style.display = 'none';
-      document.getElementById('dashboardScreen').style.display = 'block';
+      showDashboard();
       loadDashboardData();
     }
 
-    // Login Logic
+    // =============================================================
+    // UI UTILITIES
+    // =============================================================
+
+    /**
+     * Show a toast notification with optional type styling.
+     * @param {string} msg   - Message text
+     * @param {string} type  - 'success' | 'error' | 'info'
+     */
+    function showToast(msg, type = 'success') {
+      const toast = document.getElementById('toast');
+      const toastIcon = document.getElementById('toastIcon');
+      const toastMsg  = document.getElementById('toastMsg');
+
+      // Icon based on type
+      const icons = {
+        success: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+        error:   '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+        info:    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
+      };
+
+      toastIcon.innerHTML = icons[type] || icons.info;
+      toastMsg.textContent = msg;
+      toast.classList.add('show');
+
+      clearTimeout(toast._hideTimer);
+      toast._hideTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    /**
+     * Relative time formatter (e.g., "5 min ago").
+     */
+    function timeAgo(dateString) {
+      const seconds = Math.floor((Date.now() - new Date(dateString).getTime()) / 1000);
+      if (seconds < 10)   return 'just now';
+      if (seconds < 60)   return seconds + 's ago';
+      const minutes = Math.floor(seconds / 60);
+      if (minutes < 60)   return minutes + 'min ago';
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24)     return hours + 'h ago';
+      return Math.floor(hours / 24) + 'd ago';
+    }
+
+    /**
+     * Truncates an email for display.
+     */
+    function truncateEmail(email) {
+      if (!email) return 'Unknown';
+      if (email.length <= 22) return email;
+      return email.substring(0, 12) + '…' + email.substring(email.length - 8);
+    }
+
+    /**
+     * Animated counter — smoothly counts up a number in a DOM element.
+     */
+    function animateCounter(element, target, duration = 800) {
+      const start = parseInt(element.textContent) || 0;
+      if (start === target) { element.textContent = target.toLocaleString(); return; }
+
+      const startTime = performance.now();
+      function tick(now) {
+        const progress = Math.min((now - startTime) / duration, 1);
+        // Ease out cubic
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.round(start + (target - start) * eased);
+        element.textContent = current.toLocaleString();
+        if (progress < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+
+    /**
+     * Ripple effect — call on any element with .ripple-host class.
+     */
+    document.addEventListener('click', (e) => {
+      const host = e.target.closest('.ripple-host');
+      if (!host) return;
+
+      const ripple = document.createElement('span');
+      ripple.classList.add('ripple');
+      const rect = host.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      ripple.style.width = ripple.style.height = size + 'px';
+      ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+      ripple.style.top  = (e.clientY - rect.top - size / 2) + 'px';
+      host.appendChild(ripple);
+      ripple.addEventListener('animationend', () => ripple.remove());
+    });
+
+    /**
+     * Set active nav item styling.
+     */
+    function setNavActive(el) {
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      if (el.classList.contains('nav-item')) el.classList.add('active');
+    }
+
+    // =============================================================
+    // SCREEN TRANSITIONS
+    // =============================================================
+
+    function showDashboard() {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('dashboardScreen').style.display = 'block';
+      document.getElementById('bottomNav').style.display = 'flex';
+    }
+
+    function showLogin() {
+      document.getElementById('loginScreen').style.display = 'flex';
+      document.getElementById('dashboardScreen').style.display = 'none';
+      document.getElementById('bottomNav').style.display = 'none';
+    }
+
+    // =============================================================
+    // ANALYTICS MODAL
+    // =============================================================
+
+    function toggleAnalyticsModal() {
+      const overlay = document.getElementById('modalOverlay');
+      const modal   = document.getElementById('analyticsModal');
+
+      if (modal.classList.contains('show')) {
+        modal.classList.remove('show');
+        overlay.classList.remove('show');
+        // Allow CSS transition to complete before hiding
+        setTimeout(() => { if (!modal.classList.contains('show')) overlay.style.display = 'none'; }, 400);
+      } else {
+        overlay.style.display = 'block';
+        // Force reflow, then animate
+        requestAnimationFrame(() => {
+          overlay.classList.add('show');
+          modal.classList.add('show');
+        });
+      }
+    }
+
+    // =============================================================
+    // AUTHENTICATION
+    // =============================================================
+
     async function loginAdmin() {
       const password = document.getElementById('adminPassword').value.trim();
-      const errorText = document.getElementById('loginError');
-      
+      const errorEl  = document.getElementById('loginError');
+
+      if (!password) {
+        errorEl.textContent = 'Please enter a password.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      errorEl.style.display = 'none';
+
       try {
         const res = await fetch(`${BACKEND_URL}/api/admin/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ password })
         });
+
         const data = await res.json();
-        
+
         if (data.success) {
           sessionToken = data.token;
           localStorage.setItem("syntrix_admin_key", sessionToken);
-          document.getElementById('loginScreen').style.display = 'none';
-          document.getElementById('dashboardScreen').style.display = 'block';
+          showDashboard();
           loadDashboardData();
-          showToast("Mainframe Connection Established");
+          showToast('Mainframe connection established.', 'success');
         } else {
-          errorText.innerText = data.error || "Authentication Denied.";
-          errorText.style.display = 'block';
+          errorEl.textContent = data.error || 'Authentication denied.';
+          errorEl.style.display = 'block';
         }
       } catch (err) {
-        errorText.innerText = "Network Error. Target unreachable.";
-        errorText.style.display = 'block';
+        errorEl.textContent = 'Network error — target unreachable.';
+        errorEl.style.display = 'block';
       }
     }
 
     function logoutAdmin() {
       localStorage.removeItem("syntrix_admin_key");
-      location.reload();
+      sessionToken = null;
+      allSubmissions = [];
+      showLogin();
+      showToast('Session terminated.', 'info');
     }
 
-    // Time Formatter
-    function timeAgo(dateString) {
-      const seconds = Math.floor((new Date() - new Date(dateString)) / 1000);
-      if (seconds < 60) return seconds + " sec ago";
-      const minutes = Math.floor(seconds / 60);
-      if (minutes < 60) return minutes + " min ago";
-      const hours = Math.floor(minutes / 60);
-      if (hours < 24) return hours + " hrs ago";
-      return Math.floor(hours / 24) + " d ago";
-    }
+    // =============================================================
+    // DATA FETCHING
+    // =============================================================
 
-    // Shorten Email/Wallet
-    function formatUser(email) {
-      if(!email) return "Unknown";
-      if(email.length > 20) return email.substring(0, 10) + '...' + email.substring(email.length - 6);
-      return email;
-    }
-
-    // Fetch and Load Data
     async function loadDashboardData() {
       try {
-        const statsRes = await fetch(`${BACKEND_URL}/api/admin/stats`, { headers: { 'x-admin-key': sessionToken } });
+        // ── Fetch Stats ──
+        const statsRes = await fetch(`${BACKEND_URL}/api/admin/stats`, {
+          headers: { 'x-admin-key': sessionToken }
+        });
+
+        if (statsRes.status === 403 || statsRes.status === 401) {
+          logoutAdmin();
+          showToast('Session expired. Please re-authenticate.', 'error');
+          return;
+        }
+
         const statsData = await statsRes.json();
-        
+
         if (statsData.success) {
-          document.getElementById('statTotal').innerText = (statsData.stats.totalSubmissions || 0).toLocaleString();
-          document.getElementById('statPending').innerText = (statsData.stats.pendingSubmissions || 0).toLocaleString();
-          document.getElementById('statUsers').innerText = (statsData.stats.totalUsers || 0).toLocaleString();
-          document.getElementById('statTokens').innerText = (statsData.stats.totalTokens || 0).toLocaleString();
+          const s = statsData.stats;
+          animateCounter(document.getElementById('statUsers'),   s.totalUsers || 0);
+          animateCounter(document.getElementById('statTotal'),   s.totalSubmissions || 0);
+          animateCounter(document.getElementById('statPending'), s.pendingSubmissions || 0);
+          animateCounter(document.getElementById('statTokens'),  s.totalTokens || 0);
+
+          // Update pending sub-text
+          const pendingCount = s.pendingSubmissions || 0;
+          document.getElementById('pendingSub').textContent = pendingCount > 0
+            ? `${pendingCount} in queue`
+            : 'Queue clear';
         }
 
-        const tableRes = await fetch(`${BACKEND_URL}/api/admin/submissions`, { headers: { 'x-admin-key': sessionToken } });
-        const tableData = await tableRes.json();
-        
-        if (tableData.success) {
-          allSubmissionsData = tableData.submissions;
-          renderFeed(currentFilterState);
+        // ── Fetch Submissions ──
+        const subRes = await fetch(`${BACKEND_URL}/api/admin/submissions`, {
+          headers: { 'x-admin-key': sessionToken }
+        });
+
+        const subData = await subRes.json();
+
+        if (subData.success) {
+          allSubmissions = subData.submissions || [];
+          updateTabCounts();
+          renderFeed(currentFilter);
+          updateModalStats();
         }
+
       } catch (err) {
-        if (err.message.includes("403")) logoutAdmin(); 
+        console.error('Dashboard data fetch error:', err);
+        showToast('Failed to sync data.', 'error');
       }
     }
 
-    // Tab Switching Logic (Fixes hallucination bug)
-    function switchTab(filterType, element) {
-      document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
-      element.classList.add('active');
-      currentFilterState = filterType;
-      renderFeed(filterType);
-    }
+    // =============================================================
+    // TAB COUNTS & FILTERING
+    // =============================================================
 
-    // Render Feed with Animations
-    function renderFeed(filterType) {
-      const container = document.getElementById('feedContainer');
-      container.innerHTML = ""; // Clear old data completely to prevent ghosting
+    function getFilteredSubmissions(filter) {
+      if (filter === 'all') return allSubmissions;
 
-      let filtered = allSubmissionsData;
-      
-      // Strict filtering logic
-      if (filterType === 'verified') {
-        filtered = allSubmissionsData.filter(s => s.status === 'verified' || s.status === 'approved' || s.status === 'success');
-      } else if (filterType === 'rejected') {
-        filtered = allSubmissionsData.filter(s => s.status === 'rejected' || s.status === 'fraud' || s.status === 'rejected_pii');
-      } else if (filterType === 'pending') {
-        filtered = allSubmissionsData.filter(s => s.status === 'pending');
-      }
-
-      if (filtered.length === 0) {
-        container.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 13px; padding: 30px;">No matching records.</div>`;
-        return;
-      }
-
-      filtered.forEach((sub, index) => {
-        let badgeClass = 'pill-pending';
-        let badgeText = 'PENDING';
-        
-        if (sub.status === 'verified' || sub.status === 'approved' || sub.status === 'success') {
-          badgeClass = 'pill-approved'; badgeText = 'APPROVED';
-        } else if (sub.status === 'rejected' || sub.status === 'fraud' || sub.status === 'rejected_pii') {
-          badgeClass = 'pill-rejected'; badgeText = 'REJECTED';
-        }
-
-        const timeString = timeAgo(sub.created_at);
-        const iconSvg = sub.task_type === 'selfie' 
-          ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`
-          : `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`;
-
-        const imgSource = sub.storage_url ? sub.storage_url : `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="%231f1f23"><rect width="48" height="48"/></svg>`;
-
-        // Action Buttons Logic
-        let actionHtml = `
-          <button class="btn-action btn-view" onclick="window.open('${sub.storage_url || '#'}', '_blank')" title="View Image">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        `;
-
-        if (sub.status === 'pending') {
-          // If Pending: Show an Approve (check) button
-          actionHtml += `
-            <button class="btn-action btn-approve" onclick="overrideStatus('${sub.id}', 'verified')" title="Force Approve">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-            </button>
-          `;
-        } else {
-          // If Already processed (Approved or Rejected): Show a Refresh/Reverse button
-          const reverseStatus = (sub.status === 'verified' || sub.status === 'approved' || sub.status === 'success') ? 'rejected' : 'verified';
-          const reverseClass = reverseStatus === 'rejected' ? 'btn-reject' : 'btn-approve';
-          actionHtml += `
-            <button class="btn-action ${reverseClass}" onclick="overrideStatus('${sub.id}', '${reverseStatus}')" title="Reverse AI Decision">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 22v-6h6"/></svg>
-            </button>
-          `;
-        }
-
-        // Apply staggered animation delay
-        const delay = index * 0.08;
-
-        container.innerHTML += `
-          <div class="feed-item animate-feed-item" style="animation-delay: ${delay}s;">
-            <div class="feed-img-wrapper">
-              <img src="${imgSource}" class="feed-img" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'48\\' height=\\'48\\' fill=\\'%231a1a1f\\'><rect width=\\'48\\' height=\\'48\\'/></svg>'">
-              <div class="feed-type-icon">${iconSvg}</div>
-            </div>
-            
-            <div class="feed-info">
-              <div class="feed-title" style="text-transform: capitalize;">${sub.task_type} Submission</div>
-              <div class="feed-user">${sub.email}</div>
-              <div class="feed-time">${timeString}</div>
-            </div>
-            
-            <div class="pill ${badgeClass}">${badgeText}</div>
-            
-            <div class="action-group">
-              ${actionHtml}
-            </div>
-          </div>
-        `;
+      return allSubmissions.filter(s => {
+        const st = (s.status || '').toLowerCase();
+        if (filter === 'pending')  return st === 'pending';
+        if (filter === 'verified') return st === 'verified' || st === 'approved' || st === 'success';
+        if (filter === 'rejected') return st === 'rejected' || st === 'fraud' || st === 'rejected_pii';
+        return true;
       });
     }
 
-    // Force Override Logic
-    async function overrideStatus(id, newStatus) {
-      if (!confirm(`Force override status to ${newStatus.toUpperCase()}?`)) return;
-      
-      const reason = newStatus === 'verified' ? "Manually Approved via God Mode" : "Manually Rejected via God Mode";
-      showToast("Executing Override...");
-      
+    function updateTabCounts() {
+      const counts = {
+        all:      allSubmissions.length,
+        pending:  getFilteredSubmissions('pending').length,
+        approved: getFilteredSubmissions('verified').length,
+        rejected: getFilteredSubmissions('rejected').length
+      };
+
+      const setCount = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val > 0 ? val : '';
+      };
+
+      setCount('countAll',      counts.all);
+      setCount('countPending',  counts.pending);
+      setCount('countApproved', counts.approved);
+      setCount('countRejected', counts.rejected);
+    }
+
+    function switchTab(filter, tabEl) {
+      // Update active tab styling
+      document.querySelectorAll('#tabsBar .tab').forEach(t => t.classList.remove('active'));
+      tabEl.classList.add('active');
+
+      currentFilter = filter;
+      renderFeed(filter);
+    }
+
+    // =============================================================
+    // FEED RENDERING
+    // =============================================================
+
+    function renderFeed(filter) {
+      const container = document.getElementById('feedContainer');
+      const filtered  = getFilteredSubmissions(filter);
+
+      // Clear existing content
+      container.innerHTML = '';
+
+      // Empty state
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="feed-empty">
+            <div class="feed-empty-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 15h8"/><circle cx="9" cy="9" r="1"/><circle cx="15" cy="9" r="1"/></svg>
+            </div>
+            No ${filter === 'all' ? '' : filter} submissions found.
+          </div>`;
+        return;
+      }
+
+      // Build feed items with staggered animation delays
+      filtered.forEach((sub, i) => {
+        // Determine status pill class and label
+        let pillClass = 'pill-pending';
+        let pillText  = 'PENDING';
+        const st = (sub.status || '').toLowerCase();
+
+        if (st === 'verified' || st === 'approved' || st === 'success') {
+          pillClass = 'pill-approved';
+          pillText  = 'APPROVED';
+        } else if (st === 'rejected' || st === 'fraud' || st === 'rejected_pii') {
+          pillClass = 'pill-rejected';
+          pillText  = 'REJECTED';
+        }
+
+        // Task type icon
+        const typeIcon = sub.task_type === 'selfie'
+          ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'
+          : '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+
+        // Image source — use storage_url if available, else a placeholder SVG
+        const imgSrc = sub.storage_url || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect width='48' height='48' fill='%23111114'/%3E%3C/svg%3E";
+
+        // Build action buttons based on status
+        let actionsHTML = `
+          <button class="btn-action view" onclick="window.open('${sub.storage_url || '#'}','_blank')" title="View Image">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>`;
+
+        if (st === 'pending') {
+          // Pending: show approve + reject
+          actionsHTML += `
+            <button class="btn-action approve" onclick="requestOverride('${sub.id}','verified')" title="Force Approve">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            </button>
+            <button class="btn-action reject" onclick="requestOverride('${sub.id}','rejected')" title="Force Reject">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>`;
+        } else {
+          // Already processed: allow reversal
+          const reverseStatus = (st === 'verified' || st === 'approved' || st === 'success') ? 'rejected' : 'verified';
+          const reverseClass  = reverseStatus === 'rejected' ? 'reject' : 'approve';
+          actionsHTML += `
+            <button class="btn-action ${reverseClass}" onclick="requestOverride('${sub.id}','${reverseStatus}')" title="Reverse Decision">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/></svg>
+            </button>`;
+        }
+
+        // Stagger delay — each item gets an additional 60ms
+        const delay = i * 0.06;
+
+        const itemHTML = `
+          <div class="feed-item" style="animation-delay: ${delay}s;">
+            <div class="feed-thumb">
+              <img src="${imgSrc}" alt="Submission" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2748%27 height=%2748%27%3E%3Crect width=%2748%27 height=%2748%27 fill=%27%23111114%27/%3E%3C/svg%3E'">
+              <div class="feed-type-badge">${typeIcon}</div>
+            </div>
+            <div class="feed-info">
+              <div class="feed-title">${sub.task_type || 'Unknown'} Submission</div>
+              <div class="feed-user">${truncateEmail(sub.email)}</div>
+              <div class="feed-time">${timeAgo(sub.created_at)}</div>
+            </div>
+            <div class="status-pill ${pillClass}">${pillText}</div>
+            <div class="actions">${actionsHTML}</div>
+          </div>`;
+
+        container.insertAdjacentHTML('beforeend', itemHTML);
+      });
+    }
+
+    // =============================================================
+    // OVERRIDE SYSTEM (with Confirmation Modal)
+    // =============================================================
+
+    /**
+     * Opens the confirm dialog before executing an override.
+     */
+    function requestOverride(id, newStatus) {
+      const overlay  = document.getElementById('confirmOverlay');
+      const iconWrap = document.getElementById('confirmIconWrap');
+      const iconSvg  = document.getElementById('confirmIconSvg');
+      const title    = document.getElementById('confirmTitle');
+      const desc     = document.getElementById('confirmDesc');
+      const taskId   = document.getElementById('confirmTaskId');
+      const execBtn  = document.getElementById('confirmExecBtn');
+
+      if (newStatus === 'verified') {
+        iconWrap.className = 'confirm-icon green';
+        iconSvg.innerHTML  = '<polyline points="20 6 9 17 4 12"/>';
+        title.textContent  = 'Force Approve';
+        desc.textContent   = 'This will mark the submission as verified and trigger reward processing.';
+        execBtn.className  = 'confirm-btn execute green-action';
+        execBtn.textContent = 'Approve';
+      } else {
+        iconWrap.className = 'confirm-icon red';
+        iconSvg.innerHTML  = '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>';
+        title.textContent  = 'Force Reject';
+        desc.textContent   = 'This will reject the submission and remove the uploaded image from storage.';
+        execBtn.className  = 'confirm-btn execute red-action';
+        execBtn.textContent = 'Reject';
+      }
+
+      taskId.textContent = 'Task: ' + id.substring(0, 20) + (id.length > 20 ? '…' : '');
+
+      pendingOverride = {
+        id,
+        newStatus,
+        reason: newStatus === 'verified'
+          ? 'Manually Approved via God Mode'
+          : 'Manually Rejected via God Mode'
+      };
+
+      overlay.classList.add('show');
+    }
+
+    function closeConfirm() {
+      document.getElementById('confirmOverlay').classList.remove('show');
+      pendingOverride = null;
+    }
+
+    /**
+     * Executes the confirmed override via the backend API.
+     */
+    async function executeConfirmedOverride() {
+      if (!pendingOverride) return;
+
+      closeConfirm();
+      showToast('Executing override…', 'info');
+
       try {
         const res = await fetch(`${BACKEND_URL}/api/admin/override`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-admin-key': sessionToken },
-          body: JSON.stringify({ id, newStatus, reason })
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-key': sessionToken
+          },
+          body: JSON.stringify(pendingOverride)
         });
-        
+
         const data = await res.json();
+
         if (data.success) {
-          showToast("Status Overridden!");
-          loadDashboardData(); 
+          showToast(`Status overridden to ${pendingOverride.newStatus.toUpperCase()}.`, 'success');
+          loadDashboardData(); // Refresh everything
         } else {
-          showToast("Override Failed: " + (data.error || "Unknown Error"));
+          showToast('Override failed: ' + (data.error || 'Unknown error.'), 'error');
         }
       } catch (err) {
-        showToast("Network Error during override.");
+        showToast('Network error during override.', 'error');
       }
+
+      pendingOverride = null;
     }
 
-    // Background poller
+    // =============================================================
+    // MODAL ANALYTICS — Computed from submission data
+    // =============================================================
+
+    function updateModalStats() {
+      if (allSubmissions.length === 0) return;
+
+      const approved = getFilteredSubmissions('verified').length;
+      const rejected = getFilteredSubmissions('rejected').length;
+      const total    = allSubmissions.length;
+
+      const approvalRate  = total > 0 ? Math.round((approved / total) * 100) : 0;
+      const rejectionRate = total > 0 ? Math.round((rejected / total) * 100) : 0;
+
+      document.getElementById('modalApprovalRate').textContent  = approvalRate + '%';
+      document.getElementById('modalRejectionRate').textContent = rejectionRate + '%';
+    }
+
+    // =============================================================
+    // BACKGROUND AUTO-REFRESH (every 15 seconds)
+    // =============================================================
     setInterval(() => {
-      if (document.getElementById('dashboardScreen').style.display === 'block') {
+      if (document.getElementById('dashboardScreen').style.display === 'block' && sessionToken) {
         loadDashboardData();
       }
     }, 15000);
+
   </script>
 </body>
 </html>
