@@ -3,7 +3,7 @@
 // Contains the full multilingual survey question registry matrix (6-Section Array)
 // =========================================================================
 
-var surveySections = [
+const surveySections = [
   {
     title: "1. Financial Power & Demographics",
     questions: [
@@ -18,10 +18,10 @@ var surveySections = [
         question: "Which city tier are you from?",
         type: "radio",
         options: [
-          "🏙️ Metro City (Mumbai, Delhi, Bengaluru, Chennai)",
-          "🌆 Large City (Ahmedabad, Surat, Jaipur, Vadodara)",
-          "🏘️ Small City / District City (Rajkot, Udaipur, Bhavnagar, Kota)",
-          "🌿 Town / Village (Kalol, Gangapur and similar areas)"
+          "Metro City (Mumbai, Delhi, Bengaluru, Chennai)",
+          "Large City (Ahmedabad, Surat, Jaipur, Vadodara)",
+          "Small City / District City (Rajkot, Udaipur, Bhavnagar, Kota)",
+          "Town / Village (Kalol, Gangapur and similar areas)"
         ]
       },
       {
@@ -178,6 +178,10 @@ var surveySections = [
   }
 ];
 
+// =========================================================================
+// PERSONA CALCULATION ENGINE
+// =========================================================================
+
 function calculateConsumerPsychologyBadge() {
   let scores = { Analyzer: 0, Stylist: 0, Hedger: 0, Native: 0 };
   const activeAnswers = typeof answers !== "undefined" ? answers : (window.answers || {});
@@ -239,3 +243,74 @@ function calculateConsumerPsychologyBadge() {
   
   return tieBreaker;
 }
+
+// =========================================================================
+// MULTI-LANGUAGE TRANSLATION DICTIONARY
+// =========================================================================
+
+const translations = {
+  en: {
+    mainTitle: "Syntrix Web3 Verification",
+    mainSubtitle: "Complete tasks to earn SYNX tokens.",
+    emailSectionTitle: "Enter your email to begin",
+    btnStart: "Send Verification Code &rarr;",
+    previous: "Back",
+    next: "Next",
+    submit: "Submit to AI Verification",
+    claimTitle: "Claim Your Rewards",
+    rewardSubtitle: "Transfer SYNX directly to your wallet.",
+    metaMaskLabel: "Connect MetaMask",
+    manualLabel: "Or Enter Wallet Manually",
+    btnExecute: "Execute Claim",
+    referralTitle: "Refer & Earn",
+    referralSub: "Share your link to earn 10 SYNX per active user.",
+    btnCopy: "Copy Link",
+    modalTitle: "Account Recovery",
+    modalSub: "Enter your email to retrieve your profile.",
+    modalDetailsTitle: "What is recovered?",
+    modalDetails1: "XP & Persona Badges",
+    modalDetails2: "Pending SYNX Tokens",
+    modalDetails3: "Referral Network Data",
+    modalInputLabel: "Account Email",
+    btnCancel: "Cancel",
+    btnSearch: "Search Ledger",
+    validationRequired: "Please answer all questions before continuing.",
+    submitting: "⏳ Storing survey data metrics across secure registers...",
+    claiming: "⚡ Appending whitelist configuration parameters...",
+    checkingLedger: "⏳ Setting up your exclusive premium experience..."
+  },
+  hi: {
+    mainTitle: "सिंट्रिक्स वेब3 सत्यापन",
+    mainSubtitle: "SYNX टोकन अर्जित करने के लिए कार्य पूरे करें।",
+    emailSectionTitle: "शुरू करने के लिए अपना ईमेल दर्ज करें",
+    btnStart: "सत्यापन कोड भेजें &rarr;",
+    previous: "पीछे",
+    next: "अगला",
+    submit: "एआई सत्यापन के लिए सबमिट करें",
+    claimTitle: "अपने पुरस्कारों का दावा करें",
+    rewardSubtitle: "SYNX को सीधे अपने वॉलेट में ट्रांसफर करें।",
+    metaMaskLabel: "मेटामास्क कनेक्ट करें",
+    manualLabel: "या मैन्युअल रूप से वॉलेट दर्ज करें",
+    btnExecute: "दावा निष्पादित करें",
+    referralTitle: "रेफर करें और कमाएं",
+    referralSub: "प्रति सक्रिय उपयोगकर्ता 10 SYNX कमाने के लिए अपना लिंक साझा करें।",
+    btnCopy: "लिंक कॉपी करें"
+  },
+  hinglish: {
+    mainTitle: "Syntrix Web3 Verification",
+    mainSubtitle: "Tasks complete karein aur SYNX tokens kamayein.",
+    emailSectionTitle: "Start karne ke liye email enter karein",
+    btnStart: "Verification Code Bhejein &rarr;",
+    previous: "Peeche",
+    next: "Aage",
+    submit: "AI Verification ke liye Submit karein",
+    claimTitle: "Apne Rewards Claim Karein",
+    rewardSubtitle: "SYNX ko seedhe apne wallet mein transfer karein.",
+    metaMaskLabel: "MetaMask Connect Karein",
+    manualLabel: "Ya Manually Wallet Enter Karein",
+    btnExecute: "Claim Execute Karein",
+    referralTitle: "Refer Karein & Kamayein",
+    referralSub: "Har active user par 10 SYNX kamane ke liye link share karein.",
+    btnCopy: "Link Copy Karein"
+  }
+};
