@@ -1391,8 +1391,8 @@ body::before {
           onkeydown="if(event.key==='Enter') loginAdmin()"
         >
 
-        <button class="login-btn ripple-host" onclick="loginAdmin()">
-          Authenticate &rarr;
+        <button type="button" id="loginBtn" class="login-btn ripple-host" onclick="loginAdmin()">
+          AUTHENTICATE &rarr;
         </button>
 
         <p class="login-error" id="loginError">Authentication denied.</p>
@@ -1773,6 +1773,7 @@ body::before {
     async function loginAdmin() {
       const password = document.getElementById('adminPassword').value.trim();
       const errorEl  = document.getElementById('loginError');
+      const loginBtn = document.getElementById('loginBtn');
 
       if (!password) {
         errorEl.textContent = 'Please enter a password.';
@@ -1780,30 +1781,53 @@ body::before {
         return;
       }
 
+      // -- Instant visual feedback --
       errorEl.style.display = 'none';
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'AUTHENTICATING...';
+      loginBtn.style.opacity = '0.7';
+      loginBtn.style.cursor = 'wait';
 
       try {
-        const res = await fetch(`${BACKEND_URL}/api/admin/login`, {
+        const res = await fetch(BACKEND_URL + '/api/admin/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ password })
+          body: JSON.stringify({ password: password })
         });
+
+        // Handle non-OK HTTP status codes explicitly
+        if (!res.ok) {
+          const errText = await res.text().catch(function() { return 'Status ' + res.status; });
+          throw new Error('Server responded with ' + res.status + ': ' + errText);
+        }
 
         const data = await res.json();
 
         if (data.success) {
           sessionToken = data.token;
-          localStorage.setItem("syntrix_admin_key", sessionToken);
+          localStorage.setItem('syntrix_admin_key', sessionToken);
           showDashboard();
           loadDashboardData();
           showToast('Mainframe connection established.', 'success');
         } else {
-          errorEl.textContent = data.error || 'Authentication denied.';
+          errorEl.textContent = data.error || 'Authentication denied by server.';
           errorEl.style.display = 'block';
+          // Revert button
+          loginBtn.disabled = false;
+          loginBtn.innerHTML = 'AUTHENTICATE &rarr;';
+          loginBtn.style.opacity = '1';
+          loginBtn.style.cursor = 'pointer';
         }
       } catch (err) {
-        errorEl.textContent = 'Network error  target unreachable.';
+        // -- Verbose error: surface the actual message to the UI --
+        console.error('loginAdmin() error:', err);
+        errorEl.textContent = 'Connection failed: ' + (err.message || 'Unknown network error');
         errorEl.style.display = 'block';
+        // Revert button
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = 'AUTHENTICATE &rarr;';
+        loginBtn.style.opacity = '1';
+        loginBtn.style.cursor = 'pointer';
       }
     }
 
