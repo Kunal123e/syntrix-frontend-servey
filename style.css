@@ -2,20 +2,20 @@
 
 :root {
   /* DESIGN TOKENS */
-  --bg-deep: #000000;
-  --bg-surface: #050505;
-  --bg-card: rgba(20, 20, 20, 0.6);
-  --bg-card-hover: rgba(30, 30, 30, 0.8);
-  --bg-input: rgba(15, 15, 15, 0.9);
-  --border-subtle: rgba(255, 255, 255, 0.1);
-  --border-hover: rgba(255, 255, 255, 0.2);
-  --border-accent: rgba(255, 255, 255, 0.5);
-  --accent-purple: #FFFFFF;
-  --accent-purple-light: #A1A1AA;
-  --accent-indigo: #FFFFFF;
-  --accent-green: #FFFFFF;
-  --accent-amber: #FFFFFF;
-  --accent-red: #A1A1AA;
+  --bg-deep: #030308;
+  --bg-surface: #080810;
+  --bg-card: rgba(12, 12, 20, 0.75);
+  --bg-card-hover: rgba(16, 16, 28, 0.85);
+  --bg-input: rgba(15, 15, 25, 0.9);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-hover: rgba(255, 255, 255, 0.12);
+  --border-accent: rgba(139, 92, 246, 0.3);
+  --accent-purple: #8b5cf6;
+  --accent-purple-light: #a78bfa;
+  --accent-indigo: #6366f1;
+  --accent-green: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-red: #ef4444;
   --text-primary: #ffffff;
   --text-secondary: #a1a1aa;
   --text-muted: #71717a;
@@ -53,8 +53,31 @@ html, body {
   overflow-y: auto !important;
 }
 
+body::before {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 50% 30%, rgba(99, 102, 241, 0.1), transparent 50%),
+              radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.05), transparent 50%);
+  z-index: -2;
+  pointer-events: none;
+  animation: galaxyDrift 60s linear infinite;
+}
 
-
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at top center, rgba(139, 92, 246, 0.08) 0%, transparent 60%);
+  z-index: -1;
+  pointer-events: none;
+}
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
@@ -104,9 +127,15 @@ html, body {
   from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }
 }
-
-
-
+@keyframes galaxyDrift {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes glowPulse {
+  0% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.2); }
+  50% { box-shadow: 0 0 40px rgba(139, 92, 246, 0.4); }
+  100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.2); }
+}
 
 .anim-1 { animation: fadeUpIn 0.6s var(--transition-smooth) forwards; opacity: 0; }
 .anim-2 { animation: fadeUpIn 0.6s var(--transition-smooth) 0.1s forwards; opacity: 0; }
@@ -206,7 +235,6 @@ html, body {
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  min-height: 44px;
   transition: var(--transition-fast);
 }
 
@@ -244,7 +272,6 @@ html, body {
   text-align: left;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  min-height: 44px;
   font-size: 13px;
   font-weight: 500;
   transition: var(--transition-fast);
@@ -266,7 +293,6 @@ html, body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  min-height: 44px;
   transition: var(--transition-fast);
 }
 
@@ -327,7 +353,6 @@ html, body {
   justify-content: center;
   gap: 8px;
   cursor: pointer;
-  min-height: 44px;
   transition: var(--transition-fast);
   width: 100%;
 }
@@ -353,7 +378,6 @@ html, body {
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  min-height: 44px;
   transition: var(--transition-fast);
   text-align: left;
   width: 100%;
@@ -419,10 +443,10 @@ html, body {
 
 .progressFill {
   height: 100%;
-  background: #FFFFFF; color: #000000;
+  background: linear-gradient(90deg, var(--accent-indigo), var(--accent-purple));
   border-radius: var(--radius-full);
   transition: width 0.5s var(--transition-spring);
-  box-shadow: none;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
 }
 
 /* CARDS */
@@ -455,25 +479,25 @@ html, body {
 
 /* BUTTONS */
 .primaryActionBtn, .executeDistributionBtn, .submitClaimBtn, .btn-primary {
-  background: var(--text-primary);
-  color: var(--bg-deep);
+  background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
+  color: var(--text-primary);
   border: none;
   padding: 14px 28px;
   border-radius: var(--radius-lg);
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
-  min-height: 44px;
   transition: var(--transition-fast);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
+  box-shadow: var(--shadow-glow);
 }
 
 .primaryActionBtn:hover, .executeDistributionBtn:hover, .submitClaimBtn:hover, .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(255, 255, 255, 0.15);
+  box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
 }
 
 .btn-dark {
@@ -503,7 +527,6 @@ html, body {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  min-height: 44px;
   transition: var(--transition-fast);
 }
 .navBtn:hover {
@@ -512,7 +535,7 @@ html, body {
 }
 
 .btn-glow-v3 {
-  background: #FFFFFF; color: #000000;
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-indigo));
   color: white;
   border: none;
   padding: 16px 32px;
@@ -520,13 +543,12 @@ html, body {
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  min-height: 44px;
   transition: var(--transition-fast);
-  box-shadow: none;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
 }
 .btn-glow-v3:hover {
   transform: translateY(-3px);
-  box-shadow: 0 15px 35px rgba(139, 92, 246, 0.4);
+  box-shadow: 0 15px 35px rgba(139, 92, 246, 0.6);
 }
 
 .btn-solid-v3 {
@@ -538,7 +560,6 @@ html, body {
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  min-height: 44px;
   transition: var(--transition-fast);
 }
 .btn-solid-v3:hover {
@@ -547,7 +568,7 @@ html, body {
 }
 
 .btn-gradient-purple {
-  background: #FFFFFF; color: #000000;
+  background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
   color: white;
   border: none;
   padding: 14px 28px;
@@ -555,26 +576,27 @@ html, body {
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
-  min-height: 44px;
   transition: var(--transition-fast);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  box-shadow: var(--shadow-glow);
 }
 .btn-gradient-purple:hover {
   opacity: 0.9;
   transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(139, 92, 246, 0.4);
 }
 .btn-gradient-purple:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  min-height: 44px;
   transform: none;
+  box-shadow: none;
 }
 
 .doc-submit-btn {
-  background: #FFFFFF; color: #000000;
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-indigo));
   color: white;
   border: none;
   padding: 16px 32px;
@@ -582,7 +604,6 @@ html, body {
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  min-height: 44px;
   transition: var(--transition-fast);
   width: 100%;
   max-width: 400px;
@@ -590,12 +611,13 @@ html, body {
   align-items: center;
   justify-content: center;
   gap: 10px;
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
 }
 .doc-submit-btn:disabled {
   background: var(--bg-input);
   color: var(--text-muted);
   cursor: not-allowed;
-  min-height: 44px;
+  box-shadow: none;
 }
 
 .doc-btn-white {
@@ -607,7 +629,6 @@ html, body {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -628,7 +649,6 @@ html, body {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -647,7 +667,6 @@ html, body {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -688,7 +707,6 @@ html, body {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  min-height: 44px;
   transition: var(--transition-fast);
   width: 100%;
 }
@@ -705,7 +723,6 @@ html, body {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  min-height: 44px;
 }
 
 /* GATEWAY */
@@ -752,14 +769,13 @@ html, body {
   align-items: center;
   text-align: center;
   cursor: pointer;
-  min-height: 44px;
   transition: var(--transition-smooth);
   box-shadow: var(--shadow-card);
 }
 .gateway-card:hover {
   border-color: var(--border-accent);
   transform: translateY(-5px);
-  box-shadow: none;
+  box-shadow: var(--shadow-glow);
 }
 
 .card-icon {
@@ -847,21 +863,21 @@ input:focus, textarea:focus, .premium-select:focus, .doc-dark-input:focus {
 }
 
 .pac-primary-btn {
-  background: white;
-  color: black;
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-indigo));
+  color: white;
   border: none;
   padding: 16px;
   border-radius: var(--radius-xl);
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  min-height: 44px;
   transition: var(--transition-fast);
   width: 100%;
 }
 .pac-primary-btn:hover {
-  background: #f4f4f5;
+  opacity: 0.9;
   transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
 }
 
 .pac-divider {
@@ -887,7 +903,6 @@ input:focus, textarea:focus, .premium-select:focus, .doc-dark-input:focus {
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  min-height: 44px;
   transition: var(--transition-fast);
   width: 100%;
   display: flex;
@@ -955,14 +970,12 @@ input:focus, textarea:focus, .premium-select:focus, .doc-dark-input:focus {
   width: 16px;
   height: 16px;
   cursor: pointer;
-  min-height: 44px;
 }
 .pac-consent-group label {
   font-size: 13px;
   color: var(--text-secondary);
   line-height: 1.5;
   cursor: pointer;
-  min-height: 44px;
 }
 
 .custom-cb-wrapper {
@@ -970,7 +983,6 @@ input:focus, textarea:focus, .premium-select:focus, .doc-dark-input:focus {
   align-items: center;
   gap: 12px;
   cursor: pointer;
-  min-height: 44px;
   padding: 12px;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-subtle);
@@ -1027,7 +1039,6 @@ input:focus, textarea:focus, .premium-select:focus, .doc-dark-input:focus {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  min-height: 44px;
   transition: var(--transition-fast);
   flex: 1;
 }
@@ -1161,12 +1172,14 @@ input:focus, textarea:focus, .premium-select:focus, .doc-dark-input:focus {
   background: radial-gradient(circle, rgba(139, 92, 246, 0.4) 0%, transparent 70%);
   filter: blur(40px);
   z-index: 1;
+  animation: glowPulse 4s infinite alternate;
 }
 .galaxy-img {
   width: 100%;
   height: auto;
   position: relative;
   z-index: 2;
+  animation: floatOrb 8s ease-in-out infinite;
 }
 
 .f5-grid {
@@ -1193,6 +1206,7 @@ input:focus, textarea:focus, .premium-select:focus, .doc-dark-input:focus {
 .f5-card:hover {
   border-color: rgba(255, 255, 255, 0.15);
   transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.1);
 }
 .f5-icon {
   width: 48px;
@@ -1202,7 +1216,7 @@ input:focus, textarea:focus, .premium-select:focus, .doc-dark-input:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-primary);
+  color: var(--accent-purple);
 }
 .f5-card h4 {
   font-size: 18px;
@@ -1306,6 +1320,7 @@ input:focus, textarea:focus, .premium-select:focus, .doc-dark-input:focus {
   line-height: 1;
   margin-bottom: 10px;
   letter-spacing: -1px;
+  text-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
 }
 .ec-sub {
   font-size: 14px;
@@ -1379,7 +1394,6 @@ input:focus, textarea:focus, .premium-select:focus, .doc-dark-input:focus {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  min-height: 44px;
   transition: var(--transition-fast);
 }
 .doc-back-btn:hover {
@@ -1589,7 +1603,6 @@ input:focus, textarea:focus, .premium-select:focus, .doc-dark-input:focus {
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  min-height: 44px;
   transition: var(--transition-fast);
   display: flex;
   align-items: center;
@@ -1656,7 +1669,7 @@ input:focus, textarea:focus, .premium-select:focus, .doc-dark-input:focus {
 .persona-card-premium:hover {
   border-color: var(--border-accent);
   transform: translateY(-5px);
-  box-shadow: none;
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.1);
 }
 .persona-header-top {
   font-size: 10px;
@@ -1992,7 +2005,6 @@ input:focus, textarea:focus, .premium-select:focus, .doc-dark-input:focus {
   color: var(--text-primary);
   font-size: 15px;
   cursor: pointer;
-  min-height: 44px;
   transition: var(--transition-fast);
 }
 .option:hover {
