@@ -2,20 +2,20 @@
 
 :root {
   /* DESIGN TOKENS */
-  --bg-deep: #030308;
-  --bg-surface: #080810;
-  --bg-card: rgba(12, 12, 20, 0.75);
-  --bg-card-hover: rgba(16, 16, 28, 0.85);
-  --bg-input: rgba(15, 15, 25, 0.9);
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-hover: rgba(255, 255, 255, 0.12);
-  --border-accent: rgba(139, 92, 246, 0.3);
-  --accent-purple: #8b5cf6;
-  --accent-purple-light: #a78bfa;
-  --accent-indigo: #6366f1;
-  --accent-green: #10b981;
-  --accent-amber: #f59e0b;
-  --accent-red: #ef4444;
+  --bg-deep: #000000;
+  --bg-surface: #050505;
+  --bg-card: rgba(20, 20, 20, 0.6);
+  --bg-card-hover: rgba(30, 30, 30, 0.8);
+  --bg-input: rgba(15, 15, 15, 0.9);
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --border-hover: rgba(255, 255, 255, 0.2);
+  --border-accent: rgba(255, 255, 255, 0.5);
+  --accent-purple: #FFFFFF;
+  --accent-purple-light: #A1A1AA;
+  --accent-indigo: #FFFFFF;
+  --accent-green: #FFFFFF;
+  --accent-amber: #FFFFFF;
+  --accent-red: #A1A1AA;
   --text-primary: #ffffff;
   --text-secondary: #a1a1aa;
   --text-muted: #71717a;
@@ -53,18 +53,8 @@ html, body {
   overflow-y: auto !important;
 }
 
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.05) 40%, transparent 80%);
-  pointer-events: none;
-  z-index: -1;
-  animation: galaxyDrift 20s infinite alternate linear;
-}
+
+
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
@@ -114,15 +104,9 @@ body::before {
   from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }
 }
-@keyframes galaxyDrift {
-  0% { background-position: 0% 0%; }
-  100% { background-position: 100% 100%; }
-}
-@keyframes glowPulse {
-  0% { box-shadow: 0 0 10px rgba(139, 92, 246, 0.2); }
-  50% { box-shadow: 0 0 25px rgba(139, 92, 246, 0.5); }
-  100% { box-shadow: 0 0 10px rgba(139, 92, 246, 0.2); }
-}
+
+
+
 
 .anim-1 { animation: fadeUpIn 0.6s var(--transition-smooth) forwards; opacity: 0; }
 .anim-2 { animation: fadeUpIn 0.6s var(--transition-smooth) 0.1s forwards; opacity: 0; }
@@ -222,6 +206,7 @@ body::before {
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
+  min-height: 44px;
   transition: var(--transition-fast);
 }
 
@@ -259,6 +244,7 @@ body::before {
   text-align: left;
   border-radius: var(--radius-sm);
   cursor: pointer;
+  min-height: 44px;
   font-size: 13px;
   font-weight: 500;
   transition: var(--transition-fast);
@@ -273,13 +259,14 @@ body::before {
   background: var(--bg-input);
   border: 1px solid var(--border-subtle);
   color: var(--text-primary);
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  min-height: 44px;
   transition: var(--transition-fast);
 }
 
@@ -340,6 +327,7 @@ body::before {
   justify-content: center;
   gap: 8px;
   cursor: pointer;
+  min-height: 44px;
   transition: var(--transition-fast);
   width: 100%;
 }
@@ -365,6 +353,7 @@ body::before {
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
+  min-height: 44px;
   transition: var(--transition-fast);
   text-align: left;
   width: 100%;
@@ -430,10 +419,10 @@ body::before {
 
 .progressFill {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent-indigo), var(--accent-purple));
+  background: #FFFFFF; color: #000000;
   border-radius: var(--radius-full);
   transition: width 0.5s var(--transition-spring);
-  box-shadow: var(--shadow-glow);
+  box-shadow: none;
 }
 
 /* CARDS */
@@ -474,6 +463,7 @@ body::before {
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
+  min-height: 44px;
   transition: var(--transition-fast);
   display: inline-flex;
   align-items: center;
@@ -513,6 +503,7 @@ body::before {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  min-height: 44px;
   transition: var(--transition-fast);
 }
 .navBtn:hover {
@@ -521,7 +512,7 @@ body::before {
 }
 
 .btn-glow-v3 {
-  background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
+  background: #FFFFFF; color: #000000;
   color: white;
   border: none;
   padding: 16px 32px;
@@ -529,8 +520,9 @@ body::before {
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
+  min-height: 44px;
   transition: var(--transition-fast);
-  box-shadow: var(--shadow-glow);
+  box-shadow: none;
 }
 .btn-glow-v3:hover {
   transform: translateY(-3px);
@@ -546,6 +538,7 @@ body::before {
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
+  min-height: 44px;
   transition: var(--transition-fast);
 }
 .btn-solid-v3:hover {
@@ -554,7 +547,7 @@ body::before {
 }
 
 .btn-gradient-purple {
-  background: linear-gradient(135deg, var(--accent-purple), var(--accent-indigo));
+  background: #FFFFFF; color: #000000;
   color: white;
   border: none;
   padding: 14px 28px;
@@ -562,6 +555,7 @@ body::before {
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
+  min-height: 44px;
   transition: var(--transition-fast);
   display: inline-flex;
   align-items: center;
@@ -575,11 +569,12 @@ body::before {
 .btn-gradient-purple:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  min-height: 44px;
   transform: none;
 }
 
 .doc-submit-btn {
-  background: linear-gradient(135deg, var(--accent-purple), var(--accent-indigo));
+  background: #FFFFFF; color: #000000;
   color: white;
   border: none;
   padding: 16px 32px;
@@ -587,6 +582,7 @@ body::before {
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
+  min-height: 44px;
   transition: var(--transition-fast);
   width: 100%;
   max-width: 400px;
@@ -599,6 +595,7 @@ body::before {
   background: var(--bg-input);
   color: var(--text-muted);
   cursor: not-allowed;
+  min-height: 44px;
 }
 
 .doc-btn-white {
@@ -610,6 +607,7 @@ body::before {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -630,6 +628,7 @@ body::before {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -648,6 +647,7 @@ body::before {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -688,6 +688,7 @@ body::before {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  min-height: 44px;
   transition: var(--transition-fast);
   width: 100%;
 }
@@ -704,6 +705,7 @@ body::before {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  min-height: 44px;
 }
 
 /* GATEWAY */
@@ -750,13 +752,14 @@ body::before {
   align-items: center;
   text-align: center;
   cursor: pointer;
+  min-height: 44px;
   transition: var(--transition-smooth);
   box-shadow: var(--shadow-card);
 }
 .gateway-card:hover {
   border-color: var(--border-accent);
   transform: translateY(-5px);
-  box-shadow: var(--shadow-glow);
+  box-shadow: none;
 }
 
 .card-icon {
@@ -852,6 +855,7 @@ input:focus, textarea:focus, .premium-select:focus, .doc-dark-input:focus {
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
+  min-height: 44px;
   transition: var(--transition-fast);
   width: 100%;
 }
@@ -883,6 +887,7 @@ input:focus, textarea:focus, .premium-select:focus, .doc-dark-input:focus {
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
+  min-height: 44px;
   transition: var(--transition-fast);
   width: 100%;
   display: flex;
@@ -950,12 +955,14 @@ input:focus, textarea:focus, .premium-select:focus, .doc-dark-input:focus {
   width: 16px;
   height: 16px;
   cursor: pointer;
+  min-height: 44px;
 }
 .pac-consent-group label {
   font-size: 13px;
   color: var(--text-secondary);
   line-height: 1.5;
   cursor: pointer;
+  min-height: 44px;
 }
 
 .custom-cb-wrapper {
@@ -963,6 +970,7 @@ input:focus, textarea:focus, .premium-select:focus, .doc-dark-input:focus {
   align-items: center;
   gap: 12px;
   cursor: pointer;
+  min-height: 44px;
   padding: 12px;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-subtle);
@@ -1019,6 +1027,7 @@ input:focus, textarea:focus, .premium-select:focus, .doc-dark-input:focus {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  min-height: 44px;
   transition: var(--transition-fast);
   flex: 1;
 }
@@ -1370,6 +1379,7 @@ input:focus, textarea:focus, .premium-select:focus, .doc-dark-input:focus {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  min-height: 44px;
   transition: var(--transition-fast);
 }
 .doc-back-btn:hover {
@@ -1579,6 +1589,7 @@ input:focus, textarea:focus, .premium-select:focus, .doc-dark-input:focus {
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
+  min-height: 44px;
   transition: var(--transition-fast);
   display: flex;
   align-items: center;
@@ -1645,7 +1656,7 @@ input:focus, textarea:focus, .premium-select:focus, .doc-dark-input:focus {
 .persona-card-premium:hover {
   border-color: var(--border-accent);
   transform: translateY(-5px);
-  box-shadow: var(--shadow-glow);
+  box-shadow: none;
 }
 .persona-header-top {
   font-size: 10px;
@@ -1955,7 +1966,7 @@ input:focus, textarea:focus, .premium-select:focus, .doc-dark-input:focus {
   margin: 0 auto;
 }
 
-/* SURVEY STYLES (Injected dynamically) */
+/* SURVEY */
 .question {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
@@ -1981,6 +1992,7 @@ input:focus, textarea:focus, .premium-select:focus, .doc-dark-input:focus {
   color: var(--text-primary);
   font-size: 15px;
   cursor: pointer;
+  min-height: 44px;
   transition: var(--transition-fast);
 }
 .option:hover {
