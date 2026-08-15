@@ -14,7 +14,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/ethereum-provider@9/dist/ethereumProvider.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@9/dist/modal.umd.min.js"></script>
 
-  <!-- 🚀 NEW: PREMIUM BENTO UI STYLES FOR XP DASHBOARD -->
+  <!-- 🚀 PREMIUM BENTO UI STYLES FOR XP DASHBOARD -->
   <style id="xp-premium-bento-styles">
     .xp-bento-container { display: flex; flex-direction: column; gap: 24px; width: 100%; max-width: 1100px; margin: 0 auto; text-align: left; }
     .xp-bento-row { display: grid; gap: 24px; width: 100%; }
@@ -29,7 +29,6 @@
     .xp-bento-header h3 { font-size: 13px; font-weight: 700; color: #a1a1aa; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
     .xp-bento-header-icon { color: #d1d5db; }
 
-    /* Progress Card Specifics */
     .xp-prog-title { font-size: 12px; color: #a1a1aa; font-weight: 700; letter-spacing: 1px; margin-bottom: 6px; }
     .xp-prog-level-row { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
     .xp-prog-level-text { font-size: 42px; font-weight: 900; color: #ffffff; line-height: 1; letter-spacing: -1px; }
@@ -48,7 +47,6 @@
     .xp-stat-label { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #a1a1aa; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
     .xp-stat-val { font-size: 24px; font-weight: 800; color: #ffffff; }
 
-    /* Hexagon Badge Specifics */
     .xp-hex-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; position: relative; }
     .xp-hex-bg-glow { position: absolute; width: 150px; height: 150px; background: radial-gradient(circle, rgba(168, 85, 247, 0.2) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
     .xp-hex-shape { width: 120px; height: 135px; background: linear-gradient(180deg, #18181b 0%, #09090b 100%); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); display: flex; align-items: center; justify-content: center; position: relative; z-index: 2; border: 1px solid rgba(255,255,255,0.1); box-shadow: inset 0 0 20px rgba(255,255,255,0.05); }
@@ -57,7 +55,6 @@
     .xp-hex-rank-text { margin-top: 24px; font-size: 16px; font-weight: 800; color: #ffffff; letter-spacing: 1px; text-transform: uppercase; z-index: 2;}
     .xp-laurel-wreath { position: absolute; width: 180px; height: 180px; top: 50%; left: 50%; transform: translate(-50%, -55%); opacity: 0.6; pointer-events: none; z-index: 1;}
 
-    /* History List */
     .xp-hist-list { display: flex; flex-direction: column; gap: 16px; overflow-y: auto; max-height: 300px; padding-right: 10px;}
     .xp-hist-list::-webkit-scrollbar { width: 4px; }
     .xp-hist-list::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
@@ -71,7 +68,6 @@
     .xp-hist-amount { font-size: 15px; font-weight: 800; color: #ffffff; margin-bottom: 4px; display: block; }
     .xp-hist-time { font-size: 11px; color: #71717a; font-weight: 600; }
 
-    /* Roadmap Timeline */
     .xp-roadmap { display: flex; flex-direction: column; gap: 20px; position: relative; padding-left: 20px; }
     .xp-roadmap::before { content: ''; position: absolute; left: 0; top: 10px; bottom: 10px; width: 2px; background: #27272a; border-radius: 2px; }
     .xp-road-item { position: relative; display: flex; justify-content: space-between; align-items: center; }
@@ -79,7 +75,6 @@
     .xp-road-item.completed .xp-road-dot { border-color: #10b981; background: #10b981; color: #000; }
     .xp-road-item.current .xp-road-dot { border-color: #a855f7; background: #a855f7; color: #fff; box-shadow: 0 0 10px rgba(168,85,247,0.5); }
     .xp-road-item.current::before { content:''; position:absolute; left:-28px; top:18px; bottom:-20px; width:2px; background: linear-gradient(180deg, #a855f7, #27272a); }
-    
     .xp-road-left h4 { font-size: 14px; font-weight: 700; color: #ffffff; margin: 0 0 4px 0; }
     .xp-road-left p { font-size: 12px; color: #a1a1aa; margin: 0; }
     .xp-road-right { text-align: right; }
@@ -90,7 +85,6 @@
     .xp-road-item.locked .xp-road-status { color: #71717a; }
     .xp-road-item.locked h4, .xp-road-item.locked p, .xp-road-item.locked .xp-road-xp { color: #71717a; }
 
-    /* Streaks & Stats Mini Cards */
     .xp-streak-days { display: flex; justify-content: space-between; margin-top: 10px; }
     .xp-streak-day { display: flex; flex-direction: column; align-items: center; gap: 8px; }
     .xp-streak-check { width: 24px; height: 24px; border-radius: 50%; background: #18181b; border: 1px solid #3f3f46; display: flex; align-items: center; justify-content: center; color: transparent; font-size: 12px; }
@@ -102,7 +96,6 @@
     .xp-stat-list-left { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #d1d5db; font-weight: 500;}
     .xp-stat-list-right { font-size: 14px; font-weight: 800; color: #ffffff; }
 
-    /* Responsive adjustments */
     @media (max-width: 900px) {
       .xp-bento-row-top, .xp-bento-row-mid, .xp-bento-row-bot { grid-template-columns: 1fr; }
       .xp-prog-stats-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -110,8 +103,276 @@
       .xp-prog-percent-badge { position: relative; right: auto; margin-left: 10px; }
       .xp-prog-bar-track { width: calc(100% - 50px); }
     }
+    
+    .level-up-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(12px); z-index: 999999;
+      display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
+    }
+    .level-up-overlay.active { opacity: 1; pointer-events: all; }
+    .level-up-content { text-align: center; transform: scale(0.9) translateY(20px); opacity: 0; transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+    .level-up-overlay.active .level-up-content { transform: scale(1) translateY(0); opacity: 1; }
+    .level-up-title-top { font-size: 20px; font-weight: 800; color: #ffffff; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 30px;}
+    .level-up-badge-container {
+      width: 150px; height: 150px; margin: 0 auto 30px;
+      background: radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, transparent 70%);
+      display: flex; align-items: center; justify-content: center; position: relative;
+      animation: floatOrb 4s ease-in-out infinite;
+    }
+    .level-up-hex { width: 120px; height: 135px; background: linear-gradient(180deg, #18181b 0%, #09090b 100%); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); display: flex; align-items: center; justify-content: center; position: relative; z-index: 2; border: 1px solid rgba(255,255,255,0.2); box-shadow: inset 0 0 30px rgba(168, 85, 247, 0.2), 0 0 50px rgba(168, 85, 247, 0.4); }
+    .level-up-hex::before { content:''; position:absolute; width:114px; height:129px; background:#000; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); z-index:-1;}
+    .level-up-title { font-size: 42px; font-weight: 900; color: #ffffff; margin-bottom: 8px; letter-spacing: -1px; }
+    .level-up-subtitle { font-size: 16px; color: #a1a1aa; margin-bottom: 40px; }
+    .btn-level-continue { background: #ffffff; color: #000000; border: none; padding: 18px 48px; font-size: 16px; font-weight: 800; border-radius: 16px; cursor: pointer; transition: all 0.2s ease; }
+    .btn-level-continue:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2); }
+
+    .xp-floating-toast {
+      position: fixed; bottom: 40px; right: 40px; 
+      background: rgba(10, 10, 10, 0.95); border: 1px solid rgba(168, 85, 247, 0.5); 
+      border-radius: 16px; padding: 14px 24px; display: flex; align-items: center; gap: 14px; 
+      z-index: 9999999; box-shadow: 0 15px 40px rgba(168, 85, 247, 0.25), inset 0 1px 0 rgba(255,255,255,0.1); 
+      transform: translateY(150px) scale(0.9); opacity: 0; 
+      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .xp-floating-toast.show { transform: translateY(0) scale(1); opacity: 1; }
+    .xp-toast-icon { font-size: 28px; animation: floatOrb 3s ease-in-out infinite; filter: drop-shadow(0 0 10px rgba(168,85,247,0.6)); }
+    .xp-toast-text { display: flex; flex-direction: column; text-align: left;}
+    .xp-toast-amount { color: #a855f7; font-weight: 900; font-size: 18px; letter-spacing: 0.5px; }
+    .xp-toast-reason { color: #d1d5db; font-size: 13px; font-weight: 600; }
+    @media(max-width: 900px) { .xp-floating-toast { bottom: 20px; right: 20px; left: 20px; justify-content: center; } }
   </style>
 
+  <!-- 🚀 EXPLICIT SCRIPT LOGIC FOR PRE-LOGIN -->
+  <script>
+    window.hasCompletedSurvey = false;
+
+    window.toggleSettingsMenu = function() {
+        const popover = document.getElementById('optionsPopover');
+        if (popover) {
+            if (popover.style.display === 'none' || popover.classList.contains('hidden')) {
+                popover.style.display = 'block';
+                popover.classList.remove('hidden');
+            } else {
+                popover.style.display = 'none';
+                popover.classList.add('hidden');
+            }
+        }
+    };
+
+    document.addEventListener('click', function(event) {
+        const popover = document.getElementById('optionsPopover');
+        const menuBtn = document.getElementById('menuToggleBtn');
+        if (popover && popover.style.display === 'block') {
+            if (!popover.contains(event.target) && !menuBtn.contains(event.target)) {
+                popover.style.display = 'none';
+                popover.classList.add('hidden');
+            }
+        }
+    });
+
+    window.generateMyQR = function(e) {
+        if(e) e.preventDefault();
+        const wrapper = document.getElementById('qrCodeWrapper');
+        const canvas = document.getElementById('qrCodeCanvas');
+        const refInput = document.getElementById('referralCodeDisplay');
+        if (!wrapper || !canvas || !refInput) return;
+        
+        canvas.innerHTML = ''; 
+        const link = refInput.value || 'https://syntrix.ai';
+        try {
+            new QRCode(canvas, {
+                text: link, width: 180, height: 180,
+                colorDark : "#000000", colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+            wrapper.style.display = 'flex';
+        } catch(err) { console.error("QR Generation Error:", err); }
+    };
+
+    window.copyMyReferral = function(e) {
+        if(e) e.preventDefault();
+        const refInput = document.getElementById('referralCodeDisplay');
+        if(refInput) {
+            refInput.select();
+            document.execCommand('copy');
+            const toast = document.getElementById('customToast');
+            const toastMsg = document.getElementById('toastMessage');
+            if(toast && toastMsg) {
+                toastMsg.innerHTML = "✅ Link copied to clipboard!";
+                toast.style.display = 'flex';
+                toast.classList.add('show');
+                setTimeout(() => { toast.classList.remove('show'); toast.style.display='none'; }, 3000);
+            }
+        }
+    };
+
+    window.downloadMyQR = function(e) {
+        if(e) e.preventDefault();
+        const canvasEl = document.querySelector('#qrCodeCanvas canvas');
+        if(canvasEl) {
+            const url = canvasEl.toDataURL("image/png");
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Syntrix-Referral-QR.png';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    };
+
+    window.unlockFullMenu = function() {
+        const authElements = document.querySelectorAll('.auth-protected-ui');
+        authElements.forEach(el => { el.style.display = el.classList.contains('links-sec') ? 'flex' : 'block'; });
+        document.getElementById('signupSectionOnly').style.display = 'none';
+    };
+
+    window.handleLogout = async function() {
+        try {
+            if (window.metamaskEmbeddedInstance && window.metamaskEmbeddedInstance.connected) {
+                await window.metamaskEmbeddedInstance.logout();
+            }
+        } catch(e) { console.error("Logout Error:", e); }
+        
+        localStorage.removeItem("syntrix_user_email");
+        localStorage.removeItem("referralCode");
+        window.hasCompletedSurvey = false; 
+        
+        const appLayout = document.getElementById('mainApplicationLayout');
+        if(appLayout) { appLayout.style.display = 'none'; appLayout.style.opacity = '0'; }
+        
+        document.getElementById('appTopbar').style.display = 'flex';
+        const authElements = document.querySelectorAll('.auth-protected-ui');
+        authElements.forEach(el => el.style.display = 'none');
+        document.getElementById('signupSectionOnly').style.display = 'block';
+        
+        const popover = document.getElementById('optionsPopover');
+        if(popover) { popover.style.display = 'none'; popover.classList.add('hidden'); }
+        
+        const sections = ['gatewayScreenSection', 'documentModeSection', 'selfieModeSection', 'claimForm', 'rewardDashboardScreen', 'tabScreenBadge', 'tabScreenReferrals', 'tabScreenMoreSurveys', 'claimScreenSection', 'tabScreenXP'];
+        sections.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) { el.style.display = 'none'; el.classList.add('hidden'); }
+        });
+        
+        const splash = document.getElementById('splashLandingGate');
+        if(splash) {
+            splash.style.display = 'flex';
+            setTimeout(() => { splash.style.opacity = '1'; splash.style.transform = 'scale(1) translateY(0)'; }, 50);
+        }
+        
+        const emailGate = document.getElementById('emailGateSection');
+        if(emailGate) {
+            emailGate.classList.remove('hidden');
+            emailGate.style.display = 'flex';
+            
+            // FULL RESET OF VERIFICATION GATE
+            const otpSection = document.getElementById('otpSection');
+            if (otpSection) {
+              otpSection.style.display = 'none';
+              otpSection.classList.add('hidden');
+            }
+            const preVerifyBtn = document.getElementById('preVerifyBtn');
+            const startBtn = document.getElementById('startSurveyBtn');
+            if (startBtn) { startBtn.style.display = 'none'; startBtn.classList.add('hidden'); }
+            if (preVerifyBtn) { preVerifyBtn.style.display = 'flex'; preVerifyBtn.classList.remove('hidden'); }
+        }
+    };
+
+    window.handleGoogleLogin = async function() {
+        try {
+            if (window.metamaskEmbeddedInstance) {
+                await window.metamaskEmbeddedInstance.connectTo("openlogin", { loginProvider: "google" });
+            }
+        } catch(e) {
+            console.error("Web3Auth Google Login error. Falling back to Simulator UI.", e);
+            const modal = document.getElementById('googleSimModal');
+            if (modal) { modal.classList.remove('hidden'); modal.style.display = 'flex'; }
+        }
+    };
+
+    window.executeGoogleSimLogin = function(email) {
+        document.getElementById('googleSimModal').style.display = 'none';
+        const emailGate = document.getElementById('emailGateSection');
+        if(emailGate) { emailGate.style.display = 'none'; emailGate.classList.add('hidden'); }
+        window.hasCompletedSurvey = true; 
+        window.unlockFullMenu();
+        window.openModeEnhanced('gateway'); 
+    };
+
+    window.openModeEnhanced = function(modeName) {
+      if(window.openMode) { try { window.openMode(modeName); } catch(e) {} }
+      const popover = document.getElementById('optionsPopover');
+      if(popover) { popover.style.display = 'none'; popover.classList.add('hidden'); }
+
+      if (modeName === 'survey' && window.hasCompletedSurvey) {
+          const toast = document.getElementById('customToast');
+          const toastMsg = document.getElementById('toastMessage');
+          if(toast && toastMsg) {
+              toastMsg.innerHTML = "✅ Survey already completed. Redirecting to Survey Matrix...";
+              toast.style.display = 'flex'; toast.classList.add('show');
+              setTimeout(() => { toast.classList.remove('show'); toast.style.display='none'; }, 3000);
+          }
+          if (typeof routeDashboardTabs === 'function') { routeDashboardTabs('more-surveys'); }
+          return; 
+      }
+      
+      const allScreens = ['gatewayScreenSection', 'documentModeSection', 'selfieModeSection', 'claimForm', 'rewardDashboardScreen', 'tabScreenBadge', 'tabScreenReferrals', 'tabScreenMoreSurveys', 'claimScreenSection', 'tabScreenXP'];
+      allScreens.forEach(id => {
+          const el = document.getElementById(id);
+          if(el) { el.style.display = 'none'; el.classList.add('hidden'); }
+      });
+      
+      let targetId = '';
+      if(modeName === 'document') targetId = 'documentModeSection';
+      else if (modeName === 'selfie') targetId = 'selfieModeSection';
+      else if (modeName === 'gateway') targetId = 'gatewayScreenSection';
+      else if (modeName === 'survey') targetId = 'claimForm';
+      else if (modeName === 'badge') targetId = 'tabScreenBadge';
+      else if (modeName === 'hub') targetId = 'rewardDashboardScreen';
+      else if (modeName === 'referrals') targetId = 'tabScreenReferrals';
+      else if (modeName === 'more') targetId = 'tabScreenMoreSurveys';
+      else if (modeName === 'xp') targetId = 'tabScreenXP'; 
+      
+      if(targetId) {
+          const targetEl = document.getElementById(targetId);
+          if(targetEl) {
+              targetEl.classList.remove('hidden');
+              targetEl.style.display = (targetId === 'gatewayScreenSection') ? 'flex' : 'block';
+          }
+          if (modeName === 'xp' && typeof XPAnimator !== 'undefined') { XPAnimator.replayAnimations(); }
+      }
+    };
+
+    window.playSmoothStart = function() {
+      const splash = document.getElementById('splashLandingGate');
+      splash.style.transition = 'all 0.5s cubic-bezier(0.25, 1, 0.5, 1)';
+      splash.style.opacity = '0';
+      splash.style.transform = 'scale(0.96) translateY(-15px)';
+      
+      setTimeout(() => {
+        splash.style.display = 'none'; 
+        const hiddenBtn = document.getElementById('initializePlatformBtn');
+        if(hiddenBtn) hiddenBtn.click();
+        
+        const appLayout = document.getElementById('mainApplicationLayout');
+        if(appLayout) {
+            appLayout.style.display = 'block';
+            appLayout.style.opacity = '0';
+            appLayout.style.animation = 'fadeUpIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+        }
+      }, 450);
+    };
+
+    window.openLegalModal = function() {
+        const modal = document.getElementById('legalModal');
+        if (modal) { modal.classList.remove('hidden'); modal.style.display = 'flex'; }
+    };
+
+    window.closeLegalModal = function() {
+        const modal = document.getElementById('legalModal');
+        if (modal) { modal.style.display = 'none'; modal.classList.add('hidden'); }
+    };
+  </script>
 </head>
 <body class="dark-theme" style="background-color: #000000; color: #ffffff; overflow-x: hidden; margin: 0;">
 
@@ -397,7 +658,6 @@
               <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
             </button>
             <div id="optionsPopover" class="options-popover hidden" style="display: none;">
-              <!-- Authenticated Menu Elements (Hidden initially) -->
               <div class="popover-section profile-sec auth-protected-ui" style="display: none;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 <span style="color: #a1a1aa; font-weight: 500;">Profile:</span>
@@ -416,7 +676,6 @@
               </div>
               <div id="dashboardTabLinks" class="popover-section links-sec auth-protected-ui" style="display: none; flex-direction: column;">
                 
-                <!-- 🚀 NEW XP DASHBOARD BUTTON -->
                 <button class="menu-item-btn tab-btn" data-tab="xp" onclick="window.openModeEnhanced('xp')">
                   <div class="menu-icon-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
                   XP & Levels Progression
@@ -490,8 +749,7 @@
               </div>
             </div>
 
-            <!-- 🚀 FIX: STRICTLY HIDDEN OTP SECTION ON LOAD -->
-            <div id="otpSection" class="pac-form-group" style="display: none !important; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;">
+            <div id="otpSection" class="pac-form-group hidden" style="display: none;">
               <label for="gateOtp" style="display: flex; justify-content: space-between; align-items: center;">
                 <span>Verification Code</span>
                 <span style="color:#10b981; font-size:11px; font-weight: 700;">✅ Code sent!</span>
@@ -525,7 +783,7 @@
             <button type="button" id="preVerifyBtn" class="pac-primary-btn">
               Send Verification Code &rarr;
             </button>
-            <button type="submit" id="startSurveyBtn" class="pac-primary-btn hidden" style="display: none !important;">
+            <button type="submit" id="startSurveyBtn" class="pac-primary-btn hidden" style="display: none;">
               Verify & Enter &rarr;
             </button>
 
@@ -1630,7 +1888,6 @@
 // SYNTRIX CORE PLATFORM APPLICATION LOGIC ENGINE
 // =========================================================================
 
-// 🚀 INJECT PREMIUM AI ANIMATION CSS DYNAMICALLY
 const styleSheet = document.createElement("style");
 styleSheet.innerText = `
 @keyframes aiSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -1648,7 +1905,6 @@ const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 const WALLET_REGEX = /^0x[a-fA-F0-9]{40}$/;
 const DEFAULT_TIMEOUT_MS = 90000; 
 
-// 🚀 QUALITY GATE: Start time tracker
 let surveyStartTime = 0;
 const QUALITY_THRESHOLD_MS = 120000; 
 
@@ -1662,7 +1918,6 @@ let userConnectedWalletAddress = "";
 let legalConsentTimestamp = "";
 let clientUserAgent = "";
 
-// Splash Screen & App Shell Element Selectors
 const splashLandingGate = document.getElementById("splashLandingGate");
 const mainApplicationLayout = document.getElementById("mainApplicationLayout");
 const viewSplashHome = document.getElementById("viewSplashHome");
@@ -1698,12 +1953,10 @@ const nextBtn = document.getElementById("nextBtn");
 const prevBtn = document.getElementById("prevBtn");
 const submitClaimBtn = document.getElementById("submitClaimBtn");
 
-// Gateway & Document Selectors
 const gatewayScreenSection = document.getElementById("gatewayScreenSection");
 const documentModeSection = document.getElementById("documentModeSection");
 const selfieModeSection = document.getElementById("selfieModeSection");
 
-// Dashboard Selectors
 const rewardDashboardScreen = document.getElementById("rewardDashboardScreen");
 const tabScreenHub = document.getElementById("rewardDashboardScreen"); 
 const tabScreenBadge = document.getElementById("tabScreenBadge");
@@ -1725,7 +1978,6 @@ const statTotalEarned = document.getElementById("statTotalEarned");
 const referralCodeDisplay = document.getElementById("referralCodeDisplay");
 const copyReferralBtn = document.getElementById("copyReferralBtn");
 
-// 🚀 QR Code Element Selectors
 const generateQrBtn = document.getElementById("generateQrBtn");
 const qrCodeWrapper = document.getElementById("qrCodeWrapper");
 const qrCodeCanvas = document.getElementById("qrCodeCanvas");
@@ -1791,7 +2043,6 @@ const dismissModal = () => {
   }
 };
 
-// ================= SPLASH PAGE ISOLATED ROUTING =================
 function routeSplashNavViews(targetView) {
   if (viewSplashHome) viewSplashHome.style.display = "none";
   if (viewSplashRewards) viewSplashRewards.style.display = "none";
@@ -1846,7 +2097,6 @@ if (initializePlatformBtn) {
   });
 }
 
-// ================= GATEWAY LOGIC =================
 window.openMode = function(mode) {
   if (mode === 'survey' && window.hasCompletedSurvey) {
       showToast("✅ Survey already completed. Redirecting to Survey Matrix...", "✅");
@@ -1994,7 +2244,6 @@ function getUIText(key) {
   return fallbacks[key] || key;
 }
 
-// ================= DASHBOARD APP TABS ROUTER =================
 function routeDashboardTabs(targetTab) {
   const cards = [
     document.getElementById("rewardDashboardScreen"),
@@ -2308,356 +2557,4 @@ async function runProfileLedgerVerification(email, isFromModal = false, isBackgr
     } else {
       if (!isFromModal) {
         if (!isBackgroundSync) {
-            if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
-            const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "claimForm", "topProgressBox", "documentModeSection", "selfieModeSection"];
-            dashboardCards.forEach(id => {
-              const el = document.getElementById(id);
-              if (el) { el.style.display = "none"; el.classList.add("hidden"); }
-            });
-            const tabLinksContainer = document.getElementById("dashboardTabLinks");
-            if (tabLinksContainer) { tabLinksContainer.classList.add("hidden"); tabLinksContainer.style.display = "none"; }
-            
-            routeDashboardTabs("gateway");
-            outputTarget.innerHTML = "";
-        }
-      } else {
-        if (!isBackgroundSync) outputTarget.innerHTML = ""; 
-        showToast("Profile ledger entry not found.", "❌");
-      }
-    }
-  } catch (err) {
-    if (!isBackgroundSync) outputTarget.innerHTML = ""; 
-    showToast("Server waking up or offline. Please try again.", "❌");
-  }
-}
-
-function determinePersonaBadge(answersObj) {
-  const scores = { Analyzer: 0, Stylist: 0, Hedger: 0, Native: 0 };
-  const mapping = {
-    "question_1_id": {
-      "I compare all the data and reviews": "Analyzer",
-      "I care about how beautiful it looks": "Stylist",
-      "I only buy if there is a safe warranty": "Hedger",
-      "I buy what my friends recommend": "Native"
-    },
-    "question_2_id": {
-      "Logic and numbers": "Analyzer",
-      "Aesthetics and vibe": "Stylist",
-      "Safety and guarantees": "Hedger",
-      "Community and trust": "Native"
-    }
-  };
-  for (const [qId, selectedAnswer] of Object.entries(answersObj)) {
-    if (mapping[qId] && mapping[qId][selectedAnswer]) {
-      const persona = mapping[qId][selectedAnswer];
-      scores[persona]++;
-    }
-  }
-  let topBadge = "Analyzer";
-  let maxScore = -1;
-  for (const [badge, score] of Object.entries(scores)) {
-    if (score > maxScore) {
-      maxScore = score;
-      topBadge = badge;
-    }
-  }
-  return topBadge;
-}
-
-async function handleSurveySubmission(e) {
-  if (e) e.preventDefault();
-
-  if ((Date.now() - surveyStartTime) < QUALITY_THRESHOLD_MS) {
-    showToast("Please take more time to read the questions carefully.", "⏱️");
-    return;
-  }
-
-  if (!validateCurrentSectionAnswers()) {
-    showToast(getUIText("validationRequired"), "⚠️");
-    return;
-  }
-
-  if (claimForm) { claimForm.classList.add("hidden"); claimForm.style.display = "none"; }
-  
-  const excitementBanner = document.getElementById("excitementBanner");
-  if(excitementBanner) excitementBanner.style.display = "none";
-
-  const animOverlay = document.getElementById("rewardAnimationOverlay");
-  if (animOverlay) animOverlay.style.display = "flex";
-
-  const referralCodeUsed = localStorage.getItem("referralCode") || "";
-
-  const finalPayload = {
-    email: userEmailAddress,
-    answers: answers,
-    referredBy: referralCodeUsed,
-    legal_consent: true,
-    consent_timestamp: legalConsentTimestamp || new Date().toISOString(),
-    user_agent: clientUserAgent || navigator.userAgent,
-    startTime: surveyStartTime, 
-    submissionTime: Date.now(),
-    assignedBadge: determinePersonaBadge(answers)
-  };
-
-  try {
-    const response = await fetchWithTimeout(`${BACKEND_URL}/api/submit-survey`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(finalPayload)
-    });
-
-    const result = await response.json();
-    
-    setTimeout(async () => {
-      if (animOverlay) animOverlay.style.display = "none";
-      if (result.success) {
-        if (statusDiv) statusDiv.innerHTML = "";
-        window.hasCompletedSurvey = true; 
-        await runProfileLedgerVerification(userEmailAddress, false);
-      } else {
-        if (claimForm) { claimForm.classList.remove("hidden"); claimForm.style.display = "block"; }
-        showToast(`${result.error || "Submission rejected by registry backend."}`, "❌");
-      }
-    }, 3500);
-  } catch (err) {
-    if (animOverlay) animOverlay.style.display = "none";
-    if (claimForm) { claimForm.classList.remove("hidden"); claimForm.style.display = "block"; }
-    showToast("Network transaction failed.", "❌");
-  }
-}
-
-function translatePage() {
-  if (typeof translations === "undefined" || !translations[currentLanguage]) return;
-  const dict = translations[currentLanguage];
-
-  const mainTitleEl = document.getElementById("mainTitle");
-  const mainSubtitleEl = document.getElementById("mainSubtitle");
-  if (mainTitleEl && dict.mainTitle) mainTitleEl.innerHTML = dict.mainTitle;
-  if (mainSubtitleEl && dict.mainSubtitle) mainSubtitleEl.innerHTML = dict.mainSubtitle;
-
-  const emailSectionTitleEl = document.querySelector("#emailGateSection .sectionTitle");
-  if (emailSectionTitleEl && dict.emailSectionTitle) emailSectionTitleEl.innerText = dict.emailSectionTitle;
-  
-  const startSurveyBtnEl = document.getElementById("startSurveyBtn");
-  if (startSurveyBtnEl && dict.btnStart) startSurveyBtnEl.innerHTML = dict.btnStart;
-
-  const prevBtnEl = document.getElementById("prevBtn");
-  const nextBtnEl = document.getElementById("nextBtn");
-  const submitClaimBtnEl = document.getElementById("submitClaimBtn");
-  if (prevBtnEl && dict.previous) prevBtnEl.innerHTML = `&lt; ${dict.previous}`;
-  if (nextBtnEl && dict.next) nextBtnEl.innerHTML = `${dict.next} &gt;`;
-  if (submitClaimBtnEl && dict.submit) submitClaimBtnEl.innerHTML = dict.submit;
-
-  const rewardTitleEl = document.getElementById("claimTitle");
-  const rewardSubtitleEl = document.getElementById("rewardSubtitleDesc");
-  if (rewardTitleEl && dict.claimTitle) rewardTitleEl.innerHTML = dict.claimTitle;
-  if (rewardSubtitleEl && dict.rewardSubtitle) rewardSubtitleEl.innerHTML = dict.rewardSubtitle;
-
-  const connectWalletBtnEl = document.querySelector("#connectWalletBtn span");
-  if (connectWalletBtnEl && dict.metaMaskLabel) connectWalletBtnEl.innerText = dict.metaMaskLabel;
-  
-  const manualLabelEl = document.querySelector(".manualWalletWrapper .dividerLine span");
-  if (manualLabelEl && dict.manualLabel) manualLabelEl.innerText = dict.manualLabel;
-  
-  const executeClaimBtnEl = document.getElementById("executeClaimBtn");
-  if (executeClaimBtnEl && dict.btnExecute) executeClaimBtnEl.innerText = dict.btnExecute;
-  
-  const referralTitleEl = document.querySelector(".referralContainer .dividerLine span");
-  if (referralTitleEl && dict.referralTitle) referralTitleEl.innerText = dict.referralTitle;
-
-  const referralDescriptionEl = document.getElementById("referralSubText");
-  if (referralDescriptionEl && dict.referralSub) referralDescriptionEl.innerHTML = dict.referralSub;
-  
-  const copyReferralBtnEl = document.getElementById("copyReferralBtn");
-  if (copyReferralBtnEl && dict.btnCopy) copyReferralBtnEl.innerText = dict.btnCopy;
-
-  const modalTitleEl = document.querySelector("#retrieveModal .modal-header h2");
-  if (modalTitleEl && dict.modalTitle) modalTitleEl.innerText = dict.modalTitle;
-  
-  const modalSubEl = document.querySelector("#retrieveModal .modal-subtitle");
-  if (modalSubEl && dict.modalSub) modalSubEl.innerText = dict.modalSub;
-  
-  const modalDetailsTitleEl = document.querySelector("#retrieveModal .extra-details-box h4");
-  if (modalDetailsTitleEl && dict.modalDetailsTitle) modalDetailsTitleEl.innerText = dict.modalDetailsTitle;
-  
-  const modalDetails1El = document.querySelector("#retrieveModal .extra-details-box li:nth-child(1)");
-  if (modalDetails1El && dict.modalDetails1) modalDetails1El.innerText = dict.modalDetails1;
-  
-  const modalDetails2El = document.querySelector("#retrieveModal .extra-details-box li:nth-child(2)");
-  if (modalDetails2El && dict.modalDetails2) modalDetails2El.innerText = dict.modalDetails2;
-  
-  const modalDetails3El = document.querySelector("#retrieveModal .extra-details-box li:nth-child(3)");
-  if (modalDetails3El && dict.modalDetails3) modalDetails3El.innerText = dict.modalDetails3;
-  
-  const modalInputLabelEl = document.querySelector("#retrieveModal .input-wrapper label");
-  if (modalInputLabelEl && dict.modalInputLabel) modalInputLabelEl.innerText = dict.modalInputLabel;
-  
-  const cancelModalBtnEl = document.getElementById("cancelModalBtn");
-  if (cancelModalBtnEl && dict.btnCancel) cancelModalBtnEl.innerText = dict.btnCancel;
-  
-  const confirmRetrieveBtnEl = document.getElementById("confirmRetrieveBtn");
-  if (confirmRetrieveBtnEl && dict.btnSearch) confirmRetrieveBtnEl.innerText = dict.btnSearch;
-}
-
-function resetApplicationFlowState() {
-  if (emailGateForm) emailGateForm.reset();
-  localStorage.removeItem("syntrix_user_email");
-  localStorage.removeItem("referralCode");
-  
-  if (statusDiv) statusDiv.innerHTML = "";
-  
-  userEmailAddress = "";
-  currentSection = 0;
-  isOtpSent = false;
-  legalConsentTimestamp = "";
-  clientUserAgent = ""; 
-  window.hasCompletedSurvey = false;
-  
-  const otpSection = document.getElementById("otpSection");
-  if (otpSection) {
-      otpSection.style.opacity = '0';
-      otpSection.style.pointerEvents = 'none';
-      setTimeout(() => {
-          otpSection.style.setProperty('display', 'none', 'important');
-          otpSection.classList.add('hidden');
-      }, 300);
-  }
-  
-  if (startSurveyBtn) {
-      startSurveyBtn.style.setProperty('display', 'none', 'important');
-      startSurveyBtn.classList.add('hidden');
-  }
-  
-  if (preVerifyBtn) {
-      preVerifyBtn.innerText = "Send Verification Code \u2192";
-      preVerifyBtn.disabled = false;
-      preVerifyBtn.style.setProperty('display', 'flex', 'important');
-      preVerifyBtn.classList.remove('hidden');
-  }
-
-  if (gateEmailInput) gateEmailInput.readOnly = false;
-  
-  for (const prop in answers) {
-      if (Object.prototype.hasOwnProperty.call(answers, prop)) {
-          delete answers[prop];
-      }
-  }
-  
-  if (emailGateSection) {
-      emailGateSection.classList.remove("hidden");
-      emailGateSection.style.display = "flex";
-  }
-  
-  const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "gatewayScreenSection", "documentModeSection", "selfieModeSection"];
-  dashboardCards.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) { el.classList.add("hidden"); el.style.display = "none"; }
-  });
-
-  if (claimForm) {
-      claimForm.classList.add("hidden");
-      claimForm.style.display = "none";
-  }
-  if (topProgressBox) {
-      topProgressBox.classList.add("hidden");
-      topProgressBox.style.display = "none";
-  }
-  
-  const tabLinksContainer = document.getElementById("dashboardTabLinks");
-  if (tabLinksContainer) {
-      tabLinksContainer.classList.add("hidden");
-      tabLinksContainer.style.display = "none";
-  }
-  
-  const menuReferralWrapper = document.getElementById("menuReferralWrapper");
-  if (menuReferralWrapper) menuReferralWrapper.style.display = "none";
-  
-  if (mainApplicationLayout) {
-      mainApplicationLayout.classList.add("hidden");
-      mainApplicationLayout.style.display = "none";
-  }
-  if (splashLandingGate) {
-      splashLandingGate.style.display = "flex";
-  }
-  routeSplashNavViews("home");
-  showToast("Account profiles successfully signed out.", "✓");
-}
-
-// ================= LIFE CYCLE REGISTRATION RUNNERS & EVENT ROUTERS =================
-document.addEventListener("DOMContentLoaded", async () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const claimToken = urlParams.get("token");
-  const refParam = urlParams.get("ref");
-  
-  if (refParam) {
-    localStorage.setItem("referralCode", normalizeReferralCode(refParam));
-    window.history.replaceState({}, document.title, window.location.pathname);
-  }
-  const savedRefCode = localStorage.getItem("referralCode");
-  if (savedRefCode && referredByCodeInput) referredByCodeInput.value = savedRefCode;
-
-  document.querySelectorAll(".tab-btn").forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      const target = e.target.dataset.tab;
-      if (target) {
-        if (target === 'survey' && window.hasCompletedSurvey) {
-            showToast("✅ Survey already completed. Redirecting to Survey Matrix...", "✅");
-            routeDashboardTabs('more-surveys');
-        } else {
-            routeDashboardTabs(target);
-        }
-        if(optionsPopover) {
-          optionsPopover.classList.add("hidden");
-          optionsPopover.style.display = "none";
-        }
-      }
-    });
-  });
-
-  if (claimToken) {
-    if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
-    if (claimForm) { claimForm.classList.add("hidden"); claimForm.style.display = "none"; }
-    if (topProgressBox) { topProgressBox.classList.add("hidden"); topProgressBox.style.display = "none"; }
-    if (gatewayScreenSection) { gatewayScreenSection.classList.add("hidden"); gatewayScreenSection.style.display = "none"; }
-    if (documentModeSection) { documentModeSection.classList.add("hidden"); documentModeSection.style.display = "none"; }
-    if (selfieModeSection) { selfieModeSection.classList.add("hidden"); selfieModeSection.style.display = "none"; }
-    
-    const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys"];
-    dashboardCards.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) { el.classList.add("hidden"); el.style.display = "none"; }
-    });
-  } else {
-    if (splashLandingGate) {
-        splashLandingGate.style.display = "flex";
-    }
-    if (mainApplicationLayout) {
-        mainApplicationLayout.style.display = "none";
-        mainApplicationLayout.classList.add("hidden");
-    }
-    routeSplashNavViews("home");
-  }
-
-  if (nextBtn) nextBtn.onclick = () => handleNextSection();
-  if (prevBtn) prevBtn.onclick = () => handlePrevSection();
-  if (claimForm) {
-    claimForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      handleSurveySubmission(e);
-    });
-  }
-  
-  if (connectWalletBtn) connectWalletBtn.addEventListener("click", interceptClaimGateActions);
-  if (claimConnectWalletBtn) claimConnectWalletBtn.addEventListener("click", interceptClaimGateActions);
-  if (executeClaimBtn) executeClaimBtn.addEventListener("click", interceptClaimGateActions);
-  if (submitClaimRewardBtn) submitClaimRewardBtn.addEventListener("click", interceptClaimGateActions);
-  
-  if (sidebarLogoutBtn) sidebarLogoutBtn.addEventListener("click", () => resetApplicationFlowState());
-  
-  if (copyReferralBtn) {
-      copyReferralBtn.onclick = () => {
-        if (!referralCodeDisplay) return;
-        referralCodeDisplay.select(); 
-        referralCodeDisplay.setSelectionRange(0, 99999);
-        try {
-          navigator.clipboard.writeI seem to be encountering an error. Can I try something else for you?
+            if (emailGateI encountered an error doing what you asked. Could you try again?
