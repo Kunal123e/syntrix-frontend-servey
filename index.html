@@ -256,37 +256,6 @@
         }
     };
 
-    window.handleGoogleLogin = async function() {
-        try {
-            if (window.metamaskEmbeddedInstance) {
-                await window.metamaskEmbeddedInstance.connectTo("openlogin", {
-                    loginProvider: "google"
-                });
-            }
-        } catch(e) {
-            console.error("Web3Auth Google Login error. Falling back to Simulator UI.", e);
-            const modal = document.getElementById('googleSimModal');
-            if (modal) {
-                modal.classList.remove('hidden');
-                modal.style.display = 'flex';
-            }
-        }
-    };
-
-    window.executeGoogleSimLogin = function(email) {
-        document.getElementById('googleSimModal').style.display = 'none';
-        
-        const emailGate = document.getElementById('emailGateSection');
-        if(emailGate) {
-            emailGate.style.display = 'none';
-            emailGate.classList.add('hidden');
-        }
-        
-        window.hasCompletedSurvey = true; 
-        window.unlockFullMenu();
-        window.openModeEnhanced('gateway'); 
-    };
-
     window.addEventListener("load", async () => {
       const selectAll = document.getElementById('selectAllConsent');
       const childConsents = document.querySelectorAll('.consent-child');
@@ -306,11 +275,48 @@
 
       const emailForm = document.getElementById('emailGateForm');
       const preVerifyBtn = document.getElementById('preVerifyBtn');
+      const gateEmailInput = document.getElementById('gateEmail');
+
+      // 🚀 FIX: Explicit Verification State
+      let verificationSent = false;
+
+      // 🚀 FIX: Reset state if user changes their email address after requesting OTP
+      if (gateEmailInput) {
+          gateEmailInput.addEventListener('input', () => {
+              if (verificationSent) {
+                  verificationSent = false;
+                  
+                  // Hide the OTP field and "Code sent!" indicator immediately
+                  const otpSection = document.getElementById('otpSection');
+                  if (otpSection) otpSection.style.display = 'none';
+                  
+                  // Clear out any old OTP value
+                  const gateOtp = document.getElementById('gateOtp');
+                  if (gateOtp) gateOtp.value = '';
+                  
+                  // Hide "Verify & Enter" button, bring back "Send Verification Code" button
+                  const startBtn = document.getElementById('startSurveyBtn');
+                  if (startBtn) {
+                      startBtn.style.setProperty('display', 'none', 'important');
+                      startBtn.classList.add('hidden');
+                  }
+                  
+                  if (preVerifyBtn) {
+                      preVerifyBtn.innerText = "Send Verification Code \u2192";
+                      preVerifyBtn.disabled = false;
+                      preVerifyBtn.style.setProperty('display', 'flex', 'important');
+                      preVerifyBtn.classList.remove('hidden');
+                  }
+              }
+          });
+      }
 
       if (preVerifyBtn) {
-          // 🚀 FIX: Secure Backend Request for OTP
+          // 🚀 FIX: Secure Backend Request for OTP with Verification State
           preVerifyBtn.addEventListener('click', async function() {
-              const emailInput = document.getElementById('gateEmail').value;
+              if (verificationSent) return;
+
+              const emailInput = gateEmailInput ? gateEmailInput.value : '';
               if (!emailInput) return alert("Please enter your email first.");
 
               preVerifyBtn.innerText = "Sending Code...";
@@ -326,21 +332,29 @@
                   const data = await res.json();
                   
                   if (data.success) {
-                      document.getElementById('otpSection').style.display = 'flex';
+                      // 🚀 API CONFIRMED SUCCESS: Update State & Reveal Input
+                      verificationSent = true;
+
+                      const otpSection = document.getElementById('otpSection');
+                      if (otpSection) otpSection.style.display = 'flex';
                       
                       // 🚀 FIX: Fully hide Send Code button and show Verify & Enter button securely
                       preVerifyBtn.classList.add('hidden');
                       preVerifyBtn.style.setProperty('display', 'none', 'important');
                       
                       const startBtn = document.getElementById('startSurveyBtn');
-                      startBtn.classList.remove('hidden');
-                      startBtn.style.setProperty('display', 'flex', 'important');
+                      if (startBtn) {
+                          startBtn.classList.remove('hidden');
+                          startBtn.style.setProperty('display', 'flex', 'important');
+                      }
                   } else {
+                      verificationSent = false;
                       alert(data.error || "Failed to send code.");
                       preVerifyBtn.innerText = "Send Verification Code \u2192";
                       preVerifyBtn.disabled = false;
                   }
               } catch(err) {
+                  verificationSent = false;
                   alert("Network error. Make sure backend is running.");
                   preVerifyBtn.innerText = "Send Verification Code \u2192";
                   preVerifyBtn.disabled = false;
@@ -496,46 +510,6 @@
 </head>
 <body class="dark-theme" style="background-color: #000000; color: #ffffff; overflow-x: hidden; margin: 0;">
 
-<!-- GOOGLE ACCOUNT SIMULATOR MODAL -->
-<div id="googleSimModal" class="modal-overlay hidden" style="display: none; z-index: 100000; background: rgba(0,0,0,0.6);">
-  <div style="background: #fff; width: 400px; max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-family: 'Segoe UI', Arial, sans-serif; color: #202124; overflow: hidden; animation: fadeUpIn 0.3s ease forwards;">
-    <div style="padding: 30px 24px 20px; text-align: center; border-bottom: 1px solid #e0e0e0;">
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 12px;">
-        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-      </svg>
-      <h2 style="margin: 0 0 8px 0; font-size: 22px; font-weight: 500;">Sign in with Google</h2>
-      <p style="margin: 0; font-size: 15px; color: #5f6368;">Choose an account to continue to Syntrix</p>
-    </div>
-    <div style="padding: 0;">
-      <div class="google-account-item" onclick="executeGoogleSimLogin('user@gmail.com')" style="display: flex; align-items: center; gap: 12px; padding: 12px 24px; cursor: pointer; border-bottom: 1px solid #f1f3f4;">
-         <div style="width: 32px; height: 32px; border-radius: 50%; background: #6366f1; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px;">U</div>
-         <div style="text-align: left;">
-           <div style="font-size: 14px; font-weight: 500; color: #3c4043;">User Account</div>
-           <div style="font-size: 12px; color: #5f6368;">user@gmail.com</div>
-         </div>
-      </div>
-      <div class="google-account-item" onclick="executeGoogleSimLogin('analyzer@syntrix.ai')" style="display: flex; align-items: center; gap: 12px; padding: 12px 24px; cursor: pointer;">
-         <div style="width: 32px; height: 32px; border-radius: 50%; background: #10b981; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px;">A</div>
-         <div style="text-align: left;">
-           <div style="font-size: 14px; font-weight: 500; color: #3c4043;">Analyzer Profile</div>
-           <div style="font-size: 12px; color: #5f6368;">analyzer@syntrix.ai</div>
-         </div>
-      </div>
-    </div>
-    <div style="padding: 14px 24px; font-size: 12px; color: #5f6368; display: flex; justify-content: space-between; background: #f8f9fa;">
-      <span>English (United States)</span>
-      <div style="display:flex; gap:12px;">
-          <span style="cursor: pointer;">Help</span>
-          <span style="cursor: pointer;">Privacy</span>
-          <span style="cursor: pointer;">Terms</span>
-      </div>
-    </div>
-  </div>
-</div>
-
 <div id="customToast" class="custom-toast" style="display: none;">
   <span class="toast-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
   <span id="toastMessage"></span>
@@ -551,8 +525,9 @@
 <div id="splashLandingGate">
   <div class="cosmic-bg-effect"></div>
   <header class="splash-header-v3">
-    <div class="nav-logo" id="navLogoHomeTrigger">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+    <!-- 🚀 FIX: LOGO IMPLEMENTATION -->
+    <div class="nav-logo" id="navLogoHomeTrigger" onclick="document.getElementById('linkHomeTab').click(); return false;">
+      <img src="syntrix-logo.png" alt="Syntrix Logo" style="height: 32px; width: auto; object-fit: contain; margin-right: 8px;">
       <span class="logo-text-v3">SYNTRIX</span>
     </div>
     <div class="unified-nav-links">
@@ -871,6 +846,7 @@
               </div>
             </div>
 
+            <!-- 🚀 FIX: Hidden OTP section by default -->
             <div id="otpSection" class="pac-form-group" style="display: none;">
               <label for="gateOtp" style="display: flex; justify-content: space-between; align-items: center;">
                 <span>Verification Code</span>
@@ -902,26 +878,13 @@
               </label>
             </div>
 
-            <!-- 🚀 FIX: Reverted to single dynamic button controlled seamlessly by script.js -->
-            <button type="submit" id="startSurveyBtn" class="pac-primary-btn">
+            <button type="button" id="preVerifyBtn" class="pac-primary-btn">
               Send Verification Code &rarr;
             </button>
-
-            <div class="pac-divider">
-                <div class="pac-divider-line"></div>
-                <span>Or continue with</span>
-                <div class="pac-divider-line"></div>
-            </div>
-
-            <button type="button" class="pac-google-btn" onclick="window.handleGoogleLogin();">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-              </svg>
-              Continue with Google
+            <button type="submit" id="startSurveyBtn" class="pac-primary-btn hidden" style="display: none;">
+              Verify & Enter &rarr;
             </button>
+
           </form>
 
           <div class="pac-trust-badges">
@@ -1023,7 +986,6 @@
                 </label>
               </div>
 
-              <!-- 🚀 FIX: Restricted max-height to 280px, properly hidden, and added the Cancel 'X' Button -->
               <div id="previewContainer" class="preview-window" style="display: none; margin-top: 20px; width: 100%; justify-content: center; position: relative;">
                 
                 <button type="button" onclick="resetUploadState(false)" style="position: absolute; top: 10px; right: 10px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 50%; width: 32px; height: 32px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(0,0,0,0.3); z-index: 20; transition: 0.2s;" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='rgba(239, 68, 68, 0.9)'">✕</button>
@@ -1191,7 +1153,6 @@
               <h4>1. Take a Selfie</h4>
             </div>
             
-            <!-- 🚀 FIX: Added position: relative and the Cancel 'X' button inside the Selfie Container -->
             <div class="selfie-scanner-container" style="position: relative;">
                 <div class="scanner-corner tl"></div>
                 <div class="scanner-corner tr"></div>
@@ -1698,7 +1659,6 @@
                     </div>
                 </div>
 
-                <!-- Hexagon Badge Card -->
                 <div class="xp-bento-card" style="justify-content: center; overflow: visible;">
                     <div class="xp-hex-container">
                         <div class="xp-hex-bg-glow"></div>
