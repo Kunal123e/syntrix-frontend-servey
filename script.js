@@ -47,10 +47,19 @@ const navLogoHomeTrigger = document.getElementById("navLogoHomeTrigger");
 const navGetStartedAction = document.getElementById("navGetStartedAction");
 const initializePlatformBtn = document.getElementById("initializePlatformBtn");
 
+// 🚀 FIX: Define playSmoothStart globally to resolve the Uncaught TypeError
+window.playSmoothStart = function() {
+  const initBtn = document.getElementById("initializePlatformBtn");
+  if (initBtn) {
+    initBtn.click();
+  }
+};
+
 const emailGateSection = document.getElementById("emailGateSection");
 const emailGateForm = document.getElementById("emailGateForm");
 const gateEmailInput = document.getElementById("gateEmail");
 const startSurveyBtn = document.getElementById("startSurveyBtn");
+const preVerifyBtn = document.getElementById('preVerifyBtn');
 const referredByCodeInput = document.getElementById("referredByCode"); 
 const menuToggleBtn = document.getElementById("menuToggleBtn");
 const optionsPopover = document.getElementById("optionsPopover");
