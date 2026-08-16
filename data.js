@@ -248,7 +248,7 @@ function calculateConsumerPsychologyBadge() {
 // MULTI-LANGUAGE TRANSLATION DICTIONARY
 // =========================================================================
 
-const translations = {
+var translations = {
   en: {
     mainTitle: "Syntrix Web3 Verification",
     mainSubtitle: "Complete tasks to earn SYNX tokens.",
