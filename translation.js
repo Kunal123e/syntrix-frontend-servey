@@ -3,7 +3,7 @@
 // Supports complete rendering vectors across English, Hindi, and Hinglish
 // =========================================================================
 
-const translations = {
+var translations = {
   en: {
     mainTitle: "Syntrix Consumer Analytics Hub",
     mainSubtitle: "Complete all 6 consumer research modules to secure your <span style='font-weight: 800; color: #111827; background: #e0e7ff; padding: 2px 8px; border-radius: 6px;'>48 SYNX</span> token allocation.",
