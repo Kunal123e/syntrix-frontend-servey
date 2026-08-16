@@ -489,8 +489,8 @@
             </div>
 
             <!-- 🚀 FIX: STRICTLY HIDDEN OTP SECTION ON LOAD -->
-            <div id="otpSection" class="pac-form-group hidden" style="display: none;">
-              <label for="gateOtp" style="display: flex; justify-content: space-between; align-items: center;">
+            <div id="otpSection" class="pac-form-group hidden" style="display: none !important; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;">
+              <label for="gateOtp" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                 <span>Verification Code</span>
                 <span style="color:#10b981; font-size:11px; font-weight: 700;">✅ Code sent!</span>
               </label>
@@ -849,36 +849,7 @@
           <div class="doc-card doc-bento-full">
             <div class="doc-card-header">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-              <h4 style="color: #ef4444;">Selfie Guidelines</h4>
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 16px;">
-              <div class="guide-item">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                <p style="color: #d1d5db;">Clear front-facing selfie.</p>
-              </div>
-              <div class="guide-item">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
-                <p style="color: #d1d5db;"><strong>NO</strong> group photos.</p>
-              </div>
-              <div class="guide-item">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
-                <p style="color: #d1d5db;"><strong>NO</strong> filters or face edits.</p>
-              </div>
-              <div class="guide-item">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
-                <p style="color: #d1d5db;"><strong>NO</strong> hats, masks, or sunglasses.</p>
-              </div>
-              <div class="guide-item">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                <p style="color: #d1d5db;">Well-lit background.</p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="doc-card doc-bento-full">
-            <div class="doc-card-header">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-              <h4>Legal Consent & Data Release</h4>
+              <h4 style="color: #ef4444;">Legal Consent & Data Release</h4>
             </div>
             <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
               <label class="custom-cb-wrapper" style="align-items: flex-start;">
@@ -1624,6 +1595,14 @@
 
 <!-- 🚀 MONOLITHIC JAVASCRIPT INJECTION 🚀 -->
 <script>
+// 🚀 FIX: Define playSmoothStart globally to resolve the Uncaught TypeError on line 193/207
+window.playSmoothStart = function() {
+  const initBtn = document.getElementById("initializePlatformBtn");
+  if (initBtn) {
+    initBtn.click();
+  }
+};
+
 // =========================================================================
 // SYNTRIX CORE PLATFORM APPLICATION LOGIC ENGINE
 // =========================================================================
@@ -2504,26 +2483,11 @@ function resetApplicationFlowState() {
   
   const otpSection = document.getElementById("otpSection");
   if (otpSection) {
-      otpSection.style.opacity = '0';
-      otpSection.style.pointerEvents = 'none';
-      setTimeout(() => {
-          otpSection.classList.add('hidden');
-          otpSection.style.display = 'none';
-      }, 300);
+      otpSection.classList.add("hidden");
+      otpSection.style.display = "none";
   }
   
-  if (startSurveyBtn) {
-      startSurveyBtn.classList.add('hidden');
-      startSurveyBtn.style.display = 'none';
-  }
-  
-  if (preVerifyBtn) {
-      preVerifyBtn.innerText = "Send Verification Code \u2192";
-      preVerifyBtn.disabled = false;
-      preVerifyBtn.classList.remove('hidden');
-      preVerifyBtn.style.display = 'block';
-  }
-
+  if (startSurveyBtn) startSurveyBtn.innerHTML = "Send Verification Code &rarr;";
   if (gateEmailInput) gateEmailInput.readOnly = false;
   
   for (const prop in answers) {
@@ -2572,6 +2536,7 @@ function resetApplicationFlowState() {
   showToast("Account profiles successfully signed out.", "✓");
 }
 
+// ================= LIFE CYCLE REGISTRATION RUNNERS & EVENT ROUTERS =================
 document.addEventListener("DOMContentLoaded", async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const claimToken = urlParams.get("token");
@@ -2620,4 +2585,217 @@ document.addEventListener("DOMContentLoaded", async () => {
         splashLandingGate.style.display = "flex";
     }
     if (mainApplicationLayout) {
-        mainApplicationLayout.style.display =I encountered an error doing what you asked. Could you try again?
+        mainApplicationLayout.style.display = "none";
+        mainApplicationLayout.classList.add("hidden");
+    }
+    routeSplashNavViews("home");
+  }
+
+  // 🚀 FIX: OTP SEND & VERIFY LOGIC TO SHOW VERIFICATION BOX
+  if (preVerifyBtn) {
+    preVerifyBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const emailVal = gateEmailInput.value.trim().toLowerCase();
+      if (!emailVal || !EMAIL_REGEX.test(emailVal)) {
+        showToast("Please enter a valid email address.", "⚠️");
+        return;
+      }
+
+      preVerifyBtn.disabled = true;
+      preVerifyBtn.innerText = "Sending Code...";
+
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/send-otp`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: emailVal })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showToast("Verification code sent to your email!", "✅");
+          isOtpSent = true;
+          userEmailAddress = emailVal;
+          gateEmailInput.readOnly = true;
+          
+          preVerifyBtn.classList.add("hidden");
+          preVerifyBtn.style.display = "none";
+          
+          if (startSurveyBtn) {
+            startSurveyBtn.classList.remove("hidden");
+            startSurveyBtn.style.display = "flex";
+          }
+          
+          const otpSection = document.getElementById("otpSection");
+          if (otpSection) {
+            otpSection.classList.remove("hidden");
+            otpSection.style.setProperty("display", "flex", "important"); 
+            otpSection.style.opacity = "1";
+            otpSection.style.pointerEvents = "auto";
+          }
+        } else {
+          showToast(data.error || "Failed to send code. Try again.", "❌");
+          preVerifyBtn.disabled = false;
+          preVerifyBtn.innerText = "Send Verification Code \u2192";
+        }
+      } catch (err) {
+        showToast("Network error. Please try again.", "❌");
+        preVerifyBtn.disabled = false;
+        preVerifyBtn.innerText = "Send Verification Code \u2192";
+      }
+    });
+  }
+
+  if (emailGateForm) {
+    emailGateForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!isOtpSent) return;
+
+      const otpVal = document.getElementById("gateOtp").value.trim();
+      if (!otpVal || otpVal.length < 6) {
+        showToast("Please enter the 6-digit code.", "⚠️");
+        return;
+      }
+
+      if (startSurveyBtn) {
+        startSurveyBtn.disabled = true;
+        startSurveyBtn.innerText = "Verifying...";
+      }
+
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/verify-otp`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: userEmailAddress, otp: otpVal })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          const referralCode = document.getElementById("referredByCode").value.trim();
+          if(referralCode) localStorage.setItem("referralCode", normalizeReferralCode(referralCode));
+
+          if(splashLandingGate) splashLandingGate.style.display = "none"; 
+          if(mainApplicationLayout) {
+              mainApplicationLayout.classList.remove("hidden");
+              mainApplicationLayout.style.display = "flex"; 
+          }
+          
+          await runProfileLedgerVerification(userEmailAddress, false);
+        } else {
+          showToast(data.error || "Invalid OTP code.", "❌");
+          if (startSurveyBtn) {
+            startSurveyBtn.disabled = false;
+            startSurveyBtn.innerHTML = "Verify & Enter &rarr;";
+          }
+        }
+      } catch (err) {
+        showToast("Network error. Please try again.", "❌");
+        if (startSurveyBtn) {
+          startSurveyBtn.disabled = false;
+          startSurveyBtn.innerHTML = "Verify & Enter &rarr;";
+        }
+      }
+    });
+  }
+
+  if (nextBtn) nextBtn.onclick = () => handleNextSection();
+  if (prevBtn) prevBtn.onclick = () => handlePrevSection();
+  if (claimForm) {
+    claimForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      handleSurveySubmission(e);
+    });
+  }
+  
+  if (connectWalletBtn) connectWalletBtn.addEventListener("click", interceptClaimGateActions);
+  if (claimConnectWalletBtn) claimConnectWalletBtn.addEventListener("click", interceptClaimGateActions);
+  if (executeClaimBtn) executeClaimBtn.addEventListener("click", interceptClaimGateActions);
+  if (submitClaimRewardBtn) submitClaimRewardBtn.addEventListener("click", interceptClaimGateActions);
+  
+  if (sidebarLogoutBtn) sidebarLogoutBtn.addEventListener("click", () => resetApplicationFlowState());
+  
+  if (copyReferralBtn) {
+      copyReferralBtn.onclick = () => {
+        if (!referralCodeDisplay) return;
+        referralCodeDisplay.select(); 
+        referralCodeDisplay.setSelectionRange(0, 99999);
+        try {
+          navigator.clipboard.writeText(referralCodeDisplay.value);
+          const originalText = copyReferralBtn.innerText; 
+          copyReferralBtn.innerText = "Copied! ✓";
+          setTimeout(() => { copyReferralBtn.innerText = originalText; }, 2000);
+        } catch (err) { showToast("Failed to access system registers.", "❌"); }
+      }
+  }
+
+  if (generateQrBtn) {
+    generateQrBtn.addEventListener("click", () => {
+      const shopRefCode = localStorage.getItem("referralCode");
+      if (!shopRefCode) {
+        showToast("Referral link not found. Please log in to your shop account.", "❌");
+        return;
+      }
+      
+      qrCodeWrapper.style.display = "flex";
+      qrCodeCanvas.innerHTML = "";
+      
+      const dynamicQrLink = `${BACKEND_URL}/r/${shopRefCode}`;
+      
+      new QRCode(qrCodeCanvas, {
+        text: dynamicQrLink,
+        width: 256,
+        height: 256,
+        colorDark: "#111827",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+      qrCodeWrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      showToast("Shop QR Code generated!", "✅");
+    });
+  }
+
+  if (downloadQrBtn) {
+    downloadQrBtn.addEventListener("click", () => {
+      const originalCanvas = qrCodeCanvas.querySelector("canvas");
+
+      if (!originalCanvas) {
+        showToast("Please generate the QR code first.", "❌");
+        return;
+      }
+
+      const padding = 24; 
+      const paddedCanvas = document.createElement("canvas");
+      paddedCanvas.width = originalCanvas.width + (padding * 2);
+      paddedCanvas.height = originalCanvas.height + (padding * 2);
+      
+      const ctx = paddedCanvas.getContext("2d");
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, paddedCanvas.width, paddedCanvas.height);
+      ctx.drawImage(originalCanvas, padding, padding);
+
+      const downloadUrl = paddedCanvas.toDataURL("image/png");
+      
+      const tempLink = document.createElement("a");
+      tempLink.href = downloadUrl;
+      tempLink.download = "Syntrix_Dealer_QR.png";
+      document.body.appendChild(tempLink);
+      tempLink.click();
+      document.body.removeChild(tempLink);
+      
+      showToast("QR Code saved to gallery!", "✅");
+    });
+  }
+
+  const menuCopyReferralBtn = document.getElementById("menuCopyReferralBtn");
+  const menuReferralInputDisplay = document.getElementById("menuReferralInputDisplay");
+  if (menuCopyReferralBtn && menuReferralInputDisplay) {
+    menuCopyReferralBtn.onclick = (e) => {
+      e.stopPropagation();
+      const refLink = menuReferralInputDisplay.value;
+      if (refLink) {
+        navigator.clipboard.writeText(refLink);
+        menuCopyReferralBtn.innerText = "Copied!";
+I encountered an error doing what you asked. Could you try again?
