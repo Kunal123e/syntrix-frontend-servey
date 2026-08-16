@@ -994,6 +994,115 @@ document.addEventListener("DOMContentLoaded", async () => {
     routeSplashNavViews("home");
   }
 
+  // 🚀 FIX: OTP SEND & VERIFY LOGIC TO SHOW VERIFICATION BOX
+  if (preVerifyBtn) {
+    preVerifyBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const emailVal = gateEmailInput.value.trim().toLowerCase();
+      if (!emailVal || !EMAIL_REGEX.test(emailVal)) {
+        showToast("Please enter a valid email address.", "⚠️");
+        return;
+      }
+
+      preVerifyBtn.disabled = true;
+      preVerifyBtn.innerText = "Sending Code...";
+
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/send-otp`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: emailVal })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showToast("Verification code sent to your email!", "✅");
+          isOtpSent = true;
+          userEmailAddress = emailVal;
+          gateEmailInput.readOnly = true;
+          
+          preVerifyBtn.classList.add("hidden");
+          preVerifyBtn.style.display = "none";
+          
+          if (startSurveyBtn) {
+            startSurveyBtn.classList.remove("hidden");
+            startSurveyBtn.style.display = "flex";
+          }
+          
+          const otpSection = document.getElementById("otpSection");
+          if (otpSection) {
+            otpSection.classList.remove("hidden");
+            otpSection.style.setProperty("display", "flex", "important"); 
+            otpSection.style.opacity = "1";
+            otpSection.style.pointerEvents = "auto";
+          }
+        } else {
+          showToast(data.error || "Failed to send code. Try again.", "❌");
+          preVerifyBtn.disabled = false;
+          preVerifyBtn.innerText = "Send Verification Code \u2192";
+        }
+      } catch (err) {
+        showToast("Network error. Please try again.", "❌");
+        preVerifyBtn.disabled = false;
+        preVerifyBtn.innerText = "Send Verification Code \u2192";
+      }
+    });
+  }
+
+  if (emailGateForm) {
+    emailGateForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!isOtpSent) return;
+
+      const otpVal = document.getElementById("gateOtp").value.trim();
+      if (!otpVal || otpVal.length < 6) {
+        showToast("Please enter the 6-digit code.", "⚠️");
+        return;
+      }
+
+      if (startSurveyBtn) {
+        startSurveyBtn.disabled = true;
+        startSurveyBtn.innerText = "Verifying...";
+      }
+
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/verify-otp`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: userEmailAddress, otp: otpVal })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          const referralCode = document.getElementById("referredByCode").value.trim();
+          if(referralCode) localStorage.setItem("referralCode", normalizeReferralCode(referralCode));
+
+          if(splashLandingGate) splashLandingGate.style.display = "none"; 
+          if(mainApplicationLayout) {
+              mainApplicationLayout.classList.remove("hidden");
+              mainApplicationLayout.style.display = "flex"; 
+          }
+          
+          await runProfileLedgerVerification(userEmailAddress, false);
+        } else {
+          showToast(data.error || "Invalid OTP code.", "❌");
+          if (startSurveyBtn) {
+            startSurveyBtn.disabled = false;
+            startSurveyBtn.innerHTML = "Verify & Enter &rarr;";
+          }
+        }
+      } catch (err) {
+        showToast("Network error. Please try again.", "❌");
+        if (startSurveyBtn) {
+          startSurveyBtn.disabled = false;
+          startSurveyBtn.innerHTML = "Verify & Enter &rarr;";
+        }
+      }
+    });
+  }
+
   if (nextBtn) nextBtn.onclick = () => handleNextSection();
   if (prevBtn) prevBtn.onclick = () => handlePrevSection();
   if (claimForm) {
