@@ -248,7 +248,6 @@ function calculateConsumerPsychologyBadge() {
 // MULTI-LANGUAGE TRANSLATION DICTIONARY
 // =========================================================================
 
-// 🚀 FIX: Changed from const to var to prevent redeclaration fatal crashes
 var translations = {
   en: {
     mainTitle: "Syntrix Web3 Verification",
