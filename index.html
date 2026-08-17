@@ -1598,6 +1598,51 @@
 
 <!-- 🚀 MONOLITHIC JAVASCRIPT INJECTION 🚀 -->
 <script>
+// 🚀 FIX: BULLETPROOF "GET STARTED" LOGIC 
+window.playSmoothStart = function() {
+    // 1. Hide Splash Screen
+    const splash = document.getElementById("splashLandingGate");
+    if (splash) splash.style.display = "none";
+
+    // 2. Show Main App Container
+    const app = document.getElementById("mainApplicationLayout");
+    if (app) {
+        app.classList.remove("hidden");
+        app.style.display = "flex"; 
+    }
+
+    // 3. Routing Logic (Auth Check)
+    const emailGate = document.getElementById("emailGateSection");
+    const savedEmail = localStorage.getItem("syntrix_user_email");
+    
+    if (savedEmail) {
+        window.userEmailAddress = savedEmail;
+        if (emailGate) {
+            emailGate.style.display = "none";
+            emailGate.classList.add("hidden");
+        }
+        if (typeof runProfileLedgerVerification === "function") {
+            runProfileLedgerVerification(savedEmail, false);
+        }
+    } else {
+        const cards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "gatewayScreenSection", "documentModeSection", "selfieModeSection"];
+        cards.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) { el.style.display = "none"; el.classList.add("hidden"); }
+        });
+        if (emailGate) {
+            emailGate.classList.remove("hidden");
+            emailGate.style.display = "flex";
+        }
+    }
+};
+
+// Fallback attachment for the hidden button
+document.addEventListener("DOMContentLoaded", () => {
+    const initBtn = document.getElementById("initializePlatformBtn");
+    if (initBtn) initBtn.onclick = window.playSmoothStart;
+});
+
 // =========================================================================
 // SYNTRIX CORE PLATFORM APPLICATION LOGIC ENGINE
 // =========================================================================
@@ -1632,19 +1677,11 @@ let userConnectedWalletAddress = "";
 let legalConsentTimestamp = "";
 let clientUserAgent = "";
 
-const splashLandingGate = document.getElementById("splashLandingGate");
-const mainApplicationLayout = document.getElementById("mainApplicationLayout");
-const viewSplashHome = document.getElementById("viewSplashHome");
-const viewSplashRewards = document.getElementById("viewSplashRewards");
-const viewSplashAbout = document.getElementById("viewSplashAbout");
 const linkHomeTab = document.getElementById("linkHomeTab");
 const linkRewardsTab = document.getElementById("linkRewardsTab");
 const linkAboutTab = document.getElementById("linkAboutTab");
 const navLogoHomeTrigger = document.getElementById("navLogoHomeTrigger");
-const navGetStartedAction = document.getElementById("navGetStartedAction");
-const initializePlatformBtn = document.getElementById("initializePlatformBtn");
 
-const emailGateSection = document.getElementById("emailGateSection");
 const emailGateForm = document.getElementById("emailGateForm");
 const gateEmailInput = document.getElementById("gateEmail");
 const startSurveyBtn = document.getElementById("startSurveyBtn");
@@ -1704,7 +1741,6 @@ const progressText = document.querySelector(".progressText");
 const dashboardTabLinks = document.getElementById("dashboardTabLinks");
 const sidebarLogoutBtn = document.getElementById("sidebarLogoutBtn");
 
-const confirmRestartModal = document.getElementById("confirmRestartModal");
 const cancelRestartBtn = document.getElementById("cancelRestartBtn");
 const confirmRestartBtn = document.getElementById("confirmRestartBtn");
 
@@ -1751,6 +1787,7 @@ function closeLegalModal() {
   }
 }
 const dismissModal = () => { 
+  const retrieveModal = document.getElementById("retrieveModal");
   if (retrieveModal) {
     retrieveModal.classList.add("hidden"); 
     retrieveModal.style.display = "none";
@@ -1758,6 +1795,10 @@ const dismissModal = () => {
 };
 
 function routeSplashNavViews(targetView) {
+  const viewSplashHome = document.getElementById("viewSplashHome");
+  const viewSplashRewards = document.getElementById("viewSplashRewards");
+  const viewSplashAbout = document.getElementById("viewSplashAbout");
+
   if (viewSplashHome) viewSplashHome.style.display = "none";
   if (viewSplashRewards) viewSplashRewards.style.display = "none";
   if (viewSplashAbout) viewSplashAbout.style.display = "none";
@@ -1775,43 +1816,8 @@ if (linkAboutTab) linkAboutTab.addEventListener("click", (e) => { e.preventDefau
 if (navLogoHomeTrigger) navLogoHomeTrigger.addEventListener("click", () => routeSplashNavViews("home"));
 document.querySelectorAll(".back-to-home-btn").forEach(btn => btn.addEventListener("click", () => routeSplashNavViews("home")));
 
-if (navGetStartedAction) {
-  navGetStartedAction.addEventListener("click", () => {
-    if (initializePlatformBtn) initializePlatformBtn.click();
-  });
-}
 
-if (initializePlatformBtn) {
-  initializePlatformBtn.addEventListener("click", () => {
-    if(splashLandingGate) splashLandingGate.style.display = "none"; 
-    if(mainApplicationLayout) {
-        mainApplicationLayout.classList.remove("hidden");
-        mainApplicationLayout.style.display = "flex"; 
-    }
-    
-    const savedEmail = localStorage.getItem("syntrix_user_email");
-    if (savedEmail) {
-      userEmailAddress = savedEmail;
-      if (emailGateSection) {
-          emailGateSection.style.display = "none";
-          emailGateSection.classList.add("hidden");
-      }
-      runProfileLedgerVerification(userEmailAddress, false);
-    } else {
-      const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "gatewayScreenSection", "documentModeSection", "selfieModeSection"];
-      dashboardCards.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) { el.style.display = "none"; el.classList.add("hidden"); }
-      });
-      if (emailGateSection) {
-          emailGateSection.classList.remove("hidden");
-          emailGateSection.style.display = "flex";
-      }
-    }
-  });
-}
-
-window.openMode = function(mode) {
+window.openModeEnhanced = function(mode) {
   if (mode === 'survey' && window.hasCompletedSurvey) {
       showToast("✅ Survey already completed. Redirecting to Survey Matrix...", "✅");
       routeDashboardTabs('more-surveys');
@@ -1822,9 +1828,10 @@ window.openMode = function(mode) {
   const survey = document.getElementById("claimForm");
   const topProgress = document.getElementById("topProgressBox");
   const docMode = document.getElementById("documentModeSection");
+  const selfieMode = document.getElementById("selfieModeSection");
   const mainSubtitle = document.getElementById("mainSubtitle"); 
 
-  [gateway, survey, topProgress, docMode].forEach(el => {
+  [gateway, survey, topProgress, docMode, selfieMode].forEach(el => {
       if (el) { el.classList.add("hidden"); el.style.display = "none"; }
   });
 
@@ -1837,6 +1844,9 @@ window.openMode = function(mode) {
       renderSection(); 
   } else if (mode === 'document') {
       if(docMode) { docMode.classList.remove("hidden"); docMode.style.display = "block"; }
+      if(mainSubtitle) mainSubtitle.style.display = "none"; 
+  } else if (mode === 'selfie') {
+      if(selfieMode) { selfieMode.classList.remove("hidden"); selfieMode.style.display = "block"; }
       if(mainSubtitle) mainSubtitle.style.display = "none"; 
   }
 };
@@ -1969,7 +1979,8 @@ function routeDashboardTabs(targetTab) {
     document.getElementById("selfieModeSection"),
     document.getElementById("gatewayScreenSection"),
     document.getElementById("claimForm"),
-    document.getElementById("topProgressBox")
+    document.getElementById("topProgressBox"),
+    document.getElementById("tabScreenXP")
   ];
   
   cards.forEach(card => {
@@ -2012,6 +2023,11 @@ function routeDashboardTabs(targetTab) {
     if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
     if(mainSubtitle) mainSubtitle.style.display = "none"; 
   }
+  else if (targetTab === "xp") {
+    const el = document.getElementById("tabScreenXP");
+    if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
+    if(mainSubtitle) mainSubtitle.style.display = "none"; 
+  }
   else if (targetTab === "gateway") {
     const el = document.getElementById("gatewayScreenSection");
     if(el) { el.classList.remove("hidden"); el.style.display = "flex"; }
@@ -2025,7 +2041,7 @@ function routeDashboardTabs(targetTab) {
 }
 
 function handleNextSection() {
-  const sections = getSurveyData();
+  const sections = window.surveySections;
   if (!validateCurrentSectionAnswers()) {
     showToast(getUIText("validationRequired"), "⚠️");
     return;
@@ -2043,6 +2059,13 @@ function handlePrevSection() {
     renderSection();
     updateExcitementBanner(currentSection);
   }
+}
+
+function getSectionTitle(sectionData) {
+  if (typeof sectionTranslations !== "undefined" && sectionTranslations[currentLanguage]) {
+    return sectionTranslations[currentLanguage][sectionData.title] || sectionData.title;
+  }
+  return sectionData.title;
 }
 
 function getQuestionText(q) {
@@ -2065,7 +2088,7 @@ function interceptClaimGateActions(e) {
 }
 
 function validateCurrentSectionAnswers() {
-  const sections = getSurveyData();
+  const sections = window.surveySections;
   const currentData = sections[currentSection];
   if (!currentData) return false;
   
@@ -2080,7 +2103,7 @@ function validateCurrentSectionAnswers() {
 }
 
 function renderSection() {
-  const sections = getSurveyData();
+  const sections = window.surveySections;
   if (!sections || sections.length === 0 || !surveyContainer) return;
   const currentData = sections[currentSection];
   
@@ -2089,14 +2112,17 @@ function renderSection() {
        surveyStartTime = Date.now(); 
     }
 
+    const topProgressBox = document.getElementById("topProgressBox");
     if (topProgressBox) {
       topProgressBox.classList.remove("hidden");
       topProgressBox.style.display = "block";
     }
+    const claimForm = document.getElementById("claimForm");
     if (claimForm) {
       claimForm.classList.remove("hidden");
       claimForm.style.display = "block";
     }
+    const emailGateSection = document.getElementById("emailGateSection");
     if (emailGateSection) {
       emailGateSection.classList.add("hidden");
       emailGateSection.style.display = "none";
@@ -2136,6 +2162,10 @@ function renderSection() {
 
     htmlStr += `</div>`;
     surveyContainer.innerHTML = htmlStr;
+
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const submitClaimBtn = document.getElementById("submitClaimBtn");
 
     if (prevBtn) {
       if(currentSection === 0) {
@@ -2198,6 +2228,7 @@ function updateExcitementBanner(sectionIndex) {
 }
 
 async function runProfileLedgerVerification(email, isFromModal = false, isBackgroundSync = false) {
+  const modalStatus = document.getElementById("modalStatus");
   const outputTarget = isFromModal ? modalStatus : statusDiv;
   if (!outputTarget) return;
 
@@ -2216,6 +2247,12 @@ async function runProfileLedgerVerification(email, isFromModal = false, isBackgr
       userEmailAddress = email;
       localStorage.setItem("syntrix_user_email", email);
       
+      const statTotalReferrals = document.getElementById("statTotalReferrals");
+      const statPendingRewards = document.getElementById("statPendingRewards");
+      const statClaimedRewards = document.getElementById("statClaimedRewards");
+      const statTotalEarned = document.getElementById("statTotalEarned");
+      const referralCodeDisplay = document.getElementById("referralCodeDisplay");
+
       if (statTotalReferrals) statTotalReferrals.innerText = statusResult.referralsCount || "0";
       if (statPendingRewards) statPendingRewards.innerText = `${statusResult.pendingRewards || 0} SYNX`;
       if (statClaimedRewards) statClaimedRewards.innerText = `${statusResult.claimedRewards || 0} SYNX`;
@@ -2234,6 +2271,13 @@ async function runProfileLedgerVerification(email, isFromModal = false, isBackgr
         displayConsumerBadgesUI(statusResult.badge || "Analyzer");
 
         if (!isBackgroundSync) {
+            const emailGateSection = document.getElementById("emailGateSection");
+            const claimForm = document.getElementById("claimForm");
+            const topProgressBox = document.getElementById("topProgressBox");
+            const gatewayScreenSection = document.getElementById("gatewayScreenSection");
+            const documentModeSection = document.getElementById("documentModeSection");
+            const selfieModeSection = document.getElementById("selfieModeSection");
+            
             if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
             if (claimForm) { claimForm.classList.add("hidden"); claimForm.style.display = "none"; }
             if (topProgressBox) { topProgressBox.classList.add("hidden"); topProgressBox.style.display = "none"; }
@@ -2253,6 +2297,7 @@ async function runProfileLedgerVerification(email, isFromModal = false, isBackgr
         if (menuPsychologyBadgeWrapper) menuPsychologyBadgeWrapper.style.display = "none";
 
         if (!isBackgroundSync) {
+            const emailGateSection = document.getElementById("emailGateSection");
             if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
             
             const cards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "claimForm", "topProgressBox", "documentModeSection", "selfieModeSection"];
@@ -2271,6 +2316,7 @@ async function runProfileLedgerVerification(email, isFromModal = false, isBackgr
     } else {
       if (!isFromModal) {
         if (!isBackgroundSync) {
+            const emailGateSection = document.getElementById("emailGateSection");
             if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
             const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "claimForm", "topProgressBox", "documentModeSection", "selfieModeSection"];
             dashboardCards.forEach(id => {
@@ -2340,6 +2386,7 @@ async function handleSurveySubmission(e) {
     return;
   }
 
+  const claimForm = document.getElementById("claimForm");
   if (claimForm) { claimForm.classList.add("hidden"); claimForm.style.display = "none"; }
   
   const excitementBanner = document.getElementById("excitementBanner");
@@ -2463,6 +2510,7 @@ function translatePage() {
 }
 
 function resetApplicationFlowState() {
+  const emailGateForm = document.getElementById("emailGateForm");
   if (emailGateForm) emailGateForm.reset();
   localStorage.removeItem("syntrix_user_email");
   localStorage.removeItem("referralCode");
@@ -2482,7 +2530,9 @@ function resetApplicationFlowState() {
       otpSection.style.display = "none";
   }
   
+  const startSurveyBtn = document.getElementById("startSurveyBtn");
   if (startSurveyBtn) startSurveyBtn.innerHTML = "Send Verification Code &rarr;";
+  const gateEmailInput = document.getElementById("gateEmail");
   if (gateEmailInput) gateEmailInput.readOnly = false;
   
   for (const prop in answers) {
@@ -2491,6 +2541,7 @@ function resetApplicationFlowState() {
       }
   }
   
+  const emailGateSection = document.getElementById("emailGateSection");
   if (emailGateSection) {
       emailGateSection.classList.remove("hidden");
       emailGateSection.style.display = "flex";
@@ -2502,10 +2553,12 @@ function resetApplicationFlowState() {
     if (el) { el.classList.add("hidden"); el.style.display = "none"; }
   });
 
+  const claimForm = document.getElementById("claimForm");
   if (claimForm) {
       claimForm.classList.add("hidden");
       claimForm.style.display = "none";
   }
+  const topProgressBox = document.getElementById("topProgressBox");
   if (topProgressBox) {
       topProgressBox.classList.add("hidden");
       topProgressBox.style.display = "none";
@@ -2542,6 +2595,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     window.history.replaceState({}, document.title, window.location.pathname);
   }
   const savedRefCode = localStorage.getItem("referralCode");
+  const referredByCodeInput = document.getElementById("referredByCode");
   if (savedRefCode && referredByCodeInput) referredByCodeInput.value = savedRefCode;
 
   document.querySelectorAll(".tab-btn").forEach(btn => {
@@ -2554,6 +2608,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         } else {
             routeDashboardTabs(target);
         }
+        const optionsPopover = document.getElementById("optionsPopover");
         if(optionsPopover) {
           optionsPopover.classList.add("hidden");
           optionsPopover.style.display = "none";
@@ -2561,6 +2616,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
   });
+
+  const emailGateSection = document.getElementById("emailGateSection");
+  const claimForm = document.getElementById("claimForm");
+  const topProgressBox = document.getElementById("topProgressBox");
+  const gatewayScreenSection = document.getElementById("gatewayScreenSection");
+  const documentModeSection = document.getElementById("documentModeSection");
+  const selfieModeSection = document.getElementById("selfieModeSection");
 
   if (claimToken) {
     if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
@@ -2587,6 +2649,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // 🚀 FIX: OTP SEND & VERIFY LOGIC TO SHOW VERIFICATION BOX
+  const preVerifyBtn = document.getElementById('preVerifyBtn');
+  const gateEmailInput = document.getElementById("gateEmail");
+  const startSurveyBtn = document.getElementById("startSurveyBtn");
+  const emailGateForm = document.getElementById("emailGateForm");
+
   if (preVerifyBtn) {
     preVerifyBtn.addEventListener("click", async (e) => {
       e.preventDefault();
@@ -2695,6 +2762,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
+  const nextBtn = document.getElementById("nextBtn");
+  const prevBtn = document.getElementById("prevBtn");
+
   if (nextBtn) nextBtn.onclick = () => handleNextSection();
   if (prevBtn) prevBtn.onclick = () => handlePrevSection();
   if (claimForm) {
@@ -2704,6 +2774,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
   
+  const connectWalletBtn = document.getElementById("connectWalletBtn");
+  const claimConnectWalletBtn = document.getElementById("claimConnectWalletBtn");
+  const executeClaimBtn = document.getElementById("executeClaimBtn");
+  const submitClaimRewardBtn = document.getElementById("submitClaimRewardBtn");
+  const sidebarLogoutBtn = document.getElementById("sidebarLogoutBtn");
+  const copyReferralBtn = document.getElementById("copyReferralBtn");
+  const referralCodeDisplay = document.getElementById("referralCodeDisplay");
+  const generateQrBtn = document.getElementById("generateQrBtn");
+  const qrCodeWrapper = document.getElementById("qrCodeWrapper");
+  const qrCodeCanvas = document.getElementById("qrCodeCanvas");
+  const downloadQrBtn = document.getElementById("downloadQrBtn");
+
   if (connectWalletBtn) connectWalletBtn.addEventListener("click", interceptClaimGateActions);
   if (claimConnectWalletBtn) claimConnectWalletBtn.addEventListener("click", interceptClaimGateActions);
   if (executeClaimBtn) executeClaimBtn.addEventListener("click", interceptClaimGateActions);
@@ -2742,4 +2824,153 @@ document.addEventListener("DOMContentLoaded", async () => {
         text: dynamicQrLink,
         width: 256,
         height: 256,
-        colorDarkI'm having a hard time fulfilling your request. Can I help you with something else instead?
+        colorDark: "#111827",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+      qrCodeWrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      showToast("Shop QR Code generated!", "✅");
+    });
+  }
+
+  if (downloadQrBtn) {
+    downloadQrBtn.addEventListener("click", () => {
+      const originalCanvas = qrCodeCanvas.querySelector("canvas");
+
+      if (!originalCanvas) {
+        showToast("Please generate the QR code first.", "❌");
+        return;
+      }
+
+      const padding = 24; 
+      const paddedCanvas = document.createElement("canvas");
+      paddedCanvas.width = originalCanvas.width + (padding * 2);
+      paddedCanvas.height = originalCanvas.height + (padding * 2);
+      
+      const ctx = paddedCanvas.getContext("2d");
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, paddedCanvas.width, paddedCanvas.height);
+      ctx.drawImage(originalCanvas, padding, padding);
+
+      const downloadUrl = paddedCanvas.toDataURL("image/png");
+      
+      const tempLink = document.createElement("a");
+      tempLink.href = downloadUrl;
+      tempLink.download = "Syntrix_Dealer_QR.png";
+      document.body.appendChild(tempLink);
+      tempLink.click();
+      document.body.removeChild(tempLink);
+      
+      showToast("QR Code saved to gallery!", "✅");
+    });
+  }
+
+  const menuCopyReferralBtn = document.getElementById("menuCopyReferralBtn");
+  const menuReferralInputDisplay = document.getElementById("menuReferralInputDisplay");
+  if (menuCopyReferralBtn && menuReferralInputDisplay) {
+    menuCopyReferralBtn.onclick = (e) => {
+      e.stopPropagation();
+      const refLink = menuReferralInputDisplay.value;
+      if (refLink) {
+        navigator.clipboard.writeText(refLink);
+        menuCopyReferralBtn.innerText = "Copied!";
+        menuCopyReferralBtn.style.background = "#10b981";
+        setTimeout(() => { 
+            menuCopyReferralBtn.innerText = "Copy"; 
+            menuCopyReferralBtn.style.background = "#111827";
+        }, 2000);
+      }
+    };
+  }
+
+  const menuToggleBtn = document.getElementById("menuToggleBtn");
+  const optionsPopover = document.getElementById("optionsPopover");
+  if (menuToggleBtn && optionsPopover) {
+    menuToggleBtn.onclick = (e) => { 
+        e.stopPropagation(); 
+        optionsPopover.classList.toggle("hidden"); 
+        if(optionsPopover.style.display === "none" || optionsPopover.style.display === "") {
+            optionsPopover.style.display = "block";
+        } else {
+            optionsPopover.style.display = "none";
+        }
+    };
+    document.addEventListener("click", (e) => {
+        if(optionsPopover && !optionsPopover.contains(e.target) && e.target !== menuToggleBtn) {
+          optionsPopover.classList.add("hidden");
+          optionsPopover.style.display = "none";
+        }
+    });
+  }
+
+  const menuRestartBtn = document.getElementById("menuRestartBtn"); 
+  const confirmRestartModal = document.getElementById("confirmRestartModal");
+  if (menuRestartBtn) {
+    menuRestartBtn.onclick = () => { 
+      if(optionsPopover) {
+          optionsPopover.classList.add("hidden"); 
+          optionsPopover.style.display = "none";
+      }
+      if(confirmRestartModal) {
+          confirmRestartModal.classList.remove("hidden"); 
+          confirmRestartModal.style.display = "flex";
+      }
+    };
+  }
+  
+  const cancelRestartBtn = document.getElementById("cancelRestartBtn");
+  if (cancelRestartBtn) {
+    cancelRestartBtn.onclick = () => {
+      if(confirmRestartModal) {
+          confirmRestartModal.classList.add("hidden");
+          confirmRestartModal.style.display = "none";
+      }
+    };
+  }
+  
+  const confirmRestartBtn = document.getElementById("confirmRestartBtn");
+  if (confirmRestartBtn) {
+    confirmRestartBtn.onclick = () => {
+      if(confirmRestartModal) {
+          confirmRestartModal.classList.add("hidden");
+          confirmRestartModal.style.display = "none";
+      }
+      resetApplicationFlowState();
+    };
+  }
+
+  const menuRecoverBtn = document.getElementById("menuRecoverBtn");
+  const retrieveModal = document.getElementById("retrieveModal");
+  const modalEmailInput = document.getElementById("modalEmailInput");
+  const modalStatus = document.getElementById("modalStatus");
+  const confirmRetrieveBtn = document.getElementById("confirmRetrieveBtn");
+
+  if (menuRecoverBtn && retrieveModal) {
+    menuRecoverBtn.onclick = () => {
+      if(optionsPopover) {
+          optionsPopover.classList.add("hidden"); 
+          optionsPopover.style.display = "none";
+      }
+      retrieveModal.classList.remove("hidden");
+      retrieveModal.style.display = "flex";
+      if (modalEmailInput) modalEmailInput.value = ""; 
+      if (modalStatus) modalStatus.innerHTML = "";
+      
+      if (confirmRetrieveBtn) {
+        confirmRetrieveBtn.onclick = async () => {
+          const searchEmail = modalEmailInput ? modalEmailInput.value.trim().toLowerCase() : "";
+          if (!searchEmail || !EMAIL_REGEX.test(searchEmail)) {
+            showToast("Please provide a valid email structure.", "❌");
+            return;
+          }
+          if (splashLandingGate) splashLandingGate.style.display = "none";
+          if (mainApplicationLayout) {
+              mainApplicationLayout.classList.remove("hidden");
+              mainApplicationLayout.style.display = "flex";
+          }
+          
+          const originalText = confirmRetrieveBtn.innerText;
+          confirmRetrieveBtn.innerText = "Searching...";
+          confirmRetrieveBtn.disabled = true;
+          I seem to be encountering an error. Can I try something else for you?
