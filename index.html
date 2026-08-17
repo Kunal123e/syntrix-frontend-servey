@@ -14,7 +14,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/ethereum-provider@9/dist/ethereumProvider.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@9/dist/modal.umd.min.js"></script>
 
-  <!-- 🚀 NEW: PREMIUM BENTO UI STYLES FOR XP DASHBOARD -->
+  <!-- 🚀 PREMIUM BENTO UI STYLES FOR XP DASHBOARD -->
   <style id="xp-premium-bento-styles">
     .xp-bento-container { display: flex; flex-direction: column; gap: 24px; width: 100%; max-width: 1100px; margin: 0 auto; text-align: left; }
     .xp-bento-row { display: grid; gap: 24px; width: 100%; }
@@ -29,7 +29,6 @@
     .xp-bento-header h3 { font-size: 13px; font-weight: 700; color: #a1a1aa; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
     .xp-bento-header-icon { color: #d1d5db; }
 
-    /* Progress Card Specifics */
     .xp-prog-title { font-size: 12px; color: #a1a1aa; font-weight: 700; letter-spacing: 1px; margin-bottom: 6px; }
     .xp-prog-level-row { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
     .xp-prog-level-text { font-size: 42px; font-weight: 900; color: #ffffff; line-height: 1; letter-spacing: -1px; }
@@ -48,7 +47,6 @@
     .xp-stat-label { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #a1a1aa; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
     .xp-stat-val { font-size: 24px; font-weight: 800; color: #ffffff; }
 
-    /* Hexagon Badge Specifics */
     .xp-hex-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; position: relative; }
     .xp-hex-bg-glow { position: absolute; width: 150px; height: 150px; background: radial-gradient(circle, rgba(168, 85, 247, 0.2) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
     .xp-hex-shape { width: 120px; height: 135px; background: linear-gradient(180deg, #18181b 0%, #09090b 100%); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); display: flex; align-items: center; justify-content: center; position: relative; z-index: 2; border: 1px solid rgba(255,255,255,0.1); box-shadow: inset 0 0 20px rgba(255,255,255,0.05); }
@@ -57,7 +55,6 @@
     .xp-hex-rank-text { margin-top: 24px; font-size: 16px; font-weight: 800; color: #ffffff; letter-spacing: 1px; text-transform: uppercase; z-index: 2;}
     .xp-laurel-wreath { position: absolute; width: 180px; height: 180px; top: 50%; left: 50%; transform: translate(-50%, -55%); opacity: 0.6; pointer-events: none; z-index: 1;}
 
-    /* History List */
     .xp-hist-list { display: flex; flex-direction: column; gap: 16px; overflow-y: auto; max-height: 300px; padding-right: 10px;}
     .xp-hist-list::-webkit-scrollbar { width: 4px; }
     .xp-hist-list::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
@@ -71,7 +68,6 @@
     .xp-hist-amount { font-size: 15px; font-weight: 800; color: #ffffff; margin-bottom: 4px; display: block; }
     .xp-hist-time { font-size: 11px; color: #71717a; font-weight: 600; }
 
-    /* Roadmap Timeline */
     .xp-roadmap { display: flex; flex-direction: column; gap: 20px; position: relative; padding-left: 20px; }
     .xp-roadmap::before { content: ''; position: absolute; left: 0; top: 10px; bottom: 10px; width: 2px; background: #27272a; border-radius: 2px; }
     .xp-road-item { position: relative; display: flex; justify-content: space-between; align-items: center; }
@@ -79,7 +75,6 @@
     .xp-road-item.completed .xp-road-dot { border-color: #10b981; background: #10b981; color: #000; }
     .xp-road-item.current .xp-road-dot { border-color: #a855f7; background: #a855f7; color: #fff; box-shadow: 0 0 10px rgba(168,85,247,0.5); }
     .xp-road-item.current::before { content:''; position:absolute; left:-28px; top:18px; bottom:-20px; width:2px; background: linear-gradient(180deg, #a855f7, #27272a); }
-    
     .xp-road-left h4 { font-size: 14px; font-weight: 700; color: #ffffff; margin: 0 0 4px 0; }
     .xp-road-left p { font-size: 12px; color: #a1a1aa; margin: 0; }
     .xp-road-right { text-align: right; }
@@ -90,7 +85,6 @@
     .xp-road-item.locked .xp-road-status { color: #71717a; }
     .xp-road-item.locked h4, .xp-road-item.locked p, .xp-road-item.locked .xp-road-xp { color: #71717a; }
 
-    /* Streaks & Stats Mini Cards */
     .xp-streak-days { display: flex; justify-content: space-between; margin-top: 10px; }
     .xp-streak-day { display: flex; flex-direction: column; align-items: center; gap: 8px; }
     .xp-streak-check { width: 24px; height: 24px; border-radius: 50%; background: #18181b; border: 1px solid #3f3f46; display: flex; align-items: center; justify-content: center; color: transparent; font-size: 12px; }
@@ -102,7 +96,6 @@
     .xp-stat-list-left { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #d1d5db; font-weight: 500;}
     .xp-stat-list-right { font-size: 14px; font-weight: 800; color: #ffffff; }
 
-    /* Responsive adjustments */
     @media (max-width: 900px) {
       .xp-bento-row-top, .xp-bento-row-mid, .xp-bento-row-bot { grid-template-columns: 1fr; }
       .xp-prog-stats-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -180,8 +173,7 @@
       <a href="#" id="linkAboutTab" class="nav-splash-tab">About Us</a>
     </div>
     <div class="header-actions-v3">
-      <!-- 🚀 FIX 1 APPLIED HERE -->
-      <button type="button" class="btn-solid-v3" onclick="document.getElementById('initializePlatformBtn').click()">Get Started Free &rarr;</button>
+      <button type="button" class="btn-solid-v3" onclick="window.playSmoothStart()">Get Started Free &rarr;</button>
     </div>
   </header>
 
@@ -191,8 +183,7 @@
       <a href="#" class="nav-splash-tab" onclick="document.getElementById('linkRewardsTab').click(); return false;">Rewards</a>
       <a href="#" class="nav-splash-tab" onclick="document.getElementById('linkAboutTab').click(); return false;">About Us</a>
     </div>
-    <!-- 🚀 FIX 2 APPLIED HERE -->
-    <button type="button" class="btn-solid-v3 mobile-get-started" onclick="document.getElementById('initializePlatformBtn').click()">Get Started Free &rarr;</button>
+    <button type="button" class="btn-solid-v3 mobile-get-started" onclick="window.playSmoothStart()">Get Started Free &rarr;</button>
   </div>
 
   <div class="hero-container-v3">
@@ -206,8 +197,7 @@
             <p>Powering decentralized AI verification.<br>Complete interactive surveys,<br>document classification,<br>embedding intelligence,<br>and selfie verification.</p>
             <p style="margin-top: 25px;">Everything secured through our<br>decentralized AI infrastructure.</p>
           </div>
-          <!-- 🚀 FIX 3 APPLIED HERE -->
-          <button type="button" class="btn-glow-v3 anim-4" onclick="document.getElementById('initializePlatformBtn').click()">
+          <button type="button" class="btn-glow-v3 anim-4" onclick="window.playSmoothStart()">
             Get Started Free &rarr;
           </button>
           <button type="button" id="initializePlatformBtn" style="display: none;"></button>
@@ -400,6 +390,7 @@
               <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
             </button>
             <div id="optionsPopover" class="options-popover hidden" style="display: none;">
+              <!-- Authenticated Menu Elements (Hidden initially) -->
               <div class="popover-section profile-sec auth-protected-ui" style="display: none;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 <span style="color: #a1a1aa; font-weight: 500;">Profile:</span>
@@ -491,9 +482,8 @@
               </div>
             </div>
 
-            <!-- 🚀 FIX: STRICTLY HIDDEN OTP SECTION ON LOAD -->
-            <div id="otpSection" class="pac-form-group hidden" style="display: none !important; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;">
-              <label for="gateOtp" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <div id="otpSection" class="pac-form-group hidden" style="display: none;">
+              <label for="gateOtp" style="display: flex; justify-content: space-between; align-items: center;">
                 <span>Verification Code</span>
                 <span style="color:#10b981; font-size:11px; font-weight: 700;">✅ Code sent!</span>
               </label>
@@ -852,7 +842,36 @@
           <div class="doc-card doc-bento-full">
             <div class="doc-card-header">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-              <h4 style="color: #ef4444;">Legal Consent & Data Release</h4>
+              <h4 style="color: #ef4444;">Selfie Guidelines</h4>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <div class="guide-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <p style="color: #d1d5db;">Clear front-facing selfie.</p>
+              </div>
+              <div class="guide-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                <p style="color: #d1d5db;"><strong>NO</strong> group photos.</p>
+              </div>
+              <div class="guide-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                <p style="color: #d1d5db;"><strong>NO</strong> filters or face edits.</p>
+              </div>
+              <div class="guide-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                <p style="color: #d1d5db;"><strong>NO</strong> hats, masks, or sunglasses.</p>
+              </div>
+              <div class="guide-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <p style="color: #d1d5db;">Well-lit background.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="doc-card doc-bento-full">
+            <div class="doc-card-header">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              <h4>Legal Consent & Data Release</h4>
             </div>
             <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
               <label class="custom-cb-wrapper" style="align-items: flex-start;">
@@ -1377,7 +1396,7 @@
                         <div class="xp-stat-list-item"><div class="xp-stat-list-left"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Surveys Completed</div> <div class="xp-stat-list-right" id="bentoStatSurveys">0</div></div>
                         <div class="xp-stat-list-item"><div class="xp-stat-list-left"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg> Documents Verified</div> <div class="xp-stat-list-right" id="bentoStatDocs">0</div></div>
                         <div class="xp-stat-list-item"><div class="xp-stat-list-left"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"></circle><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path></svg> Selfies Verified</div> <div class="xp-stat-list-right" id="bentoStatSelfies">0</div></div>
-                        <div class="xp-stat-list-item"><div class="xp-stat-list-left"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> Referral Success</div> <div class="xp-stat-list-right" id="bentoStatReferrals">0</div></div>
+                        <div class="xp-stat-list-item"><div class="xp-stat-list-left"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> Referrals</div> <div class="xp-stat-list-right" id="bentoStatReferrals">0</div></div>
                         <div class="xp-stat-list-item" style="margin-top: 10px;"><div class="xp-stat-list-left" style="color:#a855f7;"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg> Total XP Earned</div> <div class="xp-stat-list-right" style="color:#a855f7;" id="bentoStatTotalXp">0</div></div>
                     </div>
                 </div>
@@ -1595,1382 +1614,33 @@
 
 <script src="data.js?v=final_launch"></script>
 <script src="translation.js?v=final_launch"></script>
+<script src="script.js?v=final_launch"></script>
 
-<!-- 🚀 MONOLITHIC JAVASCRIPT INJECTION 🚀 -->
-<script>
-// 🚀 FIX: BULLETPROOF "GET STARTED" LOGIC 
-window.playSmoothStart = function() {
-    // 1. Hide Splash Screen
-    const splash = document.getElementById("splashLandingGate");
-    if (splash) splash.style.display = "none";
-
-    // 2. Show Main App Container
-    const app = document.getElementById("mainApplicationLayout");
-    if (app) {
-        app.classList.remove("hidden");
-        app.style.display = "flex"; 
-    }
-
-    // 3. Routing Logic (Auth Check)
-    const emailGate = document.getElementById("emailGateSection");
-    const savedEmail = localStorage.getItem("syntrix_user_email");
-    
-    if (savedEmail) {
-        window.userEmailAddress = savedEmail;
-        if (emailGate) {
-            emailGate.style.display = "none";
-            emailGate.classList.add("hidden");
-        }
-        if (typeof runProfileLedgerVerification === "function") {
-            runProfileLedgerVerification(savedEmail, false);
-        }
-    } else {
-        const cards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "gatewayScreenSection", "documentModeSection", "selfieModeSection"];
-        cards.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) { el.style.display = "none"; el.classList.add("hidden"); }
-        });
-        if (emailGate) {
-            emailGate.classList.remove("hidden");
-            emailGate.style.display = "flex";
-        }
-    }
-};
-
-// Fallback attachment for the hidden button
-document.addEventListener("DOMContentLoaded", () => {
-    const initBtn = document.getElementById("initializePlatformBtn");
-    if (initBtn) initBtn.onclick = window.playSmoothStart;
-});
-
-// =========================================================================
-// SYNTRIX CORE PLATFORM APPLICATION LOGIC ENGINE
-// =========================================================================
-
-const styleSheet = document.createElement("style");
-styleSheet.innerText = `
-@keyframes aiSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-@keyframes slideUpFade { 0% { opacity: 0; transform: translateY(15px); } 100% { opacity: 1; transform: translateY(0); } }
-.status-text-pulse { animation: textPulse 1.5s infinite; }
-@keyframes textPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-`;
-document.head.appendChild(styleSheet);
-
-const BACKEND_URL = window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1")
-  ? "http://localhost:5000"
-  : "https://syntrix-airdrop.onrender.com";
-
-const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-const WALLET_REGEX = /^0x[a-fA-F0-9]{40}$/;
-const DEFAULT_TIMEOUT_MS = 90000; 
-
-let surveyStartTime = 0;
-const QUALITY_THRESHOLD_MS = 120000; 
-
-let userEmailAddress = "";
-let currentSection = 0;
-const answers = {};
-let currentLanguage = "en";
-let isOtpSent = false;
-let userConnectedWalletAddress = "";
-
-let legalConsentTimestamp = "";
-let clientUserAgent = "";
-
-const linkHomeTab = document.getElementById("linkHomeTab");
-const linkRewardsTab = document.getElementById("linkRewardsTab");
-const linkAboutTab = document.getElementById("linkAboutTab");
-const navLogoHomeTrigger = document.getElementById("navLogoHomeTrigger");
-
-const emailGateForm = document.getElementById("emailGateForm");
-const gateEmailInput = document.getElementById("gateEmail");
-const startSurveyBtn = document.getElementById("startSurveyBtn");
-const preVerifyBtn = document.getElementById('preVerifyBtn');
-const referredByCodeInput = document.getElementById("referredByCode"); 
-const menuToggleBtn = document.getElementById("menuToggleBtn");
-const optionsPopover = document.getElementById("optionsPopover");
-const menuRecoverBtn = document.getElementById("menuRecoverBtn");
-const menuRestartBtn = document.getElementById("menuRestartBtn"); 
-const retrieveModal = document.getElementById("retrieveModal");
-const closeModalBtn = document.getElementById("closeModalBtn");
-const cancelModalBtn = document.getElementById("cancelModalBtn");
-const confirmRetrieveBtn = document.getElementById("confirmRetrieveBtn");
-const modalEmailInput = document.getElementById("modalEmailInput");
-const modalStatus = document.getElementById("modalStatus");
-const topProgressBox = document.getElementById("topProgressBox");
-const claimForm = document.getElementById("claimForm");
-const surveyContainer = document.getElementById("surveyContainer");
-const nextBtn = document.getElementById("nextBtn");
-const prevBtn = document.getElementById("prevBtn");
-const submitClaimBtn = document.getElementById("submitClaimBtn");
-
-const gatewayScreenSection = document.getElementById("gatewayScreenSection");
-const documentModeSection = document.getElementById("documentModeSection");
-const selfieModeSection = document.getElementById("selfieModeSection");
-
-const rewardDashboardScreen = document.getElementById("rewardDashboardScreen");
-const tabScreenHub = document.getElementById("rewardDashboardScreen"); 
-const tabScreenBadge = document.getElementById("tabScreenBadge");
-const tabScreenReferrals = document.getElementById("tabScreenReferrals");
-const tabScreenMoreSurveys = document.getElementById("tabScreenMoreSurveys");
-const claimScreenSection = document.getElementById("claimScreenSection");
-
-const dashboardWalletInput = document.getElementById("dashboardWalletInput");
-const executeClaimBtn = document.getElementById("executeClaimBtn");
-const connectWalletBtn = document.getElementById("connectWalletBtn");
-const claimConnectWalletBtn = document.getElementById("claimConnectWalletBtn");
-const claimWalletConnectedBlock = document.getElementById("claimWalletConnectedBlock");
-const claimWalletAddressDisplay = document.getElementById("claimWalletAddressDisplay");
-const submitClaimRewardBtn = document.getElementById("submitClaimRewardBtn");
-const statTotalReferrals = document.getElementById("statTotalReferrals");
-const statPendingRewards = document.getElementById("statPendingRewards");
-const statClaimedRewards = document.getElementById("statClaimedRewards");
-const statTotalEarned = document.getElementById("statTotalEarned");
-const referralCodeDisplay = document.getElementById("referralCodeDisplay");
-const copyReferralBtn = document.getElementById("copyReferralBtn");
-
-const generateQrBtn = document.getElementById("generateQrBtn");
-const qrCodeWrapper = document.getElementById("qrCodeWrapper");
-const qrCodeCanvas = document.getElementById("qrCodeCanvas");
-const downloadQrBtn = document.getElementById("downloadQrBtn");
-
-const statusDiv = document.getElementById("status");
-const progressFill = document.querySelector(".progressFill");
-const progressText = document.querySelector(".progressText");
-
-const dashboardTabLinks = document.getElementById("dashboardTabLinks");
-const sidebarLogoutBtn = document.getElementById("sidebarLogoutBtn");
-
-const cancelRestartBtn = document.getElementById("cancelRestartBtn");
-const confirmRestartBtn = document.getElementById("confirmRestartBtn");
-
-function showToast(message, icon = "⚠️") {
-  let toast = document.getElementById("customToast");
-  let toastMsg = document.getElementById("toastMessage");
-  let toastIcon = document.querySelector(".toast-icon");
-  
-  if (!toast) {
-    toast = document.createElement("div");
-    toast.id = "customToast";
-    toast.className = "custom-toast";
-    toast.innerHTML = `<span class="toast-icon">${icon}</span><span id="toastMessage">${message}</span>`;
-    document.body.appendChild(toast);
-    toastMsg = document.getElementById("toastMessage");
-    toastIcon = document.querySelector(".toast-icon");
-  }
-
-  toastMsg.innerText = message;
-  if(toastIcon) toastIcon.innerText = icon;
-  
-  void toast.offsetWidth;
-  
-  toast.style.display = "flex";
-  toast.classList.add("show");
-  setTimeout(() => { 
-    toast.classList.remove("show"); 
-    setTimeout(() => { toast.style.display = "none"; }, 500);
-  }, 3500);
+<!-- 🚀 PREMIUM FLOATING XP TOAST -->
+<style>
+.xp-floating-toast {
+  position: fixed; bottom: 40px; right: 40px; 
+  background: rgba(10, 10, 10, 0.95); border: 1px solid rgba(168, 85, 247, 0.5); 
+  border-radius: 16px; padding: 14px 24px; display: flex; align-items: center; gap: 14px; 
+  z-index: 9999999; box-shadow: 0 15px 40px rgba(168, 85, 247, 0.25), inset 0 1px 0 rgba(255,255,255,0.1); 
+  transform: translateY(150px) scale(0.9); opacity: 0; 
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
-function openLegalModal() { 
-  const legalModal = document.getElementById("legalModal");
-  if(legalModal) {
-    legalModal.classList.remove("hidden");
-    legalModal.style.display = "flex";
-  }
-}
-function closeLegalModal() { 
-  const legalModal = document.getElementById("legalModal");
-  if(legalModal) {
-    legalModal.classList.add("hidden");
-    legalModal.style.display = "none";
-  }
-}
-const dismissModal = () => { 
-  const retrieveModal = document.getElementById("retrieveModal");
-  if (retrieveModal) {
-    retrieveModal.classList.add("hidden"); 
-    retrieveModal.style.display = "none";
-  }
-};
-
-function routeSplashNavViews(targetView) {
-  const viewSplashHome = document.getElementById("viewSplashHome");
-  const viewSplashRewards = document.getElementById("viewSplashRewards");
-  const viewSplashAbout = document.getElementById("viewSplashAbout");
-
-  if (viewSplashHome) viewSplashHome.style.display = "none";
-  if (viewSplashRewards) viewSplashRewards.style.display = "none";
-  if (viewSplashAbout) viewSplashAbout.style.display = "none";
-  
-  document.querySelectorAll(".nav-splash-tab").forEach(link => link.classList.remove("active"));
-  
-  if (targetView === "home" && viewSplashHome) { viewSplashHome.style.display = "block"; if(linkHomeTab) linkHomeTab.classList.add("active"); }
-  if (targetView === "rewards" && viewSplashRewards) { viewSplashRewards.style.display = "block"; if(linkRewardsTab) linkRewardsTab.classList.add("active"); }
-  if (targetView === "about" && viewSplashAbout) { viewSplashAbout.style.display = "block"; if(linkAboutTab) linkAboutTab.classList.add("active"); }
-}
-
-if (linkHomeTab) linkHomeTab.addEventListener("click", (e) => { e.preventDefault(); routeSplashNavViews("home"); });
-if (linkRewardsTab) linkRewardsTab.addEventListener("click", (e) => { e.preventDefault(); routeSplashNavViews("rewards"); });
-if (linkAboutTab) linkAboutTab.addEventListener("click", (e) => { e.preventDefault(); routeSplashNavViews("about"); });
-if (navLogoHomeTrigger) navLogoHomeTrigger.addEventListener("click", () => routeSplashNavViews("home"));
-document.querySelectorAll(".back-to-home-btn").forEach(btn => btn.addEventListener("click", () => routeSplashNavViews("home")));
-
-
-window.openModeEnhanced = function(mode) {
-  if (mode === 'survey' && window.hasCompletedSurvey) {
-      showToast("✅ Survey already completed. Redirecting to Survey Matrix...", "✅");
-      routeDashboardTabs('more-surveys');
-      return; 
-  }
-
-  const gateway = document.getElementById("gatewayScreenSection");
-  const survey = document.getElementById("claimForm");
-  const topProgress = document.getElementById("topProgressBox");
-  const docMode = document.getElementById("documentModeSection");
-  const selfieMode = document.getElementById("selfieModeSection");
-  const mainSubtitle = document.getElementById("mainSubtitle"); 
-
-  [gateway, survey, topProgress, docMode, selfieMode].forEach(el => {
-      if (el) { el.classList.add("hidden"); el.style.display = "none"; }
-  });
-
-  if (mode === 'gateway') {
-      if(gateway) { gateway.classList.remove("hidden"); gateway.style.display = "flex"; }
-      if(mainSubtitle) mainSubtitle.style.display = "block";
-  } else if (mode === 'survey') {
-      currentSection = 0;
-      if(mainSubtitle) mainSubtitle.style.display = "block";
-      renderSection(); 
-  } else if (mode === 'document') {
-      if(docMode) { docMode.classList.remove("hidden"); docMode.style.display = "block"; }
-      if(mainSubtitle) mainSubtitle.style.display = "none"; 
-  } else if (mode === 'selfie') {
-      if(selfieMode) { selfieMode.classList.remove("hidden"); selfieMode.style.display = "block"; }
-      if(mainSubtitle) mainSubtitle.style.display = "none"; 
-  }
-};
-
-const BADGE_PROFILES = {
-  Analyzer: { 
-    title: "ANALYZER", sub: "The Mindful Shopper",
-    desc: "You shop with brilliant clarity! For you, real value and true quality matter most. By thoughtfully comparing details and trusting genuine reviews, you always make incredibly smart and satisfying choices.", 
-    iconHTML: `<img src="BADGES%20PNG/badge%201%20analyzer.jpeg" alt="Analyzer" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none';">`, 
-    menuIcon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`,
-    color: "#2563eb", textColor: "#0f172a"
-  },
-  Stylist: { 
-    title: "STYLIST", sub: "The Tasteful Explorer",
-    desc: "You have a beautiful eye for design! For you, shopping is about joy, artistry, and wonderful experiences. You naturally gravitate towards things that tell a great story and bring an extra touch of elegance into your everyday life.", 
-    iconHTML: `<img src="BADGES%20PNG/badge%203.jpeg" alt="Stylist" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none';">`, 
-    menuIcon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L15 9L22 12L15 15L12 22L9 15L2 12L9 9Z"></path></svg>`,
-    color: "#8b5cf6", textColor: "#0f172a"
-  },
-  Hedger: { 
-    title: "HEDGER", sub: "The Thoughtful Planner",
-    desc: "You value peace of mind and total reliability! You love knowing your purchases are safe and backed by great guarantees. By choosing trusted paths, you ensure every shopping experience is completely smooth, secure, and worry-free.", 
-    iconHTML: `<img src="BADGES%20PNG/badge%202.jpeg" alt="Hedger" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none';">`, 
-    menuIcon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>`,
-    color: "#ea580c", textColor: "#0f172a"
-  },
-  Native: { 
-    title: "NATIVE", sub: "The Connected Heart",
-    desc: "You deeply value genuine connections! Your best shopping moments come from trusted recommendations and shared stories. By listening to friends and family, you always bring home products that carry real warmth and authenticity.", 
-    iconHTML: `<img src="BADGES%20PNG/badge%204.jpeg" alt="Native" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none';">`, 
-    menuIcon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`,
-    color: "#eab308", textColor: "#0f172a"
-  }
-};
-
-function displayConsumerBadgesUI(badgeKey) {
-  const profile = BADGE_PROFILES[badgeKey] || BADGE_PROFILES.Analyzer;
-  const badgeCard = document.getElementById("dashboardPsychologyBadgeCard");
-
-  if (badgeCard) {
-    badgeCard.style.display = "flex";
-    badgeCard.style.flexDirection = "column";
-    badgeCard.style.background = "linear-gradient(180deg, rgba(20,20,25,1) 0%, rgba(9,9,11,1) 100%)";
-    badgeCard.style.border = `1px solid ${profile.color}50`;
-    badgeCard.style.boxShadow = `0 20px 40px rgba(0, 0, 0, 0.6), 0 0 25px ${profile.color}20`;
-    badgeCard.style.borderRadius = "24px";
-    badgeCard.style.padding = "35px 25px";
-    badgeCard.style.marginBottom = "35px";
-    badgeCard.style.alignItems = "center";
-    badgeCard.style.textAlign = "center";
-    badgeCard.style.color = "#ffffff";
-
-    badgeCard.innerHTML = `
-      <div class="persona-header-top" style="color: ${profile.color}; letter-spacing: 2px; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 12px;">CONSUMER PERSONA UNLOCKED</div>
-      <h2 class="persona-title-main" style="font-size: 36px; font-weight: 900; color: #ffffff; letter-spacing: -1px; margin: 0 0 4px 0;">${profile.title}</h2>
-      <h4 class="persona-subtitle" style="font-size: 17px; font-weight: 600; color: #d1d5db; margin-bottom: 25px;">${profile.sub}</h4>
-      <div class="persona-icon-wrapper" style="width: 120px; height: 120px; border-radius: 50%; border: 2px solid ${profile.color}60; display: flex; align-items: center; justify-content: center; margin-bottom: 25px; background: radial-gradient(circle, ${profile.color}20 0%, transparent 70%); box-shadow: inset 0 0 20px ${profile.color}20, 0 0 20px ${profile.color}20; overflow: hidden;">
-         ${profile.iconHTML}
-      </div>
-      <p class="persona-description" style="font-size: 15px; line-height: 1.7; color: #a1a1aa; margin: 0 0 30px 0; max-width: 650px;">${profile.desc}</p>
-      <div class="persona-verified-badge" style="display: flex; align-items: center; justify-content: center; gap: 12px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 14px 20px; width: 100%; max-width: 450px; text-align: left;">
-        <div class="pv-icon" style="color: ${profile.color}; display: flex; align-items: center; justify-content: center;">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-        </div>
-        <div class="pv-text" style="display: flex; flex-direction: column;">
-          <strong style="font-size: 12px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px;">VERIFIED BY SYNTRIX AI</strong>
-          <span style="font-size: 11px; color: #a1a1aa; font-weight: 500;">100% Authentic Analysis</span>
-        </div>
-      </div>
-    `;
-  }
-
-  const dropdownBadgeWrapper = document.getElementById("menuPsychologyBadgeWrapper");
-  const dropdownBadgeText = document.getElementById("menuPsychologyBadgeText");
-  const dropdownBadgeIcon = document.getElementById("menuBadgeIcon");
-  if (dropdownBadgeWrapper && dropdownBadgeText && dropdownBadgeIcon) {
-    dropdownBadgeWrapper.style.display = "flex";
-    dropdownBadgeIcon.innerHTML = profile.menuIcon;
-    dropdownBadgeText.innerText = profile.title;
-    dropdownBadgeText.style.color = profile.color;
-  }
-}
-
-function normalizeReferralCode(code) {
-  if (!code) return "";
-  let clean = code.trim().toUpperCase();
-  clean = clean.replace(/\s+/g, "");
-  if (!clean.startsWith("SYN-")) {
-    if (clean.startsWith("SYN")) clean = "SYN-" + clean.substring(3);
-    else clean = "SYN-" + clean;
-  }
-  return clean;
-}
-
-async function fetchWithTimeout(resource, options = {}) {
-  const { timeout = DEFAULT_TIMEOUT_MS } = options;
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), timeout);
-  try {
-    const response = await fetch(resource, { ...options, signal: controller.signal });
-    clearTimeout(id);
-    return response;
-  } catch (error) {
-    clearTimeout(id);
-    throw error;
-  }
-}
-
-function getUIText(key) {
-  const fallbacks = {
-    validationRequired: "Please answer all questions before continuing.",
-    submitting: "⏳ Storing survey data metrics across secure registers...",
-    claiming: "⚡ Appending whitelist configuration parameters...",
-    checkingLedger: "⏳ Setting up your exclusive premium experience..."
-  };
-  if (typeof translations !== "undefined" && translations[currentLanguage] && translations[currentLanguage][key]) {
-    return translations[currentLanguage][key];
-  }
-  return fallbacks[key] || key;
-}
-
-function routeDashboardTabs(targetTab) {
-  const cards = [
-    document.getElementById("rewardDashboardScreen"),
-    document.getElementById("tabScreenBadge"),
-    document.getElementById("tabScreenReferrals"),
-    document.getElementById("tabScreenMoreSurveys"),
-    document.getElementById("claimScreenSection"),
-    document.getElementById("documentModeSection"),
-    document.getElementById("selfieModeSection"),
-    document.getElementById("gatewayScreenSection"),
-    document.getElementById("claimForm"),
-    document.getElementById("topProgressBox"),
-    document.getElementById("tabScreenXP")
-  ];
-  
-  cards.forEach(card => {
-    if (card) {
-      card.classList.add("hidden");
-      card.style.display = "none";
-    }
-  });
-  
-  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
-  const clickedBtn = document.querySelector(`[data-tab="${targetTab}"]`);
-  if (clickedBtn) clickedBtn.classList.add("active");
-
-  const mainSubtitle = document.getElementById("mainSubtitle"); 
-  if(mainSubtitle) mainSubtitle.style.display = "block";
-
-  if (targetTab === "hub") {
-    const el = document.getElementById("rewardDashboardScreen");
-    if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
-  }
-  else if (targetTab === "badge") {
-    const el = document.getElementById("tabScreenBadge");
-    if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
-  }
-  else if (targetTab === "referrals") {
-    const el = document.getElementById("tabScreenReferrals");
-    if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
-  }
-  else if (targetTab === "more-surveys" || targetTab === "more") {
-    const el = document.getElementById("tabScreenMoreSurveys");
-    if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
-  }
-  else if (targetTab === "document") {
-    const el = document.getElementById("documentModeSection");
-    if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
-    if(mainSubtitle) mainSubtitle.style.display = "none"; 
-  }
-  else if (targetTab === "selfie") {
-    const el = document.getElementById("selfieModeSection");
-    if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
-    if(mainSubtitle) mainSubtitle.style.display = "none"; 
-  }
-  else if (targetTab === "xp") {
-    const el = document.getElementById("tabScreenXP");
-    if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
-    if(mainSubtitle) mainSubtitle.style.display = "none"; 
-  }
-  else if (targetTab === "gateway") {
-    const el = document.getElementById("gatewayScreenSection");
-    if(el) { el.classList.remove("hidden"); el.style.display = "flex"; }
-  }
-  else if (targetTab === "survey") {
-    const form = document.getElementById("claimForm");
-    const progress = document.getElementById("topProgressBox");
-    if(form) { form.classList.remove("hidden"); form.style.display = "block"; }
-    if(progress) { progress.classList.remove("hidden"); progress.style.display = "block"; }
-  }
-}
-
-function handleNextSection() {
-  const sections = window.surveySections;
-  if (!validateCurrentSectionAnswers()) {
-    showToast(getUIText("validationRequired"), "⚠️");
-    return;
-  }
-  if (currentSection < sections.length - 1) {
-    currentSection++;
-    renderSection();
-    updateExcitementBanner(currentSection);
-  }
-}
-
-function handlePrevSection() {
-  if (currentSection > 0) {
-    currentSection--;
-    renderSection();
-    updateExcitementBanner(currentSection);
-  }
-}
-
-function getSectionTitle(sectionData) {
-  if (typeof sectionTranslations !== "undefined" && sectionTranslations[currentLanguage]) {
-    return sectionTranslations[currentLanguage][sectionData.title] || sectionData.title;
-  }
-  return sectionData.title;
-}
-
-function getQuestionText(q) {
-  if (typeof questionTranslations !== "undefined" && questionTranslations[currentLanguage]) {
-    return questionTranslations[currentLanguage][q.id] || q.question || q.id;
-  }
-  return q.question || q.id;
-}
-
-function getOptionText(opt) {
-  if (typeof optionTranslations !== "undefined" && optionTranslations[currentLanguage]) {
-    return optionTranslations[currentLanguage][opt] || opt;
-  }
-  return opt;
-}
-
-function interceptClaimGateActions(e) {
-  if (e) e.preventDefault();
-  showToast("Coming Soon! Stay tuned to claim your precious tokens! 💎", "⚙️");
-}
-
-function validateCurrentSectionAnswers() {
-  const sections = window.surveySections;
-  const currentData = sections[currentSection];
-  if (!currentData) return false;
-  
-  for (let q of currentData.questions) { 
-    if (q.type === "textarea") {
-      if (!answers[q.id] || answers[q.id].trim() === "") return false;
-    } else {
-      if (!answers[q.id]) return false; 
-    }
-  }
-  return true;
-}
-
-function renderSection() {
-  const sections = window.surveySections;
-  if (!sections || sections.length === 0 || !surveyContainer) return;
-  const currentData = sections[currentSection];
-  
-  try {
-    if (currentSection === 0) {
-       surveyStartTime = Date.now(); 
-    }
-
-    const topProgressBox = document.getElementById("topProgressBox");
-    if (topProgressBox) {
-      topProgressBox.classList.remove("hidden");
-      topProgressBox.style.display = "block";
-    }
-    const claimForm = document.getElementById("claimForm");
-    if (claimForm) {
-      claimForm.classList.remove("hidden");
-      claimForm.style.display = "block";
-    }
-    const emailGateSection = document.getElementById("emailGateSection");
-    if (emailGateSection) {
-      emailGateSection.classList.add("hidden");
-      emailGateSection.style.display = "none";
-    }
-
-    const progressPercent = ((currentSection + 1) / sections.length) * 100;
-    if (progressFill) progressFill.style.width = `${progressPercent}%`;
-    if (progressText) progressText.innerText = `Progress ${currentSection + 1}/${sections.length}`;
-
-    let htmlStr = `<div class="survey-section-card animate-fade-in">
-      <h2 class="surveySectionTitle" style="font-size: 26px; font-weight: 800; color: #ffffff; margin-bottom: 5px;">${getSectionTitle(currentData)}</h2>`;
-
-    if (currentData && currentData.questions) {
-        currentData.questions.forEach((q) => {
-          const savedAnswer = answers[q.id] || "";
-          htmlStr += `<div class="question-block" style="margin-top:30px; text-align:left;">
-            <p class="questionText" style="font-weight:800; margin-bottom:16px; font-size:17px; color:#d1d5db;">${getQuestionText(q)}</p>
-            <div class="options">`; 
-
-          if (q.type === "textarea") {
-               htmlStr += `<textarea id="${q.id}" placeholder="Type your answer here..." onchange="recordSelection('${q.id}', this.value)" style="width:100%; border:1px solid #3f3f46; border-radius:14px; padding:16px; font-size:15px; font-family:inherit; background: #18181b; color: #ffffff;">${savedAnswer}</textarea>`;
-          } 
-          else if (q.options && Array.isArray(q.options)) {
-              q.options.forEach((opt) => {
-                const isChecked = savedAnswer === opt ? "checked" : "";
-                const isSelectedClass = savedAnswer === opt ? "selected" : ""; 
-                htmlStr += `
-                  <label class="option ${isSelectedClass}" style="display:inline-block; user-select:none; font-weight: 600;">
-                    <input type="radio" name="${q.id}" value="${opt}" ${isChecked} style="display:none;" onchange="recordSelection('${q.id}', this.value)">
-                    <span class="optionText">${getOptionText(opt)}</span>
-                  </label>`;
-              });
-          }
-          htmlStr += `</div></div>`;
-        });
-    }
-
-    htmlStr += `</div>`;
-    surveyContainer.innerHTML = htmlStr;
-
-    const prevBtn = document.getElementById("prevBtn");
-    const nextBtn = document.getElementById("nextBtn");
-    const submitClaimBtn = document.getElementById("submitClaimBtn");
-
-    if (prevBtn) {
-      if(currentSection === 0) {
-        prevBtn.style.visibility = "hidden";
-        prevBtn.style.display = "none";
-      } else {
-        prevBtn.style.visibility = "visible";
-        prevBtn.style.display = "block";
-      }
-    }
-    
-    if (currentSection === sections.length - 1) {
-      if (nextBtn) { nextBtn.classList.add("hidden"); nextBtn.style.display = "none"; }
-      if (submitClaimBtn) { submitClaimBtn.classList.remove("hidden"); submitClaimBtn.style.display = "block"; }
-    } else {
-      if (nextBtn) { nextBtn.classList.remove("hidden"); nextBtn.style.display = "block"; }
-      if (submitClaimBtn) { submitClaimBtn.classList.add("hidden"); submitClaimBtn.style.display = "none"; }
-    }
-  } catch (err) {
-    surveyContainer.innerHTML = `<div style="background:#fee2e2; border: 2px solid #ef4444; color:#991b1b; padding: 20px; border-radius: 12px; font-weight:bold; margin-top:20px;">🚨 System Error: ${err.message}</div>`;
-    console.error(err);
-  }
-}
-
-window.recordSelection = function(questionId, selectedValue) {
-  answers[questionId] = selectedValue;
-  renderSection();
-};
-
-function updateExcitementBanner(sectionIndex) {
-  const banner = document.getElementById("excitementBanner");
-  if (!banner) return;
-  if (sectionIndex === 0) { banner.style.display = "none"; return; }
-
-  const unlockedTokens = sectionIndex * 8;
-  const totalTokens = 48;
-  
-  banner.style.display = "flex";
-  banner.style.animation = 'none'; banner.offsetHeight; banner.style.animation = 'slideDown 0.5s ease-out';
-
-  if (currentLanguage === "hi") {
-      if (sectionIndex < 5) {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">शानदार! आपने अब तक <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> सुरक्षित कर लिए हैं!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">अगला मॉड्यूल पूरा करें Aur <strong style="color: #fbbf24;">8 Aur Paayein!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">जारी रखें & दावा करें &gt;</div></div>`;
-      } else {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">अविश्वसनीय! आपने सभी <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span> सुरक्षित कर लिए हैं!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">दावा करने के लिए नीचे सबमिट पर क्लिक करें!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">दावा करने के लिए तैयार</div></div>`;
-      }
-  } else if (currentLanguage === "hinglish") {
-      if (sectionIndex < 5) {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! Aapne ab tak <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> secure kar liye hain!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Next module complete karein aur <strong style="color: #fbbf24;">8 more payein!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div></div>`;
-      } else {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! Aapne sabhi <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span> secure kar liye hain!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Neeche Submit button par click karke claim karein!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div>`;
-      }
-  } else {
-      if (sectionIndex < 5) {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! You've secured <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> so far!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Complete the next module to claim <strong style="color: #fbbf24;">8 more!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div></div>`;
-      } else {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! You've secured all <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span>!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Hit Submit below to transfer them to your wallet!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div>`;
-      }
-  }
-}
-
-async function runProfileLedgerVerification(email, isFromModal = false, isBackgroundSync = false) {
-  const modalStatus = document.getElementById("modalStatus");
-  const outputTarget = isFromModal ? modalStatus : statusDiv;
-  if (!outputTarget) return;
-
-  if (!isBackgroundSync) {
-    outputTarget.innerHTML = `⏳ ${getUIText("checkingLedger")}`;
-    outputTarget.style.color = "#57d6c2";
-  }
-
-  try {
-    const response = await fetchWithTimeout(`${BACKEND_URL}/api/user-status?email=${encodeURIComponent(email)}`);
-    const statusResult = await response.json();
-
-    if (isFromModal) dismissModal();
-
-    if (statusResult.success) {
-      userEmailAddress = email;
-      localStorage.setItem("syntrix_user_email", email);
-      
-      const statTotalReferrals = document.getElementById("statTotalReferrals");
-      const statPendingRewards = document.getElementById("statPendingRewards");
-      const statClaimedRewards = document.getElementById("statClaimedRewards");
-      const statTotalEarned = document.getElementById("statTotalEarned");
-      const referralCodeDisplay = document.getElementById("referralCodeDisplay");
-
-      if (statTotalReferrals) statTotalReferrals.innerText = statusResult.referralsCount || "0";
-      if (statPendingRewards) statPendingRewards.innerText = `${statusResult.pendingRewards || 0} SYNX`;
-      if (statClaimedRewards) statClaimedRewards.innerText = `${statusResult.claimedRewards || 0} SYNX`;
-      if (statTotalEarned) statTotalEarned.innerText = `${(statusResult.pendingRewards || 0) + (statusResult.claimedRewards || 0)} SYNX`;
-      
-      if (referralCodeDisplay) referralCodeDisplay.value = `${window.location.origin}/?ref=${statusResult.referralCode || ""}`;
-      
-      const menuReferralInput = document.getElementById("menuReferralInputDisplay");
-      if (menuReferralInput) menuReferralInput.value = `${window.location.origin}/?ref=${statusResult.referralCode || ""}`;
-      
-      const menuReferralWrapper = document.getElementById("menuReferralWrapper");
-      if (menuReferralWrapper) menuReferralWrapper.style.display = "flex";
-
-      if (statusResult.exists === true) {
-        window.hasCompletedSurvey = true; 
-        displayConsumerBadgesUI(statusResult.badge || "Analyzer");
-
-        if (!isBackgroundSync) {
-            const emailGateSection = document.getElementById("emailGateSection");
-            const claimForm = document.getElementById("claimForm");
-            const topProgressBox = document.getElementById("topProgressBox");
-            const gatewayScreenSection = document.getElementById("gatewayScreenSection");
-            const documentModeSection = document.getElementById("documentModeSection");
-            const selfieModeSection = document.getElementById("selfieModeSection");
-            
-            if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
-            if (claimForm) { claimForm.classList.add("hidden"); claimForm.style.display = "none"; }
-            if (topProgressBox) { topProgressBox.classList.add("hidden"); topProgressBox.style.display = "none"; }
-            if (gatewayScreenSection) { gatewayScreenSection.classList.add("hidden"); gatewayScreenSection.style.display = "none"; }
-            if (documentModeSection) { documentModeSection.classList.add("hidden"); documentModeSection.style.display = "none"; }
-            if (selfieModeSection) { selfieModeSection.classList.add("hidden"); selfieModeSection.style.display = "none"; }
-            
-            const tabLinksContainer = document.getElementById("dashboardTabLinks");
-            if (tabLinksContainer) { tabLinksContainer.classList.remove("hidden"); tabLinksContainer.style.display = "flex"; }
-            
-            routeDashboardTabs("badge");
-        }
-        if (!isBackgroundSync) outputTarget.innerHTML = "";
-      } else {
-        window.hasCompletedSurvey = false; 
-        const menuPsychologyBadgeWrapper = document.getElementById("menuPsychologyBadgeWrapper");
-        if (menuPsychologyBadgeWrapper) menuPsychologyBadgeWrapper.style.display = "none";
-
-        if (!isBackgroundSync) {
-            const emailGateSection = document.getElementById("emailGateSection");
-            if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
-            
-            const cards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "claimForm", "topProgressBox", "documentModeSection", "selfieModeSection"];
-            cards.forEach(id => {
-              const el = document.getElementById(id);
-              if (el) { el.classList.add("hidden"); el.style.display = "none"; }
-            });
-            
-            const tabLinksContainer = document.getElementById("dashboardTabLinks");
-            if (tabLinksContainer) { tabLinksContainer.classList.add("hidden"); tabLinksContainer.style.display = "none"; }
-
-            routeDashboardTabs("gateway");
-            outputTarget.innerHTML = "";
-        }
-      }
-    } else {
-      if (!isFromModal) {
-        if (!isBackgroundSync) {
-            const emailGateSection = document.getElementById("emailGateSection");
-            if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
-            const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "claimForm", "topProgressBox", "documentModeSection", "selfieModeSection"];
-            dashboardCards.forEach(id => {
-              const el = document.getElementById(id);
-              if (el) { el.style.display = "none"; el.classList.add("hidden"); }
-            });
-            const tabLinksContainer = document.getElementById("dashboardTabLinks");
-            if (tabLinksContainer) { tabLinksContainer.classList.add("hidden"); tabLinksContainer.style.display = "none"; }
-            
-            routeDashboardTabs("gateway");
-            outputTarget.innerHTML = "";
-        }
-      } else {
-        if (!isBackgroundSync) outputTarget.innerHTML = ""; 
-        showToast("Profile ledger entry not found.", "❌");
-      }
-    }
-  } catch (err) {
-    if (!isBackgroundSync) outputTarget.innerHTML = ""; 
-    showToast("Server waking up or offline. Please try again.", "❌");
-  }
-}
-
-function determinePersonaBadge(answersObj) {
-  const scores = { Analyzer: 0, Stylist: 0, Hedger: 0, Native: 0 };
-  const mapping = {
-    "question_1_id": {
-      "I compare all the data and reviews": "Analyzer",
-      "I care about how beautiful it looks": "Stylist",
-      "I only buy if there is a safe warranty": "Hedger",
-      "I buy what my friends recommend": "Native"
-    },
-    "question_2_id": {
-      "Logic and numbers": "Analyzer",
-      "Aesthetics and vibe": "Stylist",
-      "Safety and guarantees": "Hedger",
-      "Community and trust": "Native"
-    }
-  };
-  for (const [qId, selectedAnswer] of Object.entries(answersObj)) {
-    if (mapping[qId] && mapping[qId][selectedAnswer]) {
-      const persona = mapping[qId][selectedAnswer];
-      scores[persona]++;
-    }
-  }
-  let topBadge = "Analyzer";
-  let maxScore = -1;
-  for (const [badge, score] of Object.entries(scores)) {
-    if (score > maxScore) {
-      maxScore = score;
-      topBadge = badge;
-    }
-  }
-  return topBadge;
-}
-
-async function handleSurveySubmission(e) {
-  if (e) e.preventDefault();
-
-  if ((Date.now() - surveyStartTime) < QUALITY_THRESHOLD_MS) {
-    showToast("Please take more time to read the questions carefully.", "⏱️");
-    return;
-  }
-
-  if (!validateCurrentSectionAnswers()) {
-    showToast(getUIText("validationRequired"), "⚠️");
-    return;
-  }
-
-  const claimForm = document.getElementById("claimForm");
-  if (claimForm) { claimForm.classList.add("hidden"); claimForm.style.display = "none"; }
-  
-  const excitementBanner = document.getElementById("excitementBanner");
-  if(excitementBanner) excitementBanner.style.display = "none";
-
-  const animOverlay = document.getElementById("rewardAnimationOverlay");
-  if (animOverlay) animOverlay.style.display = "flex";
-
-  const referralCodeUsed = localStorage.getItem("referralCode") || "";
-
-  const finalPayload = {
-    email: userEmailAddress,
-    answers: answers,
-    referredBy: referralCodeUsed,
-    legal_consent: true,
-    consent_timestamp: legalConsentTimestamp || new Date().toISOString(),
-    user_agent: clientUserAgent || navigator.userAgent,
-    startTime: surveyStartTime, 
-    submissionTime: Date.now(),
-    assignedBadge: determinePersonaBadge(answers)
-  };
-
-  try {
-    const response = await fetchWithTimeout(`${BACKEND_URL}/api/submit-survey`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(finalPayload)
-    });
-
-    const result = await response.json();
-    
-    setTimeout(async () => {
-      if (animOverlay) animOverlay.style.display = "none";
-      if (result.success) {
-        if (statusDiv) statusDiv.innerHTML = "";
-        window.hasCompletedSurvey = true; 
-        await runProfileLedgerVerification(userEmailAddress, false);
-      } else {
-        if (claimForm) { claimForm.classList.remove("hidden"); claimForm.style.display = "block"; }
-        showToast(`${result.error || "Submission rejected by registry backend."}`, "❌");
-      }
-    }, 3500);
-  } catch (err) {
-    if (animOverlay) animOverlay.style.display = "none";
-    if (claimForm) { claimForm.classList.remove("hidden"); claimForm.style.display = "block"; }
-    showToast("Network transaction failed.", "❌");
-  }
-}
-
-function translatePage() {
-  if (typeof translations === "undefined" || !translations[currentLanguage]) return;
-  const dict = translations[currentLanguage];
-
-  const mainTitleEl = document.getElementById("mainTitle");
-  const mainSubtitleEl = document.getElementById("mainSubtitle");
-  if (mainTitleEl && dict.mainTitle) mainTitleEl.innerHTML = dict.mainTitle;
-  if (mainSubtitleEl && dict.mainSubtitle) mainSubtitleEl.innerHTML = dict.mainSubtitle;
-
-  const emailSectionTitleEl = document.querySelector("#emailGateSection .sectionTitle");
-  if (emailSectionTitleEl && dict.emailSectionTitle) emailSectionTitleEl.innerText = dict.emailSectionTitle;
-  
-  const startSurveyBtnEl = document.getElementById("startSurveyBtn");
-  if (startSurveyBtnEl && dict.btnStart) startSurveyBtnEl.innerHTML = dict.btnStart;
-
-  const prevBtnEl = document.getElementById("prevBtn");
-  const nextBtnEl = document.getElementById("nextBtn");
-  const submitClaimBtnEl = document.getElementById("submitClaimBtn");
-  if (prevBtnEl && dict.previous) prevBtnEl.innerHTML = `&lt; ${dict.previous}`;
-  if (nextBtnEl && dict.next) nextBtnEl.innerHTML = `${dict.next} &gt;`;
-  if (submitClaimBtnEl && dict.submit) submitClaimBtnEl.innerHTML = dict.submit;
-
-  const rewardTitleEl = document.getElementById("claimTitle");
-  const rewardSubtitleEl = document.getElementById("rewardSubtitleDesc");
-  if (rewardTitleEl && dict.claimTitle) rewardTitleEl.innerHTML = dict.claimTitle;
-  if (rewardSubtitleEl && dict.rewardSubtitle) rewardSubtitleEl.innerHTML = dict.rewardSubtitle;
-
-  const connectWalletBtnEl = document.querySelector("#connectWalletBtn span");
-  if (connectWalletBtnEl && dict.metaMaskLabel) connectWalletBtnEl.innerText = dict.metaMaskLabel;
-  
-  const manualLabelEl = document.querySelector(".manualWalletWrapper .dividerLine span");
-  if (manualLabelEl && dict.manualLabel) manualLabelEl.innerText = dict.manualLabel;
-  
-  const executeClaimBtnEl = document.getElementById("executeClaimBtn");
-  if (executeClaimBtnEl && dict.btnExecute) executeClaimBtnEl.innerText = dict.btnExecute;
-  
-  const referralTitleEl = document.querySelector(".referralContainer .dividerLine span");
-  if (referralTitleEl && dict.referralTitle) referralTitleEl.innerText = dict.referralTitle;
-
-  const referralDescriptionEl = document.getElementById("referralSubText");
-  if (referralDescriptionEl && dict.referralSub) referralDescriptionEl.innerHTML = dict.referralSub;
-  
-  const copyReferralBtnEl = document.getElementById("copyReferralBtn");
-  if (copyReferralBtnEl && dict.btnCopy) copyReferralBtnEl.innerText = dict.btnCopy;
-
-  const modalTitleEl = document.querySelector("#retrieveModal .modal-header h2");
-  if (modalTitleEl && dict.modalTitle) modalTitleEl.innerText = dict.modalTitle;
-  
-  const modalSubEl = document.querySelector("#retrieveModal .modal-subtitle");
-  if (modalSubEl && dict.modalSub) modalSubEl.innerText = dict.modalSub;
-  
-  const modalDetailsTitleEl = document.querySelector("#retrieveModal .extra-details-box h4");
-  if (modalDetailsTitleEl && dict.modalDetailsTitle) modalDetailsTitleEl.innerText = dict.modalDetailsTitle;
-  
-  const modalDetails1El = document.querySelector("#retrieveModal .extra-details-box li:nth-child(1)");
-  if (modalDetails1El && dict.modalDetails1) modalDetails1El.innerText = dict.modalDetails1;
-  
-  const modalDetails2El = document.querySelector("#retrieveModal .extra-details-box li:nth-child(2)");
-  if (modalDetails2El && dict.modalDetails2) modalDetails2El.innerText = dict.modalDetails2;
-  
-  const modalDetails3El = document.querySelector("#retrieveModal .extra-details-box li:nth-child(3)");
-  if (modalDetails3El && dict.modalDetails3) modalDetails3El.innerText = dict.modalDetails3;
-  
-  const modalInputLabelEl = document.querySelector("#retrieveModal .input-wrapper label");
-  if (modalInputLabelEl && dict.modalInputLabel) modalInputLabelEl.innerText = dict.modalInputLabel;
-  
-  const cancelModalBtnEl = document.getElementById("cancelModalBtn");
-  if (cancelModalBtnEl && dict.btnCancel) cancelModalBtnEl.innerText = dict.btnCancel;
-  
-  const confirmRetrieveBtnEl = document.getElementById("confirmRetrieveBtn");
-  if (confirmRetrieveBtnEl && dict.btnSearch) confirmRetrieveBtnEl.innerText = dict.btnSearch;
-}
-
-function resetApplicationFlowState() {
-  const emailGateForm = document.getElementById("emailGateForm");
-  if (emailGateForm) emailGateForm.reset();
-  localStorage.removeItem("syntrix_user_email");
-  localStorage.removeItem("referralCode");
-  
-  if (statusDiv) statusDiv.innerHTML = "";
-  
-  userEmailAddress = "";
-  currentSection = 0;
-  isOtpSent = false;
-  legalConsentTimestamp = "";
-  clientUserAgent = ""; 
-  window.hasCompletedSurvey = false;
-  
-  const otpSection = document.getElementById("otpSection");
-  if (otpSection) {
-      otpSection.classList.add("hidden");
-      otpSection.style.display = "none";
-  }
-  
-  const startSurveyBtn = document.getElementById("startSurveyBtn");
-  if (startSurveyBtn) startSurveyBtn.innerHTML = "Send Verification Code &rarr;";
-  const gateEmailInput = document.getElementById("gateEmail");
-  if (gateEmailInput) gateEmailInput.readOnly = false;
-  
-  for (const prop in answers) {
-      if (Object.prototype.hasOwnProperty.call(answers, prop)) {
-          delete answers[prop];
-      }
-  }
-  
-  const emailGateSection = document.getElementById("emailGateSection");
-  if (emailGateSection) {
-      emailGateSection.classList.remove("hidden");
-      emailGateSection.style.display = "flex";
-  }
-  
-  const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "gatewayScreenSection", "documentModeSection", "selfieModeSection"];
-  dashboardCards.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) { el.classList.add("hidden"); el.style.display = "none"; }
-  });
-
-  const claimForm = document.getElementById("claimForm");
-  if (claimForm) {
-      claimForm.classList.add("hidden");
-      claimForm.style.display = "none";
-  }
-  const topProgressBox = document.getElementById("topProgressBox");
-  if (topProgressBox) {
-      topProgressBox.classList.add("hidden");
-      topProgressBox.style.display = "none";
-  }
-  
-  const tabLinksContainer = document.getElementById("dashboardTabLinks");
-  if (tabLinksContainer) {
-      tabLinksContainer.classList.add("hidden");
-      tabLinksContainer.style.display = "none";
-  }
-  
-  const menuReferralWrapper = document.getElementById("menuReferralWrapper");
-  if (menuReferralWrapper) menuReferralWrapper.style.display = "none";
-  
-  if (mainApplicationLayout) {
-      mainApplicationLayout.classList.add("hidden");
-      mainApplicationLayout.style.display = "none";
-  }
-  if (splashLandingGate) {
-      splashLandingGate.style.display = "flex";
-  }
-  routeSplashNavViews("home");
-  showToast("Account profiles successfully signed out.", "✓");
-}
-
-// ================= LIFE CYCLE REGISTRATION RUNNERS & EVENT ROUTERS =================
-document.addEventListener("DOMContentLoaded", async () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const claimToken = urlParams.get("token");
-  const refParam = urlParams.get("ref");
-  
-  if (refParam) {
-    localStorage.setItem("referralCode", normalizeReferralCode(refParam));
-    window.history.replaceState({}, document.title, window.location.pathname);
-  }
-  const savedRefCode = localStorage.getItem("referralCode");
-  const referredByCodeInput = document.getElementById("referredByCode");
-  if (savedRefCode && referredByCodeInput) referredByCodeInput.value = savedRefCode;
-
-  document.querySelectorAll(".tab-btn").forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      const target = e.target.dataset.tab;
-      if (target) {
-        if (target === 'survey' && window.hasCompletedSurvey) {
-            showToast("✅ Survey already completed. Redirecting to Survey Matrix...", "✅");
-            routeDashboardTabs('more-surveys');
-        } else {
-            routeDashboardTabs(target);
-        }
-        const optionsPopover = document.getElementById("optionsPopover");
-        if(optionsPopover) {
-          optionsPopover.classList.add("hidden");
-          optionsPopover.style.display = "none";
-        }
-      }
-    });
-  });
-
-  const emailGateSection = document.getElementById("emailGateSection");
-  const claimForm = document.getElementById("claimForm");
-  const topProgressBox = document.getElementById("topProgressBox");
-  const gatewayScreenSection = document.getElementById("gatewayScreenSection");
-  const documentModeSection = document.getElementById("documentModeSection");
-  const selfieModeSection = document.getElementById("selfieModeSection");
-
-  if (claimToken) {
-    if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
-    if (claimForm) { claimForm.classList.add("hidden"); claimForm.style.display = "none"; }
-    if (topProgressBox) { topProgressBox.classList.add("hidden"); topProgressBox.style.display = "none"; }
-    if (gatewayScreenSection) { gatewayScreenSection.classList.add("hidden"); gatewayScreenSection.style.display = "none"; }
-    if (documentModeSection) { documentModeSection.classList.add("hidden"); documentModeSection.style.display = "none"; }
-    if (selfieModeSection) { selfieModeSection.classList.add("hidden"); selfieModeSection.style.display = "none"; }
-    
-    const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys"];
-    dashboardCards.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) { el.classList.add("hidden"); el.style.display = "none"; }
-    });
-  } else {
-    if (splashLandingGate) {
-        splashLandingGate.style.display = "flex";
-    }
-    if (mainApplicationLayout) {
-        mainApplicationLayout.style.display = "none";
-        mainApplicationLayout.classList.add("hidden");
-    }
-    routeSplashNavViews("home");
-  }
-
-  // 🚀 FIX: OTP SEND & VERIFY LOGIC TO SHOW VERIFICATION BOX
-  const preVerifyBtn = document.getElementById('preVerifyBtn');
-  const gateEmailInput = document.getElementById("gateEmail");
-  const startSurveyBtn = document.getElementById("startSurveyBtn");
-  const emailGateForm = document.getElementById("emailGateForm");
-
-  if (preVerifyBtn) {
-    preVerifyBtn.addEventListener("click", async (e) => {
-      e.preventDefault();
-      const emailVal = gateEmailInput.value.trim().toLowerCase();
-      if (!emailVal || !EMAIL_REGEX.test(emailVal)) {
-        showToast("Please enter a valid email address.", "⚠️");
-        return;
-      }
-
-      preVerifyBtn.disabled = true;
-      preVerifyBtn.innerText = "Sending Code...";
-
-      try {
-        const response = await fetch(`${BACKEND_URL}/api/send-otp`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: emailVal })
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-          showToast("Verification code sent to your email!", "✅");
-          isOtpSent = true;
-          userEmailAddress = emailVal;
-          gateEmailInput.readOnly = true;
-          
-          preVerifyBtn.classList.add("hidden");
-          preVerifyBtn.style.display = "none";
-          
-          if (startSurveyBtn) {
-            startSurveyBtn.classList.remove("hidden");
-            startSurveyBtn.style.display = "flex";
-          }
-          
-          const otpSection = document.getElementById("otpSection");
-          if (otpSection) {
-            otpSection.classList.remove("hidden");
-            otpSection.style.setProperty("display", "flex", "important"); 
-            otpSection.style.opacity = "1";
-            otpSection.style.pointerEvents = "auto";
-          }
-        } else {
-          showToast(data.error || "Failed to send code. Try again.", "❌");
-          preVerifyBtn.disabled = false;
-          preVerifyBtn.innerText = "Send Verification Code \u2192";
-        }
-      } catch (err) {
-        showToast("Network error. Please try again.", "❌");
-        preVerifyBtn.disabled = false;
-        preVerifyBtn.innerText = "Send Verification Code \u2192";
-      }
-    });
-  }
-
-  if (emailGateForm) {
-    emailGateForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      if (!isOtpSent) return;
-
-      const otpVal = document.getElementById("gateOtp").value.trim();
-      if (!otpVal || otpVal.length < 6) {
-        showToast("Please enter the 6-digit code.", "⚠️");
-        return;
-      }
-
-      if (startSurveyBtn) {
-        startSurveyBtn.disabled = true;
-        startSurveyBtn.innerText = "Verifying...";
-      }
-
-      try {
-        const response = await fetch(`${BACKEND_URL}/api/verify-otp`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: userEmailAddress, otp: otpVal })
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-          const referralCode = document.getElementById("referredByCode").value.trim();
-          if(referralCode) localStorage.setItem("referralCode", normalizeReferralCode(referralCode));
-
-          if(splashLandingGate) splashLandingGate.style.display = "none"; 
-          if(mainApplicationLayout) {
-              mainApplicationLayout.classList.remove("hidden");
-              mainApplicationLayout.style.display = "flex"; 
-          }
-          
-          await runProfileLedgerVerification(userEmailAddress, false);
-        } else {
-          showToast(data.error || "Invalid OTP code.", "❌");
-          if (startSurveyBtn) {
-            startSurveyBtn.disabled = false;
-            startSurveyBtn.innerHTML = "Verify & Enter &rarr;";
-          }
-        }
-      } catch (err) {
-        showToast("Network error. Please try again.", "❌");
-        if (startSurveyBtn) {
-          startSurveyBtn.disabled = false;
-          startSurveyBtn.innerHTML = "Verify & Enter &rarr;";
-        }
-      }
-    });
-  }
-
-  const nextBtn = document.getElementById("nextBtn");
-  const prevBtn = document.getElementById("prevBtn");
-
-  if (nextBtn) nextBtn.onclick = () => handleNextSection();
-  if (prevBtn) prevBtn.onclick = () => handlePrevSection();
-  if (claimForm) {
-    claimForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      handleSurveySubmission(e);
-    });
-  }
-  
-  const connectWalletBtn = document.getElementById("connectWalletBtn");
-  const claimConnectWalletBtn = document.getElementById("claimConnectWalletBtn");
-  const executeClaimBtn = document.getElementById("executeClaimBtn");
-  const submitClaimRewardBtn = document.getElementById("submitClaimRewardBtn");
-  const sidebarLogoutBtn = document.getElementById("sidebarLogoutBtn");
-  const copyReferralBtn = document.getElementById("copyReferralBtn");
-  const referralCodeDisplay = document.getElementById("referralCodeDisplay");
-  const generateQrBtn = document.getElementById("generateQrBtn");
-  const qrCodeWrapper = document.getElementById("qrCodeWrapper");
-  const qrCodeCanvas = document.getElementById("qrCodeCanvas");
-  const downloadQrBtn = document.getElementById("downloadQrBtn");
-
-  if (connectWalletBtn) connectWalletBtn.addEventListener("click", interceptClaimGateActions);
-  if (claimConnectWalletBtn) claimConnectWalletBtn.addEventListener("click", interceptClaimGateActions);
-  if (executeClaimBtn) executeClaimBtn.addEventListener("click", interceptClaimGateActions);
-  if (submitClaimRewardBtn) submitClaimRewardBtn.addEventListener("click", interceptClaimGateActions);
-  
-  if (sidebarLogoutBtn) sidebarLogoutBtn.addEventListener("click", () => resetApplicationFlowState());
-  
-  if (copyReferralBtn) {
-      copyReferralBtn.onclick = () => {
-        if (!referralCodeDisplay) return;
-        referralCodeDisplay.select(); 
-        referralCodeDisplay.setSelectionRange(0, 99999);
-        try {
-          navigator.clipboard.writeText(referralCodeDisplay.value);
-          const originalText = copyReferralBtn.innerText; 
-          copyReferralBtn.innerText = "Copied! ✓";
-          setTimeout(() => { copyReferralBtn.innerText = originalText; }, 2000);
-        } catch (err) { showToast("Failed to access system registers.", "❌"); }
-      }
-  }
-
-  if (generateQrBtn) {
-    generateQrBtn.addEventListener("click", () => {
-      const shopRefCode = localStorage.getItem("referralCode");
-      if (!shopRefCode) {
-        showToast("Referral link not found. Please log in to your shop account.", "❌");
-        return;
-      }
-      
-      qrCodeWrapper.style.display = "flex";
-      qrCodeCanvas.innerHTML = "";
-      
-      const dynamicQrLink = `${BACKEND_URL}/r/${shopRefCode}`;
-      
-      new QRCode(qrCodeCanvas, {
-        text: dynamicQrLink,
-        width: 256,
-        height: 256,
-        colorDark: "#111827",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
-      });
-
-      qrCodeWrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      showToast("Shop QR Code generated!", "✅");
-    });
-  }
-
-  if (downloadQrBtn) {
-    downloadQrBtn.addEventListener("click", () => {
-      const originalCanvas = qrCodeCanvas.querySelector("canvas");
-
-      if (!originalCanvas) {
-        showToast("Please generate the QR code first.", "❌");
-        return;
-      }
-
-      const padding = 24; 
-      const paddedCanvas = document.createElement("canvas");
-      paddedCanvas.width = originalCanvas.width + (padding * 2);
-      paddedCanvas.height = originalCanvas.height + (padding * 2);
-      
-      const ctx = paddedCanvas.getContext("2d");
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, paddedCanvas.width, paddedCanvas.height);
-      ctx.drawImage(originalCanvas, padding, padding);
-
-      const downloadUrl = paddedCanvas.toDataURL("image/png");
-      
-      const tempLink = document.createElement("a");
-      tempLink.href = downloadUrl;
-      tempLink.download = "Syntrix_Dealer_QR.png";
-      document.body.appendChild(tempLink);
-      tempLink.click();
-      document.body.removeChild(tempLink);
-      
-      showToast("QR Code saved to gallery!", "✅");
-    });
-  }
-
-  const menuCopyReferralBtn = document.getElementById("menuCopyReferralBtn");
-  const menuReferralInputDisplay = document.getElementById("menuReferralInputDisplay");
-  if (menuCopyReferralBtn && menuReferralInputDisplay) {
-    menuCopyReferralBtn.onclick = (e) => {
-      e.stopPropagation();
-      const refLink = menuReferralInputDisplay.value;
-      if (refLink) {
-        navigator.clipboard.writeText(refLink);
-        menuCopyReferralBtn.innerText = "Copied!";
-        menuCopyReferralBtn.style.background = "#10b981";
-        setTimeout(() => { 
-            menuCopyReferralBtn.innerText = "Copy"; 
-            menuCopyReferralBtn.style.background = "#111827";
-        }, 2000);
-      }
-    };
-  }
-
-  const menuToggleBtn = document.getElementById("menuToggleBtn");
-  const optionsPopover = document.getElementById("optionsPopover");
-  if (menuToggleBtn && optionsPopover) {
-    menuToggleBtn.onclick = (e) => { 
-        e.stopPropagation(); 
-        optionsPopover.classList.toggle("hidden"); 
-        if(optionsPopover.style.display === "none" || optionsPopover.style.display === "") {
-            optionsPopover.style.display = "block";
-        } else {
-            optionsPopover.style.display = "none";
-        }
-    };
-    document.addEventListener("click", (e) => {
-        if(optionsPopover && !optionsPopover.contains(e.target) && e.target !== menuToggleBtn) {
-          optionsPopover.classList.add("hidden");
-          optionsPopover.style.display = "none";
-        }
-    });
-  }
-
-  const menuRestartBtn = document.getElementById("menuRestartBtn"); 
-  const confirmRestartModal = document.getElementById("confirmRestartModal");
-  if (menuRestartBtn) {
-    menuRestartBtn.onclick = () => { 
-      if(optionsPopover) {
-          optionsPopover.classList.add("hidden"); 
-          optionsPopover.style.display = "none";
-      }
-      if(confirmRestartModal) {
-          confirmRestartModal.classList.remove("hidden"); 
-          confirmRestartModal.style.display = "flex";
-      }
-    };
-  }
-  
-  const cancelRestartBtn = document.getElementById("cancelRestartBtn");
-  if (cancelRestartBtn) {
-    cancelRestartBtn.onclick = () => {
-      if(confirmRestartModal) {
-          confirmRestartModal.classList.add("hidden");
-          confirmRestartModal.style.display = "none";
-      }
-    };
-  }
-  
-  const confirmRestartBtn = document.getElementById("confirmRestartBtn");
-  if (confirmRestartBtn) {
-    confirmRestartBtn.onclick = () => {
-      if(confirmRestartModal) {
-          confirmRestartModal.classList.add("hidden");
-          confirmRestartModal.style.display = "none";
-      }
-      resetApplicationFlowState();
-    };
-  }
-
-  const menuRecoverBtn = document.getElementById("menuRecoverBtn");
-  const retrieveModal = document.getElementById("retrieveModal");
-  const modalEmailInput = document.getElementById("modalEmailInput");
-  const modalStatus = document.getElementById("modalStatus");
-  const confirmRetrieveBtn = document.getElementById("confirmRetrieveBtn");
-
-  if (menuRecoverBtn && retrieveModal) {
-    menuRecoverBtn.onclick = () => {
-      if(optionsPopover) {
-          optionsPopover.classList.add("hidden"); 
-          optionsPopover.style.display = "none";
-      }
-      retrieveModal.classList.remove("hidden");
-      retrieveModal.style.display = "flex";
-      if (modalEmailInput) modalEmailInput.value = ""; 
-      if (modalStatus) modalStatus.innerHTML = "";
-      
-      if (confirmRetrieveBtn) {
-        confirmRetrieveBtn.onclick = async () => {
-          const searchEmail = modalEmailInput ? modalEmailInput.value.trim().toLowerCase() : "";
-          if (!searchEmail || !EMAIL_REGEX.test(searchEmail)) {
-            showToast("Please provide a valid email structure.", "❌");
-            return;
-          }
-          if (splashLandingGate) splashLandingGate.style.display = "none";
-          if (mainApplicationLayout) {
-              mainApplicationLayout.classList.remove("hidden");
-              mainApplicationLayout.style.display = "flex";
-          }
-          
-          const originalText = confirmRetrieveBtn.innerText;
-          confirmRetrieveBtn.innerText = "Searching...";
-          confirmRetrieveBtn.disabled = true;
-          I seem to be encountering an error. Can I try something else for you?
+.xp-floating-toast.show { transform: translateY(0) scale(1); opacity: 1; }
+.xp-toast-icon { font-size: 28px; animation: floatOrb 3s ease-in-out infinite; filter: drop-shadow(0 0 10px rgba(168,85,247,0.6)); }
+.xp-toast-text { display: flex; flex-direction: column; text-align: left;}
+.xp-toast-amount { color: #a855f7; font-weight: 900; font-size: 18px; letter-spacing: 0.5px; }
+.xp-toast-reason { color: #d1d5db; font-size: 13px; font-weight: 600; }
+@media(max-width: 900px) { .xp-floating-toast { bottom: 20px; right: 20px; left: 20px; justify-content: center; } }
+</style>
+
+<div id="xpFloatingToast" class="xp-floating-toast hidden">
+  <div class="xp-toast-icon">✨</div>
+  <div class="xp-toast-text">
+    <span class="xp-toast-amount" id="xpToastAmount">+0 XP</span>
+    <span class="xp-toast-reason" id="xpToastReason">Task Completed</span>
+  </div>
+</div>
+
+</body>
+</html>
