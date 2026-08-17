@@ -3,7 +3,6 @@
 // Supports complete rendering vectors across English, Hindi, and Hinglish
 // =========================================================================
 
-// 🚀 FIX: Changed from const to var to prevent redeclaration fatal crashes
 var translations = {
   en: {
     mainTitle: "Syntrix Consumer Analytics Hub",
