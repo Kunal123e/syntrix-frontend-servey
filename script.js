@@ -1,4 +1,3 @@
-``javascript
 // =========================================================================
 // SYNTRIX CORE PLATFORM APPLICATION LOGIC ENGINE
 // =========================================================================
@@ -2285,5 +2284,3 @@ window.addEventListener('DOMContentLoaded', function() {
         }, true);
     }
 });
-
-``
