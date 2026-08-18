@@ -1,8 +1,9 @@
+``javascript
 // =========================================================================
 // SYNTRIX CORE PLATFORM APPLICATION LOGIC ENGINE
 // =========================================================================
 
-// 🚀 INJECT PREMIUM AI ANIMATION CSS DYNAMICALLY
+// INJECT PREMIUM AI ANIMATION CSS DYNAMICALLY
 const styleSheet = document.createElement("style");
 styleSheet.innerText = `
 @keyframes aiSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -20,7 +21,7 @@ const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 const WALLET_REGEX = /^0x[a-fA-F0-9]{40}$/;
 const DEFAULT_TIMEOUT_MS = 90000; 
 
-// 🚀 QUALITY GATE: Start time tracker
+// QUALITY GATE: Start time tracker
 let surveyStartTime = 0;
 const QUALITY_THRESHOLD_MS = 120000; 
 
@@ -47,11 +48,27 @@ const navLogoHomeTrigger = document.getElementById("navLogoHomeTrigger");
 const navGetStartedAction = document.getElementById("navGetStartedAction");
 const initializePlatformBtn = document.getElementById("initializePlatformBtn");
 
-// 🚀 FIX: Define playSmoothStart globally to resolve the Uncaught TypeError
+// FIX: Define playSmoothStart globally with error safety
 window.playSmoothStart = function() {
-  const initBtn = document.getElementById("initializePlatformBtn");
-  if (initBtn) {
-    initBtn.click();
+  try {
+    var initBtn = document.getElementById("initializePlatformBtn");
+    if (initBtn) {
+      initBtn.click();
+    } else {
+      // Fallback: manually perform the transition if button element is missing
+      if(splashLandingGate) splashLandingGate.style.display = "none";
+      if(mainApplicationLayout) {
+        mainApplicationLayout.classList.remove("hidden");
+        mainApplicationLayout.style.display = "block";
+      }
+    }
+  } catch(err) {
+    console.error("[Syntrix] playSmoothStart error:", err);
+    // Emergency fallback
+    var splash = document.getElementById("splashLandingGate");
+    var main = document.getElementById("mainApplicationLayout");
+    if(splash) splash.style.display = "none";
+    if(main) { main.classList.remove("hidden"); main.style.display = "block"; }
   }
 };
 
@@ -105,7 +122,7 @@ const statTotalEarned = document.getElementById("statTotalEarned");
 const referralCodeDisplay = document.getElementById("referralCodeDisplay");
 const copyReferralBtn = document.getElementById("copyReferralBtn");
 
-// 🚀 QR Code Element Selectors
+// QR Code Element Selectors
 const generateQrBtn = document.getElementById("generateQrBtn");
 const qrCodeWrapper = document.getElementById("qrCodeWrapper");
 const qrCodeCanvas = document.getElementById("qrCodeCanvas");
@@ -122,16 +139,17 @@ const confirmRestartModal = document.getElementById("confirmRestartModal");
 const cancelRestartBtn = document.getElementById("cancelRestartBtn");
 const confirmRestartBtn = document.getElementById("confirmRestartBtn");
 
-function showToast(message, icon = "⚠️") {
-  let toast = document.getElementById("customToast");
-  let toastMsg = document.getElementById("toastMessage");
-  let toastIcon = document.querySelector(".toast-icon");
+function showToast(message, icon) {
+  if (icon === undefined) icon = "!";
+  var toast = document.getElementById("customToast");
+  var toastMsg = document.getElementById("toastMessage");
+  var toastIcon = document.querySelector(".toast-icon");
   
   if (!toast) {
     toast = document.createElement("div");
     toast.id = "customToast";
     toast.className = "custom-toast";
-    toast.innerHTML = `<span class="toast-icon">${icon}</span><span id="toastMessage">${message}</span>`;
+    toast.innerHTML = '<span class="toast-icon">' + icon + '</span><span id="toastMessage">' + message + '</span>';
     document.body.appendChild(toast);
     toastMsg = document.getElementById("toastMessage");
     toastIcon = document.querySelector(".toast-icon");
@@ -144,32 +162,162 @@ function showToast(message, icon = "⚠️") {
   
   toast.style.display = "flex";
   toast.classList.add("show");
-  setTimeout(() => { 
+  setTimeout(function() { 
     toast.classList.remove("show"); 
-    setTimeout(() => { toast.style.display = "none"; }, 500);
+    setTimeout(function() { toast.style.display = "none"; }, 500);
   }, 3500);
 }
 
 function openLegalModal() { 
-  const legalModal = document.getElementById("legalModal");
+  var legalModal = document.getElementById("legalModal");
   if(legalModal) {
     legalModal.classList.remove("hidden");
     legalModal.style.display = "flex";
   }
 }
 function closeLegalModal() { 
-  const legalModal = document.getElementById("legalModal");
+  var legalModal = document.getElementById("legalModal");
   if(legalModal) {
     legalModal.classList.add("hidden");
     legalModal.style.display = "none";
   }
 }
-const dismissModal = () => { 
+var dismissModal = function() { 
   if (retrieveModal) {
     retrieveModal.classList.add("hidden"); 
     retrieveModal.style.display = "none";
   }
 };
+
+// ================= FIX: GLOBAL toggleSettingsMenu =================
+function toggleSettingsMenu() {
+  var popover = document.getElementById("optionsPopover");
+  if (!popover) return;
+  if (popover.style.display === "none" || popover.style.display === "" || popover.classList.contains("hidden")) {
+    popover.classList.remove("hidden");
+    popover.style.display = "block";
+  } else {
+    popover.classList.add("hidden");
+    popover.style.display = "none";
+  }
+}
+
+// ================= FIX: GLOBAL handleLogout =================
+window.handleLogout = function() {
+  resetApplicationFlowState();
+};
+
+// ================= FIX: GLOBAL executeGoogleSimLogin =================
+window.executeGoogleSimLogin = function(email) {
+  var modal = document.getElementById("googleSimModal");
+  if (modal) {
+    modal.classList.add("hidden");
+    modal.style.display = "none";
+  }
+  
+  if (email) {
+    userEmailAddress = email;
+    localStorage.setItem("syntrix_user_email", email);
+    
+    if (splashLandingGate) splashLandingGate.style.display = "none";
+    if (mainApplicationLayout) {
+      mainApplicationLayout.classList.remove("hidden");
+      mainApplicationLayout.style.display = "block";
+    }
+    
+    runProfileLedgerVerification(email, false);
+  }
+};
+
+// ================= FIX: GLOBAL copyMyReferral =================
+window.copyMyReferral = function(e) {
+  if (e) e.preventDefault();
+  var refDisplay = document.getElementById("referralCodeDisplay");
+  if (!refDisplay) return;
+  
+  var refLink = refDisplay.value;
+  if (refLink) {
+    try {
+      navigator.clipboard.writeText(refLink);
+      var btn = document.getElementById("btnCopyReferralLink");
+      if (btn) {
+        var origHTML = btn.innerHTML;
+        btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Copied!';
+        setTimeout(function() { btn.innerHTML = origHTML; }, 2000);
+      }
+    } catch(err) {
+      showToast("Failed to copy. Please copy manually.", "!");
+    }
+  }
+};
+
+// ================= FIX: GLOBAL generateMyQR =================
+window.generateMyQR = function(e) {
+  if (e) e.preventDefault();
+  var refDisplay = document.getElementById("referralCodeDisplay");
+  var qrWrapper = document.getElementById("qrCodeWrapper");
+  var qrCanvas = document.getElementById("qrCodeCanvas");
+  
+  if (!refDisplay || !qrWrapper || !qrCanvas) return;
+  
+  var refLink = refDisplay.value;
+  if (!refLink || refLink === "https://syntrix-frontend-servey-8ea88a") {
+    showToast("Referral link not available yet.", "!");
+    return;
+  }
+  
+  qrWrapper.style.display = "flex";
+  qrCanvas.innerHTML = "";
+  
+  if (typeof QRCode !== "undefined") {
+    new QRCode(qrCanvas, {
+      text: refLink,
+      width: 256,
+      height: 256,
+      colorDark: "#111827",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  }
+  
+  qrWrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  showToast("QR Code generated!", "OK");
+};
+
+// ================= FIX: GLOBAL downloadMyQR =================
+window.downloadMyQR = function(e) {
+  if (e) e.preventDefault();
+  var qrCanvas = document.getElementById("qrCodeCanvas");
+  if (!qrCanvas) return;
+  
+  var originalCanvas = qrCanvas.querySelector("canvas");
+  if (!originalCanvas) {
+    showToast("Please generate the QR code first.", "!");
+    return;
+  }
+
+  var padding = 24; 
+  var paddedCanvas = document.createElement("canvas");
+  paddedCanvas.width = originalCanvas.width + (padding * 2);
+  paddedCanvas.height = originalCanvas.height + (padding * 2);
+  
+  var ctx = paddedCanvas.getContext("2d");
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, paddedCanvas.width, paddedCanvas.height);
+  ctx.drawImage(originalCanvas, padding, padding);
+
+  var downloadUrl = paddedCanvas.toDataURL("image/png");
+  
+  var tempLink = document.createElement("a");
+  tempLink.href = downloadUrl;
+  tempLink.download = "Syntrix_Dealer_QR.png";
+  document.body.appendChild(tempLink);
+  tempLink.click();
+  document.body.removeChild(tempLink);
+  
+  showToast("QR Code saved to gallery!", "OK");
+};
+
 
 // ================= SPLASH PAGE ISOLATED ROUTING =================
 function routeSplashNavViews(targetView) {
@@ -177,34 +325,34 @@ function routeSplashNavViews(targetView) {
   if (viewSplashRewards) viewSplashRewards.style.display = "none";
   if (viewSplashAbout) viewSplashAbout.style.display = "none";
   
-  document.querySelectorAll(".nav-splash-tab").forEach(link => link.classList.remove("active"));
+  document.querySelectorAll(".nav-splash-tab").forEach(function(link) { link.classList.remove("active"); });
   
   if (targetView === "home" && viewSplashHome) { viewSplashHome.style.display = "block"; if(linkHomeTab) linkHomeTab.classList.add("active"); }
   if (targetView === "rewards" && viewSplashRewards) { viewSplashRewards.style.display = "block"; if(linkRewardsTab) linkRewardsTab.classList.add("active"); }
   if (targetView === "about" && viewSplashAbout) { viewSplashAbout.style.display = "block"; if(linkAboutTab) linkAboutTab.classList.add("active"); }
 }
 
-if (linkHomeTab) linkHomeTab.addEventListener("click", (e) => { e.preventDefault(); routeSplashNavViews("home"); });
-if (linkRewardsTab) linkRewardsTab.addEventListener("click", (e) => { e.preventDefault(); routeSplashNavViews("rewards"); });
-if (linkAboutTab) linkAboutTab.addEventListener("click", (e) => { e.preventDefault(); routeSplashNavViews("about"); });
-if (navLogoHomeTrigger) navLogoHomeTrigger.addEventListener("click", () => routeSplashNavViews("home"));
-document.querySelectorAll(".back-to-home-btn").forEach(btn => btn.addEventListener("click", () => routeSplashNavViews("home")));
+if (linkHomeTab) linkHomeTab.addEventListener("click", function(e) { e.preventDefault(); routeSplashNavViews("home"); });
+if (linkRewardsTab) linkRewardsTab.addEventListener("click", function(e) { e.preventDefault(); routeSplashNavViews("rewards"); });
+if (linkAboutTab) linkAboutTab.addEventListener("click", function(e) { e.preventDefault(); routeSplashNavViews("about"); });
+if (navLogoHomeTrigger) navLogoHomeTrigger.addEventListener("click", function() { routeSplashNavViews("home"); });
+document.querySelectorAll(".back-to-home-btn").forEach(function(btn) { btn.addEventListener("click", function() { routeSplashNavViews("home"); }); });
 
 if (navGetStartedAction) {
-  navGetStartedAction.addEventListener("click", () => {
+  navGetStartedAction.addEventListener("click", function() {
     if (initializePlatformBtn) initializePlatformBtn.click();
   });
 }
 
 if (initializePlatformBtn) {
-  initializePlatformBtn.addEventListener("click", () => {
+  initializePlatformBtn.addEventListener("click", function() {
     if(splashLandingGate) splashLandingGate.style.display = "none"; 
     if(mainApplicationLayout) {
         mainApplicationLayout.classList.remove("hidden");
-        mainApplicationLayout.style.display = "flex"; 
+        mainApplicationLayout.style.display = "block"; 
     }
     
-    const savedEmail = localStorage.getItem("syntrix_user_email");
+    var savedEmail = localStorage.getItem("syntrix_user_email");
     if (savedEmail) {
       userEmailAddress = savedEmail;
       if (emailGateSection) {
@@ -213,9 +361,9 @@ if (initializePlatformBtn) {
       }
       runProfileLedgerVerification(userEmailAddress, false);
     } else {
-      const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "gatewayScreenSection", "documentModeSection", "selfieModeSection"];
-      dashboardCards.forEach(id => {
-        const el = document.getElementById(id);
+      var dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "gatewayScreenSection", "documentModeSection", "selfieModeSection", "tabScreenXP"];
+      dashboardCards.forEach(function(id) {
+        var el = document.getElementById(id);
         if (el) { el.style.display = "none"; el.classList.add("hidden"); }
       });
       if (emailGateSection) {
@@ -229,18 +377,18 @@ if (initializePlatformBtn) {
 // ================= GATEWAY LOGIC =================
 window.openMode = function(mode) {
   if (mode === 'survey' && window.hasCompletedSurvey) {
-      showToast("✅ Survey already completed. Redirecting to Survey Matrix...", "✅");
+      showToast("Survey already completed. Redirecting to Survey Matrix...", "OK");
       routeDashboardTabs('more-surveys');
       return; 
   }
 
-  const gateway = document.getElementById("gatewayScreenSection");
-  const survey = document.getElementById("claimForm");
-  const topProgress = document.getElementById("topProgressBox");
-  const docMode = document.getElementById("documentModeSection");
-  const mainSubtitle = document.getElementById("mainSubtitle"); 
+  var gateway = document.getElementById("gatewayScreenSection");
+  var survey = document.getElementById("claimForm");
+  var topProgress = document.getElementById("topProgressBox");
+  var docMode = document.getElementById("documentModeSection");
+  var mainSubtitle = document.getElementById("mainSubtitle"); 
 
-  [gateway, survey, topProgress, docMode].forEach(el => {
+  [gateway, survey, topProgress, docMode].forEach(function(el) {
       if (el) { el.classList.add("hidden"); el.style.display = "none"; }
   });
 
@@ -257,47 +405,85 @@ window.openMode = function(mode) {
   }
 };
 
-const BADGE_PROFILES = {
+// ================= FIX: GLOBAL openModeEnhanced =================
+window.openModeEnhanced = function(mode) {
+  // Close the settings menu if open
+  var popover = document.getElementById("optionsPopover");
+  if (popover) {
+    popover.classList.add("hidden");
+    popover.style.display = "none";
+  }
+
+  // Show authenticated UI elements
+  var authEls = document.querySelectorAll(".auth-protected-ui");
+  authEls.forEach(function(el) { el.style.display = "flex"; });
+  
+  var tabLinksContainer = document.getElementById("dashboardTabLinks");
+  if (tabLinksContainer) { tabLinksContainer.classList.remove("hidden"); tabLinksContainer.style.display = "flex"; }
+
+  // Route to the correct tab
+  if (mode === 'survey' && window.hasCompletedSurvey) {
+    showToast("Survey already completed. Redirecting to Survey Matrix...", "OK");
+    routeDashboardTabs('more-surveys');
+    return;
+  }
+  
+  if (mode === 'survey') {
+    currentSection = 0;
+    routeDashboardTabs('survey');
+    renderSection();
+  } else {
+    routeDashboardTabs(mode);
+  }
+  
+  // Trigger XP animation replay when opening XP tab
+  if (mode === 'xp' && typeof XPAnimator !== 'undefined' && XPAnimator.replayAnimations) {
+    setTimeout(function() { XPAnimator.replayAnimations(); }, 100);
+  }
+};
+
+
+var BADGE_PROFILES = {
   Analyzer: { 
     title: "ANALYZER", sub: "The Mindful Shopper",
     desc: "You shop with brilliant clarity! For you, real value and true quality matter most. By thoughtfully comparing details and trusting genuine reviews, you always make incredibly smart and satisfying choices.", 
-    iconHTML: `<img src="BADGES%20PNG/badge%201%20analyzer.jpeg" alt="Analyzer" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none';">`, 
-    menuIcon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`,
+    iconHTML: '<img src="BADGES%20PNG/badge%201%20analyzer.jpeg" alt="Analyzer" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display=\'none\';">', 
+    menuIcon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
     color: "#2563eb", textColor: "#0f172a"
   },
   Stylist: { 
     title: "STYLIST", sub: "The Tasteful Explorer",
     desc: "You have a beautiful eye for design! For you, shopping is about joy, artistry, and wonderful experiences. You naturally gravitate towards things that tell a great story and bring an extra touch of elegance into your everyday life.", 
-    iconHTML: `<img src="BADGES%20PNG/badge%203.jpeg" alt="Stylist" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none';">`, 
-    menuIcon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L15 9L22 12L15 15L12 22L9 15L2 12L9 9Z"></path></svg>`,
+    iconHTML: '<img src="BADGES%20PNG/badge%203.jpeg" alt="Stylist" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display=\'none\';">', 
+    menuIcon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L15 9L22 12L15 15L12 22L9 15L2 12L9 9Z"></path></svg>',
     color: "#8b5cf6", textColor: "#0f172a"
   },
   Hedger: { 
     title: "HEDGER", sub: "The Thoughtful Planner",
     desc: "You value peace of mind and total reliability! You love knowing your purchases are safe and backed by great guarantees. By choosing trusted paths, you ensure every shopping experience is completely smooth, secure, and worry-free.", 
-    iconHTML: `<img src="BADGES%20PNG/badge%202.jpeg" alt="Hedger" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none';">`, 
-    menuIcon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>`,
+    iconHTML: '<img src="BADGES%20PNG/badge%202.jpeg" alt="Hedger" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display=\'none\';">', 
+    menuIcon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>',
     color: "#ea580c", textColor: "#0f172a"
   },
   Native: { 
     title: "NATIVE", sub: "The Connected Heart",
     desc: "You deeply value genuine connections! Your best shopping moments come from trusted recommendations and shared stories. By listening to friends and family, you always bring home products that carry real warmth and authenticity.", 
-    iconHTML: `<img src="BADGES%20PNG/badge%204.jpeg" alt="Native" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none';">`, 
-    menuIcon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`,
+    iconHTML: '<img src="BADGES%20PNG/badge%204.jpeg" alt="Native" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display=\'none\';">', 
+    menuIcon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>',
     color: "#eab308", textColor: "#0f172a"
   }
 };
 
 function displayConsumerBadgesUI(badgeKey) {
-  const profile = BADGE_PROFILES[badgeKey] || BADGE_PROFILES.Analyzer;
-  const badgeCard = document.getElementById("dashboardPsychologyBadgeCard");
+  var profile = BADGE_PROFILES[badgeKey] || BADGE_PROFILES.Analyzer;
+  var badgeCard = document.getElementById("dashboardPsychologyBadgeCard");
 
   if (badgeCard) {
     badgeCard.style.display = "flex";
     badgeCard.style.flexDirection = "column";
     badgeCard.style.background = "linear-gradient(180deg, rgba(20,20,25,1) 0%, rgba(9,9,11,1) 100%)";
-    badgeCard.style.border = `1px solid ${profile.color}50`;
-    badgeCard.style.boxShadow = `0 20px 40px rgba(0, 0, 0, 0.6), 0 0 25px ${profile.color}20`;
+    badgeCard.style.border = "1px solid " + profile.color + "50";
+    badgeCard.style.boxShadow = "0 20px 40px rgba(0, 0, 0, 0.6), 0 0 25px " + profile.color + "20";
     badgeCard.style.borderRadius = "24px";
     badgeCard.style.padding = "35px 25px";
     badgeCard.style.marginBottom = "35px";
@@ -305,29 +491,28 @@ function displayConsumerBadgesUI(badgeKey) {
     badgeCard.style.textAlign = "center";
     badgeCard.style.color = "#ffffff";
 
-    badgeCard.innerHTML = `
-      <div class="persona-header-top" style="color: ${profile.color}; letter-spacing: 2px; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 12px;">CONSUMER PERSONA UNLOCKED</div>
-      <h2 class="persona-title-main" style="font-size: 36px; font-weight: 900; color: #ffffff; letter-spacing: -1px; margin: 0 0 4px 0;">${profile.title}</h2>
-      <h4 class="persona-subtitle" style="font-size: 17px; font-weight: 600; color: #d1d5db; margin-bottom: 25px;">${profile.sub}</h4>
-      <div class="persona-icon-wrapper" style="width: 120px; height: 120px; border-radius: 50%; border: 2px solid ${profile.color}60; display: flex; align-items: center; justify-content: center; margin-bottom: 25px; background: radial-gradient(circle, ${profile.color}20 0%, transparent 70%); box-shadow: inset 0 0 20px ${profile.color}20, 0 0 20px ${profile.color}20; overflow: hidden;">
-         ${profile.iconHTML}
-      </div>
-      <p class="persona-description" style="font-size: 15px; line-height: 1.7; color: #a1a1aa; margin: 0 0 30px 0; max-width: 650px;">${profile.desc}</p>
-      <div class="persona-verified-badge" style="display: flex; align-items: center; justify-content: center; gap: 12px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 14px 20px; width: 100%; max-width: 450px; text-align: left;">
-        <div class="pv-icon" style="color: ${profile.color}; display: flex; align-items: center; justify-content: center;">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-        </div>
-        <div class="pv-text" style="display: flex; flex-direction: column;">
-          <strong style="font-size: 12px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px;">VERIFIED BY SYNTRIX AI</strong>
-          <span style="font-size: 11px; color: #a1a1aa; font-weight: 500;">100% Authentic Analysis</span>
-        </div>
-      </div>
-    `;
+    badgeCard.innerHTML = 
+      '<div class="persona-header-top" style="color: ' + profile.color + '; letter-spacing: 2px; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 12px;">CONSUMER PERSONA UNLOCKED</div>' +
+      '<h2 class="persona-title-main" style="font-size: 36px; font-weight: 900; color: #ffffff; letter-spacing: -1px; margin: 0 0 4px 0;">' + profile.title + '</h2>' +
+      '<h4 class="persona-subtitle" style="font-size: 17px; font-weight: 600; color: #d1d5db; margin-bottom: 25px;">' + profile.sub + '</h4>' +
+      '<div class="persona-icon-wrapper" style="width: 120px; height: 120px; border-radius: 50%; border: 2px solid ' + profile.color + '60; display: flex; align-items: center; justify-content: center; margin-bottom: 25px; background: radial-gradient(circle, ' + profile.color + '20 0%, transparent 70%); box-shadow: inset 0 0 20px ' + profile.color + '20, 0 0 20px ' + profile.color + '20; overflow: hidden;">' +
+         profile.iconHTML +
+      '</div>' +
+      '<p class="persona-description" style="font-size: 15px; line-height: 1.7; color: #a1a1aa; margin: 0 0 30px 0; max-width: 650px;">' + profile.desc + '</p>' +
+      '<div class="persona-verified-badge" style="display: flex; align-items: center; justify-content: center; gap: 12px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 14px 20px; width: 100%; max-width: 450px; text-align: left;">' +
+        '<div class="pv-icon" style="color: ' + profile.color + '; display: flex; align-items: center; justify-content: center;">' +
+          '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>' +
+        '</div>' +
+        '<div class="pv-text" style="display: flex; flex-direction: column;">' +
+          '<strong style="font-size: 12px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px;">VERIFIED BY SYNTRIX AI</strong>' +
+          '<span style="font-size: 11px; color: #a1a1aa; font-weight: 500;">100% Authentic Analysis</span>' +
+        '</div>' +
+      '</div>';
   }
 
-  const dropdownBadgeWrapper = document.getElementById("menuPsychologyBadgeWrapper");
-  const dropdownBadgeText = document.getElementById("menuPsychologyBadgeText");
-  const dropdownBadgeIcon = document.getElementById("menuBadgeIcon");
+  var dropdownBadgeWrapper = document.getElementById("menuPsychologyBadgeWrapper");
+  var dropdownBadgeText = document.getElementById("menuPsychologyBadgeText");
+  var dropdownBadgeIcon = document.getElementById("menuBadgeIcon");
   if (dropdownBadgeWrapper && dropdownBadgeText && dropdownBadgeIcon) {
     dropdownBadgeWrapper.style.display = "flex";
     dropdownBadgeIcon.innerHTML = profile.menuIcon;
@@ -338,7 +523,7 @@ function displayConsumerBadgesUI(badgeKey) {
 
 function normalizeReferralCode(code) {
   if (!code) return "";
-  let clean = code.trim().toUpperCase();
+  var clean = code.trim().toUpperCase();
   clean = clean.replace(/\s+/g, "");
   if (!clean.startsWith("SYN-")) {
     if (clean.startsWith("SYN")) clean = "SYN-" + clean.substring(3);
@@ -347,12 +532,13 @@ function normalizeReferralCode(code) {
   return clean;
 }
 
-async function fetchWithTimeout(resource, options = {}) {
-  const { timeout = DEFAULT_TIMEOUT_MS } = options;
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), timeout);
+async function fetchWithTimeout(resource, options) {
+  if (!options) options = {};
+  var timeout = options.timeout || DEFAULT_TIMEOUT_MS;
+  var controller = new AbortController();
+  var id = setTimeout(function() { controller.abort(); }, timeout);
   try {
-    const response = await fetch(resource, { ...options, signal: controller.signal });
+    var response = await fetch(resource, Object.assign({}, options, { signal: controller.signal }));
     clearTimeout(id);
     return response;
   } catch (error) {
@@ -362,11 +548,11 @@ async function fetchWithTimeout(resource, options = {}) {
 }
 
 function getUIText(key) {
-  const fallbacks = {
+  var fallbacks = {
     validationRequired: "Please answer all questions before continuing.",
-    submitting: "⏳ Storing survey data metrics across secure registers...",
-    claiming: "⚡ Appending whitelist configuration parameters...",
-    checkingLedger: "⏳ Setting up your exclusive premium experience..."
+    submitting: "Storing survey data metrics across secure registers...",
+    claiming: "Appending whitelist configuration parameters...",
+    checkingLedger: "Setting up your exclusive premium experience..."
   };
   if (typeof translations !== "undefined" && translations[currentLanguage] && translations[currentLanguage][key]) {
     return translations[currentLanguage][key];
@@ -376,7 +562,7 @@ function getUIText(key) {
 
 // ================= DASHBOARD APP TABS ROUTER =================
 function routeDashboardTabs(targetTab) {
-  const cards = [
+  var cards = [
     document.getElementById("rewardDashboardScreen"),
     document.getElementById("tabScreenBadge"),
     document.getElementById("tabScreenReferrals"),
@@ -386,65 +572,71 @@ function routeDashboardTabs(targetTab) {
     document.getElementById("selfieModeSection"),
     document.getElementById("gatewayScreenSection"),
     document.getElementById("claimForm"),
-    document.getElementById("topProgressBox")
+    document.getElementById("topProgressBox"),
+    document.getElementById("tabScreenXP")
   ];
   
-  cards.forEach(card => {
+  cards.forEach(function(card) {
     if (card) {
       card.classList.add("hidden");
       card.style.display = "none";
     }
   });
   
-  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
-  const clickedBtn = document.querySelector(`[data-tab="${targetTab}"]`);
+  document.querySelectorAll(".tab-btn").forEach(function(btn) { btn.classList.remove("active"); });
+  var clickedBtn = document.querySelector('[data-tab="' + targetTab + '"]');
   if (clickedBtn) clickedBtn.classList.add("active");
 
-  const mainSubtitle = document.getElementById("mainSubtitle"); 
+  var mainSubtitle = document.getElementById("mainSubtitle"); 
   if(mainSubtitle) mainSubtitle.style.display = "block";
 
   if (targetTab === "hub") {
-    const el = document.getElementById("rewardDashboardScreen");
+    var el = document.getElementById("rewardDashboardScreen");
     if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
   }
   else if (targetTab === "badge") {
-    const el = document.getElementById("tabScreenBadge");
+    var el = document.getElementById("tabScreenBadge");
     if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
   }
   else if (targetTab === "referrals") {
-    const el = document.getElementById("tabScreenReferrals");
+    var el = document.getElementById("tabScreenReferrals");
     if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
   }
   else if (targetTab === "more-surveys" || targetTab === "more") {
-    const el = document.getElementById("tabScreenMoreSurveys");
+    var el = document.getElementById("tabScreenMoreSurveys");
     if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
   }
   else if (targetTab === "document") {
-    const el = document.getElementById("documentModeSection");
+    var el = document.getElementById("documentModeSection");
     if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
     if(mainSubtitle) mainSubtitle.style.display = "none"; 
   }
   else if (targetTab === "selfie") {
-    const el = document.getElementById("selfieModeSection");
+    var el = document.getElementById("selfieModeSection");
     if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
     if(mainSubtitle) mainSubtitle.style.display = "none"; 
   }
   else if (targetTab === "gateway") {
-    const el = document.getElementById("gatewayScreenSection");
+    var el = document.getElementById("gatewayScreenSection");
     if(el) { el.classList.remove("hidden"); el.style.display = "flex"; }
   }
   else if (targetTab === "survey") {
-    const form = document.getElementById("claimForm");
-    const progress = document.getElementById("topProgressBox");
+    var form = document.getElementById("claimForm");
+    var progress = document.getElementById("topProgressBox");
     if(form) { form.classList.remove("hidden"); form.style.display = "block"; }
     if(progress) { progress.classList.remove("hidden"); progress.style.display = "block"; }
+  }
+  else if (targetTab === "xp") {
+    var el = document.getElementById("tabScreenXP");
+    if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
+    if(mainSubtitle) mainSubtitle.style.display = "none";
   }
 }
 
 function handleNextSection() {
-  const sections = getSurveyData();
+  var sections = getSurveyData();
   if (!validateCurrentSectionAnswers()) {
-    showToast(getUIText("validationRequired"), "⚠️");
+    showToast(getUIText("validationRequired"), "!");
     return;
   }
   if (currentSection < sections.length - 1) {
@@ -478,15 +670,16 @@ function getOptionText(opt) {
 
 function interceptClaimGateActions(e) {
   if (e) e.preventDefault();
-  showToast("Coming Soon! Stay tuned to claim your precious tokens! 💎", "⚙️");
+  showToast("Coming Soon! Stay tuned to claim your precious tokens!", "!");
 }
 
 function validateCurrentSectionAnswers() {
-  const sections = getSurveyData();
-  const currentData = sections[currentSection];
+  var sections = getSurveyData();
+  var currentData = sections[currentSection];
   if (!currentData) return false;
   
-  for (let q of currentData.questions) { 
+  for (var i = 0; i < currentData.questions.length; i++) { 
+    var q = currentData.questions[i];
     if (q.type === "textarea") {
       if (!answers[q.id] || answers[q.id].trim() === "") return false;
     } else {
@@ -497,9 +690,9 @@ function validateCurrentSectionAnswers() {
 }
 
 function renderSection() {
-  const sections = getSurveyData();
+  var sections = getSurveyData();
   if (!sections || sections.length === 0 || !surveyContainer) return;
-  const currentData = sections[currentSection];
+  var currentData = sections[currentSection];
   
   try {
     if (currentSection === 0) {
@@ -519,39 +712,38 @@ function renderSection() {
       emailGateSection.style.display = "none";
     }
 
-    const progressPercent = ((currentSection + 1) / sections.length) * 100;
-    if (progressFill) progressFill.style.width = `${progressPercent}%`;
-    if (progressText) progressText.innerText = `Progress ${currentSection + 1}/${sections.length}`;
+    var progressPercent = ((currentSection + 1) / sections.length) * 100;
+    if (progressFill) progressFill.style.width = progressPercent + "%";
+    if (progressText) progressText.innerText = "Progress " + (currentSection + 1) + "/" + sections.length;
 
-    let htmlStr = `<div class="survey-section-card animate-fade-in">
-      <h2 class="surveySectionTitle" style="font-size: 26px; font-weight: 800; color: #ffffff; margin-bottom: 5px;">${getSectionTitle(currentData)}</h2>`;
+    var htmlStr = '<div class="survey-section-card animate-fade-in">' +
+      '<h2 class="surveySectionTitle" style="font-size: 26px; font-weight: 800; color: #ffffff; margin-bottom: 5px;">' + getSectionTitle(currentData) + '</h2>';
 
     if (currentData && currentData.questions) {
-        currentData.questions.forEach((q) => {
-          const savedAnswer = answers[q.id] || "";
-          htmlStr += `<div class="question-block" style="margin-top:30px; text-align:left;">
-            <p class="questionText" style="font-weight:800; margin-bottom:16px; font-size:17px; color:#d1d5db;">${getQuestionText(q)}</p>
-            <div class="options">`; 
+        currentData.questions.forEach(function(q) {
+          var savedAnswer = answers[q.id] || "";
+          htmlStr += '<div class="question-block" style="margin-top:30px; text-align:left;">' +
+            '<p class="questionText" style="font-weight:800; margin-bottom:16px; font-size:17px; color:#d1d5db;">' + getQuestionText(q) + '</p>' +
+            '<div class="options">'; 
 
           if (q.type === "textarea") {
-               htmlStr += `<textarea id="${q.id}" placeholder="Type your answer here..." onchange="recordSelection('${q.id}', this.value)" style="width:100%; border:1px solid #3f3f46; border-radius:14px; padding:16px; font-size:15px; font-family:inherit; background: #18181b; color: #ffffff;">${savedAnswer}</textarea>`;
+               htmlStr += '<textarea id="' + q.id + '" placeholder="Type your answer here..." onchange="recordSelection(\'' + q.id + '\', this.value)" style="width:100%; border:1px solid #3f3f46; border-radius:14px; padding:16px; font-size:15px; font-family:inherit; background: #18181b; color: #ffffff;">' + savedAnswer + '</textarea>';
           } 
           else if (q.options && Array.isArray(q.options)) {
-              q.options.forEach((opt) => {
-                const isChecked = savedAnswer === opt ? "checked" : "";
-                const isSelectedClass = savedAnswer === opt ? "selected" : ""; 
-                htmlStr += `
-                  <label class="option ${isSelectedClass}" style="display:inline-block; user-select:none; font-weight: 600;">
-                    <input type="radio" name="${q.id}" value="${opt}" ${isChecked} style="display:none;" onchange="recordSelection('${q.id}', this.value)">
-                    <span class="optionText">${getOptionText(opt)}</span>
-                  </label>`;
+              q.options.forEach(function(opt) {
+                var isChecked = savedAnswer === opt ? "checked" : "";
+                var isSelectedClass = savedAnswer === opt ? "selected" : ""; 
+                htmlStr += '<label class="option ' + isSelectedClass + '" style="display:inline-block; user-select:none; font-weight: 600;">' +
+                    '<input type="radio" name="' + q.id + '" value="' + opt + '" ' + isChecked + ' style="display:none;" onchange="recordSelection(\'' + q.id + '\', this.value)">' +
+                    '<span class="optionText">' + getOptionText(opt) + '</span>' +
+                  '</label>';
               });
           }
-          htmlStr += `</div></div>`;
+          htmlStr += '</div></div>';
         });
     }
 
-    htmlStr += `</div>`;
+    htmlStr += '</div>';
     surveyContainer.innerHTML = htmlStr;
 
     if (prevBtn) {
@@ -572,7 +764,7 @@ function renderSection() {
       if (submitClaimBtn) { submitClaimBtn.classList.add("hidden"); submitClaimBtn.style.display = "none"; }
     }
   } catch (err) {
-    surveyContainer.innerHTML = `<div style="background:#fee2e2; border: 2px solid #ef4444; color:#991b1b; padding: 20px; border-radius: 12px; font-weight:bold; margin-top:20px;">🚨 System Error: ${err.message}</div>`;
+    surveyContainer.innerHTML = '<div style="background:#fee2e2; border: 2px solid #ef4444; color:#991b1b; padding: 20px; border-radius: 12px; font-weight:bold; margin-top:20px;">System Error: ' + err.message + '</div>';
     console.error(err);
   }
 }
@@ -583,49 +775,51 @@ window.recordSelection = function(questionId, selectedValue) {
 };
 
 function updateExcitementBanner(sectionIndex) {
-  const banner = document.getElementById("excitementBanner");
+  var banner = document.getElementById("excitementBanner");
   if (!banner) return;
   if (sectionIndex === 0) { banner.style.display = "none"; return; }
 
-  const unlockedTokens = sectionIndex * 8;
-  const totalTokens = 48;
+  var unlockedTokens = sectionIndex * 8;
+  var totalTokens = 48;
   
   banner.style.display = "flex";
   banner.style.animation = 'none'; banner.offsetHeight; banner.style.animation = 'slideDown 0.5s ease-out';
 
   if (currentLanguage === "hi") {
       if (sectionIndex < 5) {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">शानदार! आपने अब तक <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> सुरक्षित कर लिए हैं!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">अगला मॉड्यूल पूरा करें Aur <strong style="color: #fbbf24;">8 Aur Paayein!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">जारी रखें & दावा करें &gt;</div></div>`;
+          banner.innerHTML = '<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">*</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Shaandaar! Aapne ab tak <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">' + unlockedTokens + ' SYNX</span> secure kar liye hain!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Agla module complete karein Aur <strong style="color: #fbbf24;">8 Aur Paayein!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ' + unlockedTokens + ' / ' + totalTokens + ' ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div></div>';
       } else {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">अविश्वसनीय! आपने सभी <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span> सुरक्षित कर लिए हैं!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">दावा करने के लिए नीचे सबमिट पर क्लिक करें!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">दावा करने के लिए तैयार</div></div>`;
+          banner.innerHTML = '<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">*</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Adbhut! Aapne sabhi <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span> secure kar liye hain!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Daawa karne ke liye neeche Submit par click karein!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div>';
       }
   } else if (currentLanguage === "hinglish") {
       if (sectionIndex < 5) {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! Aapne ab tak <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> secure kar liye hain!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Next module complete karein aur <strong style="color: #fbbf24;">8 more payein!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div></div>`;
+          banner.innerHTML = '<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">*</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! Aapne ab tak <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">' + unlockedTokens + ' SYNX</span> secure kar liye hain!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Next module complete karein aur <strong style="color: #fbbf24;">8 more payein!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ' + unlockedTokens + ' / ' + totalTokens + ' ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div></div>';
       } else {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! Aapne sabhi <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span> secure kar liye hain!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Neeche Submit button par click karke claim karein!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div>`;
+          banner.innerHTML = '<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">*</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! Aapne sabhi <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span> secure kar liye hain!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Neeche Submit button par click karke claim karein!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div>';
       }
   } else {
       if (sectionIndex < 5) {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">🔥</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! You've secured <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">${unlockedTokens} SYNX</span> so far!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Complete the next module to claim <strong style="color: #fbbf24;">8 more!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ${unlockedTokens} / ${totalTokens} ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div></div>`;
+          banner.innerHTML = '<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">*</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! You have secured <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">' + unlockedTokens + ' SYNX</span> so far!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Complete the next module to claim <strong style="color: #fbbf24;">8 more!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ' + unlockedTokens + ' / ' + totalTokens + ' ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div></div>';
       } else {
-          banner.innerHTML = `<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">✨</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! You've secured all <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span>!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Hit Submit below to transfer them to your wallet!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div>`;
+          banner.innerHTML = '<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">*</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! You have secured all <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span>!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Hit Submit below to transfer them to your wallet!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div>';
       }
   }
 }
 
-async function runProfileLedgerVerification(email, isFromModal = false, isBackgroundSync = false) {
-  const outputTarget = isFromModal ? modalStatus : statusDiv;
+async function runProfileLedgerVerification(email, isFromModal, isBackgroundSync) {
+  if (isFromModal === undefined) isFromModal = false;
+  if (isBackgroundSync === undefined) isBackgroundSync = false;
+  var outputTarget = isFromModal ? modalStatus : statusDiv;
   if (!outputTarget) return;
 
   if (!isBackgroundSync) {
-    outputTarget.innerHTML = `⏳ ${getUIText("checkingLedger")}`;
+    outputTarget.innerHTML = getUIText("checkingLedger");
     outputTarget.style.color = "#57d6c2";
   }
 
   try {
-    const response = await fetchWithTimeout(`${BACKEND_URL}/api/user-status?email=${encodeURIComponent(email)}`);
-    const statusResult = await response.json();
+    var response = await fetchWithTimeout(BACKEND_URL + "/api/user-status?email=" + encodeURIComponent(email));
+    var statusResult = await response.json();
 
     if (isFromModal) dismissModal();
 
@@ -633,17 +827,21 @@ async function runProfileLedgerVerification(email, isFromModal = false, isBackgr
       userEmailAddress = email;
       localStorage.setItem("syntrix_user_email", email);
       
+      // Show authenticated UI elements
+      var authEls = document.querySelectorAll(".auth-protected-ui");
+      authEls.forEach(function(el) { el.style.display = "flex"; });
+      
       if (statTotalReferrals) statTotalReferrals.innerText = statusResult.referralsCount || "0";
-      if (statPendingRewards) statPendingRewards.innerText = `${statusResult.pendingRewards || 0} SYNX`;
-      if (statClaimedRewards) statClaimedRewards.innerText = `${statusResult.claimedRewards || 0} SYNX`;
-      if (statTotalEarned) statTotalEarned.innerText = `${(statusResult.pendingRewards || 0) + (statusResult.claimedRewards || 0)} SYNX`;
+      if (statPendingRewards) statPendingRewards.innerText = (statusResult.pendingRewards || 0) + " SYNX";
+      if (statClaimedRewards) statClaimedRewards.innerText = (statusResult.claimedRewards || 0) + " SYNX";
+      if (statTotalEarned) statTotalEarned.innerText = ((statusResult.pendingRewards || 0) + (statusResult.claimedRewards || 0)) + " SYNX";
       
-      if (referralCodeDisplay) referralCodeDisplay.value = `${window.location.origin}/?ref=${statusResult.referralCode || ""}`;
+      if (referralCodeDisplay) referralCodeDisplay.value = window.location.origin + "/?ref=" + (statusResult.referralCode || "");
       
-      const menuReferralInput = document.getElementById("menuReferralInputDisplay");
-      if (menuReferralInput) menuReferralInput.value = `${window.location.origin}/?ref=${statusResult.referralCode || ""}`;
+      var menuReferralInput = document.getElementById("menuReferralInputDisplay");
+      if (menuReferralInput) menuReferralInput.value = window.location.origin + "/?ref=" + (statusResult.referralCode || "");
       
-      const menuReferralWrapper = document.getElementById("menuReferralWrapper");
+      var menuReferralWrapper = document.getElementById("menuReferralWrapper");
       if (menuReferralWrapper) menuReferralWrapper.style.display = "flex";
 
       if (statusResult.exists === true) {
@@ -658,7 +856,7 @@ async function runProfileLedgerVerification(email, isFromModal = false, isBackgr
             if (documentModeSection) { documentModeSection.classList.add("hidden"); documentModeSection.style.display = "none"; }
             if (selfieModeSection) { selfieModeSection.classList.add("hidden"); selfieModeSection.style.display = "none"; }
             
-            const tabLinksContainer = document.getElementById("dashboardTabLinks");
+            var tabLinksContainer = document.getElementById("dashboardTabLinks");
             if (tabLinksContainer) { tabLinksContainer.classList.remove("hidden"); tabLinksContainer.style.display = "flex"; }
             
             routeDashboardTabs("badge");
@@ -666,20 +864,20 @@ async function runProfileLedgerVerification(email, isFromModal = false, isBackgr
         if (!isBackgroundSync) outputTarget.innerHTML = "";
       } else {
         window.hasCompletedSurvey = false; 
-        const menuPsychologyBadgeWrapper = document.getElementById("menuPsychologyBadgeWrapper");
+        var menuPsychologyBadgeWrapper = document.getElementById("menuPsychologyBadgeWrapper");
         if (menuPsychologyBadgeWrapper) menuPsychologyBadgeWrapper.style.display = "none";
 
         if (!isBackgroundSync) {
             if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
             
-            const cards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "claimForm", "topProgressBox", "documentModeSection", "selfieModeSection"];
-            cards.forEach(id => {
-              const el = document.getElementById(id);
+            var cards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "claimForm", "topProgressBox", "documentModeSection", "selfieModeSection", "tabScreenXP"];
+            cards.forEach(function(id) {
+              var el = document.getElementById(id);
               if (el) { el.classList.add("hidden"); el.style.display = "none"; }
             });
             
-            const tabLinksContainer = document.getElementById("dashboardTabLinks");
-            if (tabLinksContainer) { tabLinksContainer.classList.add("hidden"); tabLinksContainer.style.display = "none"; }
+            var tabLinksContainer = document.getElementById("dashboardTabLinks");
+            if (tabLinksContainer) { tabLinksContainer.classList.remove("hidden"); tabLinksContainer.style.display = "flex"; }
 
             routeDashboardTabs("gateway");
             outputTarget.innerHTML = "";
@@ -689,31 +887,31 @@ async function runProfileLedgerVerification(email, isFromModal = false, isBackgr
       if (!isFromModal) {
         if (!isBackgroundSync) {
             if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
-            const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "claimForm", "topProgressBox", "documentModeSection", "selfieModeSection"];
-            dashboardCards.forEach(id => {
-              const el = document.getElementById(id);
+            var dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "claimForm", "topProgressBox", "documentModeSection", "selfieModeSection", "tabScreenXP"];
+            dashboardCards.forEach(function(id) {
+              var el = document.getElementById(id);
               if (el) { el.style.display = "none"; el.classList.add("hidden"); }
             });
-            const tabLinksContainer = document.getElementById("dashboardTabLinks");
-            if (tabLinksContainer) { tabLinksContainer.classList.add("hidden"); tabLinksContainer.style.display = "none"; }
+            var tabLinksContainer = document.getElementById("dashboardTabLinks");
+            if (tabLinksContainer) { tabLinksContainer.classList.remove("hidden"); tabLinksContainer.style.display = "flex"; }
             
             routeDashboardTabs("gateway");
             outputTarget.innerHTML = "";
         }
       } else {
         if (!isBackgroundSync) outputTarget.innerHTML = ""; 
-        showToast("Profile ledger entry not found.", "❌");
+        showToast("Profile ledger entry not found.", "X");
       }
     }
   } catch (err) {
     if (!isBackgroundSync) outputTarget.innerHTML = ""; 
-    showToast("Server waking up or offline. Please try again.", "❌");
+    showToast("Server waking up or offline. Please try again.", "X");
   }
 }
 
 function determinePersonaBadge(answersObj) {
-  const scores = { Analyzer: 0, Stylist: 0, Hedger: 0, Native: 0 };
-  const mapping = {
+  var scores = { Analyzer: 0, Stylist: 0, Hedger: 0, Native: 0 };
+  var mapping = {
     "question_1_id": {
       "I compare all the data and reviews": "Analyzer",
       "I care about how beautiful it looks": "Stylist",
@@ -727,17 +925,17 @@ function determinePersonaBadge(answersObj) {
       "Community and trust": "Native"
     }
   };
-  for (const [qId, selectedAnswer] of Object.entries(answersObj)) {
-    if (mapping[qId] && mapping[qId][selectedAnswer]) {
-      const persona = mapping[qId][selectedAnswer];
+  for (var qId in answersObj) {
+    if (answersObj.hasOwnProperty(qId) && mapping[qId] && mapping[qId][answersObj[qId]]) {
+      var persona = mapping[qId][answersObj[qId]];
       scores[persona]++;
     }
   }
-  let topBadge = "Analyzer";
-  let maxScore = -1;
-  for (const [badge, score] of Object.entries(scores)) {
-    if (score > maxScore) {
-      maxScore = score;
+  var topBadge = "Analyzer";
+  var maxScore = -1;
+  for (var badge in scores) {
+    if (scores.hasOwnProperty(badge) && scores[badge] > maxScore) {
+      maxScore = scores[badge];
       topBadge = badge;
     }
   }
@@ -748,26 +946,26 @@ async function handleSurveySubmission(e) {
   if (e) e.preventDefault();
 
   if ((Date.now() - surveyStartTime) < QUALITY_THRESHOLD_MS) {
-    showToast("Please take more time to read the questions carefully.", "⏱️");
+    showToast("Please take more time to read the questions carefully.", "!");
     return;
   }
 
   if (!validateCurrentSectionAnswers()) {
-    showToast(getUIText("validationRequired"), "⚠️");
+    showToast(getUIText("validationRequired"), "!");
     return;
   }
 
   if (claimForm) { claimForm.classList.add("hidden"); claimForm.style.display = "none"; }
   
-  const excitementBanner = document.getElementById("excitementBanner");
+  var excitementBanner = document.getElementById("excitementBanner");
   if(excitementBanner) excitementBanner.style.display = "none";
 
-  const animOverlay = document.getElementById("rewardAnimationOverlay");
+  var animOverlay = document.getElementById("rewardAnimationOverlay");
   if (animOverlay) animOverlay.style.display = "flex";
 
-  const referralCodeUsed = localStorage.getItem("referralCode") || "";
+  var referralCodeUsed = localStorage.getItem("referralCode") || "";
 
-  const finalPayload = {
+  var finalPayload = {
     email: userEmailAddress,
     answers: answers,
     referredBy: referralCodeUsed,
@@ -780,15 +978,15 @@ async function handleSurveySubmission(e) {
   };
 
   try {
-    const response = await fetchWithTimeout(`${BACKEND_URL}/api/submit-survey`, {
+    var response = await fetchWithTimeout(BACKEND_URL + "/api/submit-survey", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(finalPayload)
     });
 
-    const result = await response.json();
+    var result = await response.json();
     
-    setTimeout(async () => {
+    setTimeout(async function() {
       if (animOverlay) animOverlay.style.display = "none";
       if (result.success) {
         if (statusDiv) statusDiv.innerHTML = "";
@@ -796,86 +994,74 @@ async function handleSurveySubmission(e) {
         await runProfileLedgerVerification(userEmailAddress, false);
       } else {
         if (claimForm) { claimForm.classList.remove("hidden"); claimForm.style.display = "block"; }
-        showToast(`${result.error || "Submission rejected by registry backend."}`, "❌");
+        showToast((result.error || "Submission rejected by registry backend."), "X");
       }
     }, 3500);
   } catch (err) {
     if (animOverlay) animOverlay.style.display = "none";
     if (claimForm) { claimForm.classList.remove("hidden"); claimForm.style.display = "block"; }
-    showToast("Network transaction failed.", "❌");
+    showToast("Network transaction failed.", "X");
   }
 }
 
 function translatePage() {
   if (typeof translations === "undefined" || !translations[currentLanguage]) return;
-  const dict = translations[currentLanguage];
+  var dict = translations[currentLanguage];
 
-  const mainTitleEl = document.getElementById("mainTitle");
-  const mainSubtitleEl = document.getElementById("mainSubtitle");
+  var mainTitleEl = document.getElementById("mainTitle");
+  var mainSubtitleEl = document.getElementById("mainSubtitle");
   if (mainTitleEl && dict.mainTitle) mainTitleEl.innerHTML = dict.mainTitle;
   if (mainSubtitleEl && dict.mainSubtitle) mainSubtitleEl.innerHTML = dict.mainSubtitle;
 
-  const emailSectionTitleEl = document.querySelector("#emailGateSection .sectionTitle");
+  var emailSectionTitleEl = document.querySelector("#emailGateSection .sectionTitle");
   if (emailSectionTitleEl && dict.emailSectionTitle) emailSectionTitleEl.innerText = dict.emailSectionTitle;
   
-  const startSurveyBtnEl = document.getElementById("startSurveyBtn");
+  var startSurveyBtnEl = document.getElementById("startSurveyBtn");
   if (startSurveyBtnEl && dict.btnStart) startSurveyBtnEl.innerHTML = dict.btnStart;
 
-  const prevBtnEl = document.getElementById("prevBtn");
-  const nextBtnEl = document.getElementById("nextBtn");
-  const submitClaimBtnEl = document.getElementById("submitClaimBtn");
-  if (prevBtnEl && dict.previous) prevBtnEl.innerHTML = `&lt; ${dict.previous}`;
-  if (nextBtnEl && dict.next) nextBtnEl.innerHTML = `${dict.next} &gt;`;
+  var prevBtnEl = document.getElementById("prevBtn");
+  var nextBtnEl = document.getElementById("nextBtn");
+  var submitClaimBtnEl = document.getElementById("submitClaimBtn");
+  if (prevBtnEl && dict.previous) prevBtnEl.innerHTML = "&lt; " + dict.previous;
+  if (nextBtnEl && dict.next) nextBtnEl.innerHTML = dict.next + " &gt;";
   if (submitClaimBtnEl && dict.submit) submitClaimBtnEl.innerHTML = dict.submit;
 
-  const rewardTitleEl = document.getElementById("claimTitle");
-  const rewardSubtitleEl = document.getElementById("rewardSubtitleDesc");
+  var rewardTitleEl = document.getElementById("claimTitle");
+  var rewardSubtitleEl = document.getElementById("rewardSubtitleDesc");
   if (rewardTitleEl && dict.claimTitle) rewardTitleEl.innerHTML = dict.claimTitle;
   if (rewardSubtitleEl && dict.rewardSubtitle) rewardSubtitleEl.innerHTML = dict.rewardSubtitle;
 
-  const connectWalletBtnEl = document.querySelector("#connectWalletBtn span");
+  var connectWalletBtnEl = document.querySelector("#connectWalletBtn span");
   if (connectWalletBtnEl && dict.metaMaskLabel) connectWalletBtnEl.innerText = dict.metaMaskLabel;
   
-  const manualLabelEl = document.querySelector(".manualWalletWrapper .dividerLine span");
+  var manualLabelEl = document.querySelector(".manualWalletWrapper .dividerLine span");
   if (manualLabelEl && dict.manualLabel) manualLabelEl.innerText = dict.manualLabel;
   
-  const executeClaimBtnEl = document.getElementById("executeClaimBtn");
+  var executeClaimBtnEl = document.getElementById("executeClaimBtn");
   if (executeClaimBtnEl && dict.btnExecute) executeClaimBtnEl.innerText = dict.btnExecute;
   
-  const referralTitleEl = document.querySelector(".referralContainer .dividerLine span");
+  var referralTitleEl = document.querySelector(".referralContainer .dividerLine span");
   if (referralTitleEl && dict.referralTitle) referralTitleEl.innerText = dict.referralTitle;
 
-  const referralDescriptionEl = document.getElementById("referralSubText");
+  var referralDescriptionEl = document.getElementById("referralSubText");
   if (referralDescriptionEl && dict.referralSub) referralDescriptionEl.innerHTML = dict.referralSub;
   
-  const copyReferralBtnEl = document.getElementById("copyReferralBtn");
+  var copyReferralBtnEl = document.getElementById("copyReferralBtn");
   if (copyReferralBtnEl && dict.btnCopy) copyReferralBtnEl.innerText = dict.btnCopy;
 
-  const modalTitleEl = document.querySelector("#retrieveModal .modal-header h2");
+  var modalTitleEl = document.querySelector("#retrieveModal .modal-header h2");
   if (modalTitleEl && dict.modalTitle) modalTitleEl.innerText = dict.modalTitle;
   
-  const modalSubEl = document.querySelector("#retrieveModal .modal-subtitle");
+  var modalSubEl = document.querySelector("#retrieveModal .modal-subtitle");
   if (modalSubEl && dict.modalSub) modalSubEl.innerText = dict.modalSub;
   
-  const modalDetailsTitleEl = document.querySelector("#retrieveModal .extra-details-box h4");
+  var modalDetailsTitleEl = document.querySelector("#retrieveModal .extra-details-box h4");
   if (modalDetailsTitleEl && dict.modalDetailsTitle) modalDetailsTitleEl.innerText = dict.modalDetailsTitle;
   
-  const modalDetails1El = document.querySelector("#retrieveModal .extra-details-box li:nth-child(1)");
-  if (modalDetails1El && dict.modalDetails1) modalDetails1El.innerText = dict.modalDetails1;
-  
-  const modalDetails2El = document.querySelector("#retrieveModal .extra-details-box li:nth-child(2)");
-  if (modalDetails2El && dict.modalDetails2) modalDetails2El.innerText = dict.modalDetails2;
-  
-  const modalDetails3El = document.querySelector("#retrieveModal .extra-details-box li:nth-child(3)");
-  if (modalDetails3El && dict.modalDetails3) modalDetails3El.innerText = dict.modalDetails3;
-  
-  const modalInputLabelEl = document.querySelector("#retrieveModal .input-wrapper label");
-  if (modalInputLabelEl && dict.modalInputLabel) modalInputLabelEl.innerText = dict.modalInputLabel;
-  
-  const cancelModalBtnEl = document.getElementById("cancelModalBtn");
+  var cancelModalBtnEl = document.getElementById("cancelModalBtn");
   if (cancelModalBtnEl && dict.btnCancel) cancelModalBtnEl.innerText = dict.btnCancel;
   
-  const confirmRetrieveBtnEl = document.getElementById("confirmRetrieveBtn");
+  var confirmRetrieveBtnEl = document.getElementById("confirmRetrieveBtn");
   if (confirmRetrieveBtnEl && dict.btnSearch) confirmRetrieveBtnEl.innerText = dict.btnSearch;
 }
 
@@ -893,16 +1079,29 @@ function resetApplicationFlowState() {
   clientUserAgent = ""; 
   window.hasCompletedSurvey = false;
   
-  const otpSection = document.getElementById("otpSection");
+  var otpSection = document.getElementById("otpSection");
   if (otpSection) {
       otpSection.classList.add("hidden");
       otpSection.style.display = "none";
   }
   
-  if (startSurveyBtn) startSurveyBtn.innerHTML = "Send Verification Code &rarr;";
+  if (preVerifyBtn) {
+    preVerifyBtn.classList.remove("hidden");
+    preVerifyBtn.style.display = "block";
+    preVerifyBtn.disabled = false;
+    preVerifyBtn.innerText = "Send Verification Code \u2192";
+  }
+  
+  if (startSurveyBtn) {
+    startSurveyBtn.classList.add("hidden");
+    startSurveyBtn.style.display = "none";
+    startSurveyBtn.disabled = false;
+    startSurveyBtn.innerHTML = "Verify & Enter &rarr;";
+  }
+  
   if (gateEmailInput) gateEmailInput.readOnly = false;
   
-  for (const prop in answers) {
+  for (var prop in answers) {
       if (Object.prototype.hasOwnProperty.call(answers, prop)) {
           delete answers[prop];
       }
@@ -913,9 +1112,9 @@ function resetApplicationFlowState() {
       emailGateSection.style.display = "flex";
   }
   
-  const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "gatewayScreenSection", "documentModeSection", "selfieModeSection"];
-  dashboardCards.forEach(id => {
-    const el = document.getElementById(id);
+  var dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "gatewayScreenSection", "documentModeSection", "selfieModeSection", "tabScreenXP"];
+  dashboardCards.forEach(function(id) {
+    var el = document.getElementById(id);
     if (el) { el.classList.add("hidden"); el.style.display = "none"; }
   });
 
@@ -928,13 +1127,17 @@ function resetApplicationFlowState() {
       topProgressBox.style.display = "none";
   }
   
-  const tabLinksContainer = document.getElementById("dashboardTabLinks");
+  var tabLinksContainer = document.getElementById("dashboardTabLinks");
   if (tabLinksContainer) {
       tabLinksContainer.classList.add("hidden");
       tabLinksContainer.style.display = "none";
   }
   
-  const menuReferralWrapper = document.getElementById("menuReferralWrapper");
+  // Hide auth-protected UI
+  var authEls = document.querySelectorAll(".auth-protected-ui");
+  authEls.forEach(function(el) { el.style.display = "none"; });
+  
+  var menuReferralWrapper = document.getElementById("menuReferralWrapper");
   if (menuReferralWrapper) menuReferralWrapper.style.display = "none";
   
   if (mainApplicationLayout) {
@@ -945,28 +1148,28 @@ function resetApplicationFlowState() {
       splashLandingGate.style.display = "flex";
   }
   routeSplashNavViews("home");
-  showToast("Account profiles successfully signed out.", "✓");
+  showToast("Account profiles successfully signed out.", "OK");
 }
 
 // ================= LIFE CYCLE REGISTRATION RUNNERS & EVENT ROUTERS =================
-document.addEventListener("DOMContentLoaded", async () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const claimToken = urlParams.get("token");
-  const refParam = urlParams.get("ref");
+document.addEventListener("DOMContentLoaded", async function() {
+  var urlParams = new URLSearchParams(window.location.search);
+  var claimToken = urlParams.get("token");
+  var refParam = urlParams.get("ref");
   
   if (refParam) {
     localStorage.setItem("referralCode", normalizeReferralCode(refParam));
     window.history.replaceState({}, document.title, window.location.pathname);
   }
-  const savedRefCode = localStorage.getItem("referralCode");
+  var savedRefCode = localStorage.getItem("referralCode");
   if (savedRefCode && referredByCodeInput) referredByCodeInput.value = savedRefCode;
 
-  document.querySelectorAll(".tab-btn").forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      const target = e.target.dataset.tab;
+  document.querySelectorAll(".tab-btn").forEach(function(btn) {
+    btn.addEventListener("click", function(e) {
+      var target = e.currentTarget.dataset.tab;
       if (target) {
         if (target === 'survey' && window.hasCompletedSurvey) {
-            showToast("✅ Survey already completed. Redirecting to Survey Matrix...", "✅");
+            showToast("Survey already completed. Redirecting to Survey Matrix...", "OK");
             routeDashboardTabs('more-surveys');
         } else {
             routeDashboardTabs(target);
@@ -974,6 +1177,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         if(optionsPopover) {
           optionsPopover.classList.add("hidden");
           optionsPopover.style.display = "none";
+        }
+        // Trigger XP animation when XP tab clicked
+        if (target === 'xp' && typeof XPAnimator !== 'undefined') {
+          setTimeout(function() { XPAnimator.replayAnimations(); }, 100);
         }
       }
     });
@@ -987,9 +1194,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (documentModeSection) { documentModeSection.classList.add("hidden"); documentModeSection.style.display = "none"; }
     if (selfieModeSection) { selfieModeSection.classList.add("hidden"); selfieModeSection.style.display = "none"; }
     
-    const dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys"];
-    dashboardCards.forEach(id => {
-      const el = document.getElementById(id);
+    var dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "tabScreenXP"];
+    dashboardCards.forEach(function(id) {
+      var el = document.getElementById(id);
       if (el) { el.classList.add("hidden"); el.style.display = "none"; }
     });
   } else {
@@ -1003,13 +1210,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     routeSplashNavViews("home");
   }
 
-  // 🚀 FIX: OTP SEND & VERIFY LOGIC TO SHOW VERIFICATION BOX
+  // OTP SEND & VERIFY LOGIC
   if (preVerifyBtn) {
-    preVerifyBtn.addEventListener("click", async (e) => {
+    preVerifyBtn.addEventListener("click", async function(e) {
       e.preventDefault();
-      const emailVal = gateEmailInput.value.trim().toLowerCase();
+      var emailVal = gateEmailInput.value.trim().toLowerCase();
       if (!emailVal || !EMAIL_REGEX.test(emailVal)) {
-        showToast("Please enter a valid email address.", "⚠️");
+        showToast("Please enter a valid email address.", "!");
         return;
       }
 
@@ -1017,16 +1224,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       preVerifyBtn.innerText = "Sending Code...";
 
       try {
-        const response = await fetch(`${BACKEND_URL}/api/send-otp`, {
+        var response = await fetch(BACKEND_URL + "/api/send-otp", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: emailVal })
         });
         
-        const data = await response.json();
+        var data = await response.json();
         
         if (data.success) {
-          showToast("Verification code sent to your email!", "✅");
+          showToast("Verification code sent to your email!", "OK");
           isOtpSent = true;
           userEmailAddress = emailVal;
           gateEmailInput.readOnly = true;
@@ -1039,7 +1246,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             startSurveyBtn.style.display = "flex";
           }
           
-          const otpSection = document.getElementById("otpSection");
+          var otpSection = document.getElementById("otpSection");
           if (otpSection) {
             otpSection.classList.remove("hidden");
             otpSection.style.setProperty("display", "flex", "important"); 
@@ -1047,12 +1254,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             otpSection.style.pointerEvents = "auto";
           }
         } else {
-          showToast(data.error || "Failed to send code. Try again.", "❌");
+          showToast(data.error || "Failed to send code. Try again.", "X");
           preVerifyBtn.disabled = false;
           preVerifyBtn.innerText = "Send Verification Code \u2192";
         }
       } catch (err) {
-        showToast("Network error. Please try again.", "❌");
+        showToast("Network error. Please try again.", "X");
         preVerifyBtn.disabled = false;
         preVerifyBtn.innerText = "Send Verification Code \u2192";
       }
@@ -1060,13 +1267,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   if (emailGateForm) {
-    emailGateForm.addEventListener("submit", async (e) => {
+    emailGateForm.addEventListener("submit", async function(e) {
       e.preventDefault();
       if (!isOtpSent) return;
 
-      const otpVal = document.getElementById("gateOtp").value.trim();
+      var otpVal = document.getElementById("gateOtp").value.trim();
       if (!otpVal || otpVal.length < 6) {
-        showToast("Please enter the 6-digit code.", "⚠️");
+        showToast("Please enter the 6-digit code.", "!");
         return;
       }
 
@@ -1076,34 +1283,34 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       try {
-        const response = await fetch(`${BACKEND_URL}/api/verify-otp`, {
+        var response = await fetch(BACKEND_URL + "/api/verify-otp", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: userEmailAddress, otp: otpVal })
         });
 
-        const data = await response.json();
+        var data = await response.json();
 
         if (data.success) {
-          const referralCode = document.getElementById("referredByCode").value.trim();
+          var referralCode = document.getElementById("referredByCode").value.trim();
           if(referralCode) localStorage.setItem("referralCode", normalizeReferralCode(referralCode));
 
           if(splashLandingGate) splashLandingGate.style.display = "none"; 
           if(mainApplicationLayout) {
               mainApplicationLayout.classList.remove("hidden");
-              mainApplicationLayout.style.display = "flex"; 
+              mainApplicationLayout.style.display = "block"; 
           }
           
           await runProfileLedgerVerification(userEmailAddress, false);
         } else {
-          showToast(data.error || "Invalid OTP code.", "❌");
+          showToast(data.error || "Invalid OTP code.", "X");
           if (startSurveyBtn) {
             startSurveyBtn.disabled = false;
             startSurveyBtn.innerHTML = "Verify & Enter &rarr;";
           }
         }
       } catch (err) {
-        showToast("Network error. Please try again.", "❌");
+        showToast("Network error. Please try again.", "X");
         if (startSurveyBtn) {
           startSurveyBtn.disabled = false;
           startSurveyBtn.innerHTML = "Verify & Enter &rarr;";
@@ -1112,10 +1319,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  if (nextBtn) nextBtn.onclick = () => handleNextSection();
-  if (prevBtn) prevBtn.onclick = () => handlePrevSection();
+  if (nextBtn) nextBtn.onclick = function() { handleNextSection(); };
+  if (prevBtn) prevBtn.onclick = function() { handlePrevSection(); };
   if (claimForm) {
-    claimForm.addEventListener("submit", (e) => {
+    claimForm.addEventListener("submit", function(e) {
       e.preventDefault();
       handleSurveySubmission(e);
     });
@@ -1126,34 +1333,34 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (executeClaimBtn) executeClaimBtn.addEventListener("click", interceptClaimGateActions);
   if (submitClaimRewardBtn) submitClaimRewardBtn.addEventListener("click", interceptClaimGateActions);
   
-  if (sidebarLogoutBtn) sidebarLogoutBtn.addEventListener("click", () => resetApplicationFlowState());
+  if (sidebarLogoutBtn) sidebarLogoutBtn.addEventListener("click", function() { resetApplicationFlowState(); });
   
   if (copyReferralBtn) {
-      copyReferralBtn.onclick = () => {
+      copyReferralBtn.onclick = function() {
         if (!referralCodeDisplay) return;
         referralCodeDisplay.select(); 
         referralCodeDisplay.setSelectionRange(0, 99999);
         try {
           navigator.clipboard.writeText(referralCodeDisplay.value);
-          const originalText = copyReferralBtn.innerText; 
-          copyReferralBtn.innerText = "Copied! ✓";
-          setTimeout(() => { copyReferralBtn.innerText = originalText; }, 2000);
-        } catch (err) { showToast("Failed to access system registers.", "❌"); }
-      }
+          var originalText = copyReferralBtn.innerText; 
+          copyReferralBtn.innerText = "Copied!";
+          setTimeout(function() { copyReferralBtn.innerText = originalText; }, 2000);
+        } catch (err) { showToast("Failed to access system registers.", "X"); }
+      };
   }
 
   if (generateQrBtn) {
-    generateQrBtn.addEventListener("click", () => {
-      const shopRefCode = localStorage.getItem("referralCode");
+    generateQrBtn.addEventListener("click", function() {
+      var shopRefCode = localStorage.getItem("referralCode");
       if (!shopRefCode) {
-        showToast("Referral link not found. Please log in to your shop account.", "❌");
+        showToast("Referral link not found. Please log in to your shop account.", "X");
         return;
       }
       
       qrCodeWrapper.style.display = "flex";
       qrCodeCanvas.innerHTML = "";
       
-      const dynamicQrLink = `${BACKEND_URL}/r/${shopRefCode}`;
+      var dynamicQrLink = BACKEND_URL + "/r/" + shopRefCode;
       
       new QRCode(qrCodeCanvas, {
         text: dynamicQrLink,
@@ -1165,53 +1372,53 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
 
       qrCodeWrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      showToast("Shop QR Code generated!", "✅");
+      showToast("Shop QR Code generated!", "OK");
     });
   }
 
   if (downloadQrBtn) {
-    downloadQrBtn.addEventListener("click", () => {
-      const originalCanvas = qrCodeCanvas.querySelector("canvas");
+    downloadQrBtn.addEventListener("click", function() {
+      var originalCanvas = qrCodeCanvas.querySelector("canvas");
 
       if (!originalCanvas) {
-        showToast("Please generate the QR code first.", "❌");
+        showToast("Please generate the QR code first.", "X");
         return;
       }
 
-      const padding = 24; 
-      const paddedCanvas = document.createElement("canvas");
+      var padding = 24; 
+      var paddedCanvas = document.createElement("canvas");
       paddedCanvas.width = originalCanvas.width + (padding * 2);
       paddedCanvas.height = originalCanvas.height + (padding * 2);
       
-      const ctx = paddedCanvas.getContext("2d");
+      var ctx = paddedCanvas.getContext("2d");
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, paddedCanvas.width, paddedCanvas.height);
       ctx.drawImage(originalCanvas, padding, padding);
 
-      const downloadUrl = paddedCanvas.toDataURL("image/png");
+      var downloadUrl = paddedCanvas.toDataURL("image/png");
       
-      const tempLink = document.createElement("a");
+      var tempLink = document.createElement("a");
       tempLink.href = downloadUrl;
       tempLink.download = "Syntrix_Dealer_QR.png";
       document.body.appendChild(tempLink);
       tempLink.click();
       document.body.removeChild(tempLink);
       
-      showToast("QR Code saved to gallery!", "✅");
+      showToast("QR Code saved to gallery!", "OK");
     });
   }
 
-  const menuCopyReferralBtn = document.getElementById("menuCopyReferralBtn");
-  const menuReferralInputDisplay = document.getElementById("menuReferralInputDisplay");
+  var menuCopyReferralBtn = document.getElementById("menuCopyReferralBtn");
+  var menuReferralInputDisplay = document.getElementById("menuReferralInputDisplay");
   if (menuCopyReferralBtn && menuReferralInputDisplay) {
-    menuCopyReferralBtn.onclick = (e) => {
+    menuCopyReferralBtn.onclick = function(e) {
       e.stopPropagation();
-      const refLink = menuReferralInputDisplay.value;
+      var refLink = menuReferralInputDisplay.value;
       if (refLink) {
         navigator.clipboard.writeText(refLink);
         menuCopyReferralBtn.innerText = "Copied!";
         menuCopyReferralBtn.style.background = "#10b981";
-        setTimeout(() => { 
+        setTimeout(function() { 
             menuCopyReferralBtn.innerText = "Copy"; 
             menuCopyReferralBtn.style.background = "#111827";
         }, 2000);
@@ -1220,16 +1427,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   if (menuToggleBtn && optionsPopover) {
-    menuToggleBtn.onclick = (e) => { 
+    menuToggleBtn.onclick = function(e) { 
         e.stopPropagation(); 
-        optionsPopover.classList.toggle("hidden"); 
-        if(optionsPopover.style.display === "none" || optionsPopover.style.display === "") {
-            optionsPopover.style.display = "block";
-        } else {
-            optionsPopover.style.display = "none";
-        }
+        toggleSettingsMenu();
     };
-    document.addEventListener("click", (e) => {
+    document.addEventListener("click", function(e) {
         if(optionsPopover && !optionsPopover.contains(e.target) && e.target !== menuToggleBtn) {
           optionsPopover.classList.add("hidden");
           optionsPopover.style.display = "none";
@@ -1238,7 +1440,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   if (menuRestartBtn) {
-    menuRestartBtn.onclick = () => { 
+    menuRestartBtn.onclick = function() { 
       if(optionsPopover) {
           optionsPopover.classList.add("hidden"); 
           optionsPopover.style.display = "none";
@@ -1250,7 +1452,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
   }
   if (cancelRestartBtn) {
-    cancelRestartBtn.onclick = () => {
+    cancelRestartBtn.onclick = function() {
       if(confirmRestartModal) {
           confirmRestartModal.classList.add("hidden");
           confirmRestartModal.style.display = "none";
@@ -1258,7 +1460,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
   }
   if (confirmRestartBtn) {
-    confirmRestartBtn.onclick = () => {
+    confirmRestartBtn.onclick = function() {
       if(confirmRestartModal) {
           confirmRestartModal.classList.add("hidden");
           confirmRestartModal.style.display = "none";
@@ -1268,7 +1470,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   if (menuRecoverBtn && retrieveModal) {
-    menuRecoverBtn.onclick = () => {
+    menuRecoverBtn.onclick = function() {
       if(optionsPopover) {
           optionsPopover.classList.add("hidden"); 
           optionsPopover.style.display = "none";
@@ -1279,19 +1481,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (modalStatus) modalStatus.innerHTML = "";
       
       if (confirmRetrieveBtn) {
-        confirmRetrieveBtn.onclick = async () => {
-          const searchEmail = modalEmailInput ? modalEmailInput.value.trim().toLowerCase() : "";
+        confirmRetrieveBtn.onclick = async function() {
+          var searchEmail = modalEmailInput ? modalEmailInput.value.trim().toLowerCase() : "";
           if (!searchEmail || !EMAIL_REGEX.test(searchEmail)) {
-            showToast("Please provide a valid email structure.", "❌");
+            showToast("Please provide a valid email structure.", "X");
             return;
           }
           if (splashLandingGate) splashLandingGate.style.display = "none";
           if (mainApplicationLayout) {
               mainApplicationLayout.classList.remove("hidden");
-              mainApplicationLayout.style.display = "flex";
+              mainApplicationLayout.style.display = "block";
           }
           
-          const originalText = confirmRetrieveBtn.innerText;
+          var originalText = confirmRetrieveBtn.innerText;
           confirmRetrieveBtn.innerText = "Searching...";
           confirmRetrieveBtn.disabled = true;
           
@@ -1304,13 +1506,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
   }
 
-  if (closeModalBtn) closeModalBtn.onclick = () => dismissModal();
-  if (cancelModalBtn) cancelModalBtn.onclick = () => dismissModal();
+  if (closeModalBtn) closeModalBtn.onclick = function() { dismissModal(); };
+  if (cancelModalBtn) cancelModalBtn.onclick = function() { dismissModal(); };
 
-  const langButtons = document.querySelectorAll(".langBtn");
-  langButtons.forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      langButtons.forEach(b => b.classList.remove("active"));
+  var langButtons = document.querySelectorAll(".langBtn");
+  langButtons.forEach(function(btn) {
+    btn.addEventListener("click", function(e) {
+      langButtons.forEach(function(b) { b.classList.remove("active"); });
       btn.classList.add("active"); currentLanguage = btn.dataset.lang;
       if (typeof translatePage === "function") translatePage();
       updateExcitementBanner(currentSection); 
@@ -1320,29 +1522,30 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 // ================= DOCUMENT MODE API LOGIC =================
-const taskTypeSelect = document.getElementById('taskType');
-const fileInputCamera = document.getElementById('fileInputCamera');
-const fileInputGallery = document.getElementById('fileInputGallery');
-const fileInputSelfie = document.getElementById('fileInputSelfie'); 
-const previewContainer = document.getElementById('previewContainer');
-const imagePreview = document.getElementById('imagePreview');
+var taskTypeSelect = document.getElementById('taskType');
+var fileInputCamera = document.getElementById('fileInputCamera');
+var fileInputGallery = document.getElementById('fileInputGallery');
+var fileInputSelfie = document.getElementById('fileInputSelfie'); 
+var previewContainer = document.getElementById('previewContainer');
+var imagePreview = document.getElementById('imagePreview');
 
-const submitDocBtn = document.getElementById('submitDocBtn');
-const submitSelfieBtn = document.getElementById('submitSelfieBtn'); 
+var submitDocBtn = document.getElementById('submitDocBtn');
+var submitSelfieBtn = document.getElementById('submitSelfieBtn'); 
 
-const statusMessage = document.getElementById('statusMessage');
-const detailedReasonBox = document.getElementById('detailedReasonBox');
-const retryUploadBtn = document.getElementById('retryUploadBtn');
+var statusMessage = document.getElementById('statusMessage');
+var detailedReasonBox = document.getElementById('detailedReasonBox');
+var retryUploadBtn = document.getElementById('retryUploadBtn');
 
-const statusMessageSelfie = document.getElementById('statusMessageSelfie');
-const detailedReasonBoxSelfie = document.getElementById('detailedReasonBoxSelfie');
-const retryUploadBtnSelfie = document.getElementById('retryUploadBtnSelfie');
+var statusMessageSelfie = document.getElementById('statusMessageSelfie');
+var detailedReasonBoxSelfie = document.getElementById('detailedReasonBoxSelfie');
+var retryUploadBtnSelfie = document.getElementById('retryUploadBtnSelfie');
 
-let selectedFile = null;
-let currentPollInterval = null;
-let isUploadingSelfie = false;
+var selectedFile = null;
+var currentPollInterval = null;
+var isUploadingSelfie = false;
 
-window.resetUploadState = function(keepInputs = false) {
+window.resetUploadState = function(keepInputs) {
+    if (keepInputs === undefined) keepInputs = false;
     if (!keepInputs) {
       selectedFile = null;
       if (fileInputCamera) fileInputCamera.value = '';
@@ -1358,24 +1561,24 @@ window.resetUploadState = function(keepInputs = false) {
           imagePreview.classList.add('hidden'); 
       }
       
-      const selfieImg = document.getElementById('selfieResultImg');
+      var selfieImg = document.getElementById('selfieResultImg');
       if (selfieImg) {
           selfieImg.src = '';
           selfieImg.classList.add('hidden');
           selfieImg.style.display = 'none';
       }
 
-      const scannerOuter = document.querySelector('.scanner-circle-outer');
-      const scannerInner = document.querySelector('.scanner-circle-inner');
+      var scannerOuter = document.querySelector('.scanner-circle-outer');
+      var scannerInner = document.querySelector('.scanner-circle-inner');
       if (scannerOuter) scannerOuter.style.display = 'flex';
       if (scannerInner) scannerInner.style.display = 'flex';
 
-      const btnSelfieTextContent = document.getElementById('btnSelfieTextContent');
+      var btnSelfieTextContent = document.getElementById('btnSelfieTextContent');
       if (btnSelfieTextContent) {
           btnSelfieTextContent.innerText = "Take a Photo";
       }
 
-      const clearSelfieBtn = document.getElementById('clearSelfieBtn');
+      var clearSelfieBtn = document.getElementById('clearSelfieBtn');
       if (clearSelfieBtn) clearSelfieBtn.style.display = 'none';
     }
     
@@ -1428,19 +1631,19 @@ window.resetUploadState = function(keepInputs = false) {
 };
 
 if (retryUploadBtn) {
-    retryUploadBtn.addEventListener('click', () => resetUploadState(false));
+    retryUploadBtn.addEventListener('click', function() { resetUploadState(false); });
 }
 if (retryUploadBtnSelfie) {
-    retryUploadBtnSelfie.addEventListener('click', () => resetUploadState(false));
+    retryUploadBtnSelfie.addEventListener('click', function() { resetUploadState(false); });
 }
 
 function handleFileSelection(e) {
   if (e.target.files && e.target.files.length > 0) {
-    const newFile = e.target.files[0];
+    var newFile = e.target.files[0];
     resetUploadState(true); 
     selectedFile = newFile;
     
-    const isSelfieUpload = e.target.id === 'fileInputSelfie';
+    var isSelfieUpload = e.target.id === 'fileInputSelfie';
     isUploadingSelfie = isSelfieUpload;
 
     if (isSelfieUpload) {
@@ -1448,7 +1651,7 @@ function handleFileSelection(e) {
             submitSelfieBtn.disabled = false;
             submitSelfieBtn.classList.remove('hidden');
         }
-        const btnSelfieTextContent = document.getElementById('btnSelfieTextContent');
+        var btnSelfieTextContent = document.getElementById('btnSelfieTextContent');
         if (btnSelfieTextContent) {
             btnSelfieTextContent.innerText = "Retake Photo";
         }
@@ -1461,17 +1664,17 @@ function handleFileSelection(e) {
     }
     
     try {
-      const url = URL.createObjectURL(selectedFile);
+      var url = URL.createObjectURL(selectedFile);
       
       if (isSelfieUpload) {
-          const scannerOuter = document.querySelector('.scanner-circle-outer');
-          const scannerInner = document.querySelector('.scanner-circle-inner');
+          var scannerOuter = document.querySelector('.scanner-circle-outer');
+          var scannerInner = document.querySelector('.scanner-circle-inner');
           if (scannerOuter) scannerOuter.style.display = 'none';
           if (scannerInner) scannerInner.style.display = 'none';
           
-          let selfieImg = document.getElementById('selfieResultImg');
+          var selfieImg = document.getElementById('selfieResultImg');
           if (!selfieImg) {
-              const container = document.querySelector('.selfie-scanner-container');
+              var container = document.querySelector('.selfie-scanner-container');
               if (container) {
                   selfieImg = document.createElement('img');
                   selfieImg.id = 'selfieResultImg';
@@ -1490,7 +1693,7 @@ function handleFileSelection(e) {
               selfieImg.style.display = 'block';
           }
 
-          const clearSelfieBtn = document.getElementById('clearSelfieBtn');
+          var clearSelfieBtn = document.getElementById('clearSelfieBtn');
           if (clearSelfieBtn) {
               clearSelfieBtn.style.display = 'flex';
           }
@@ -1515,17 +1718,19 @@ if (fileInputCamera) fileInputCamera.addEventListener('change', handleFileSelect
 if (fileInputGallery) fileInputGallery.addEventListener('change', handleFileSelection);
 if (fileInputSelfie) fileInputSelfie.addEventListener('change', handleFileSelection);
 
-function compressImageForBackend(file, maxWidth = 500, quality = 0.4) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
+function compressImageForBackend(file, maxWidth, quality) {
+  if (maxWidth === undefined) maxWidth = 500;
+  if (quality === undefined) quality = 0.4;
+  return new Promise(function(resolve, reject) {
+    var reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = (event) => {
-      const img = new Image();
+    reader.onload = function(event) {
+      var img = new Image();
       img.src = event.target.result;
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let width = img.width;
-        let height = img.height;
+      img.onload = function() {
+        var canvas = document.createElement('canvas');
+        var width = img.width;
+        var height = img.height;
 
         if (width > maxWidth) {
           height = Math.round((height * maxWidth) / width);
@@ -1534,73 +1739,72 @@ function compressImageForBackend(file, maxWidth = 500, quality = 0.4) {
 
         canvas.width = width;
         canvas.height = height;
-        const ctx = canvas.getContext('2d');
+        var ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
         resolve(canvas.toDataURL('image/jpeg', quality)); 
       };
-      img.onerror = (err) => reject(err);
+      img.onerror = function(err) { reject(err); };
     };
-    reader.onerror = (err) => reject(err);
+    reader.onerror = function(err) { reject(err); };
   });
 }
 
 function updateProgressUI(stepText, percent, targetMsgBox) {
     if (!targetMsgBox) return;
-    targetMsgBox.innerHTML = `
-      <div style="background: #18181b; border: 1px solid #27272a; border-radius: 16px; padding: 20px; text-align: center; margin-top: 10px;">
-          <div style="display: flex; justify-content: center; margin-bottom: 15px;">
-              <div style="width: 40px; height: 40px; border: 3px solid rgba(99, 102, 241, 0.2); border-top-color: #6366f1; border-radius: 50%; animation: aiSpin 1s linear infinite;"></div>
-          </div>
-          <div style="font-size:12px; color:#a1a1aa; font-weight:700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">AI Processing Pipeline</div>
-          <div style="background:#09090b; height:6px; border-radius:4px; overflow:hidden; margin-bottom:15px; border: 1px solid #27272a;">
-             <div style="width: ${percent}%; background: linear-gradient(90deg, #6366f1, #a855f7); height:100%; transition: width 0.4s ease; box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);"></div>
-          </div>
-          <div style="font-weight:800; color:#f4f4f5; font-size:15px;" class="status-text-pulse">${stepText}</div>
-      </div>
-    `;
+    targetMsgBox.innerHTML = 
+      '<div style="background: #18181b; border: 1px solid #27272a; border-radius: 16px; padding: 20px; text-align: center; margin-top: 10px;">' +
+          '<div style="display: flex; justify-content: center; margin-bottom: 15px;">' +
+              '<div style="width: 40px; height: 40px; border: 3px solid rgba(99, 102, 241, 0.2); border-top-color: #6366f1; border-radius: 50%; animation: aiSpin 1s linear infinite;"></div>' +
+          '</div>' +
+          '<div style="font-size:12px; color:#a1a1aa; font-weight:700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">AI Processing Pipeline</div>' +
+          '<div style="background:#09090b; height:6px; border-radius:4px; overflow:hidden; margin-bottom:15px; border: 1px solid #27272a;">' +
+             '<div style="width: ' + percent + '%; background: linear-gradient(90deg, #6366f1, #a855f7); height:100%; transition: width 0.4s ease; box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);"></div>' +
+          '</div>' +
+          '<div style="font-weight:800; color:#f4f4f5; font-size:15px;" class="status-text-pulse">' + stepText + '</div>' +
+      '</div>';
 }
 
 async function executeUploadLogic(e) {
-    const isSelfieSubmit = (e.target && e.target.id === 'submitSelfieBtn') || (this.id === 'submitSelfieBtn');
-    const activeStatusMsg = isSelfieSubmit ? statusMessageSelfie : statusMessage;
-    const activeReasonBox = isSelfieSubmit ? detailedReasonBoxSelfie : detailedReasonBox;
-    const activeRetryBtn = isSelfieSubmit ? retryUploadBtnSelfie : retryUploadBtn;
+    var isSelfieSubmit = (e && e.target && e.target.id === 'submitSelfieBtn') || (this && this.id === 'submitSelfieBtn');
+    var activeStatusMsg = isSelfieSubmit ? statusMessageSelfie : statusMessage;
+    var activeReasonBox = isSelfieSubmit ? detailedReasonBoxSelfie : detailedReasonBox;
+    var activeRetryBtn = isSelfieSubmit ? retryUploadBtnSelfie : retryUploadBtn;
 
     if (!selectedFile || !userEmailAddress) { 
-      if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">⚠️ Please select a file and ensure you are logged in.</span>';
+      if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">Please select a file and ensure you are logged in.</span>';
       return;
     }
 
-    const taskType = isSelfieSubmit ? 'selfie' : (taskTypeSelect ? taskTypeSelect.value : 'notes');
-    let contentTags = [];
+    var taskType = isSelfieSubmit ? 'selfie' : (taskTypeSelect ? taskTypeSelect.value : 'notes');
+    var contentTags = [];
     
     if (taskType === 'notes') {
-      const consentSensitive = document.getElementById('consentSensitive');
-      const consentCommercial = document.getElementById('consentCommercial');
-      if (consentSensitive && !consentSensitive.checked || consentCommercial && !consentCommercial.checked) { 
-          if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">⚠️ You must agree to the Legal Consents before uploading.</span>';
+      var consentSensitive = document.getElementById('consentSensitive');
+      var consentCommercial = document.getElementById('consentCommercial');
+      if ((consentSensitive && !consentSensitive.checked) || (consentCommercial && !consentCommercial.checked)) { 
+          if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">You must agree to the Legal Consents before uploading.</span>';
           return; 
       }
-      const docLanguageInput = document.getElementById('docLanguageInput');
+      var docLanguageInput = document.getElementById('docLanguageInput');
       if (docLanguageInput && docLanguageInput.value.trim() === "") { 
-          if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">⚠️ Please specify the language used in the notes.</span>';
+          if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">Please specify the language used in the notes.</span>';
           return; 
       }
-      const tagCheckboxes = document.querySelectorAll('.doc-tag:checked');
-      tagCheckboxes.forEach(cb => contentTags.push(cb.value));
+      var tagCheckboxes = document.querySelectorAll('.doc-tag:checked');
+      tagCheckboxes.forEach(function(cb) { contentTags.push(cb.value); });
       if (contentTags.length === 0) { 
-          if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">⚠️ Please select at least one content tag.</span>';
+          if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">Please select at least one content tag.</span>';
           return; 
       }
     } else if (taskType === 'selfie') {
-      const consentAgeSelfie = document.getElementById('consentAgeSelfie');
-      const consentSensitiveSelfie = document.getElementById('consentSensitiveSelfie');
-      const consentCommercialSelfie = document.getElementById('consentCommercialSelfie');
+      var consentAgeSelfie = document.getElementById('consentAgeSelfie');
+      var consentSensitiveSelfie = document.getElementById('consentSensitiveSelfie');
+      var consentCommercialSelfie = document.getElementById('consentCommercialSelfie');
       
       if ((consentAgeSelfie && !consentAgeSelfie.checked) || 
           (consentSensitiveSelfie && !consentSensitiveSelfie.checked) || 
           (consentCommercialSelfie && !consentCommercialSelfie.checked)) {
-          if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">⚠️ You must agree to the Legal Consents before uploading.</span>';
+          if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">You must agree to the Legal Consents before uploading.</span>';
           return; 
       }
     }
@@ -1608,11 +1812,11 @@ async function executeUploadLogic(e) {
     if (submitDocBtn) submitDocBtn.disabled = true;
     if (submitSelfieBtn) submitSelfieBtn.disabled = true;
 
-    updateProgressUI('📤 Compressing and securing payload...', 15, activeStatusMsg);
+    updateProgressUI('Compressing and securing payload...', 15, activeStatusMsg);
 
     try {
-      const base64String = await compressImageForBackend(selectedFile, 500, 0.4);
-      const payload = {
+      var base64String = await compressImageForBackend(selectedFile, 500, 0.4);
+      var payload = {
         email: userEmailAddress,
         userEmail: userEmailAddress, 
         taskType: taskType, 
@@ -1621,40 +1825,40 @@ async function executeUploadLogic(e) {
         contentTags: contentTags.length > 0 ? contentTags : ['none']
       };
 
-      const response = await fetch(`${BACKEND_URL}/api/upload-task`, {
+      var response = await fetch(BACKEND_URL + "/api/upload-task", {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
       });
 
       if (!response.ok) {
-        let errorMsg = 'Upload rejected by server.';
+        var errorMsg = 'Upload rejected by server.';
         try {
-            const data = await response.json();
-            errorMsg = data.error || data.message || `Server blocked request (Status ${response.status})`;
-        } catch(err) {
-            errorMsg = `Backend Firewall Blocked Request (Status ${response.status}). Payload might be too large.`;
+            var data = await response.json();
+            errorMsg = data.error || data.message || 'Server blocked request (Status ' + response.status + ')';
+        } catch(parseErr) {
+            errorMsg = 'Backend Firewall Blocked Request (Status ' + response.status + '). Payload might be too large.';
         }
-        if (activeStatusMsg) activeStatusMsg.innerHTML = `<span style="color:#ef4444;">❌ <strong>${errorMsg}</strong></span>`;
+        if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">X <strong>' + errorMsg + '</strong></span>';
         if (submitDocBtn) submitDocBtn.disabled = false;
         if (submitSelfieBtn) submitSelfieBtn.disabled = false;
         return;
       }
 
-      let attempts = 0;
-      const maxAttempts = 15;
-      updateProgressUI('🤖 AI is verifying parameters...', 35, activeStatusMsg);
+      var attempts = 0;
+      var maxAttempts = 15;
+      updateProgressUI('AI is verifying parameters...', 35, activeStatusMsg);
 
-      currentPollInterval = setInterval(async () => {
+      currentPollInterval = setInterval(async function() {
           attempts++;
-          if(attempts === 2) updateProgressUI('📄 Analyzing vectors and embeddings...', 60, activeStatusMsg);
-          if(attempts === 5) updateProgressUI('🔐 Security & anti-spoofing verification...', 85, activeStatusMsg);
+          if(attempts === 2) updateProgressUI('Analyzing vectors and embeddings...', 60, activeStatusMsg);
+          if(attempts === 5) updateProgressUI('Security & anti-spoofing verification...', 85, activeStatusMsg);
 
           try {
-              const res = await fetch(`${BACKEND_URL}/api/check-submission?email=${encodeURIComponent(userEmailAddress)}`);
-              const checkData = await res.json();
+              var res = await fetch(BACKEND_URL + "/api/check-submission?email=" + encodeURIComponent(userEmailAddress));
+              var checkData = await res.json();
               
               if (checkData.success && checkData.submission) {
-                  const status = checkData.submission.status;
-                  const reason = checkData.submission.reason || "System processing error.";
+                  var status = checkData.submission.status;
+                  var reason = checkData.submission.reason || "System processing error.";
                   
                   if (status === 'verified' || status === 'approved') {
                       clearInterval(currentPollInterval);
@@ -1663,23 +1867,21 @@ async function executeUploadLogic(e) {
                       if (submitDocBtn) submitDocBtn.style.display = 'none';
                       if (submitSelfieBtn) submitSelfieBtn.style.display = 'none';
                       
-                      // Strip out the ugly hash string from the UI
-                      const cleanReason = reason.split('|')[0].trim();
+                      var cleanReason = reason.split('|')[0].trim();
                       
                       if (activeStatusMsg) {
-                          activeStatusMsg.innerHTML = `
-                              <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 16px; padding: 25px 20px; text-align: center; animation: slideUpFade 0.5s ease-out; margin-top: 15px;">
-                                  <div style="width: 56px; height: 56px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);">
-                                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                  </div>
-                                  <div style="font-weight: 900; color: #10b981; font-size: 20px; margin-bottom: 5px; letter-spacing: -0.5px;">VERIFICATION SUCCESSFUL</div>
-                                  <div style="color: #a1a1aa; font-size: 14px; margin-bottom: 20px;">${cleanReason}</div>
-                                  <div style="background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 12px; display: inline-block;">
-                                      <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">+48 SYNX</span>
-                                      <span style="color: #71717a; font-size: 11px; display: block; margin-top: 3px; font-weight: 600; text-transform: uppercase;">Tokens Assigned to Ledger</span>
-                                  </div>
-                              </div>
-                          `;
+                          activeStatusMsg.innerHTML = 
+                              '<div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 16px; padding: 25px 20px; text-align: center; animation: slideUpFade 0.5s ease-out; margin-top: 15px;">' +
+                                  '<div style="width: 56px; height: 56px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);">' +
+                                      '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' +
+                                  '</div>' +
+                                  '<div style="font-weight: 900; color: #10b981; font-size: 20px; margin-bottom: 5px; letter-spacing: -0.5px;">VERIFICATION SUCCESSFUL</div>' +
+                                  '<div style="color: #a1a1aa; font-size: 14px; margin-bottom: 20px;">' + cleanReason + '</div>' +
+                                  '<div style="background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 12px; display: inline-block;">' +
+                                      '<span style="color: #fbbf24; font-weight: 900; font-size: 18px;">+48 SYNX</span>' +
+                                      '<span style="color: #71717a; font-size: 11px; display: block; margin-top: 3px; font-weight: 600; text-transform: uppercase;">Tokens Assigned to Ledger</span>' +
+                                  '</div>' +
+                              '</div>';
                       }
                       if(activeReasonBox) activeReasonBox.style.display = 'none'; 
                       if (activeRetryBtn) activeRetryBtn.style.display = 'block'; 
@@ -1691,15 +1893,14 @@ async function executeUploadLogic(e) {
                       if (submitSelfieBtn) submitSelfieBtn.style.display = 'none';
                       
                       if (activeStatusMsg) {
-                          activeStatusMsg.innerHTML = `
-                              <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 16px; padding: 25px 20px; text-align: center; animation: slideUpFade 0.5s ease-out; margin-top: 15px;">
-                                  <div style="width: 56px; height: 56px; background: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);">
-                                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                                  </div>
-                                  <div style="font-weight: 900; color: #ef4444; font-size: 20px; margin-bottom: 5px; letter-spacing: -0.5px;">VERIFICATION FAILED</div>
-                                  <div style="color: #fca5a5; font-size: 14px; background: rgba(239, 68, 68, 0.1); padding: 10px; border-radius: 8px; margin-top: 15px;">${reason}</div>
-                              </div>
-                          `;
+                          activeStatusMsg.innerHTML = 
+                              '<div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 16px; padding: 25px 20px; text-align: center; animation: slideUpFade 0.5s ease-out; margin-top: 15px;">' +
+                                  '<div style="width: 56px; height: 56px; background: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);">' +
+                                      '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>' +
+                                  '</div>' +
+                                  '<div style="font-weight: 900; color: #ef4444; font-size: 20px; margin-bottom: 5px; letter-spacing: -0.5px;">VERIFICATION FAILED</div>' +
+                                  '<div style="color: #fca5a5; font-size: 14px; background: rgba(239, 68, 68, 0.1); padding: 10px; border-radius: 8px; margin-top: 15px;">' + reason + '</div>' +
+                              '</div>';
                       }
                       if(activeReasonBox) activeReasonBox.style.display = 'none';
                       if (activeRetryBtn) activeRetryBtn.style.display = 'block';
@@ -1708,16 +1909,16 @@ async function executeUploadLogic(e) {
               
               if (attempts >= maxAttempts) {
                   clearInterval(currentPollInterval);
-                  if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ea580c; font-weight:700;">⚠️ AI timed out. Please check network and try again.</span>';
+                  if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ea580c; font-weight:700;">AI timed out. Please check network and try again.</span>';
                   if (submitDocBtn) { submitDocBtn.disabled = false; submitDocBtn.innerText = 'Approve & Submit to Waiting Room'; }
                   if (submitSelfieBtn) { submitSelfieBtn.disabled = false; submitSelfieBtn.innerText = 'Verify & Submit to Waiting Room'; }
                   if (activeRetryBtn) activeRetryBtn.style.display = 'block';
               }
-          } catch (e) { console.error("Polling error", e); }
+          } catch (pollErr) { console.error("Polling error", pollErr); }
       }, 3000); 
 
     } catch (error) {
-      if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">⚠️ Network error. Could not establish connection.</span>';
+      if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">Network error. Could not establish connection.</span>';
       if (submitDocBtn) submitDocBtn.disabled = false;
       if (submitSelfieBtn) submitSelfieBtn.disabled = false;
     }
@@ -1728,38 +1929,38 @@ if (submitSelfieBtn) submitSelfieBtn.addEventListener('click', executeUploadLogi
 
 function injectPermissionModal() {
     if (document.getElementById('sysPermissionModal')) return;
-    const modalHtml = `
-    <div id="sysPermissionModal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 99999; padding: 20px;">
-        <div style="background: #09090b; border: 1px solid #27272a; border-radius: 24px; padding: 30px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5);">
-            <div id="permIcon" style="font-size: 48px; margin-bottom: 15px;">📷</div>
-            <h2 id="permTitle" style="font-size: 22px; font-weight: 800; color: #ffffff; margin-bottom: 10px;">Camera Access Required</h2>
-            <p id="permDesc" style="font-size: 14px; color: #a1a1aa; line-height: 1.6; margin-bottom: 25px;">To securely verify your identity, we need temporary access to your camera for a real-time selfie capture.</p>
-            <div id="permErrorAlert" class="hidden" style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 12px; padding: 12px; color: #fca5a5; font-size: 13px; margin-bottom: 20px; display: none;">
-                Camera access was blocked by your browser. Please enable it in your browser settings to continue.
-            </div>
-            <div id="permActionButtons" style="display: flex; gap: 12px;">
-                <button type="button" id="permCancelBtn" style="flex: 1; padding: 14px; background: transparent; border: 1px solid #3f3f46; color: #ffffff; border-radius: 12px; font-weight: 600; cursor: pointer;">Cancel</button>
-                <label id="permAllowBtn" for="" style="flex: 1; padding: 14px; background: #ffffff; color: #000000; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; display: block; margin: 0; text-align: center;">Allow Access</label>
-            </div>
-        </div>
-    </div>`;
+    var modalHtml = 
+    '<div id="sysPermissionModal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 99999; padding: 20px;">' +
+        '<div style="background: #09090b; border: 1px solid #27272a; border-radius: 24px; padding: 30px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5);">' +
+            '<div id="permIcon" style="font-size: 48px; margin-bottom: 15px;">Camera</div>' +
+            '<h2 id="permTitle" style="font-size: 22px; font-weight: 800; color: #ffffff; margin-bottom: 10px;">Camera Access Required</h2>' +
+            '<p id="permDesc" style="font-size: 14px; color: #a1a1aa; line-height: 1.6; margin-bottom: 25px;">To securely verify your identity, we need temporary access to your camera for a real-time selfie capture.</p>' +
+            '<div id="permErrorAlert" class="hidden" style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 12px; padding: 12px; color: #fca5a5; font-size: 13px; margin-bottom: 20px; display: none;">' +
+                'Camera access was blocked by your browser. Please enable it in your browser settings to continue.' +
+            '</div>' +
+            '<div id="permActionButtons" style="display: flex; gap: 12px;">' +
+                '<button type="button" id="permCancelBtn" style="flex: 1; padding: 14px; background: transparent; border: 1px solid #3f3f46; color: #ffffff; border-radius: 12px; font-weight: 600; cursor: pointer;">Cancel</button>' +
+                '<label id="permAllowBtn" for="" style="flex: 1; padding: 14px; background: #ffffff; color: #000000; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; display: block; margin: 0; text-align: center;">Allow Access</label>' +
+            '</div>' +
+        '</div>' +
+    '</div>';
     document.body.insertAdjacentHTML('beforeend', modalHtml);
 }
 
-let pendingTriggerAction = null;
-let isApproving = false;
-let permissionGranted = { camera: false, gallery: false, selfie: false };
+var pendingTriggerAction = null;
+var isApproving = false;
+var permissionGranted = { camera: false, gallery: false, selfie: false };
 
 function requestDevicePermissionUX(type) {
     injectPermissionModal();
     pendingTriggerAction = type;
     
-    const modal = document.getElementById('sysPermissionModal');
-    const title = document.getElementById('permTitle');
-    const desc = document.getElementById('permDesc');
-    const icon = document.getElementById('permIcon');
-    const errorAlert = document.getElementById('permErrorAlert');
-    const allowBtn = document.getElementById('permAllowBtn'); 
+    var modal = document.getElementById('sysPermissionModal');
+    var title = document.getElementById('permTitle');
+    var desc = document.getElementById('permDesc');
+    var icon = document.getElementById('permIcon');
+    var errorAlert = document.getElementById('permErrorAlert');
+    var allowBtn = document.getElementById('permAllowBtn'); 
     
     if (errorAlert) {
         errorAlert.classList.add('hidden');
@@ -1767,20 +1968,20 @@ function requestDevicePermissionUX(type) {
     }
 
     if (type === 'camera') {
-        icon.innerText = '🤳';
-        title.innerText = 'Camera Access Required';
-        desc.innerText = 'Syntrix requires secure camera access to capture a live verification photo.';
-        allowBtn.setAttribute('for', 'fileInputCamera');
+        if(icon) icon.innerText = 'Camera';
+        if(title) title.innerText = 'Camera Access Required';
+        if(desc) desc.innerText = 'Syntrix requires secure camera access to capture a live verification photo.';
+        if(allowBtn) allowBtn.setAttribute('for', 'fileInputCamera');
     } else if (type === 'selfie') {
-        icon.innerText = '🤳';
-        title.innerText = 'Camera Access Required';
-        desc.innerText = 'Syntrix requires secure camera access to capture a live verification photo.';
-        allowBtn.setAttribute('for', 'fileInputSelfie');
+        if(icon) icon.innerText = 'Camera';
+        if(title) title.innerText = 'Camera Access Required';
+        if(desc) desc.innerText = 'Syntrix requires secure camera access to capture a live verification photo.';
+        if(allowBtn) allowBtn.setAttribute('for', 'fileInputSelfie');
     } else {
-        icon.innerText = '📁';
-        title.innerText = 'File Access Required';
-        desc.innerText = 'Syntrix needs access to your gallery or files to securely upload your selected document.';
-        allowBtn.setAttribute('for', 'fileInputGallery');
+        if(icon) icon.innerText = 'File';
+        if(title) title.innerText = 'File Access Required';
+        if(desc) desc.innerText = 'Syntrix needs access to your gallery or files to securely upload your selected document.';
+        if(allowBtn) allowBtn.setAttribute('for', 'fileInputGallery');
     }
     
     if (modal) {
@@ -1789,16 +1990,16 @@ function requestDevicePermissionUX(type) {
     }
 }
 
-document.addEventListener('mousedown', (e) => {
+document.addEventListener('mousedown', function(e) {
     if (e.target.id === 'permAllowBtn') isApproving = true;
 });
-document.addEventListener('touchstart', (e) => {
+document.addEventListener('touchstart', function(e) {
     if (e.target.id === 'permAllowBtn') isApproving = true;
 }, {passive: true});
 
-document.addEventListener('click', (e) => {
+document.addEventListener('click', function(e) {
     if (e.target.id === 'permCancelBtn') {
-        const modal = document.getElementById('sysPermissionModal');
+        var modal = document.getElementById('sysPermissionModal');
         if (modal) { modal.classList.add('hidden'); modal.style.display = 'none'; }
         isApproving = false;
     }
@@ -1808,8 +2009,8 @@ document.addEventListener('click', (e) => {
         if (pendingTriggerAction) {
             permissionGranted[pendingTriggerAction] = true;
         }
-        const modal = document.getElementById('sysPermissionModal');
-        setTimeout(() => {
+        var modal = document.getElementById('sysPermissionModal');
+        setTimeout(function() {
             if (modal) {
                 modal.classList.add('hidden');
                 modal.style.display = 'none';
@@ -1820,10 +2021,10 @@ document.addEventListener('click', (e) => {
 });
 
 // =========================================================================
-// 🚀 PREMIUM XP PROGRESSION FRONTEND ENGINE
+// PREMIUM XP PROGRESSION FRONTEND ENGINE
 // =========================================================================
 
-const XPAnimator = {
+var XPAnimator = {
   currentLevel: null,
   lastProfile: null, 
   RANKS: [
@@ -1842,17 +2043,17 @@ const XPAnimator = {
   async fetchAndRenderXP(email) {
     if (!email) return;
     try {
-      const response = await fetch(`${BACKEND_URL}/api/xp-profile?email=${encodeURIComponent(email)}`);
-      const result = await response.json();
+      var response = await fetch(BACKEND_URL + "/api/xp-profile?email=" + encodeURIComponent(email));
+      var result = await response.json();
 
       if (result.success && result.profile) {
         if (this.lastProfile && result.profile.totalXP > this.lastProfile.totalXP) {
-            const diff = result.profile.totalXP - this.lastProfile.totalXP;
-            const latestItem = result.profile.recentHistory[0];
+            var diff = result.profile.totalXP - this.lastProfile.totalXP;
+            var latestItem = result.profile.recentHistory[0];
             this.showXPToast(diff, latestItem ? latestItem.reason : "XP Earned!");
         } else if (!this.lastProfile && result.profile.recentHistory && result.profile.recentHistory.length > 0) {
-            const latestItem = result.profile.recentHistory[0];
-            const itemTime = new Date(latestItem.created_at).getTime();
+            var latestItem = result.profile.recentHistory[0];
+            var itemTime = new Date(latestItem.created_at).getTime();
             if (Date.now() - itemTime < 15000) {
                 this.showXPToast(latestItem.amount, latestItem.reason);
             }
@@ -1866,13 +2067,14 @@ const XPAnimator = {
     }
   },
 
-  updateUI(profile, forceAnimate = true) {
+  updateUI(profile, forceAnimate) {
+    if (forceAnimate === undefined) forceAnimate = true;
     if (this.currentLevel !== null && profile.currentLevel > this.currentLevel) {
       this.triggerLevelUpPopup(profile.currentLevel, profile.currentRank);
     }
     this.currentLevel = profile.currentLevel;
 
-    const textMap = {
+    var textMap = {
         "bentoCurrentLevel": profile.currentLevel,
         "bentoCurrentRank": profile.currentRank,
         "bentoTargetAmount": profile.xpRequiredNextLevel,
@@ -1891,95 +2093,97 @@ const XPAnimator = {
         "bentoStatTotalXp": profile.totalXP.toLocaleString()
     };
 
-    for (const [id, val] of Object.entries(textMap)) {
-        const el = document.getElementById(id);
-        if (el) el.innerText = val;
+    for (var id in textMap) {
+        if (textMap.hasOwnProperty(id)) {
+            var el = document.getElementById(id);
+            if (el) el.innerText = textMap[id];
+        }
     }
 
-    const tabScreenXP = document.getElementById("tabScreenXP");
-    if (forceAnimate || (tabScreenXP && tabScreenXP.style.display === "block")) {
-        const amt = document.getElementById("bentoCurrentAmount");
-        const pct = document.getElementById("bentoProgressPercent");
+    var tabScreenXPEl = document.getElementById("tabScreenXP");
+    if (forceAnimate || (tabScreenXPEl && tabScreenXPEl.style.display === "block")) {
+        var amt = document.getElementById("bentoCurrentAmount");
+        var pct = document.getElementById("bentoProgressPercent");
         if(amt) amt.innerText = "0";
         if(pct) pct.innerText = "0";
         
-        const bar = document.getElementById("bentoProgressBar");
+        var bar = document.getElementById("bentoProgressBar");
         if (bar) {
             bar.style.transition = 'none';
             bar.style.width = '0%';
             void bar.offsetWidth; 
             bar.style.transition = 'width 1.5s cubic-bezier(0.16, 1, 0.3, 1)';
-            setTimeout(() => { bar.style.width = `${profile.levelProgressPercentage}%`; }, 50);
+            setTimeout(function() { bar.style.width = profile.levelProgressPercentage + '%'; }, 50);
         }
 
         this.animateValue("bentoCurrentAmount", 0, profile.totalXP, 1500);
         this.animateValue("bentoProgressPercent", 0, profile.levelProgressPercentage, 1500);
     } else {
-        const amt = document.getElementById("bentoCurrentAmount");
-        const pct = document.getElementById("bentoProgressPercent");
+        var amt = document.getElementById("bentoCurrentAmount");
+        var pct = document.getElementById("bentoProgressPercent");
         if(amt) amt.innerText = profile.totalXP;
         if(pct) pct.innerText = profile.levelProgressPercentage;
-        const bar = document.getElementById("bentoProgressBar");
-        if (bar) bar.style.width = `${profile.levelProgressPercentage}%`;
+        var bar = document.getElementById("bentoProgressBar");
+        if (bar) bar.style.width = profile.levelProgressPercentage + '%';
     }
 
-    const historyList = document.getElementById("bentoHistoryList");
+    var historyList = document.getElementById("bentoHistoryList");
     if (historyList && profile.recentHistory) {
-      historyList.innerHTML = profile.recentHistory.length > 0 ? profile.recentHistory.map(item => {
-        let icon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 6 6 1-4 4 1 6-6-3-6 3 1-6-4-4 6-1z"></path></svg>';
-        let title = item.reason;
-        let desc = "XP Earned";
-        if(item.reason.includes("Survey")) { icon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>'; desc="You have completed a survey"; }
-        if(item.reason.includes("Document")) { icon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>'; desc="AI verified your document"; }
-        if(item.reason.includes("Selfie")) { icon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"></circle><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path></svg>'; desc="AI verified your selfie"; }
-        if(item.reason.includes("Referral")) { icon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>'; desc="Your referral completed the survey"; }
-        if(item.reason.includes("Login")) { icon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>'; desc="You logged in today"; }
+      historyList.innerHTML = profile.recentHistory.length > 0 ? profile.recentHistory.map(function(item) {
+        var icon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 6 6 1-4 4 1 6-6-3-6 3 1-6-4-4 6-1z"></path></svg>';
+        var title = item.reason;
+        var desc = "XP Earned";
+        if(item.reason.indexOf("Survey") !== -1) { icon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>'; desc="You have completed a survey"; }
+        if(item.reason.indexOf("Document") !== -1) { icon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>'; desc="AI verified your document"; }
+        if(item.reason.indexOf("Selfie") !== -1) { icon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"></circle><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path></svg>'; desc="AI verified your selfie"; }
+        if(item.reason.indexOf("Referral") !== -1) { icon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>'; desc="Your referral completed the survey"; }
+        if(item.reason.indexOf("Login") !== -1) { icon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>'; desc="You logged in today"; }
         
-        return `<div class="xp-hist-item">
-            <div class="xp-hist-left">
-                <div class="xp-hist-icon">${icon}</div>
-                <div class="xp-hist-text"><h4>${title}</h4><p>${desc}</p></div>
-            </div>
-            <div class="xp-hist-right">
-                <div class="xp-hist-amount">+${item.amount} XP</div>
-                <div class="xp-hist-time">Recently</div>
-            </div>
-        </div>`;
-      }).join('') : `<div style="font-size:13px; color:#71717a; text-align:left;">No recent activity yet. Complete a task to earn XP!</div>`;
+        return '<div class="xp-hist-item">' +
+            '<div class="xp-hist-left">' +
+                '<div class="xp-hist-icon">' + icon + '</div>' +
+                '<div class="xp-hist-text"><h4>' + title + '</h4><p>' + desc + '</p></div>' +
+            '</div>' +
+            '<div class="xp-hist-right">' +
+                '<div class="xp-hist-amount">+' + item.amount + ' XP</div>' +
+                '<div class="xp-hist-time">Recently</div>' +
+            '</div>' +
+        '</div>';
+      }).join('') : '<div style="font-size:13px; color:#71717a; text-align:left;">No recent activity yet. Complete a task to earn XP!</div>';
     }
 
-    const roadmapEl = document.getElementById("bentoRoadmap");
+    var roadmapEl = document.getElementById("bentoRoadmap");
     if(roadmapEl) {
-        let roadmapHTML = '';
-        let startLvl = Math.max(1, profile.currentLevel - 1);
-        let endLvl = Math.min(10, profile.currentLevel + 3);
+        var roadmapHTML = '';
+        var startLvl = Math.max(1, profile.currentLevel - 1);
+        var endLvl = Math.min(10, profile.currentLevel + 3);
         
-        for(let i = startLvl; i <= endLvl; i++) {
-            const rankObj = this.RANKS[i-1] || { level: i, rank: 'AI Pioneer', xpRequired: 8000 + ((i-10)*2000) };
-            let statusClass = 'locked';
-            let statusText = `${rankObj.xpRequired} XP`;
+        for(var i = startLvl; i <= endLvl; i++) {
+            var rankObj = this.RANKS[i-1] || { level: i, rank: 'AI Pioneer', xpRequired: 8000 + ((i-10)*2000) };
+            var statusClass = 'locked';
+            var statusText = rankObj.xpRequired + ' XP';
             
             if(i < profile.currentLevel) {
                 statusClass = 'completed'; statusText = 'COMPLETED';
             } else if (i === profile.currentLevel) {
-                statusClass = 'current'; statusText = `${profile.totalXP} / ${profile.xpRequiredNextLevel} XP<br><span style="color:#a1a1aa; font-weight:600; font-size:11px;">Current Level</span>`;
+                statusClass = 'current'; statusText = profile.totalXP + ' / ' + profile.xpRequiredNextLevel + ' XP<br><span style="color:#a1a1aa; font-weight:600; font-size:11px;">Current Level</span>';
             }
 
-            roadmapHTML += `
-            <div class="xp-road-item ${statusClass}">
-                <div class="xp-road-dot">${statusClass === 'completed' ? '✓' : (statusClass === 'current' ? '↑' : '')}</div>
-                <div class="xp-road-left"><h4>Level ${i}</h4><p>${rankObj.rank}</p></div>
-                <div class="xp-road-right"><div class="xp-road-xp" style="${statusClass==='current' ? 'color:#a855f7;' : ''}">${statusText}</div></div>
-            </div>`;
+            roadmapHTML += 
+            '<div class="xp-road-item ' + statusClass + '">' +
+                '<div class="xp-road-dot">' + (statusClass === 'completed' ? 'v' : (statusClass === 'current' ? '^' : '')) + '</div>' +
+                '<div class="xp-road-left"><h4>Level ' + i + '</h4><p>' + rankObj.rank + '</p></div>' +
+                '<div class="xp-road-right"><div class="xp-road-xp" style="' + (statusClass==='current' ? 'color:#a855f7;' : '') + '">' + statusText + '</div></div>' +
+            '</div>';
         }
         roadmapEl.innerHTML = roadmapHTML;
     }
 
-    const streakUI = document.getElementById("bentoStreakUI");
+    var streakUI = document.getElementById("bentoStreakUI");
     if(streakUI) {
-        const days = Array.from(streakUI.children);
-        let count = profile.dailyStreak > 7 ? 7 : profile.dailyStreak;
-        days.forEach((dayEl, idx) => {
+        var days = Array.from(streakUI.children);
+        var count = profile.dailyStreak > 7 ? 7 : profile.dailyStreak;
+        days.forEach(function(dayEl, idx) {
             if(idx < count) dayEl.classList.add('active');
             else dayEl.classList.remove('active');
         });
@@ -1991,29 +2195,29 @@ const XPAnimator = {
   },
 
   showXPToast(amount, reason) {
-    const toast = document.getElementById("xpFloatingToast");
+    var toast = document.getElementById("xpFloatingToast");
     if (!toast) return;
-    document.getElementById("xpToastAmount").innerText = `+${amount} XP`;
+    document.getElementById("xpToastAmount").innerText = "+" + amount + " XP";
     document.getElementById("xpToastReason").innerText = reason;
     toast.classList.remove("hidden");
     
-    setTimeout(() => { toast.classList.add("show"); }, 10);
+    setTimeout(function() { toast.classList.add("show"); }, 10);
     
-    setTimeout(() => {
+    setTimeout(function() {
         toast.classList.remove("show");
-        setTimeout(() => toast.classList.add("hidden"), 600); 
+        setTimeout(function() { toast.classList.add("hidden"); }, 600); 
     }, 4000);
   },
 
   animateValue(id, start, end, duration) {
     if (start === end) return;
-    const obj = document.getElementById(id);
+    var obj = document.getElementById(id);
     if(!obj) return;
-    let startTimestamp = null;
-    const step = (timestamp) => {
+    var startTimestamp = null;
+    var step = function(timestamp) {
       if (!startTimestamp) startTimestamp = timestamp;
-      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-      const easeProgress = 1 - Math.pow(1 - progress, 3);
+      var progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      var easeProgress = 1 - Math.pow(1 - progress, 3);
       obj.innerHTML = Math.floor(easeProgress * (end - start) + start).toLocaleString();
       if (progress < 1) {
         window.requestAnimationFrame(step);
@@ -2025,9 +2229,9 @@ const XPAnimator = {
   },
 
   triggerLevelUpPopup(newLevel, newRank) {
-    const overlay = document.getElementById("xpLevelUpOverlay");
-    const rankText = document.getElementById("levelUpNewRank");
-    const numText = document.getElementById("levelUpBadgeNumber");
+    var overlay = document.getElementById("xpLevelUpOverlay");
+    var rankText = document.getElementById("levelUpNewRank");
+    var numText = document.getElementById("levelUpBadgeNumber");
     if (overlay && rankText && numText) {
       rankText.innerText = newRank;
       numText.innerText = newLevel;
@@ -2036,21 +2240,20 @@ const XPAnimator = {
   }
 };
 
-const originalLedgerVerificationXP = window.runProfileLedgerVerification;
-if (typeof originalLedgerVerificationXP === "function") {
-  window.runProfileLedgerVerification = async function(email, isFromModal, isBackgroundSync) {
-    await originalLedgerVerificationXP(email, isFromModal, isBackgroundSync);
-    XPAnimator.fetchAndRenderXP(email);
-  };
-}
+// Wire up XP fetching after profile verification
+var originalLedgerVerificationXP = runProfileLedgerVerification;
+runProfileLedgerVerification = async function(email, isFromModal, isBackgroundSync) {
+  await originalLedgerVerificationXP(email, isFromModal, isBackgroundSync);
+  XPAnimator.fetchAndRenderXP(email);
+};
 
-window.addEventListener('DOMContentLoaded', () => {
-    const cameraUI = document.querySelector('.doc-btn-white') || document.getElementById('btnCameraText')?.parentElement;
-    const galleryUI = document.getElementById('btnGallery');
-    const selfieUI = document.getElementById('btnSelfieCamera');
+window.addEventListener('DOMContentLoaded', function() {
+    var cameraUI = document.querySelector('.doc-btn-white') || (document.getElementById('btnCameraText') ? document.getElementById('btnCameraText').parentElement : null);
+    var galleryUI = document.getElementById('btnGallery');
+    var selfieUI = document.getElementById('btnSelfieCamera');
 
     if (cameraUI && cameraUI.id !== 'btnSelfieCamera') {
-        cameraUI.addEventListener('click', (e) => {
+        cameraUI.addEventListener('click', function(e) {
             if (isApproving || permissionGranted.camera) return; 
             if (!document.getElementById('fileInputCamera').value) {
                 e.preventDefault(); 
@@ -2061,7 +2264,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     
     if (galleryUI) {
-        galleryUI.addEventListener('click', (e) => {
+        galleryUI.addEventListener('click', function(e) {
             if (isApproving || permissionGranted.gallery) return; 
             if (!document.getElementById('fileInputGallery').value) {
                 e.preventDefault();
@@ -2072,7 +2275,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     if (selfieUI) {
-        selfieUI.addEventListener('click', (e) => {
+        selfieUI.addEventListener('click', function(e) {
             if (isApproving || permissionGranted.selfie) return; 
             if (!document.getElementById('fileInputSelfie').value) {
                 e.preventDefault();
@@ -2082,3 +2285,5 @@ window.addEventListener('DOMContentLoaded', () => {
         }, true);
     }
 });
+
+``
