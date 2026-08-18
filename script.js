@@ -835,7 +835,7 @@ async function runProfileLedgerVerification(email, isFromModal, isBackgroundSync
       if (statClaimedRewards) statClaimedRewards.innerText = (statusResult.claimedRewards || 0) + " SYNX";
       if (statTotalEarned) statTotalEarned.innerText = ((statusResult.pendingRewards || 0) + (statusResult.claimedRewards || 0)) + " SYNX";
       
-      const PRODUCTION_DOMAIN = "https://your-production-site.com"; // Replace with your actual live domain
+      const PRODUCTION_DOMAIN = "https://syntrix-frontend-servey.vercel.app"; // Replaced with actual live domain
 
       if (referralCodeDisplay) referralCodeDisplay.value = PRODUCTION_DOMAIN + "/?ref=" + (statusResult.referralCode || "");
       
