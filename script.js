@@ -835,12 +835,10 @@ async function runProfileLedgerVerification(email, isFromModal, isBackgroundSync
       if (statClaimedRewards) statClaimedRewards.innerText = (statusResult.claimedRewards || 0) + " SYNX";
       if (statTotalEarned) statTotalEarned.innerText = ((statusResult.pendingRewards || 0) + (statusResult.claimedRewards || 0)) + " SYNX";
       
-      const PRODUCTION_DOMAIN = "https://syntrix-frontend-servey.vercel.app"; // Replaced with actual live domain
-
-      if (referralCodeDisplay) referralCodeDisplay.value = PRODUCTION_DOMAIN + "/?ref=" + (statusResult.referralCode || "");
+      if (referralCodeDisplay) referralCodeDisplay.value = window.location.origin + "/?ref=" + (statusResult.referralCode || "");
       
       var menuReferralInput = document.getElementById("menuReferralInputDisplay");
-      if (menuReferralInput) menuReferralInput.value = PRODUCTION_DOMAIN + "/?ref=" + (statusResult.referralCode || "");
+      if (menuReferralInput) menuReferralInput.value = window.location.origin + "/?ref=" + (statusResult.referralCode || "");
       
       var menuReferralWrapper = document.getElementById("menuReferralWrapper");
       if (menuReferralWrapper) menuReferralWrapper.style.display = "flex";
