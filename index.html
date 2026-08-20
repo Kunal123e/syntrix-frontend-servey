@@ -264,12 +264,15 @@
         }
     };
 
-    window.handleGoogleLogin = async function() {
+    window.handleGoogleLogin = async function(e) {
+        if (e) e.preventDefault();
         try {
             if (window.metamaskEmbeddedInstance) {
                 await window.metamaskEmbeddedInstance.connectTo("openlogin", {
                     loginProvider: "google"
                 });
+            } else {
+                throw new Error("Web3Auth not initialized");
             }
         } catch(e) {
             console.error("Web3Auth Google Login error. Falling back to Simulator UI.", e);
