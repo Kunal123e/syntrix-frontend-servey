@@ -206,29 +206,39 @@ window.handleLogout = function() {
   resetApplicationFlowState();
 };
 
-// ================= FIX: GLOBAL executeGoogleSimLogin =================
-window.executeGoogleSimLogin = function(email) {
-  var modal = document.getElementById("googleSimModal");
-  if (modal) {
-    modal.classList.add("hidden");
-    modal.style.display = "none";
-  }
-  
-  if (email) {
-    // Auto-fill the email input and trigger OTP flow (no bypass)
-    var emailInput = document.getElementById("gateEmail");
-    if (emailInput) {
-      emailInput.value = email;
-      emailInput.readOnly = false;
-    }
-    
-    // Programmatically trigger the Send Verification Code button
-    var sendBtn = document.getElementById("preVerifyBtn");
-    if (sendBtn && !sendBtn.disabled) {
-      sendBtn.click();
+// ================= REAL GOOGLE CREDENTIAL CALLBACK =================
+window.handleGoogleCredentialResponse = function(response) {
+  try {
+    // Decode the JWT credential to extract the email
+    var base64Url = response.credential.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    var payload = JSON.parse(jsonPayload);
+    var email = payload.email;
+
+    if (email) {
+      // Auto-fill the email input and trigger OTP flow
+      var emailInput = document.getElementById("gateEmail");
+      if (emailInput) {
+        emailInput.value = email;
+        emailInput.readOnly = false;
+      }
+      
+      // Programmatically trigger the Send Verification Code button
+      var sendBtn = document.getElementById("preVerifyBtn");
+      if (sendBtn && !sendBtn.disabled) {
+        sendBtn.click();
+      } else {
+        showToast("Email filled. Please click 'Send Verification Code' to continue.", "!");
+      }
     } else {
-      showToast("Please click 'Send Verification Code' to continue.", "!");
+      showToast("Could not extract email from Google account. Please try manual entry.", "X");
     }
+  } catch(err) {
+    console.error("Error decoding Google credential:", err);
+    showToast("Google sign-in failed. Please use email login instead.", "X");
   }
 };
 
