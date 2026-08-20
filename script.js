@@ -1174,10 +1174,11 @@ function resetApplicationFlowState() {
 document.addEventListener("DOMContentLoaded", async function() {
   if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
     google.accounts.id.initialize({
-      client_id: 'YOUR_GOOGLE_CLIENT_ID_HERE', 
+      client_id: '[PASTE YOUR REAL GOOGLE CLIENT ID HERE]', 
       callback: window.handleGoogleCredentialResponse,
       auto_select: false,
-      cancel_on_tap_outside: true
+      cancel_on_tap_outside: true,
+      use_fedcm_for_prompt: true
     });
   }
 
