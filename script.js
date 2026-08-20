@@ -215,16 +215,20 @@ window.executeGoogleSimLogin = function(email) {
   }
   
   if (email) {
-    userEmailAddress = email;
-    localStorage.setItem("syntrix_user_email", email);
-    
-    if (splashLandingGate) splashLandingGate.style.display = "none";
-    if (mainApplicationLayout) {
-      mainApplicationLayout.classList.remove("hidden");
-      mainApplicationLayout.style.display = "block";
+    // Auto-fill the email input and trigger OTP flow (no bypass)
+    var emailInput = document.getElementById("gateEmail");
+    if (emailInput) {
+      emailInput.value = email;
+      emailInput.readOnly = false;
     }
     
-    runProfileLedgerVerification(email, false);
+    // Programmatically trigger the Send Verification Code button
+    var sendBtn = document.getElementById("preVerifyBtn");
+    if (sendBtn && !sendBtn.disabled) {
+      sendBtn.click();
+    } else {
+      showToast("Please click 'Send Verification Code' to continue.", "!");
+    }
   }
 };
 
@@ -1254,7 +1258,8 @@ document.addEventListener("DOMContentLoaded", async function() {
           var otpSection = document.getElementById("otpSection");
           if (otpSection) {
             otpSection.classList.remove("hidden");
-            otpSection.style.setProperty("display", "flex", "important"); 
+            otpSection.style.setProperty("display", "flex", "important");
+            void otpSection.offsetWidth;
             otpSection.style.opacity = "1";
             otpSection.style.pointerEvents = "auto";
           }
@@ -1262,11 +1267,15 @@ document.addEventListener("DOMContentLoaded", async function() {
           showToast(data.error || "Failed to send code. Try again.", "X");
           preVerifyBtn.disabled = false;
           preVerifyBtn.innerText = "Send Verification Code \u2192";
+          var otpFail = document.getElementById("otpSection");
+          if (otpFail) { otpFail.style.setProperty("display", "none", "important"); otpFail.style.opacity = "0"; otpFail.style.pointerEvents = "none"; otpFail.classList.add("hidden"); }
         }
       } catch (err) {
         showToast("Network error. Please try again.", "X");
         preVerifyBtn.disabled = false;
         preVerifyBtn.innerText = "Send Verification Code \u2192";
+        var otpFail = document.getElementById("otpSection");
+        if (otpFail) { otpFail.style.setProperty("display", "none", "important"); otpFail.style.opacity = "0"; otpFail.style.pointerEvents = "none"; otpFail.classList.add("hidden"); }
       }
     });
   }
