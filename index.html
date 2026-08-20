@@ -271,12 +271,6 @@
         if (e) e.preventDefault();
         try {
             if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-                google.accounts.id.initialize({
-                    client_id: 'YOUR_GOOGLE_CLIENT_ID_HERE', // Replace with your real Google OAuth Client ID
-                    callback: window.handleGoogleCredentialResponse,
-                    auto_select: false,
-                    cancel_on_tap_outside: true
-                });
                 google.accounts.id.prompt(function(notification) {
                     if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
                         console.warn("Google One Tap not displayed. Reason:", notification.getNotDisplayedReason() || notification.getSkippedReason());
@@ -1013,7 +1007,7 @@
             <h2 class="pac-title">Welcome to Syntrix</h2>
             <p class="pac-subtitle">Sign in to continue to your Syntrix account</p>
           </div>
-          <form id="emailGateForm" class="pac-form">
+          <form id="emailGateForm" class="pac-form" onsubmit="event.preventDefault();">
             <div class="pac-form-group">
               <label for="gateEmail">Email Address</label>
               <div class="pac-input-wrapper">
@@ -1053,9 +1047,11 @@
               </label>
             </div>
 
-            <!-- FIX: Reverted to single dynamic button controlled seamlessly by script.js -->
-            <button type="submit" id="startSurveyBtn" class="pac-primary-btn">
+            <button type="button" id="preVerifyBtn" class="pac-primary-btn">
               Send Verification Code &rarr;
+            </button>
+            <button type="button" id="startSurveyBtn" class="pac-primary-btn hidden" style="display: none;">
+              Verify & Enter &rarr;
             </button>
 
             <div class="pac-divider">
