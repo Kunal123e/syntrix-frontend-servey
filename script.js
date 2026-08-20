@@ -1172,6 +1172,15 @@ function resetApplicationFlowState() {
 
 // ================= LIFE CYCLE REGISTRATION RUNNERS & EVENT ROUTERS =================
 document.addEventListener("DOMContentLoaded", async function() {
+  if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+    google.accounts.id.initialize({
+      client_id: 'YOUR_GOOGLE_CLIENT_ID_HERE', 
+      callback: window.handleGoogleCredentialResponse,
+      auto_select: false,
+      cancel_on_tap_outside: true
+    });
+  }
+
   var urlParams = new URLSearchParams(window.location.search);
   var claimToken = urlParams.get("token");
   var refParam = urlParams.get("ref");
@@ -1290,8 +1299,8 @@ document.addEventListener("DOMContentLoaded", async function() {
     });
   }
 
-  if (emailGateForm) {
-    emailGateForm.addEventListener("submit", async function(e) {
+  if (startSurveyBtn) {
+    startSurveyBtn.addEventListener("click", async function(e) {
       e.preventDefault();
       if (!isOtpSent) return;
 
@@ -1301,10 +1310,8 @@ document.addEventListener("DOMContentLoaded", async function() {
         return;
       }
 
-      if (startSurveyBtn) {
-        startSurveyBtn.disabled = true;
-        startSurveyBtn.innerText = "Verifying...";
-      }
+      startSurveyBtn.disabled = true;
+      startSurveyBtn.innerText = "Verifying...";
 
       try {
         var response = await fetch(BACKEND_URL + "/api/verify-otp", {
@@ -1328,17 +1335,13 @@ document.addEventListener("DOMContentLoaded", async function() {
           await runProfileLedgerVerification(userEmailAddress, false);
         } else {
           showToast(data.error || "Invalid OTP code.", "X");
-          if (startSurveyBtn) {
-            startSurveyBtn.disabled = false;
-            startSurveyBtn.innerHTML = "Verify & Enter &rarr;";
-          }
-        }
-      } catch (err) {
-        showToast("Network error. Please try again.", "X");
-        if (startSurveyBtn) {
           startSurveyBtn.disabled = false;
           startSurveyBtn.innerHTML = "Verify & Enter &rarr;";
         }
+      } catch (err) {
+        showToast("Network error. Please try again.", "X");
+        startSurveyBtn.disabled = false;
+        startSurveyBtn.innerHTML = "Verify & Enter &rarr;";
       }
     });
   }
