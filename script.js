@@ -319,21 +319,27 @@ window.downloadMyQR = function(e) {
 
 
 // ================= SPLASH PAGE ISOLATED ROUTING =================
+var viewSplashDatasets = document.getElementById("viewSplashDatasets");
+var linkDatasetsTab = document.getElementById("linkDatasetsTab");
+
 function routeSplashNavViews(targetView) {
   if (viewSplashHome) viewSplashHome.style.display = "none";
   if (viewSplashRewards) viewSplashRewards.style.display = "none";
   if (viewSplashAbout) viewSplashAbout.style.display = "none";
+  if (viewSplashDatasets) viewSplashDatasets.style.display = "none";
   
   document.querySelectorAll(".nav-splash-tab").forEach(function(link) { link.classList.remove("active"); });
   
   if (targetView === "home" && viewSplashHome) { viewSplashHome.style.display = "block"; if(linkHomeTab) linkHomeTab.classList.add("active"); }
   if (targetView === "rewards" && viewSplashRewards) { viewSplashRewards.style.display = "block"; if(linkRewardsTab) linkRewardsTab.classList.add("active"); }
   if (targetView === "about" && viewSplashAbout) { viewSplashAbout.style.display = "block"; if(linkAboutTab) linkAboutTab.classList.add("active"); }
+  if (targetView === "datasets" && viewSplashDatasets) { viewSplashDatasets.style.display = "block"; if(linkDatasetsTab) linkDatasetsTab.classList.add("active"); }
 }
 
 if (linkHomeTab) linkHomeTab.addEventListener("click", function(e) { e.preventDefault(); routeSplashNavViews("home"); });
 if (linkRewardsTab) linkRewardsTab.addEventListener("click", function(e) { e.preventDefault(); routeSplashNavViews("rewards"); });
 if (linkAboutTab) linkAboutTab.addEventListener("click", function(e) { e.preventDefault(); routeSplashNavViews("about"); });
+if (linkDatasetsTab) linkDatasetsTab.addEventListener("click", function(e) { e.preventDefault(); routeSplashNavViews("datasets"); });
 if (navLogoHomeTrigger) navLogoHomeTrigger.addEventListener("click", function() { routeSplashNavViews("home"); });
 document.querySelectorAll(".back-to-home-btn").forEach(function(btn) { btn.addEventListener("click", function() { routeSplashNavViews("home"); }); });
 
