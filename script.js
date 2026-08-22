@@ -1875,7 +1875,9 @@ async function executeUploadLogic(e) {
       var maxAttempts = 15;
       updateProgressUI('AI is verifying parameters...', 35, activeStatusMsg);
 
-      currentPollInterval = setInterval(async function() {
+      if (currentPollInterval) clearTimeout(currentPollInterval);
+
+      var pollStatus = async function() {
           attempts++;
           if(attempts === 2) updateProgressUI('Analyzing vectors and embeddings...', 60, activeStatusMsg);
           if(attempts === 5) updateProgressUI('Security & anti-spoofing verification...', 85, activeStatusMsg);
@@ -1889,7 +1891,6 @@ async function executeUploadLogic(e) {
                   var reason = checkData.submission.reason || "System processing error.";
                   
                   if (status === 'verified' || status === 'approved') {
-                      clearInterval(currentPollInterval);
                       await runProfileLedgerVerification(userEmailAddress, false, true); 
                       
                       if (submitDocBtn) submitDocBtn.style.display = 'none';
@@ -1913,10 +1914,9 @@ async function executeUploadLogic(e) {
                       }
                       if(activeReasonBox) activeReasonBox.style.display = 'none'; 
                       if (activeRetryBtn) activeRetryBtn.style.display = 'block'; 
+                      return; // STOP POLLING
                   } 
                   else if (status === 'rejected' || status === 'rejected_pii' || status === 'fraud' || status === 'duplicate') {
-                      clearInterval(currentPollInterval);
-                      
                       if (submitDocBtn) submitDocBtn.style.display = 'none';
                       if (submitSelfieBtn) submitSelfieBtn.style.display = 'none';
                       
@@ -1932,18 +1932,23 @@ async function executeUploadLogic(e) {
                       }
                       if(activeReasonBox) activeReasonBox.style.display = 'none';
                       if (activeRetryBtn) activeRetryBtn.style.display = 'block';
+                      return; // STOP POLLING
                   }
               }
               
               if (attempts >= maxAttempts) {
-                  clearInterval(currentPollInterval);
                   if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ea580c; font-weight:700;">AI timed out. Please check network and try again.</span>';
                   if (submitDocBtn) { submitDocBtn.disabled = false; submitDocBtn.innerText = 'Approve & Submit to Waiting Room'; }
                   if (submitSelfieBtn) { submitSelfieBtn.disabled = false; submitSelfieBtn.innerText = 'Verify & Submit to Waiting Room'; }
                   if (activeRetryBtn) activeRetryBtn.style.display = 'block';
+                  return; // STOP POLLING
               }
           } catch (pollErr) { console.error("Polling error", pollErr); }
-      }, 3000); 
+          
+          currentPollInterval = setTimeout(pollStatus, 3000);
+      };
+      
+      currentPollInterval = setTimeout(pollStatus, 3000); 
 
     } catch (error) {
       if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">Network error. Could not establish connection.</span>';
