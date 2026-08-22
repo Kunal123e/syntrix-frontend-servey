@@ -2193,3 +2193,10 @@ form.hidden,
   transform: translateY(-2px);
   box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
 }
+
+/* MOBILE HOTFIX: HIDE DESKTOP NAV */
+@media (max-width: 1024px) {
+  .unified-nav-links {
+    display: none !important;
+  }
+}
