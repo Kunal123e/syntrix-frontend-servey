@@ -1174,11 +1174,10 @@ function resetApplicationFlowState() {
 document.addEventListener("DOMContentLoaded", async function() {
   if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
     google.accounts.id.initialize({
-      client_id: '163483233818-hd35sh66a6bu5polfuorbr7h1j81iusp.apps.googleusercontent.com', 
+      client_id: "163483233818-hd35sh66a6bu5polfuorbr7h1j81iusp.apps.googleusercontent.com",
       callback: window.handleGoogleCredentialResponse,
-      auto_select: false,
-      cancel_on_tap_outside: true,
-      use_fedcm_for_prompt: true
+      use_fedcm_for_prompt: true,
+      auto_select: false
     });
   }
 
