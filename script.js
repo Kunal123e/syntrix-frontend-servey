@@ -9,6 +9,10 @@ styleSheet.innerText = `
 @keyframes slideUpFade { 0% { opacity: 0; transform: translateY(15px); } 100% { opacity: 1; transform: translateY(0); } }
 .status-text-pulse { animation: textPulse 1.5s infinite; }
 @keyframes textPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+@keyframes splashFadeOut { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.05); filter: blur(10px); } }
+@keyframes appFadeIn { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
+.splash-exit { animation: splashFadeOut 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.app-enter { animation: appFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 `;
 document.head.appendChild(styleSheet);
 
@@ -365,31 +369,36 @@ if (navGetStartedAction) {
 
 if (initializePlatformBtn) {
   initializePlatformBtn.addEventListener("click", function() {
-    if(splashLandingGate) splashLandingGate.style.display = "none"; 
-    if(mainApplicationLayout) {
-        mainApplicationLayout.classList.remove("hidden");
-        mainApplicationLayout.style.display = "block"; 
-    }
+    if (splashLandingGate) splashLandingGate.classList.add("splash-exit");
     
-    var savedEmail = localStorage.getItem("syntrix_user_email");
-    if (savedEmail) {
-      userEmailAddress = savedEmail;
-      if (emailGateSection) {
-          emailGateSection.style.display = "none";
-          emailGateSection.classList.add("hidden");
+    setTimeout(function() {
+      if(splashLandingGate) splashLandingGate.style.display = "none"; 
+      if(mainApplicationLayout) {
+          mainApplicationLayout.classList.remove("hidden");
+          mainApplicationLayout.classList.add("app-enter");
+          mainApplicationLayout.style.display = "block"; 
       }
-      runProfileLedgerVerification(userEmailAddress, false);
-    } else {
-      var dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "gatewayScreenSection", "documentModeSection", "selfieModeSection", "tabScreenXP"];
-      dashboardCards.forEach(function(id) {
-        var el = document.getElementById(id);
-        if (el) { el.style.display = "none"; el.classList.add("hidden"); }
-      });
-      if (emailGateSection) {
-          emailGateSection.classList.remove("hidden");
-          emailGateSection.style.display = "flex";
+      
+      var savedEmail = localStorage.getItem("syntrix_user_email");
+      if (savedEmail) {
+        userEmailAddress = savedEmail;
+        if (emailGateSection) {
+            emailGateSection.style.display = "none";
+            emailGateSection.classList.add("hidden");
+        }
+        runProfileLedgerVerification(userEmailAddress, false);
+      } else {
+        var dashboardCards = ["rewardDashboardScreen", "tabScreenBadge", "tabScreenReferrals", "tabScreenMoreSurveys", "claimScreenSection", "gatewayScreenSection", "documentModeSection", "selfieModeSection", "tabScreenXP"];
+        dashboardCards.forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) { el.style.display = "none"; el.classList.add("hidden"); }
+        });
+        if(emailGateSection) {
+            emailGateSection.style.display = "block";
+            emailGateSection.classList.remove("hidden");
+        }
       }
-    }
+    }, 450);
   });
 }
 
