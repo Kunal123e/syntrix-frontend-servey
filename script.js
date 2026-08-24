@@ -855,7 +855,7 @@ async function runProfileLedgerVerification(email, isFromModal, isBackgroundSync
       if (statClaimedRewards) statClaimedRewards.innerText = (statusResult.claimedRewards || 0) + " SYNX";
       if (statTotalEarned) statTotalEarned.innerText = ((statusResult.pendingRewards || 0) + (statusResult.claimedRewards || 0)) + " SYNX";
       
-      const PRODUCTION_DOMAIN = "https://syntrix-frontend-servey.vercel.app";
+      const PRODUCTION_DOMAIN = "https://syntrix-frontend-servey-2hl7.vercel.app";
       if (referralCodeDisplay) referralCodeDisplay.value = `${PRODUCTION_DOMAIN}?ref=${statusResult.referralCode || ""}`;
       
       var menuReferralInput = document.getElementById("menuReferralInputDisplay");
