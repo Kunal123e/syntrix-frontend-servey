@@ -1170,10 +1170,12 @@ function resetApplicationFlowState() {
   if (menuReferralWrapper) menuReferralWrapper.style.display = "none";
   
   if (mainApplicationLayout) {
+      mainApplicationLayout.classList.remove("app-enter");
       mainApplicationLayout.classList.add("hidden");
       mainApplicationLayout.style.display = "none";
   }
   if (splashLandingGate) {
+      splashLandingGate.classList.remove("splash-exit");
       splashLandingGate.style.display = "flex";
   }
   routeSplashNavViews("home");
