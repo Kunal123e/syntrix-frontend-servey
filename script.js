@@ -1042,6 +1042,19 @@ function translatePage() {
   if (mainTitleEl && dict.mainTitle) mainTitleEl.innerHTML = dict.mainTitle;
   if (mainSubtitleEl && dict.mainSubtitle) mainSubtitleEl.innerHTML = dict.mainSubtitle;
 
+  /* FIX: Override stale translation strings for mainTitle & mainSubtitle */
+  if (mainTitleEl && mainTitleEl.innerHTML.indexOf("Consumer Analytics Hub") !== -1) {
+    mainTitleEl.innerHTML = mainTitleEl.innerHTML; /* keep title as-is */
+  }
+  if (mainSubtitleEl) {
+    var sub = mainSubtitleEl.innerHTML;
+    if (sub.indexOf("Complete all 6") !== -1 || sub.indexOf("consumer research modules") !== -1 || sub.indexOf("token allocation") !== -1) {
+      mainSubtitleEl.innerHTML = sub
+        .replace(/Complete all 6 consumer research modules to secure your/gi, "Process your complete digital footprint across the Syntrix intelligence matrix\u2014including identity and research protocols\u2014to secure your")
+        .replace(/token allocation/gi, "allocation");
+    }
+  }
+
   var emailSectionTitleEl = document.querySelector("#emailGateSection .sectionTitle");
   if (emailSectionTitleEl && dict.emailSectionTitle) emailSectionTitleEl.innerText = dict.emailSectionTitle;
   
