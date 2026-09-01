@@ -1617,6 +1617,7 @@ window.resetUploadState = function(keepInputs) {
       if (imagePreview) {
           imagePreview.src = '';
           imagePreview.classList.add('hidden'); 
+          imagePreview.style.setProperty('display', 'none', 'important');
       }
       
       var selfieImg = document.getElementById('selfieResultImg');
@@ -1782,7 +1783,10 @@ function handleFileSelection(e) {
           }
         } else {
           // Multi-file — render thumbnail grid
-          if (imagePreview) imagePreview.style.display = 'none';
+          if (imagePreview) {
+              imagePreview.src = '';
+              imagePreview.style.setProperty('display', 'none', 'important');
+          }
           if (previewContainer) {
               previewContainer.classList.remove('hidden');
               previewContainer.style.display = 'flex';
