@@ -2094,129 +2094,21 @@ async function executeUploadLogic(e) {
         return;
       }
 
-      var batchId = batchResult.batchId;
-      var totalQueued = batchResult.totalQueued || filesToUpload.length;
-      var totalRejectedUpfront = batchResult.totalRejected || 0;
-
-      updateProgressUI('Batch queued! ' + totalQueued + ' file(s) in AI pipeline...', 40, activeStatusMsg);
-
-      // ---- 4. Poll batch status ----
-      var batchAttempts = 0;
-      var maxBatchAttempts = 60; // 60 * 4s = 4 minutes max
-      if (currentPollInterval) clearTimeout(currentPollInterval);
-
-      var pollBatchStatus = async function() {
-        batchAttempts++;
-        try {
-          var statusRes = await fetch(BACKEND_URL + "/api/uploads/batch/" + batchId + "/status");
-          var statusData = await statusRes.json();
-
-          if (statusData.success && statusData.summary) {
-            var s = statusData.summary;
-            var pctDone = s.total > 0 ? Math.round(((s.verified + s.rejected + s.failed) / s.total) * 100) : 0;
-            var pctBar = Math.max(40, Math.min(95, 40 + (pctDone * 0.55)));
-
-            // Build per-job status pills
-            var jobPills = '';
-            if (statusData.jobs && statusData.jobs.length > 0) {
-              jobPills = '<div style="display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 12px;">';
-              statusData.jobs.forEach(function(job, idx) {
-                var pillColor = '#3f3f46'; var pillText = '#a1a1aa';
-                if (job.status === 'VERIFIED') { pillColor = 'rgba(16, 185, 129, 0.15)'; pillText = '#10b981'; }
-                else if (job.status === 'REJECTED' || job.status === 'FAILED') { pillColor = 'rgba(239, 68, 68, 0.15)'; pillText = '#ef4444'; }
-                else if (job.status === 'PROCESSING') { pillColor = 'rgba(99, 102, 241, 0.15)'; pillText = '#6366f1'; }
-                else if (job.status === 'RETRYING') { pillColor = 'rgba(251, 191, 36, 0.15)'; pillText = '#fbbf24'; }
-                jobPills += '<div style="background:' + pillColor + '; color:' + pillText + '; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700;">' +
-                  'File ' + (idx + 1) + ': ' + job.status +
-                '</div>';
-              });
-              jobPills += '</div>';
-            }
-
-            var progressText = 'Verified: ' + s.verified + ' / Total: ' + s.total;
-            if (s.rejected > 0) progressText += ' | Rejected: ' + s.rejected;
-            if (s.failed > 0) progressText += ' | Failed: ' + s.failed;
-
-            if (activeStatusMsg) {
-              activeStatusMsg.innerHTML = 
-                '<div style="background: #18181b; border: 1px solid #27272a; border-radius: 16px; padding: 20px; text-align: center; margin-top: 10px;">' +
-                    '<div style="display: flex; justify-content: center; margin-bottom: 15px;">' +
-                        '<div style="width: 40px; height: 40px; border: 3px solid rgba(99, 102, 241, 0.2); border-top-color: #6366f1; border-radius: 50%; animation: aiSpin 1s linear infinite;"></div>' +
-                    '</div>' +
-                    '<div style="font-size:12px; color:#a1a1aa; font-weight:700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">Batch AI Processing</div>' +
-                    '<div style="background:#09090b; height:6px; border-radius:4px; overflow:hidden; margin-bottom:15px; border: 1px solid #27272a;">' +
-                       '<div style="width: ' + pctBar + '%; background: linear-gradient(90deg, #6366f1, #a855f7); height:100%; transition: width 0.4s ease; box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);"></div>' +
-                    '</div>' +
-                    '<div style="font-weight:800; color:#f4f4f5; font-size:15px;" class="status-text-pulse">' + progressText + '</div>' +
-                    jobPills +
-                '</div>';
-            }
-
-            // ---- Check if batch is complete ----
-            var batchStatus = statusData.batch ? statusData.batch.status : '';
-            if (batchStatus === 'COMPLETED' || batchStatus === 'PARTIAL' || batchStatus === 'FAILED') {
-              // Batch is done — show final result
-              await runProfileLedgerVerification(userEmailAddress, false, true);
-              if (submitDocBtn) submitDocBtn.style.display = 'none';
-
-              var totalReward = 0;
-              if (statusData.jobs) {
-                statusData.jobs.forEach(function(j) {
-                  if (j.status === 'VERIFIED' && j.reward_amount) totalReward += j.reward_amount;
-                });
-              }
-
-              if (batchStatus === 'COMPLETED') {
-                if (activeStatusMsg) {
-                  activeStatusMsg.innerHTML = 
-                    '<div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 16px; padding: 25px 20px; text-align: center; animation: slideUpFade 0.5s ease-out; margin-top: 15px;">' +
-                        '<div style="width: 56px; height: 56px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);">' +
-                            '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' +
-                        '</div>' +
-                        '<div style="font-weight: 900; color: #10b981; font-size: 20px; margin-bottom: 5px; letter-spacing: -0.5px;">ALL ' + s.verified + ' FILES VERIFIED</div>' +
-                        '<div style="color: #a1a1aa; font-size: 14px; margin-bottom: 20px;">Batch processed successfully</div>' +
-                        '<div style="background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 12px; display: inline-block;">' +
-                            '<span style="color: #fbbf24; font-weight: 900; font-size: 18px;">+' + totalReward + ' SYNX</span>' +
-                            '<span style="color: #71717a; font-size: 11px; display: block; margin-top: 3px; font-weight: 600; text-transform: uppercase;">Tokens Assigned to Ledger</span>' +
-                        '</div>' +
-                    '</div>';
-                }
-              } else {
-                // PARTIAL or FAILED
-                var resultColor = batchStatus === 'PARTIAL' ? '#fbbf24' : '#ef4444';
-                var resultLabel = batchStatus === 'PARTIAL' ? 'BATCH PARTIALLY VERIFIED' : 'BATCH FAILED';
-                if (activeStatusMsg) {
-                  activeStatusMsg.innerHTML = 
-                    '<div style="background: rgba(251, 191, 36, 0.05); border: 1px solid rgba(251, 191, 36, 0.2); border-radius: 16px; padding: 25px 20px; text-align: center; animation: slideUpFade 0.5s ease-out; margin-top: 15px;">' +
-                        '<div style="font-weight: 900; color: ' + resultColor + '; font-size: 20px; margin-bottom: 10px; letter-spacing: -0.5px;">' + resultLabel + '</div>' +
-                        '<div style="color: #a1a1aa; font-size: 14px; margin-bottom: 15px;">Verified: ' + s.verified + ' | Rejected: ' + s.rejected + ' | Failed: ' + s.failed + '</div>' +
-                        (totalReward > 0 ? '<div style="background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 12px; display: inline-block;">' +
-                            '<span style="color: #fbbf24; font-weight: 900; font-size: 18px;">+' + totalReward + ' SYNX</span>' +
-                            '<span style="color: #71717a; font-size: 11px; display: block; margin-top: 3px; font-weight: 600; text-transform: uppercase;">Tokens Assigned to Ledger</span>' +
-                        '</div>' : '') +
-                        jobPills +
-                    '</div>';
-                }
-              }
-              if(activeReasonBox) activeReasonBox.style.display = 'none'; 
-              if (activeRetryBtn) activeRetryBtn.style.display = 'block';
-              return; // STOP POLLING
-            }
-          }
-
-          // Timeout guard
-          if (batchAttempts >= maxBatchAttempts) {
-            if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ea580c; font-weight:700;">Batch processing timed out. Your files are still in the queue and will be processed.</span>';
-            if (submitDocBtn) { submitDocBtn.disabled = false; submitDocBtn.innerText = 'Approve & Submit to Waiting Room'; }
-            if (activeRetryBtn) activeRetryBtn.style.display = 'block';
-            return;
-          }
-        } catch (pollErr) { console.error("Batch polling error", pollErr); }
-
-        currentPollInterval = setTimeout(pollBatchStatus, 4000);
-      };
-
-      currentPollInterval = setTimeout(pollBatchStatus, 4000);
+      // ---- 4. Fire and Forget UX ----
+      if (submitDocBtn) submitDocBtn.style.display = 'none';
+      if (activeReasonBox) activeReasonBox.style.display = 'none';
+      
+      if (activeStatusMsg) {
+        activeStatusMsg.innerHTML = 
+          '<div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 16px; padding: 25px 20px; text-align: center; animation: slideUpFade 0.5s ease-out; margin-top: 15px;">' +
+              '<div style="width: 56px; height: 56px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);">' +
+                  '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' +
+              '</div>' +
+              '<div style="font-weight: 900; color: #10b981; font-size: 20px; margin-bottom: 5px; letter-spacing: -0.5px;">UPLOAD SUCCESSFUL! 🎉</div>' +
+              '<div style="color: #a1a1aa; font-size: 14px; margin-bottom: 20px; line-height: 1.5;">Your files are safely in the AI processing queue. You can close this page or upload more. SYNX tokens will be automatically added to your dashboard once verified.</div>' +
+              '<button type="button" onclick="resetUploadState(false)" style="background: #ffffff; color: #000000; font-weight: 800; border: none; padding: 12px 24px; border-radius: 12px; cursor: pointer; font-size: 14px; transition: opacity 0.2s;">Upload More Documents</button>' +
+          '</div>';
+      }
 
     } catch (error) {
       console.error("Batch upload error:", error);
