@@ -1593,6 +1593,7 @@ var detailedReasonBoxSelfie = document.getElementById('detailedReasonBoxSelfie')
 var retryUploadBtnSelfie = document.getElementById('retryUploadBtnSelfie');
 
 var selectedFile = null;
+var selectedFiles = []; // Multi-image batch support
 var currentPollInterval = null;
 var isUploadingSelfie = false;
 
@@ -1600,9 +1601,14 @@ window.resetUploadState = function(keepInputs) {
     if (keepInputs === undefined) keepInputs = false;
     if (!keepInputs) {
       selectedFile = null;
+      selectedFiles = [];
       if (fileInputCamera) fileInputCamera.value = '';
       if (fileInputGallery) fileInputGallery.value = '';
       if (fileInputSelfie) fileInputSelfie.value = '';
+      
+      // Remove multi-preview grid if it exists
+      var multiPreview = document.getElementById('multiPreviewGrid');
+      if (multiPreview) multiPreview.remove();
       
       if (previewContainer) {
           previewContainer.style.display = 'none';
@@ -1691,65 +1697,80 @@ if (retryUploadBtnSelfie) {
 
 function handleFileSelection(e) {
   if (e.target.files && e.target.files.length > 0) {
-    var newFile = e.target.files[0];
-    resetUploadState(true); 
-    selectedFile = newFile;
-    
     var isSelfieUpload = e.target.id === 'fileInputSelfie';
     isUploadingSelfie = isSelfieUpload;
+    resetUploadState(true); 
 
     if (isSelfieUpload) {
-        if (submitSelfieBtn) {
-            submitSelfieBtn.disabled = false;
-            submitSelfieBtn.classList.remove('hidden');
-        }
-        var btnSelfieTextContent = document.getElementById('btnSelfieTextContent');
-        if (btnSelfieTextContent) {
-            btnSelfieTextContent.innerText = "Retake Photo";
-        }
-    } else {
-        if (submitDocBtn) {
-            submitDocBtn.disabled = false;
-            submitDocBtn.classList.remove('hidden'); 
-            submitDocBtn.style.display = 'flex';
-        }
-    }
-    
-    try {
-      var url = URL.createObjectURL(selectedFile);
-      
-      if (isSelfieUpload) {
-          var scannerOuter = document.querySelector('.scanner-circle-outer');
-          var scannerInner = document.querySelector('.scanner-circle-inner');
-          if (scannerOuter) scannerOuter.style.display = 'none';
-          if (scannerInner) scannerInner.style.display = 'none';
-          
-          var selfieImg = document.getElementById('selfieResultImg');
-          if (!selfieImg) {
-              var container = document.querySelector('.selfie-scanner-container');
-              if (container) {
-                  selfieImg = document.createElement('img');
-                  selfieImg.id = 'selfieResultImg';
-                  selfieImg.style.maxWidth = '100%';
-                  selfieImg.style.maxHeight = '260px';
-                  selfieImg.style.borderRadius = '12px';
-                  selfieImg.style.objectFit = 'contain';
-                  selfieImg.style.position = 'relative';
-                  selfieImg.style.zIndex = '10';
-                  container.appendChild(selfieImg);
-              }
-          }
-          if (selfieImg) {
-              selfieImg.src = url;
-              selfieImg.classList.remove('hidden');
-              selfieImg.style.display = 'block';
-          }
+      // ---- SELFIE: Single file only (original behavior) ----
+      selectedFile = e.target.files[0];
+      selectedFiles = [selectedFile];
 
-          var clearSelfieBtn = document.getElementById('clearSelfieBtn');
-          if (clearSelfieBtn) {
-              clearSelfieBtn.style.display = 'flex';
+      if (submitSelfieBtn) {
+          submitSelfieBtn.disabled = false;
+          submitSelfieBtn.classList.remove('hidden');
+      }
+      var btnSelfieTextContent = document.getElementById('btnSelfieTextContent');
+      if (btnSelfieTextContent) {
+          btnSelfieTextContent.innerText = "Retake Photo";
+      }
+
+      try {
+        var url = URL.createObjectURL(selectedFile);
+        var scannerOuter = document.querySelector('.scanner-circle-outer');
+        var scannerInner = document.querySelector('.scanner-circle-inner');
+        if (scannerOuter) scannerOuter.style.display = 'none';
+        if (scannerInner) scannerInner.style.display = 'none';
+        
+        var selfieImg = document.getElementById('selfieResultImg');
+        if (!selfieImg) {
+            var container = document.querySelector('.selfie-scanner-container');
+            if (container) {
+                selfieImg = document.createElement('img');
+                selfieImg.id = 'selfieResultImg';
+                selfieImg.style.maxWidth = '100%';
+                selfieImg.style.maxHeight = '260px';
+                selfieImg.style.borderRadius = '12px';
+                selfieImg.style.objectFit = 'contain';
+                selfieImg.style.position = 'relative';
+                selfieImg.style.zIndex = '10';
+                container.appendChild(selfieImg);
+            }
+        }
+        if (selfieImg) {
+            selfieImg.src = url;
+            selfieImg.classList.remove('hidden');
+            selfieImg.style.display = 'block';
+        }
+        var clearSelfieBtn = document.getElementById('clearSelfieBtn');
+        if (clearSelfieBtn) clearSelfieBtn.style.display = 'flex';
+      } catch(err) {
+        console.error("Preview generation failed:", err);
+      }
+
+    } else {
+      // ---- DOCUMENT: Multi-file support (up to 10) ----
+      var fileList = Array.from(e.target.files);
+      if (fileList.length > 10) {
+        fileList = fileList.slice(0, 10);
+        showToast("Maximum 10 images per batch. First 10 selected.", "!");
+      }
+      selectedFile = fileList[0]; // backward compat
+      selectedFiles = fileList;
+
+      if (submitDocBtn) {
+          submitDocBtn.disabled = false;
+          submitDocBtn.classList.remove('hidden'); 
+          submitDocBtn.style.display = 'flex';
+          if (fileList.length > 1) {
+            submitDocBtn.innerText = 'Approve & Submit ' + fileList.length + ' Files';
           }
-      } else {
+      }
+
+      try {
+        if (fileList.length === 1) {
+          // Single file — original preview behavior
+          var url = URL.createObjectURL(fileList[0]);
           if (imagePreview) {
               imagePreview.src = url;
               imagePreview.classList.remove('hidden'); 
@@ -1759,9 +1780,42 @@ function handleFileSelection(e) {
               previewContainer.classList.remove('hidden'); 
               previewContainer.style.display = 'flex';
           }
+        } else {
+          // Multi-file — render thumbnail grid
+          if (imagePreview) imagePreview.style.display = 'none';
+          if (previewContainer) {
+              previewContainer.classList.remove('hidden');
+              previewContainer.style.display = 'flex';
+          }
+
+          var oldGrid = document.getElementById('multiPreviewGrid');
+          if (oldGrid) oldGrid.remove();
+
+          var grid = document.createElement('div');
+          grid.id = 'multiPreviewGrid';
+          grid.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; width: 100%; padding: 10px 0;';
+
+          fileList.forEach(function(file, idx) {
+            var thumb = document.createElement('div');
+            thumb.style.cssText = 'position: relative; border-radius: 10px; overflow: hidden; border: 1px solid #27272a; aspect-ratio: 1; background: #18181b;';
+            var img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            img.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
+            var badge = document.createElement('div');
+            badge.style.cssText = 'position: absolute; bottom: 4px; right: 4px; background: rgba(0,0,0,0.7); color: #a1a1aa; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 6px;';
+            badge.innerText = (idx + 1) + '/' + fileList.length;
+            thumb.appendChild(img);
+            thumb.appendChild(badge);
+            grid.appendChild(thumb);
+          });
+
+          if (previewContainer) {
+            previewContainer.appendChild(grid);
+          }
+        }
+      } catch(err) {
+        console.error("Preview generation failed:", err);
       }
-    } catch(err) {
-      console.error("Preview generation failed:", err);
     }
   }
 }
@@ -1822,7 +1876,9 @@ async function executeUploadLogic(e) {
     var activeReasonBox = isSelfieSubmit ? detailedReasonBoxSelfie : detailedReasonBox;
     var activeRetryBtn = isSelfieSubmit ? retryUploadBtnSelfie : retryUploadBtn;
 
-    if (!selectedFile || !userEmailAddress) { 
+    var filesToUpload = isSelfieSubmit ? [selectedFile] : selectedFiles;
+
+    if (!filesToUpload || filesToUpload.length === 0 || !filesToUpload[0] || !userEmailAddress) { 
       if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">Please select a file and ensure you are logged in.</span>';
       return;
     }
@@ -1864,120 +1920,304 @@ async function executeUploadLogic(e) {
     if (submitDocBtn) submitDocBtn.disabled = true;
     if (submitSelfieBtn) submitSelfieBtn.disabled = true;
 
-    updateProgressUI('Compressing and securing payload...', 15, activeStatusMsg);
+    // ---- SELFIE: Use original single-file legacy endpoint ----
+    if (isSelfieSubmit) {
+      updateProgressUI('Compressing and securing payload...', 15, activeStatusMsg);
+      try {
+        var base64String = await compressImageForBackend(selectedFile, 500, 0.4);
+        var payload = {
+          email: userEmailAddress,
+          userEmail: userEmailAddress, 
+          taskType: taskType, 
+          fileName: selectedFile.name || 'capture.jpg', 
+          imageBase64: base64String,
+          contentTags: contentTags.length > 0 ? contentTags : ['none']
+        };
 
-    try {
-      var base64String = await compressImageForBackend(selectedFile, 500, 0.4);
-      var payload = {
-        email: userEmailAddress,
-        userEmail: userEmailAddress, 
-        taskType: taskType, 
-        fileName: selectedFile.name || 'capture.jpg', 
-        imageBase64: base64String,
-        contentTags: contentTags.length > 0 ? contentTags : ['none']
-      };
+        var response = await fetch(BACKEND_URL + "/api/upload-task", {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+        });
 
-      var response = await fetch(BACKEND_URL + "/api/upload-task", {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
-      });
-
-      if (!response.ok) {
-        var errorMsg = 'Upload rejected by server.';
-        try {
-            var data = await response.json();
-            errorMsg = data.error || data.message || 'Server blocked request (Status ' + response.status + ')';
-        } catch(parseErr) {
-            errorMsg = 'Backend Firewall Blocked Request (Status ' + response.status + '). Payload might be too large.';
+        if (!response.ok) {
+          var errorMsg = 'Upload rejected by server.';
+          try {
+              var data = await response.json();
+              errorMsg = data.error || data.message || 'Server blocked request (Status ' + response.status + ')';
+          } catch(parseErr) {
+              errorMsg = 'Backend Firewall Blocked Request (Status ' + response.status + '). Payload might be too large.';
+          }
+          if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">X <strong>' + errorMsg + '</strong></span>';
+          if (submitDocBtn) submitDocBtn.disabled = false;
+          if (submitSelfieBtn) submitSelfieBtn.disabled = false;
+          return;
         }
-        if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">X <strong>' + errorMsg + '</strong></span>';
+
+        var attempts = 0;
+        var maxAttempts = 15;
+        updateProgressUI('AI is verifying parameters...', 35, activeStatusMsg);
+        if (currentPollInterval) clearTimeout(currentPollInterval);
+
+        var pollStatus = async function() {
+            attempts++;
+            if(attempts === 2) updateProgressUI('Analyzing vectors and embeddings...', 60, activeStatusMsg);
+            if(attempts === 5) updateProgressUI('Security & anti-spoofing verification...', 85, activeStatusMsg);
+
+            try {
+                var res = await fetch(BACKEND_URL + "/api/check-submission?email=" + encodeURIComponent(userEmailAddress));
+                var checkData = await res.json();
+                
+                if (checkData.success && checkData.submission) {
+                    var status = checkData.submission.status;
+                    var reason = checkData.submission.reason || "System processing error.";
+                    
+                    if (status === 'verified' || status === 'approved') {
+                        await runProfileLedgerVerification(userEmailAddress, false, true); 
+                        if (submitDocBtn) submitDocBtn.style.display = 'none';
+                        if (submitSelfieBtn) submitSelfieBtn.style.display = 'none';
+                        var cleanReason = reason.split('|')[0].trim();
+                        if (activeStatusMsg) {
+                            activeStatusMsg.innerHTML = 
+                                '<div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 16px; padding: 25px 20px; text-align: center; animation: slideUpFade 0.5s ease-out; margin-top: 15px;">' +
+                                    '<div style="width: 56px; height: 56px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);">' +
+                                        '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' +
+                                    '</div>' +
+                                    '<div style="font-weight: 900; color: #10b981; font-size: 20px; margin-bottom: 5px; letter-spacing: -0.5px;">VERIFICATION SUCCESSFUL</div>' +
+                                    '<div style="color: #a1a1aa; font-size: 14px; margin-bottom: 20px;">' + cleanReason + '</div>' +
+                                    '<div style="background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 12px; display: inline-block;">' +
+                                        '<span style="color: #fbbf24; font-weight: 900; font-size: 18px;">+48 SYNX</span>' +
+                                        '<span style="color: #71717a; font-size: 11px; display: block; margin-top: 3px; font-weight: 600; text-transform: uppercase;">Tokens Assigned to Ledger</span>' +
+                                    '</div>' +
+                                '</div>';
+                        }
+                        if(activeReasonBox) activeReasonBox.style.display = 'none'; 
+                        if (activeRetryBtn) activeRetryBtn.style.display = 'block'; 
+                        return;
+                    } 
+                    else if (status === 'rejected' || status === 'rejected_pii' || status === 'fraud' || status === 'duplicate') {
+                        if (submitDocBtn) submitDocBtn.style.display = 'none';
+                        if (submitSelfieBtn) submitSelfieBtn.style.display = 'none';
+                        if (activeStatusMsg) {
+                            activeStatusMsg.innerHTML = 
+                                '<div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 16px; padding: 25px 20px; text-align: center; animation: slideUpFade 0.5s ease-out; margin-top: 15px;">' +
+                                    '<div style="width: 56px; height: 56px; background: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);">' +
+                                        '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>' +
+                                    '</div>' +
+                                    '<div style="font-weight: 900; color: #ef4444; font-size: 20px; margin-bottom: 5px; letter-spacing: -0.5px;">VERIFICATION FAILED</div>' +
+                                    '<div style="color: #fca5a5; font-size: 14px; background: rgba(239, 68, 68, 0.1); padding: 10px; border-radius: 8px; margin-top: 15px;">' + reason + '</div>' +
+                                '</div>';
+                        }
+                        if(activeReasonBox) activeReasonBox.style.display = 'none';
+                        if (activeRetryBtn) activeRetryBtn.style.display = 'block';
+                        return;
+                    }
+                }
+                
+                if (attempts >= maxAttempts) {
+                    if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ea580c; font-weight:700;">AI timed out. Please check network and try again.</span>';
+                    if (submitDocBtn) { submitDocBtn.disabled = false; submitDocBtn.innerText = 'Approve & Submit to Waiting Room'; }
+                    if (submitSelfieBtn) { submitSelfieBtn.disabled = false; submitSelfieBtn.innerText = 'Verify & Submit to Waiting Room'; }
+                    if (activeRetryBtn) activeRetryBtn.style.display = 'block';
+                    return;
+                }
+            } catch (pollErr) { console.error("Polling error", pollErr); }
+            
+            currentPollInterval = setTimeout(pollStatus, 3000);
+        };
+        
+        currentPollInterval = setTimeout(pollStatus, 3000); 
+
+      } catch (error) {
+        if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">Network error. Could not establish connection.</span>';
         if (submitDocBtn) submitDocBtn.disabled = false;
         if (submitSelfieBtn) submitSelfieBtn.disabled = false;
+      }
+      return; // Exit — selfie flow done
+    }
+
+    // ================================================================
+    // DOCUMENT BATCH UPLOAD — Multi-file → /api/uploads/batch
+    // ================================================================
+    updateProgressUI('Compressing ' + filesToUpload.length + ' file(s)...', 10, activeStatusMsg);
+
+    try {
+      // ---- 1. Compress all files in parallel ----
+      var compressionPromises = filesToUpload.map(function(file) {
+        return compressImageForBackend(file, 500, 0.4).then(function(base64) {
+          return { fileName: file.name || 'capture.jpg', base64: base64 };
+        });
+      });
+      var compressedFiles = await Promise.all(compressionPromises);
+
+      updateProgressUI('Uploading batch to secure queue...', 30, activeStatusMsg);
+
+      // ---- 2. Build batch payload ----
+      var batchPayload = {
+        userEmail: userEmailAddress,
+        files: compressedFiles.map(function(cf) {
+          return {
+            taskType: taskType,
+            fileName: cf.fileName,
+            imageBase64: cf.base64,
+            contentTags: contentTags.length > 0 ? contentTags : ['none']
+          };
+        })
+      };
+
+      // ---- 3. Send to batch endpoint ----
+      var batchResponse = await fetch(BACKEND_URL + "/api/uploads/batch", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(batchPayload)
+      });
+
+      if (!batchResponse.ok) {
+        var errMsg = 'Batch upload rejected by server.';
+        try {
+          var errData = await batchResponse.json();
+          errMsg = errData.error || errData.message || 'Server blocked batch (Status ' + batchResponse.status + ')';
+        } catch(pe) {
+          errMsg = 'Backend rejected batch (Status ' + batchResponse.status + ')';
+        }
+        if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">X <strong>' + errMsg + '</strong></span>';
+        if (submitDocBtn) submitDocBtn.disabled = false;
         return;
       }
 
-      var attempts = 0;
-      var maxAttempts = 15;
-      updateProgressUI('AI is verifying parameters...', 35, activeStatusMsg);
+      var batchResult = await batchResponse.json();
+      if (!batchResult.success || !batchResult.batchId) {
+        if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">Batch creation failed. ' + (batchResult.message || '') + '</span>';
+        if (submitDocBtn) submitDocBtn.disabled = false;
+        return;
+      }
 
+      var batchId = batchResult.batchId;
+      var totalQueued = batchResult.totalQueued || filesToUpload.length;
+      var totalRejectedUpfront = batchResult.totalRejected || 0;
+
+      updateProgressUI('Batch queued! ' + totalQueued + ' file(s) in AI pipeline...', 40, activeStatusMsg);
+
+      // ---- 4. Poll batch status ----
+      var batchAttempts = 0;
+      var maxBatchAttempts = 60; // 60 * 4s = 4 minutes max
       if (currentPollInterval) clearTimeout(currentPollInterval);
 
-      var pollStatus = async function() {
-          attempts++;
-          if(attempts === 2) updateProgressUI('Analyzing vectors and embeddings...', 60, activeStatusMsg);
-          if(attempts === 5) updateProgressUI('Security & anti-spoofing verification...', 85, activeStatusMsg);
+      var pollBatchStatus = async function() {
+        batchAttempts++;
+        try {
+          var statusRes = await fetch(BACKEND_URL + "/api/uploads/batch/" + batchId + "/status");
+          var statusData = await statusRes.json();
 
-          try {
-              var res = await fetch(BACKEND_URL + "/api/check-submission?email=" + encodeURIComponent(userEmailAddress));
-              var checkData = await res.json();
-              
-              if (checkData.success && checkData.submission) {
-                  var status = checkData.submission.status;
-                  var reason = checkData.submission.reason || "System processing error.";
-                  
-                  if (status === 'verified' || status === 'approved') {
-                      await runProfileLedgerVerification(userEmailAddress, false, true); 
-                      
-                      if (submitDocBtn) submitDocBtn.style.display = 'none';
-                      if (submitSelfieBtn) submitSelfieBtn.style.display = 'none';
-                      
-                      var cleanReason = reason.split('|')[0].trim();
-                      
-                      if (activeStatusMsg) {
-                          activeStatusMsg.innerHTML = 
-                              '<div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 16px; padding: 25px 20px; text-align: center; animation: slideUpFade 0.5s ease-out; margin-top: 15px;">' +
-                                  '<div style="width: 56px; height: 56px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);">' +
-                                      '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' +
-                                  '</div>' +
-                                  '<div style="font-weight: 900; color: #10b981; font-size: 20px; margin-bottom: 5px; letter-spacing: -0.5px;">VERIFICATION SUCCESSFUL</div>' +
-                                  '<div style="color: #a1a1aa; font-size: 14px; margin-bottom: 20px;">' + cleanReason + '</div>' +
-                                  '<div style="background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 12px; display: inline-block;">' +
-                                      '<span style="color: #fbbf24; font-weight: 900; font-size: 18px;">+48 SYNX</span>' +
-                                      '<span style="color: #71717a; font-size: 11px; display: block; margin-top: 3px; font-weight: 600; text-transform: uppercase;">Tokens Assigned to Ledger</span>' +
-                                  '</div>' +
-                              '</div>';
-                      }
-                      if(activeReasonBox) activeReasonBox.style.display = 'none'; 
-                      if (activeRetryBtn) activeRetryBtn.style.display = 'block'; 
-                      return; // STOP POLLING
-                  } 
-                  else if (status === 'rejected' || status === 'rejected_pii' || status === 'fraud' || status === 'duplicate') {
-                      if (submitDocBtn) submitDocBtn.style.display = 'none';
-                      if (submitSelfieBtn) submitSelfieBtn.style.display = 'none';
-                      
-                      if (activeStatusMsg) {
-                          activeStatusMsg.innerHTML = 
-                              '<div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 16px; padding: 25px 20px; text-align: center; animation: slideUpFade 0.5s ease-out; margin-top: 15px;">' +
-                                  '<div style="width: 56px; height: 56px; background: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);">' +
-                                      '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>' +
-                                  '</div>' +
-                                  '<div style="font-weight: 900; color: #ef4444; font-size: 20px; margin-bottom: 5px; letter-spacing: -0.5px;">VERIFICATION FAILED</div>' +
-                                  '<div style="color: #fca5a5; font-size: 14px; background: rgba(239, 68, 68, 0.1); padding: 10px; border-radius: 8px; margin-top: 15px;">' + reason + '</div>' +
-                              '</div>';
-                      }
-                      if(activeReasonBox) activeReasonBox.style.display = 'none';
-                      if (activeRetryBtn) activeRetryBtn.style.display = 'block';
-                      return; // STOP POLLING
-                  }
+          if (statusData.success && statusData.summary) {
+            var s = statusData.summary;
+            var pctDone = s.total > 0 ? Math.round(((s.verified + s.rejected + s.failed) / s.total) * 100) : 0;
+            var pctBar = Math.max(40, Math.min(95, 40 + (pctDone * 0.55)));
+
+            // Build per-job status pills
+            var jobPills = '';
+            if (statusData.jobs && statusData.jobs.length > 0) {
+              jobPills = '<div style="display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 12px;">';
+              statusData.jobs.forEach(function(job, idx) {
+                var pillColor = '#3f3f46'; var pillText = '#a1a1aa';
+                if (job.status === 'VERIFIED') { pillColor = 'rgba(16, 185, 129, 0.15)'; pillText = '#10b981'; }
+                else if (job.status === 'REJECTED' || job.status === 'FAILED') { pillColor = 'rgba(239, 68, 68, 0.15)'; pillText = '#ef4444'; }
+                else if (job.status === 'PROCESSING') { pillColor = 'rgba(99, 102, 241, 0.15)'; pillText = '#6366f1'; }
+                else if (job.status === 'RETRYING') { pillColor = 'rgba(251, 191, 36, 0.15)'; pillText = '#fbbf24'; }
+                jobPills += '<div style="background:' + pillColor + '; color:' + pillText + '; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700;">' +
+                  'File ' + (idx + 1) + ': ' + job.status +
+                '</div>';
+              });
+              jobPills += '</div>';
+            }
+
+            var progressText = 'Verified: ' + s.verified + ' / Total: ' + s.total;
+            if (s.rejected > 0) progressText += ' | Rejected: ' + s.rejected;
+            if (s.failed > 0) progressText += ' | Failed: ' + s.failed;
+
+            if (activeStatusMsg) {
+              activeStatusMsg.innerHTML = 
+                '<div style="background: #18181b; border: 1px solid #27272a; border-radius: 16px; padding: 20px; text-align: center; margin-top: 10px;">' +
+                    '<div style="display: flex; justify-content: center; margin-bottom: 15px;">' +
+                        '<div style="width: 40px; height: 40px; border: 3px solid rgba(99, 102, 241, 0.2); border-top-color: #6366f1; border-radius: 50%; animation: aiSpin 1s linear infinite;"></div>' +
+                    '</div>' +
+                    '<div style="font-size:12px; color:#a1a1aa; font-weight:700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">Batch AI Processing</div>' +
+                    '<div style="background:#09090b; height:6px; border-radius:4px; overflow:hidden; margin-bottom:15px; border: 1px solid #27272a;">' +
+                       '<div style="width: ' + pctBar + '%; background: linear-gradient(90deg, #6366f1, #a855f7); height:100%; transition: width 0.4s ease; box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);"></div>' +
+                    '</div>' +
+                    '<div style="font-weight:800; color:#f4f4f5; font-size:15px;" class="status-text-pulse">' + progressText + '</div>' +
+                    jobPills +
+                '</div>';
+            }
+
+            // ---- Check if batch is complete ----
+            var batchStatus = statusData.batch ? statusData.batch.status : '';
+            if (batchStatus === 'COMPLETED' || batchStatus === 'PARTIAL' || batchStatus === 'FAILED') {
+              // Batch is done — show final result
+              await runProfileLedgerVerification(userEmailAddress, false, true);
+              if (submitDocBtn) submitDocBtn.style.display = 'none';
+
+              var totalReward = 0;
+              if (statusData.jobs) {
+                statusData.jobs.forEach(function(j) {
+                  if (j.status === 'VERIFIED' && j.reward_amount) totalReward += j.reward_amount;
+                });
               }
-              
-              if (attempts >= maxAttempts) {
-                  if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ea580c; font-weight:700;">AI timed out. Please check network and try again.</span>';
-                  if (submitDocBtn) { submitDocBtn.disabled = false; submitDocBtn.innerText = 'Approve & Submit to Waiting Room'; }
-                  if (submitSelfieBtn) { submitSelfieBtn.disabled = false; submitSelfieBtn.innerText = 'Verify & Submit to Waiting Room'; }
-                  if (activeRetryBtn) activeRetryBtn.style.display = 'block';
-                  return; // STOP POLLING
+
+              if (batchStatus === 'COMPLETED') {
+                if (activeStatusMsg) {
+                  activeStatusMsg.innerHTML = 
+                    '<div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 16px; padding: 25px 20px; text-align: center; animation: slideUpFade 0.5s ease-out; margin-top: 15px;">' +
+                        '<div style="width: 56px; height: 56px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);">' +
+                            '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' +
+                        '</div>' +
+                        '<div style="font-weight: 900; color: #10b981; font-size: 20px; margin-bottom: 5px; letter-spacing: -0.5px;">ALL ' + s.verified + ' FILES VERIFIED</div>' +
+                        '<div style="color: #a1a1aa; font-size: 14px; margin-bottom: 20px;">Batch processed successfully</div>' +
+                        '<div style="background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 12px; display: inline-block;">' +
+                            '<span style="color: #fbbf24; font-weight: 900; font-size: 18px;">+' + totalReward + ' SYNX</span>' +
+                            '<span style="color: #71717a; font-size: 11px; display: block; margin-top: 3px; font-weight: 600; text-transform: uppercase;">Tokens Assigned to Ledger</span>' +
+                        '</div>' +
+                    '</div>';
+                }
+              } else {
+                // PARTIAL or FAILED
+                var resultColor = batchStatus === 'PARTIAL' ? '#fbbf24' : '#ef4444';
+                var resultLabel = batchStatus === 'PARTIAL' ? 'BATCH PARTIALLY VERIFIED' : 'BATCH FAILED';
+                if (activeStatusMsg) {
+                  activeStatusMsg.innerHTML = 
+                    '<div style="background: rgba(251, 191, 36, 0.05); border: 1px solid rgba(251, 191, 36, 0.2); border-radius: 16px; padding: 25px 20px; text-align: center; animation: slideUpFade 0.5s ease-out; margin-top: 15px;">' +
+                        '<div style="font-weight: 900; color: ' + resultColor + '; font-size: 20px; margin-bottom: 10px; letter-spacing: -0.5px;">' + resultLabel + '</div>' +
+                        '<div style="color: #a1a1aa; font-size: 14px; margin-bottom: 15px;">Verified: ' + s.verified + ' | Rejected: ' + s.rejected + ' | Failed: ' + s.failed + '</div>' +
+                        (totalReward > 0 ? '<div style="background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 12px; display: inline-block;">' +
+                            '<span style="color: #fbbf24; font-weight: 900; font-size: 18px;">+' + totalReward + ' SYNX</span>' +
+                            '<span style="color: #71717a; font-size: 11px; display: block; margin-top: 3px; font-weight: 600; text-transform: uppercase;">Tokens Assigned to Ledger</span>' +
+                        '</div>' : '') +
+                        jobPills +
+                    '</div>';
+                }
               }
-          } catch (pollErr) { console.error("Polling error", pollErr); }
-          
-          currentPollInterval = setTimeout(pollStatus, 3000);
+              if(activeReasonBox) activeReasonBox.style.display = 'none'; 
+              if (activeRetryBtn) activeRetryBtn.style.display = 'block';
+              return; // STOP POLLING
+            }
+          }
+
+          // Timeout guard
+          if (batchAttempts >= maxBatchAttempts) {
+            if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ea580c; font-weight:700;">Batch processing timed out. Your files are still in the queue and will be processed.</span>';
+            if (submitDocBtn) { submitDocBtn.disabled = false; submitDocBtn.innerText = 'Approve & Submit to Waiting Room'; }
+            if (activeRetryBtn) activeRetryBtn.style.display = 'block';
+            return;
+          }
+        } catch (pollErr) { console.error("Batch polling error", pollErr); }
+
+        currentPollInterval = setTimeout(pollBatchStatus, 4000);
       };
-      
-      currentPollInterval = setTimeout(pollStatus, 3000); 
+
+      currentPollInterval = setTimeout(pollBatchStatus, 4000);
 
     } catch (error) {
+      console.error("Batch upload error:", error);
       if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">Network error. Could not establish connection.</span>';
       if (submitDocBtn) submitDocBtn.disabled = false;
-      if (submitSelfieBtn) submitSelfieBtn.disabled = false;
     }
 }
 
