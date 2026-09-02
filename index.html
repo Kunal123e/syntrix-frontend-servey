@@ -245,7 +245,7 @@
         const popover = document.getElementById('optionsPopover');
         if(popover) { popover.style.display = 'none'; popover.classList.add('hidden'); }
         
-        const sections = ['gatewayScreenSection', 'documentModeSection', 'selfieModeSection', 'claimForm', 'rewardDashboardScreen', 'tabScreenBadge', 'tabScreenReferrals', 'tabScreenMoreSurveys', 'claimScreenSection', 'tabScreenXP'];
+        const sections = ['gatewayScreenSection', 'documentModeSection', 'selfieModeSection', 'claimForm', 'rewardDashboardScreen', 'tabScreenBadge', 'tabScreenReferrals', 'tabScreenMoreSurveys', 'claimScreenSection', 'tabScreenXP', 'tabScreenHistory'];
         sections.forEach(id => {
             const el = document.getElementById(id);
             if(el) { el.style.display = 'none'; el.classList.add('hidden'); }
@@ -428,6 +428,9 @@
     window.openModeEnhanced = function(modeName) {
       if(window.openMode) { try { window.openMode(modeName); } catch(e) {} }
       
+      if (modeName === 'history' && typeof window.fetchAndRenderHistory === 'function' && window.userEmailAddress) {
+          window.fetchAndRenderHistory(window.userEmailAddress);
+      }
       const popover = document.getElementById('optionsPopover');
       if(popover) { popover.style.display = 'none'; popover.classList.add('hidden'); }
 
@@ -457,7 +460,8 @@
         'tabScreenReferrals',
         'tabScreenMoreSurveys',
         'claimScreenSection',
-        'tabScreenXP' 
+        'tabScreenXP',
+        'tabScreenHistory'
       ];
       
       allScreens.forEach(id => {
@@ -478,6 +482,7 @@
       else if (modeName === 'referrals') targetId = 'tabScreenReferrals';
       else if (modeName === 'more') targetId = 'tabScreenMoreSurveys';
       else if (modeName === 'xp') targetId = 'tabScreenXP'; 
+      else if (modeName === 'history') targetId = 'tabScreenHistory';
       
       if(targetId) {
           const targetEl = document.getElementById(targetId);
@@ -1066,6 +1071,10 @@
                 <button class="menu-item-btn tab-btn" data-tab="document" onclick="window.openModeEnhanced('document')">
                   <div class="menu-icon-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></div>
                   Document Upload Mode
+                </button>
+                <button class="menu-item-btn tab-btn" data-tab="history" onclick="window.openModeEnhanced('history')">
+                  <div class="menu-icon-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
+                  Upload History
                 </button>
                 <button class="menu-item-btn tab-btn" data-tab="hub" onclick="window.openModeEnhanced('hub')">
                   <div class="menu-icon-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><line x1="12" y1="18" x2="12" y2="22"></line><line x1="12" y1="2" x2="12" y2="6"></line></svg></div>
@@ -1891,6 +1900,17 @@
           <button type="button" onclick="window.location.href='/'" class="primaryActionBtn" style="max-width: 250px; margin: 0 auto;">
             Go to Survey Hub
           </button>
+        </div>
+      </div>
+
+      <!-- ================= UPLOAD HISTORY DASHBOARD ================= -->
+      <div id="tabScreenHistory" class="hidden rewardCard" style="display: none; max-width: 900px; padding: 40px; margin: 0 auto; background: transparent; border: none; box-shadow: none;">
+        <div style="text-align: center; margin-bottom: 40px;">
+          <h2 style="font-size: 36px; font-weight: 900; color: #fff; letter-spacing: -1px; margin-bottom: 8px;">UPLOAD HISTORY</h2>
+          <p style="color: #a1a1aa; font-size: 16px;">Track your AI verification results and SYNX rewards.</p>
+        </div>
+        <div id="historyGrid" style="display: grid; grid-template-columns: 1fr; gap: 16px;">
+           <!-- Dynamic Content Loads Here via JS -->
         </div>
       </div>
 
