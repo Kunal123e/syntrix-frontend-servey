@@ -1750,11 +1750,11 @@ function handleFileSelection(e) {
       }
 
     } else {
-      // ---- DOCUMENT: Multi-file support (up to 10) ----
+      // ---- DOCUMENT: Multi-file support (up to 5) ----
       var fileList = Array.from(e.target.files);
-      if (fileList.length > 10) {
-        fileList = fileList.slice(0, 10);
-        showToast("Maximum 10 images per batch. First 10 selected.", "!");
+      if (fileList.length > 5) {
+        fileList = fileList.slice(0, 5);
+        showToast("Maximum 5 images per batch. First 5 selected.", "!");
       }
       selectedFile = fileList[0]; // backward compat
       selectedFiles = fileList;
