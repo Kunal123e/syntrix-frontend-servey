@@ -1770,7 +1770,7 @@ function handleFileSelection(e) {
 
       try {
         if (fileList.length === 1) {
-          // Single file — original preview behavior
+          // Single file â€” original preview behavior
           var url = URL.createObjectURL(fileList[0]);
           if (imagePreview) {
               imagePreview.src = url;
@@ -1782,7 +1782,7 @@ function handleFileSelection(e) {
               previewContainer.style.display = 'flex';
           }
         } else {
-          // Multi-file — render thumbnail grid
+          // Multi-file â€” render thumbnail grid
           if (imagePreview) {
               imagePreview.src = '';
               imagePreview.style.setProperty('display', 'none', 'important');
@@ -2035,11 +2035,11 @@ async function executeUploadLogic(e) {
         if (submitDocBtn) submitDocBtn.disabled = false;
         if (submitSelfieBtn) submitSelfieBtn.disabled = false;
       }
-      return; // Exit — selfie flow done
+      return; // Exit â€” selfie flow done
     }
 
     // ================================================================
-    // DOCUMENT BATCH UPLOAD — Multi-file → /api/uploads/batch
+    // DOCUMENT BATCH UPLOAD â€” Multi-file â†’ /api/uploads/batch
     // ================================================================
     updateProgressUI('Compressing ' + filesToUpload.length + ' file(s)...', 10, activeStatusMsg);
 
@@ -2104,7 +2104,7 @@ async function executeUploadLogic(e) {
               '<div style="width: 56px; height: 56px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);">' +
                   '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' +
               '</div>' +
-              '<div style="font-weight: 900; color: #10b981; font-size: 20px; margin-bottom: 5px; letter-spacing: -0.5px;">UPLOAD SUCCESSFUL! 🎉</div>' +
+              '<div style="font-weight: 900; color: #10b981; font-size: 20px; margin-bottom: 5px; letter-spacing: -0.5px;">UPLOAD SUCCESSFUL! ðŸŽ‰</div>' +
               '<div style="color: #a1a1aa; font-size: 14px; margin-bottom: 20px; line-height: 1.5;">Your files are in the AI queue. You can safely close this page. Check the \'History\' tab for your results and rewards.</div>' +
               '<button type="button" onclick="resetUploadState(false)" style="background: #ffffff; color: #000000; font-weight: 800; border: none; padding: 12px 24px; border-radius: 12px; cursor: pointer; font-size: 14px; transition: opacity 0.2s;">Upload More</button>' +
           '</div>';
@@ -2506,7 +2506,7 @@ window.fetchAndRenderHistory = async function(email) {
             var html = '<div style="background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 20px;">';
             
             if (job.storage_url) {
-                html += '<div style="width: 80px; height: 80px; border-radius: 8px; overflow: hidden; flex-shrink: 0; background: #09090b;"><img src="' + job.storage_url + '" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display=''none''" /></div>';
+                html += '<div style="width: 80px; height: 80px; border-radius: 8px; overflow: hidden; flex-shrink: 0; background: #09090b;"><img src="' + job.storage_url + '" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display=\'none\'" /></div>';
             } else {
                 html += '<div style="width: 80px; height: 80px; border-radius: 8px; flex-shrink: 0; background: #27272a; display: flex; align-items: center; justify-content: center;"><svg width="24" height="24" stroke="#71717a" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
             }
