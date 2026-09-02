@@ -2105,8 +2105,8 @@ async function executeUploadLogic(e) {
                   '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' +
               '</div>' +
               '<div style="font-weight: 900; color: #10b981; font-size: 20px; margin-bottom: 5px; letter-spacing: -0.5px;">UPLOAD SUCCESSFUL! 🎉</div>' +
-              '<div style="color: #a1a1aa; font-size: 14px; margin-bottom: 20px; line-height: 1.5;">Your files are safely in the AI processing queue. You can close this page or upload more. SYNX tokens will be automatically added to your dashboard once verified.</div>' +
-              '<button type="button" onclick="resetUploadState(false)" style="background: #ffffff; color: #000000; font-weight: 800; border: none; padding: 12px 24px; border-radius: 12px; cursor: pointer; font-size: 14px; transition: opacity 0.2s;">Upload More Documents</button>' +
+              '<div style="color: #a1a1aa; font-size: 14px; margin-bottom: 20px; line-height: 1.5;">Your files are in the AI queue. You can safely close this page. Check the \'History\' tab for your results and rewards.</div>' +
+              '<button type="button" onclick="resetUploadState(false)" style="background: #ffffff; color: #000000; font-weight: 800; border: none; padding: 12px 24px; border-radius: 12px; cursor: pointer; font-size: 14px; transition: opacity 0.2s;">Upload More</button>' +
           '</div>';
       }
 
@@ -2478,3 +2478,57 @@ window.addEventListener('DOMContentLoaded', function() {
         }, true);
     }
 });
+
+window.fetchAndRenderHistory = async function(email) {
+    var historyGrid = document.getElementById('historyGrid');
+    if (!historyGrid) return;
+    
+    historyGrid.innerHTML = '<div style="text-align: center; color: #a1a1aa; padding: 40px;"><div class="spinner" style="margin: 0 auto 20px;"></div>Loading history...</div>';
+    
+    try {
+        var response = await fetch(BACKEND_URL + '/api/user-history?email=' + encodeURIComponent(email));
+        var data = await response.json();
+        
+        if (!data.success || !data.history || data.history.length === 0) {
+            historyGrid.innerHTML = '<div style="text-align: center; color: #71717a; padding: 40px; background: #18181b; border-radius: 16px; border: 1px dashed #27272a;">No upload history found yet.</div>';
+            return;
+        }
+        
+        historyGrid.innerHTML = '';
+        data.history.forEach(function(job) {
+            var pillColor = '#3f3f46'; var pillText = '#a1a1aa';
+            if (job.status === 'VERIFIED') { pillColor = 'rgba(16, 185, 129, 0.15)'; pillText = '#10b981'; }
+            else if (job.status === 'REJECTED' || job.status === 'FAILED') { pillColor = 'rgba(239, 68, 68, 0.15)'; pillText = '#ef4444'; }
+            else if (job.status === 'PROCESSING') { pillColor = 'rgba(99, 102, 241, 0.15)'; pillText = '#6366f1'; }
+            else if (job.status === 'QUEUED' || job.status === 'RETRYING') { pillColor = 'rgba(251, 191, 36, 0.15)'; pillText = '#fbbf24'; }
+
+            var dateStr = new Date(job.created_at).toLocaleString();
+            var html = '<div style="background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 20px;">';
+            
+            if (job.storage_url) {
+                html += '<div style="width: 80px; height: 80px; border-radius: 8px; overflow: hidden; flex-shrink: 0; background: #09090b;"><img src="' + job.storage_url + '" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display=''none''" /></div>';
+            } else {
+                html += '<div style="width: 80px; height: 80px; border-radius: 8px; flex-shrink: 0; background: #27272a; display: flex; align-items: center; justify-content: center;"><svg width="24" height="24" stroke="#71717a" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
+            }
+            
+            html += '<div style="flex-grow: 1;">';
+            html += '<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">';
+            html += '<div><div style="font-weight: 700; color: #fff; font-size: 15px;">' + (job.file_name || 'Unknown File') + '</div><div style="color: #71717a; font-size: 12px;">' + dateStr + '</div></div>';
+            html += '<div style="background:' + pillColor + '; color:' + pillText + '; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700;">' + job.status + '</div>';
+            html += '</div>';
+            
+            if (job.reason) {
+                html += '<div style="background: #09090b; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #a1a1aa; margin-bottom: ' + (job.reward_amount ? '12px' : '0') + ';">' + job.reason + '</div>';
+            }
+            if (job.reward_amount && job.status === 'VERIFIED') {
+                html += '<div style="display: inline-block; background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.2); padding: 4px 12px; border-radius: 999px; color: #fbbf24; font-weight: 800; font-size: 13px;">+' + job.reward_amount + ' SYNX Earned</div>';
+            }
+            
+            html += '</div></div>';
+            historyGrid.insertAdjacentHTML('beforeend', html);
+        });
+    } catch (error) {
+        historyGrid.innerHTML = '<div style="text-align: center; color: #ef4444; padding: 40px;">Error loading history.</div>';
+    }
+};
+
