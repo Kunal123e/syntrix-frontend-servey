@@ -1,4 +1,3 @@
-``javascript
 // =========================================================================
 // SYNTRIX CORE PLATFORM APPLICATION LOGIC ENGINE
 // =========================================================================
@@ -2551,4 +2550,3 @@ window.fetchAndRenderHistory = async function(email) {
     }
 };
 
-``
