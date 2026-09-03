@@ -1904,12 +1904,14 @@
       </div>
 
       <!-- ================= UPLOAD HISTORY DASHBOARD ================= -->
-      <div id="tabScreenHistory" class="hidden rewardCard" style="display: none; max-width: 900px; padding: 40px; margin: 0 auto; background: transparent; border: none; box-shadow: none;">
-        <div style="text-align: center; margin-bottom: 40px;">
-          <h2 style="font-size: 36px; font-weight: 900; color: #fff; letter-spacing: -1px; margin-bottom: 8px;">UPLOAD HISTORY</h2>
-          <p style="color: #a1a1aa; font-size: 16px;">Track your AI verification results and SYNX rewards.</p>
+      <div id="tabScreenHistory" class="hidden rewardCard auth-protected-ui" style="display: none; width: 100%; max-width: 900px; padding: 5vw 20px; margin: 0 auto; box-sizing: border-box; background: transparent; border: none; box-shadow: none;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h2 style="font-size: clamp(28px, 5vw, 36px); font-weight: 900; color: #fff; letter-spacing: -1px; margin-bottom: 12px;">UPLOAD HISTORY</h2>
+          <p style="color: #a1a1aa; font-size: clamp(14px, 3vw, 16px); line-height: 1.6; max-width: 600px; margin: 0 auto;">
+            This log shows the real-time AI analysis of your uploads. If an image is rejected, the specific security or quality reason will be listed below so you can improve your next submission.
+          </p>
         </div>
-        <div id="historyGrid" style="display: grid; grid-template-columns: 1fr; gap: 16px;">
+        <div id="historyGrid" style="display: flex; flex-direction: column; gap: 16px;">
            <!-- Dynamic Content Loads Here via JS -->
         </div>
       </div>
