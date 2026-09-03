@@ -1,3 +1,4 @@
+``javascript
 // =========================================================================
 // SYNTRIX CORE PLATFORM APPLICATION LOGIC ENGINE
 // =========================================================================
@@ -460,6 +461,18 @@ window.openModeEnhanced = function(mode) {
     currentSection = 0;
     routeDashboardTabs('survey');
     renderSection();
+  } else if (mode === 'history') {
+    var historyEl = document.getElementById("tabScreenHistory");
+    if (historyEl) {
+      historyEl.classList.remove("hidden");
+      historyEl.style.display = "block";
+    }
+    // Also update any navigation states
+    document.querySelectorAll(".tab-btn").forEach(function(btn) { btn.classList.remove("active"); });
+    var clickedBtn = document.querySelector('[data-tab="history"]');
+    if (clickedBtn) clickedBtn.classList.add("active");
+    var mainSubtitle = document.getElementById("mainSubtitle"); 
+    if(mainSubtitle) mainSubtitle.style.display = "none";
   } else {
     routeDashboardTabs(mode);
   }
@@ -601,7 +614,8 @@ function routeDashboardTabs(targetTab) {
     document.getElementById("gatewayScreenSection"),
     document.getElementById("claimForm"),
     document.getElementById("topProgressBox"),
-    document.getElementById("tabScreenXP")
+    document.getElementById("tabScreenXP"),
+    document.getElementById("tabScreenHistory")
   ];
   
   cards.forEach(function(card) {
@@ -656,6 +670,11 @@ function routeDashboardTabs(targetTab) {
   }
   else if (targetTab === "xp") {
     var el = document.getElementById("tabScreenXP");
+    if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
+    if(mainSubtitle) mainSubtitle.style.display = "none";
+  }
+  else if (targetTab === "history") {
+    var el = document.getElementById("tabScreenHistory");
     if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
     if(mainSubtitle) mainSubtitle.style.display = "none";
   }
@@ -1770,7 +1789,7 @@ function handleFileSelection(e) {
 
       try {
         if (fileList.length === 1) {
-          // Single file â€” original preview behavior
+          // Single file — original preview behavior
           var url = URL.createObjectURL(fileList[0]);
           if (imagePreview) {
               imagePreview.src = url;
@@ -1782,7 +1801,7 @@ function handleFileSelection(e) {
               previewContainer.style.display = 'flex';
           }
         } else {
-          // Multi-file â€” render thumbnail grid
+          // Multi-file — render thumbnail grid
           if (imagePreview) {
               imagePreview.src = '';
               imagePreview.style.setProperty('display', 'none', 'important');
@@ -2035,11 +2054,11 @@ async function executeUploadLogic(e) {
         if (submitDocBtn) submitDocBtn.disabled = false;
         if (submitSelfieBtn) submitSelfieBtn.disabled = false;
       }
-      return; // Exit â€” selfie flow done
+      return; // Exit — selfie flow done
     }
 
     // ================================================================
-    // DOCUMENT BATCH UPLOAD â€” Multi-file â†’ /api/uploads/batch
+    // DOCUMENT BATCH UPLOAD — Multi-file → /api/uploads/batch
     // ================================================================
     updateProgressUI('Compressing ' + filesToUpload.length + ' file(s)...', 10, activeStatusMsg);
 
@@ -2104,7 +2123,7 @@ async function executeUploadLogic(e) {
               '<div style="width: 56px; height: 56px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);">' +
                   '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' +
               '</div>' +
-              '<div style="font-weight: 900; color: #10b981; font-size: 20px; margin-bottom: 5px; letter-spacing: -0.5px;">UPLOAD SUCCESSFUL! ðŸŽ‰</div>' +
+              '<div style="font-weight: 900; color: #10b981; font-size: 20px; margin-bottom: 5px; letter-spacing: -0.5px;">UPLOAD SUCCESSFUL! 🎉</div>' +
               '<div style="color: #a1a1aa; font-size: 14px; margin-bottom: 20px; line-height: 1.5;">Your files are in the AI queue. You can safely close this page. Check the \'History\' tab for your results and rewards.</div>' +
               '<button type="button" onclick="resetUploadState(false)" style="background: #ffffff; color: #000000; font-weight: 800; border: none; padding: 12px 24px; border-radius: 12px; cursor: pointer; font-size: 14px; transition: opacity 0.2s;">Upload More</button>' +
           '</div>';
@@ -2532,3 +2551,4 @@ window.fetchAndRenderHistory = async function(email) {
     }
 };
 
+``
