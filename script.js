@@ -367,6 +367,24 @@ if (navGetStartedAction) {
   });
 }
 
+// ---- AUTO-LOGIN ON REFRESH: Skip splash if session exists ----
+var autoLoginEmail = localStorage.getItem("syntrix_user_email");
+if (autoLoginEmail) {
+  // User has a saved session — bypass splash screen entirely
+  userEmailAddress = autoLoginEmail;
+  if (splashLandingGate) { splashLandingGate.style.display = "none"; }
+  if (mainApplicationLayout) {
+    mainApplicationLayout.classList.remove("hidden");
+    mainApplicationLayout.classList.add("app-enter");
+    mainApplicationLayout.style.display = "block";
+  }
+  if (emailGateSection) {
+    emailGateSection.style.display = "none";
+    emailGateSection.classList.add("hidden");
+  }
+  runProfileLedgerVerification(userEmailAddress, false);
+}
+
 if (initializePlatformBtn) {
   initializePlatformBtn.addEventListener("click", function() {
     if (splashLandingGate) splashLandingGate.classList.add("splash-exit");
