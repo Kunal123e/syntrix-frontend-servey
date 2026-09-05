@@ -497,8 +497,8 @@ window.openModeEnhanced = function(mode) {
     if(mainSubtitle) mainSubtitle.style.display = "none";
 
     // CRITICAL NEW ADDITION: Trigger history fetch when opening the tab
-    if (window.userEmailAddress && typeof window.fetchAndRenderHistory === 'function') {
-        window.fetchAndRenderHistory(window.userEmailAddress);
+    if (userEmailAddress && typeof window.fetchAndRenderHistory === 'function') {
+        window.fetchAndRenderHistory(userEmailAddress);
     }
   } else {
     routeDashboardTabs(mode);
