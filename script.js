@@ -370,7 +370,6 @@ if (navGetStartedAction) {
 // ---- AUTO-LOGIN ON REFRESH: Skip splash if session exists ----
 var autoLoginEmail = localStorage.getItem("syntrix_user_email");
 if (autoLoginEmail) {
-  // User has a saved session — bypass splash screen entirely
   userEmailAddress = autoLoginEmail;
   if (splashLandingGate) { splashLandingGate.style.display = "none"; }
   if (mainApplicationLayout) {
@@ -382,7 +381,15 @@ if (autoLoginEmail) {
     emailGateSection.style.display = "none";
     emailGateSection.classList.add("hidden");
   }
+  
   runProfileLedgerVerification(userEmailAddress, false);
+  
+  setTimeout(function() {
+      var savedTab = localStorage.getItem("syntrix_current_tab") || "badge";
+      if (typeof window.openModeEnhanced === 'function') {
+          window.openModeEnhanced(savedTab);
+      }
+  }, 300);
 }
 
 if (initializePlatformBtn) {
@@ -453,21 +460,20 @@ window.openMode = function(mode) {
 
 // ================= FIX: GLOBAL openModeEnhanced =================
 window.openModeEnhanced = function(mode) {
-  // Close the settings menu if open
+  localStorage.setItem("syntrix_current_tab", mode);
+
   var popover = document.getElementById("optionsPopover");
   if (popover) {
     popover.classList.add("hidden");
     popover.style.display = "none";
   }
 
-  // Show authenticated UI elements
   var authEls = document.querySelectorAll(".auth-protected-ui");
   authEls.forEach(function(el) { el.style.display = "flex"; });
   
   var tabLinksContainer = document.getElementById("dashboardTabLinks");
   if (tabLinksContainer) { tabLinksContainer.classList.remove("hidden"); tabLinksContainer.style.display = "flex"; }
 
-  // Route to the correct tab
   if (mode === 'survey' && window.hasCompletedSurvey) {
     showToast("Survey already completed. Redirecting to Survey Matrix...", "OK");
     routeDashboardTabs('more-surveys');
@@ -484,17 +490,20 @@ window.openModeEnhanced = function(mode) {
       historyEl.classList.remove("hidden");
       historyEl.style.display = "block";
     }
-    // Also update any navigation states
     document.querySelectorAll(".tab-btn").forEach(function(btn) { btn.classList.remove("active"); });
     var clickedBtn = document.querySelector('[data-tab="history"]');
     if (clickedBtn) clickedBtn.classList.add("active");
     var mainSubtitle = document.getElementById("mainSubtitle"); 
     if(mainSubtitle) mainSubtitle.style.display = "none";
+
+    // CRITICAL NEW ADDITION: Trigger history fetch when opening the tab
+    if (window.userEmailAddress && typeof window.fetchAndRenderHistory === 'function') {
+        window.fetchAndRenderHistory(window.userEmailAddress);
+    }
   } else {
     routeDashboardTabs(mode);
   }
   
-  // Trigger XP animation replay when opening XP tab
   if (mode === 'xp' && typeof XPAnimator !== 'undefined' && XPAnimator.replayAnimations) {
     setTimeout(function() { XPAnimator.replayAnimations(); }, 100);
   }
@@ -2522,7 +2531,7 @@ window.fetchAndRenderHistory = async function(email) {
     historyGrid.innerHTML = '<div style="text-align: center; color: #a1a1aa; padding: 40px;"><div class="spinner" style="margin: 0 auto 20px;"></div>Loading history...</div>';
     
     try {
-        var response = await fetch(BACKEND_URL + '/api/user-history?email=' + encodeURIComponent(email));
+        var response = await fetch(BACKEND_URL + '/api/history?email=' + encodeURIComponent(email));
         var data = await response.json();
         
         if (!data.success || !data.history || data.history.length === 0) {
