@@ -1873,7 +1873,28 @@ if (fileInputCamera) fileInputCamera.addEventListener('change', handleFileSelect
 if (fileInputGallery) fileInputGallery.addEventListener('change', handleFileSelection);
 if (fileInputSelfie) fileInputSelfie.addEventListener('change', handleFileSelection);
 
-function compressImageForBackend(file, maxWidth, quality) {
+async function compressImageForBackend(file, maxWidth, quality) {
+  // ---- NEW: Use browser-image-compression if available ----
+  if (typeof imageCompression === 'function') {
+    try {
+      var compressedBlob = await imageCompression(file, {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+        fileType: 'image/jpeg'
+      });
+      return new Promise(function(resolve, reject) {
+        var reader = new FileReader();
+        reader.readAsDataURL(compressedBlob);
+        reader.onload = function() { resolve(reader.result); };
+        reader.onerror = function(err) { reject(err); };
+      });
+    } catch (compErr) {
+      console.warn('[COMPRESS] browser-image-compression failed, using canvas fallback:', compErr.message);
+    }
+  }
+
+  // ---- FALLBACK: Original canvas compression ----
   if (maxWidth === undefined) maxWidth = 500;
   if (quality === undefined) quality = 0.4;
   return new Promise(function(resolve, reject) {
@@ -1896,7 +1917,7 @@ function compressImageForBackend(file, maxWidth, quality) {
         canvas.height = height;
         var ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL('image/jpeg', quality)); 
+        resolve(canvas.toDataURL('image/jpeg', quality));
       };
       img.onerror = function(err) { reject(err); };
     };
