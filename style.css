@@ -2530,3 +2530,23 @@ form.hidden,
     margin-left: 0;
   }
 }
+
+/* ---- PWA MOBILE SAFE-AREA & TOUCH OPTIMIZATION ---- */
+html {
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+body {
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+input, textarea, [contenteditable="true"] {
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
