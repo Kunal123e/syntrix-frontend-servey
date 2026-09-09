@@ -357,11 +357,21 @@
       if (preVerifyBtn) {
           /* FIX: Secure Backend Request for OTP */
           preVerifyBtn.addEventListener('click', async function() {
+              if (preVerifyBtn.disabled) return;
+              
               const emailInput = document.getElementById('gateEmail').value;
               if (!emailInput) return alert("Please enter your email first.");
 
               preVerifyBtn.innerText = "Sending Code...";
               preVerifyBtn.disabled = true;
+
+              // 5-second timeout lock to prevent spamming
+              setTimeout(() => {
+                  if (!preVerifyBtn.classList.contains('hidden')) {
+                      preVerifyBtn.disabled = false;
+                      preVerifyBtn.innerText = "Send Verification Code \u2192";
+                  }
+              }, 5000);
 
               try {
                   const BACKEND = window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1") ? "http://localhost:5000" : "https://syntrix-airdrop.onrender.com";
