@@ -80,10 +80,11 @@
     .xp-hist-list { display: flex; flex-direction: column; gap: 16px; overflow-y: auto; max-height: 300px; padding-right: 10px;}
     .xp-hist-list::-webkit-scrollbar { width: 4px; }
     .xp-hist-list::-webkit-scrollbar-thumb { background: rgba(139, 92, 246, 0.3); border-radius: 4px; }
-    .xp-hist-item { display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); }
+    .xp-hist-item { display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); flex-wrap: wrap; }
     .xp-hist-item:last-child { border-bottom: none; padding-bottom: 0; }
-    .xp-hist-left { display: flex; align-items: center; gap: 16px; }
+    .xp-hist-left { display: flex; align-items: center; gap: 16px; flex: 1; min-width: 0; }
     .xp-hist-icon { width: 40px; height: 40px; background: rgba(15, 15, 25, 0.9); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #a855f7; flex-shrink: 0;}
+    .xp-hist-text { white-space: normal; word-break: break-word; overflow-wrap: break-word; }
     .xp-hist-text h4 { font-size: 14px; font-weight: 700; color: #ffffff; margin: 0 0 4px 0; }
     .xp-hist-text p { font-size: 12px; color: #a1a1aa; margin: 0; }
     .xp-hist-right { text-align: right; }
@@ -123,11 +124,14 @@
 
     /* Responsive adjustments */
     @media (max-width: 900px) {
-      .xp-bento-row-top, .xp-bento-row-mid, .xp-bento-row-bot { grid-template-columns: 1fr; }
+      .xp-bento-row-top, .xp-bento-row-mid, .xp-bento-row-bot { grid-template-columns: 1fr !important; }
       .xp-prog-stats-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
       .xp-stat-item:nth-child(2) { border-right: none; }
       .xp-prog-percent-badge { position: relative; right: auto; margin-left: 10px; }
       .xp-prog-bar-track { width: calc(100% - 50px); }
+      .xp-hist-item { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .xp-hist-right { text-align: left; width: 100%; display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
+      .xp-hex-bg-glow { width: 100px; height: 100px; }
     }
   </style>
 
