@@ -12,6 +12,8 @@
 html, body { 
   background: #000000; 
   min-height: 100vh; 
+  width: 100vw;
+  max-width: 100%;
   color: #ffffff; 
   overflow-x: clip;
   overflow-y: auto !important; /* FIX: Forces vertical scrolling to be enabled everywhere */
@@ -63,7 +65,8 @@ html, body {
 /* ================= 2. INTERNAL APP DASHBOARD STYLES ================= */
 .app { 
   max-width: 1450px; 
-  margin: auto; 
+  width: 100%;
+  margin: 0 auto; 
   display: flex; 
   background: #050505; 
   border-radius: 32px; 
@@ -78,6 +81,7 @@ html, body {
   background: #000000;
   color: #ffffff;
   width: 100%;
+  max-width: 100%;
 }
 
 .topbar { 
@@ -1687,9 +1691,9 @@ select:-webkit-autofill:focus {
 
 /* ================= 4. DASHBOARD RESPONSIVE FIXES (MOBILE) ================= */
 @media(max-width: 900px) {
-  body { padding: 12px; }
-  .app { flex-direction: column; border-radius: 20px;}
-  .content { padding: 30px 20px; }
+  body { padding: 0; }
+  .app { flex-direction: column; border-radius: 0; border: none; margin: 0; max-width: 100%; }
+  .content { padding: 20px 15px; }
   
   .topbar { flex-direction: column; align-items: stretch; gap: 20px; }
   .topbar h1 { font-size: 32px; letter-spacing: -1px; }
