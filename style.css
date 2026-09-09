@@ -294,6 +294,8 @@ html, body {
   z-index: 100; 
   overflow: hidden; 
   padding: 16px; 
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: none;
 }
 
 .popover-section {
