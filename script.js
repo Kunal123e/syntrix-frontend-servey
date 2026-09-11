@@ -2597,3 +2597,4 @@ window.fetchAndRenderHistory = async function(email) {
         historyGrid.innerHTML = '<div style="text-align: center; color: #ef4444; padding: 40px;">Error loading history.</div>';
     }
 };
+
