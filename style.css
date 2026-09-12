@@ -632,33 +632,45 @@ html, body {
 }
 
 .options {
-  display: flex;
-  flex-wrap: wrap; 
-  gap: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .options {
+    grid-template-columns: 1fr;
+  }
 }
 
 .option {
-  background: #111111;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 14px 24px;
-  border-radius: 999px; /* Perfect pill shape */
+  background: rgba(18, 18, 28, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 16px !important;
+  padding: 18px 20px !important;
   color: #a1a1aa;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer !important;
   position: relative;
   z-index: 10;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  display: inline-flex;
+  transition: all 0.3s ease !important;
+  display: flex !important;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  text-align: left;
   user-select: none;
-  text-align: center;
+}
+
+.optionText {
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.4;
 }
 
 .option:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(30, 30, 45, 0.8) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
   color: #ffffff;
   transform: translateY(-2px);
 }
@@ -669,10 +681,10 @@ html, body {
 
 /* The Premium Selected State */
 .option.selected {
-  background-color: #ffffff !important;
-  border-color: #ffffff !important;
-  color: #000000 !important;
-  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2) !important;
+  border-color: #a855f7 !important;
+  box-shadow: 0 0 25px rgba(168, 85, 247, 0.3) !important;
+  background: rgba(168, 85, 247, 0.1) !important;
+  color: #ffffff !important;
 }
 
 /* ================= INPUTS & TEXTAREA ================= */
