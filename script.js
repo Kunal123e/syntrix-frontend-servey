@@ -986,17 +986,41 @@ async function runProfileLedgerVerification(email, isFromModal, isBackgroundSync
 function determinePersonaBadge(answersObj) {
   var scores = { Analyzer: 0, Stylist: 0, Hedger: 0, Native: 0 };
   var mapping = {
-    "question_1_id": {
-      "I compare all the data and reviews": "Analyzer",
-      "I care about how beautiful it looks": "Stylist",
-      "I only buy if there is a safe warranty": "Hedger",
-      "I buy what my friends recommend": "Native"
+    "q_hardware_choice": {
+      "I compare specs, benchmarks, and performance metrics.": "Analyzer",
+      "I care about how beautiful and sleek it looks on my desk.": "Stylist",
+      "I only buy if it has a solid warranty and reliable track record.": "Hedger",
+      "I buy what my favorite creators and community use.": "Native"
     },
-    "question_2_id": {
-      "Logic and numbers": "Analyzer",
-      "Aesthetics and vibe": "Stylist",
-      "Safety and guarantees": "Hedger",
-      "Community and trust": "Native"
+    "q_ecom_checkout": {
+      "Finding a 20% discount code after searching multiple coupon sites.": "Analyzer",
+      "The unboxing experience and premium brand packaging.": "Stylist",
+      "A flexible return policy and extended buyer protection.": "Hedger",
+      "Seeing a viral TikTok review proving it works.": "Native"
+    },
+    "q_ai_adoption": {
+      "I read the technical whitepaper and test its API limits.": "Analyzer",
+      "I generate creative assets to see how good the output looks.": "Stylist",
+      "I wait 6 months until the enterprise security flaws are patched.": "Hedger",
+      "I immediately integrate it into my daily workflow like second nature.": "Native"
+    },
+    "q_subscription_audit": {
+      "I track them in a meticulous spreadsheet to optimize ROI.": "Analyzer",
+      "I keep them if they make my digital life feel curated and premium.": "Stylist",
+      "I use virtual cards with strict limits so I never get overcharged.": "Hedger",
+      "I share accounts with my squad and split the bills.": "Native"
+    },
+    "q_brand_loyalty": {
+      "They consistently offer the best price-to-performance ratio.": "Analyzer",
+      "Their design language and UX are unmatched in the industry.": "Stylist",
+      "They prioritize my privacy and offer great customer support.": "Hedger",
+      "Everyone in my network uses them, so it's easier to collaborate.": "Native"
+    },
+    "q_decision_speed": {
+      "Skim the feature list and pricing tiers to calculate value.": "Analyzer",
+      "Watch their promo video to get a feel for the interface.": "Stylist",
+      "Check Reddit or Trustpilot for any major red flags.": "Hedger",
+      "Just buy it. I can always cancel later if it's trash.": "Native"
     }
   };
   for (var qId in answersObj) {
@@ -2597,5 +2621,4 @@ window.fetchAndRenderHistory = async function(email) {
         historyGrid.innerHTML = '<div style="text-align: center; color: #ef4444; padding: 40px;">Error loading history.</div>';
     }
 };
-
 
