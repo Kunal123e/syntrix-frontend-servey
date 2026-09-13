@@ -516,28 +516,28 @@ var BADGE_PROFILES = {
   Analyzer: { 
     title: "ANALYZER", sub: "The Mindful Shopper",
     desc: "You shop with brilliant clarity! For you, real value and true quality matter most. By thoughtfully comparing details and trusting genuine reviews, you always make incredibly smart and satisfying choices.", 
-    iconHTML: '<img src="BADGES%20PNG/badge%201%20analyzer.jpeg" alt="Analyzer" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display=\'none\';">', 
+    iconHTML: '<img src="BADGES%20PNG/badge%201%20analyzer%20.jpeg" alt="Analyzer" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display=\'none\';">', 
     menuIcon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
     color: "#2563eb", textColor: "#0f172a"
   },
   Stylist: { 
     title: "STYLIST", sub: "The Tasteful Explorer",
     desc: "You have a beautiful eye for design! For you, shopping is about joy, artistry, and wonderful experiences. You naturally gravitate towards things that tell a great story and bring an extra touch of elegance into your everyday life.", 
-    iconHTML: '<img src="BADGES%20PNG/badge%203.jpeg" alt="Stylist" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display=\'none\';">', 
+    iconHTML: '<img src="BADGES%20PNG/badge%202.jpeg" alt="Stylist" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display=\'none\';">', 
     menuIcon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L15 9L22 12L15 15L12 22L9 15L2 12L9 9Z"></path></svg>',
     color: "#8b5cf6", textColor: "#0f172a"
   },
   Hedger: { 
     title: "HEDGER", sub: "The Thoughtful Planner",
     desc: "You value peace of mind and total reliability! You love knowing your purchases are safe and backed by great guarantees. By choosing trusted paths, you ensure every shopping experience is completely smooth, secure, and worry-free.", 
-    iconHTML: '<img src="BADGES%20PNG/badge%202.jpeg" alt="Hedger" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display=\'none\';">', 
+    iconHTML: '<img src="BADGES%20PNG/badge%203%20.jpeg" alt="Hedger" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display=\'none\';">', 
     menuIcon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>',
     color: "#ea580c", textColor: "#0f172a"
   },
   Native: { 
     title: "NATIVE", sub: "The Connected Heart",
     desc: "You deeply value genuine connections! Your best shopping moments come from trusted recommendations and shared stories. By listening to friends and family, you always bring home products that carry real warmth and authenticity.", 
-    iconHTML: '<img src="BADGES%20PNG/badge%204.jpeg" alt="Native" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display=\'none\';">', 
+    iconHTML: '<img src="BADGES%20PNG/badge%204%20.jpeg" alt="Native" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display=\'none\';">', 
     menuIcon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>',
     color: "#eab308", textColor: "#0f172a"
   }
@@ -988,41 +988,53 @@ async function runProfileLedgerVerification(email, isFromModal, isBackgroundSync
 function determinePersonaBadge(answersObj) {
   var scores = { Analyzer: 0, Stylist: 0, Hedger: 0, Native: 0 };
   var mapping = {
-    "q_hardware_choice": {
-      "I compare specs, benchmarks, and performance metrics.": "Analyzer",
-      "I care about how beautiful and sleek it looks on my desk.": "Stylist",
-      "I only buy if it has a solid warranty and reliable track record.": "Hedger",
-      "I buy what my favorite creators and community use.": "Native"
+    "q_ecommerce_search": {
+      "Technical comparison sites and deep-dive Reddit threads.": "Analyzer",
+      "Curated Pinterest boards, Instagram aesthetics, or brand lookbooks.": "Stylist",
+      "Established retail giants (Amazon/Walmart) with guaranteed buyer protection.": "Hedger",
+      "TikTok feeds, YouTube reviews, or what my favorite creators recommend.": "Native"
     },
-    "q_ecom_checkout": {
-      "Finding a 20% discount code after searching multiple coupon sites.": "Analyzer",
-      "The unboxing experience and premium brand packaging.": "Stylist",
-      "A flexible return policy and extended buyer protection.": "Hedger",
-      "Seeing a viral TikTok review proving it works.": "Native"
+    "q_ecommerce_trigger": {
+      "The price dropped to my target threshold based on tracking tools.": "Analyzer",
+      "It perfectly completes a specific look or aesthetic I am building.": "Stylist",
+      "I confirmed the 30-day free return policy, so there is zero risk.": "Hedger",
+      "I saw someone in my circle or a trusted influencer successfully using it.": "Native"
     },
-    "q_ai_adoption": {
-      "I read the technical whitepaper and test its API limits.": "Analyzer",
-      "I generate creative assets to see how good the output looks.": "Stylist",
-      "I wait 6 months until the enterprise security flaws are patched.": "Hedger",
-      "I immediately integrate it into my daily workflow like second nature.": "Native"
+    "q_ecommerce_abandon": {
+      "Hidden shipping fees or taxes that ruin the total value proposition.": "Analyzer",
+      "A clunky, ugly checkout interface that feels unbranded or cheap.": "Stylist",
+      "Lack of trusted payment gateways (like PayPal/Apple Pay) or missing security badges.": "Hedger",
+      "A sudden lack of social proof or bad recent reviews on the product page.": "Native"
     },
-    "q_subscription_audit": {
-      "I track them in a meticulous spreadsheet to optimize ROI.": "Analyzer",
-      "I keep them if they make my digital life feel curated and premium.": "Stylist",
-      "I use virtual cards with strict limits so I never get overcharged.": "Hedger",
-      "I share accounts with my squad and split the bills.": "Native"
+    "q_ecommerce_impulse": {
+      "A mathematically unbeatable flash sale or stacking discount codes.": "Analyzer",
+      "A limited-edition drop with incredible packaging and exclusive design.": "Stylist",
+      "A 'buy now, pay later' option with a lifetime guarantee included.": "Hedger",
+      "A viral trend that is selling out quickly across my social feeds.": "Native"
     },
-    "q_brand_loyalty": {
-      "They consistently offer the best price-to-performance ratio.": "Analyzer",
-      "Their design language and UX are unmatched in the industry.": "Stylist",
-      "They prioritize my privacy and offer great customer support.": "Hedger",
-      "Everyone in my network uses them, so it's easier to collaborate.": "Native"
+    "q_ecommerce_loyalty": {
+      "The product strictly meets all advertised benchmarks and longevity claims.": "Analyzer",
+      "The unboxing experience was premium and the product looks better in person.": "Stylist",
+      "Customer service instantly resolved a minor issue with zero friction.": "Hedger",
+      "The brand has an active, exclusive community or Discord I can join.": "Native"
     },
-    "q_decision_speed": {
-      "Skim the feature list and pricing tiers to calculate value.": "Analyzer",
-      "Watch their promo video to get a feel for the interface.": "Stylist",
-      "Check Reddit or Trustpilot for any major red flags.": "Hedger",
-      "Just buy it. I can always cancel later if it's trash.": "Native"
+    "q_ecommerce_discovery": {
+      "Algorithmic tech articles, performance blogs, or SEO-driven guides.": "Analyzer",
+      "High-end digital lookbooks, design awards, or visual ad campaigns.": "Stylist",
+      "Verified consumer reports or established marketplace incubators.": "Hedger",
+      "Organic viral posts on TikTok or Instagram Reels.": "Native"
+    },
+    "q_ecommerce_premium": {
+      "The cost-per-use and material durability justify the higher upfront price.": "Analyzer",
+      "The silhouette, brand identity, and exclusivity are worth the premium.": "Stylist",
+      "It includes an extended warranty and priority customer support.": "Hedger",
+      "It carries cultural cachet and is recognized within my social circle.": "Native"
+    },
+    "q_ecommerce_reviews": {
+      "I filter by 3-star reviews to find the most objective, detailed pros and cons.": "Analyzer",
+      "I look exclusively at user-uploaded photos to check the actual color and fit.": "Stylist",
+      "I search for terms like 'broken,' 'return,' or 'scam' to audit worst-case scenarios.": "Hedger",
+      "I skip text and look for video reviews from creators who share my lifestyle.": "Native"
     }
   };
   for (var qId in answersObj) {
