@@ -6,103 +6,129 @@ window.getSectionTitle = function(section) {
 window.getSurveyData = function() {
   return [
     {
-      title: "1. Hardware & Setup",
-      subtitle: "How do you approach buying new tech hardware?",
+      id: "sec_1",
+      title: "Module 1: Product Discovery",
       questions: [
         {
-          id: "q_hardware_choice",
-          type: "radio",
-          text: "When buying a new device, what is your primary focus?",
+          id: "q_ecommerce_search",
+          question: "When looking for a new product, where do you start your search?",
           options: [
-            "I compare specs, benchmarks, and performance metrics.",
-            "I care about how beautiful and sleek it looks on my desk.",
-            "I only buy if it has a solid warranty and reliable track record.",
-            "I buy what my favorite creators and community use."
+            "Technical comparison sites and deep-dive Reddit threads.",
+            "Curated Pinterest boards, Instagram aesthetics, or brand lookbooks.",
+            "Established retail giants (Amazon/Walmart) with guaranteed buyer protection.",
+            "TikTok feeds, YouTube reviews, or what my favorite creators recommend."
           ]
         }
       ]
     },
     {
-      title: "2. E-Commerce & Checkout",
-      subtitle: "What drives your online shopping habits?",
+      id: "sec_2",
+      title: "Module 2: The Purchase Trigger",
       questions: [
         {
-          id: "q_ecom_checkout",
-          type: "radio",
-          text: "You are at checkout for an expensive item. What makes you click buy?",
+          id: "q_ecommerce_trigger",
+          question: "What is the primary reason you finally hit 'Buy' on an item sitting in your cart?",
           options: [
-            "Finding a 20% discount code after searching multiple coupon sites.",
-            "The unboxing experience and premium brand packaging.",
-            "A flexible return policy and extended buyer protection.",
-            "Seeing a viral TikTok review proving it works."
+            "The price dropped to my target threshold based on tracking tools.",
+            "It perfectly completes a specific look or aesthetic I am building.",
+            "I confirmed the 30-day free return policy, so there is zero risk.",
+            "I saw someone in my circle or a trusted influencer successfully using it."
           ]
         }
       ]
     },
     {
-      title: "3. AI Tools & Adoption",
-      subtitle: "How are you adapting to the AI revolution?",
+      id: "sec_3",
+      title: "Module 3: Cart Abandonment",
       questions: [
         {
-          id: "q_ai_adoption",
-          type: "radio",
-          text: "When a new AI tool launches, how do you react?",
+          id: "q_ecommerce_abandon",
+          question: "What instantly makes you abandon a checkout page?",
           options: [
-            "I read the technical whitepaper and test its API limits.",
-            "I generate creative assets to see how good the output looks.",
-            "I wait 6 months until the enterprise security flaws are patched.",
-            "I immediately integrate it into my daily workflow like second nature."
+            "Hidden shipping fees or taxes that ruin the total value proposition.",
+            "A clunky, ugly checkout interface that feels unbranded or cheap.",
+            "Lack of trusted payment gateways (like PayPal/Apple Pay) or missing security badges.",
+            "A sudden lack of social proof or bad recent reviews on the product page."
           ]
         }
       ]
     },
     {
-      title: "4. Subscription Audit",
-      subtitle: "Managing recurring expenses.",
+      id: "sec_4",
+      title: "Module 4: Impulse Buying",
       questions: [
         {
-          id: "q_subscription_audit",
-          type: "radio",
-          text: "How do you handle your monthly digital subscriptions?",
+          id: "q_ecommerce_impulse",
+          question: "You make an unplanned purchase. What usually causes this?",
           options: [
-            "I track them in a meticulous spreadsheet to optimize ROI.",
-            "I keep them if they make my digital life feel curated and premium.",
-            "I use virtual cards with strict limits so I never get overcharged.",
-            "I share accounts with my squad and split the bills."
+            "A mathematically unbeatable flash sale or stacking discount codes.",
+            "A limited-edition drop with incredible packaging and exclusive design.",
+            "A 'buy now, pay later' option with a lifetime guarantee included.",
+            "A viral trend that is selling out quickly across my social feeds."
           ]
         }
       ]
     },
     {
-      title: "5. Brand Loyalty",
-      subtitle: "What keeps you coming back?",
+      id: "sec_5",
+      title: "Module 5: Post-Purchase Loyalty",
       questions: [
         {
-          id: "q_brand_loyalty",
-          type: "radio",
-          text: "Why do you stay loyal to a specific tech brand?",
+          id: "q_ecommerce_loyalty",
+          question: "After receiving a product, what makes you a loyal repeat customer?",
           options: [
-            "They consistently offer the best price-to-performance ratio.",
-            "Their design language and UX are unmatched in the industry.",
-            "They prioritize my privacy and offer great customer support.",
-            "Everyone in my network uses them, so it's easier to collaborate."
+            "The product strictly meets all advertised benchmarks and longevity claims.",
+            "The unboxing experience was premium and the product looks better in person.",
+            "Customer service instantly resolved a minor issue with zero friction.",
+            "The brand has an active, exclusive community or Discord I can join."
           ]
         }
       ]
     },
     {
-      title: "6. Flash Decisions",
-      subtitle: "The impulse factor.",
+      id: "sec_6",
+      title: "Module 6: Brand Discovery",
       questions: [
         {
-          id: "q_decision_speed",
-          type: "radio",
-          text: "You have 5 minutes to decide on a major software purchase. You...",
+          id: "q_ecommerce_discovery",
+          question: "How do you usually discover emerging D2C (Direct-to-Consumer) brands?",
           options: [
-            "Skim the feature list and pricing tiers to calculate value.",
-            "Watch their promo video to get a feel for the interface.",
-            "Check Reddit or Trustpilot for any major red flags.",
-            "Just buy it. I can always cancel later if it's trash."
+            "Algorithmic tech articles, performance blogs, or SEO-driven guides.",
+            "High-end digital lookbooks, design awards, or visual ad campaigns.",
+            "Verified consumer reports or established marketplace incubators.",
+            "Organic viral posts on TikTok or Instagram Reels."
+          ]
+        }
+      ]
+    },
+    {
+      id: "sec_7",
+      title: "Module 7: Premium Pricing",
+      questions: [
+        {
+          id: "q_ecommerce_premium",
+          question: "You choose a more expensive premium option over a budget alternative. Why?",
+          options: [
+            "The cost-per-use and material durability justify the higher upfront price.",
+            "The silhouette, brand identity, and exclusivity are worth the premium.",
+            "It includes an extended warranty and priority customer support.",
+            "It carries cultural cachet and is recognized within my social circle."
+          ]
+        }
+      ]
+    },
+    {
+      id: "sec_8",
+      title: "Module 8: Review Analysis",
+      questions: [
+        {
+          id: "q_ecommerce_reviews",
+          question: "How do you read product reviews before purchasing?",
+          options: [
+            "I filter by 3-star reviews to find the most objective, detailed pros and cons.",
+            "I look exclusively at user-uploaded photos to check the actual color and fit.",
+            "I search for terms like 'broken,' 'return,' or 'scam' to audit worst-case scenarios.",
+            "I skip text and look for video reviews from creators who share my lifestyle."
           ]
         }
       ]
