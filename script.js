@@ -38,6 +38,8 @@ let userConnectedWalletAddress = "";
 let legalConsentTimestamp = "";
 let clientUserAgent = "";
 
+window.getSectionTitle = function(section) { return section.title || "Consumer Research Matrix"; };
+
 // Splash Screen & App Shell Element Selectors
 const splashLandingGate = document.getElementById("splashLandingGate");
 const mainApplicationLayout = document.getElementById("mainApplicationLayout");
@@ -790,7 +792,7 @@ function renderSection() {
     if (progressText) progressText.innerText = "Progress " + (currentSection + 1) + "/" + sections.length;
 
     var htmlStr = '<div class="survey-section-card animate-fade-in">' +
-      '<h2 class="surveySectionTitle" style="font-size: 26px; font-weight: 800; color: #ffffff; margin-bottom: 5px;">' + getSectionTitle(currentData) + '</h2>';
+      '<h2 class="surveySectionTitle" style="font-size: 26px; font-weight: 800; color: #ffffff; margin-bottom: 5px;">' + window.getSectionTitle(currentData) + '</h2>';
 
     if (currentData && currentData.questions) {
         currentData.questions.forEach(function(q) {
@@ -1065,14 +1067,14 @@ async function handleSurveySubmission(e) {
 
   var finalPayload = {
     email: userEmailAddress,
-    answers: answers,
+    survey_data: answers,
     referredBy: referralCodeUsed,
     legal_consent: true,
     consent_timestamp: legalConsentTimestamp || new Date().toISOString(),
     user_agent: clientUserAgent || navigator.userAgent,
     startTime: surveyStartTime, 
     submissionTime: Date.now(),
-    assignedBadge: determinePersonaBadge(answers)
+    persona_badge: determinePersonaBadge(answers)
   };
 
   try {
