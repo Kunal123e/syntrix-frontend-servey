@@ -16,9 +16,9 @@ styleSheet.innerText = `
 `;
 document.head.appendChild(styleSheet);
 
-const BACKEND_URL = window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1")
-  ? "http://localhost:5000"
-  : "https://syntrix-airdrop.onrender.com";
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:5000' 
+  : 'https://syntrix-airdrop.onrender.com';
 
 const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 const WALLET_REGEX = /^0x[a-fA-F0-9]{40}$/;
@@ -893,7 +893,7 @@ async function runProfileLedgerVerification(email, isFromModal, isBackgroundSync
   }
 
   try {
-    var response = await fetchWithTimeout(BACKEND_URL + "/api/user-status?email=" + encodeURIComponent(email));
+    var response = await fetchWithTimeout(API_BASE_URL + "/api/user-status?email=" + encodeURIComponent(email));
     var statusResult = await response.json();
 
     if (isFromModal) dismissModal();
@@ -1092,7 +1092,7 @@ async function handleSurveySubmission(e) {
   };
 
   try {
-    var response = await fetchWithTimeout(BACKEND_URL + "/api/submit-survey", {
+    var response = await fetchWithTimeout(API_BASE_URL + "/api/submit-survey", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(finalPayload)
@@ -1384,7 +1384,7 @@ document.addEventListener("DOMContentLoaded", async function() {
       preVerifyBtn.innerText = "Sending Code...";
 
       try {
-        var response = await fetch(BACKEND_URL + "/api/send-otp", {
+        var response = await fetch(API_BASE_URL + "/api/send-otp", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: emailVal })
@@ -1446,7 +1446,7 @@ document.addEventListener("DOMContentLoaded", async function() {
       startSurveyBtn.innerText = "Verifying...";
 
       try {
-        var response = await fetch(BACKEND_URL + "/api/verify-otp", {
+        var response = await fetch(API_BASE_URL + "/api/verify-otp", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: userEmailAddress, otp: otpVal })
@@ -1519,7 +1519,7 @@ document.addEventListener("DOMContentLoaded", async function() {
       qrCodeWrapper.style.display = "flex";
       qrCodeCanvas.innerHTML = "";
       
-      var dynamicQrLink = BACKEND_URL + "/r/" + shopRefCode;
+      var dynamicQrLink = API_BASE_URL + "/r/" + shopRefCode;
       
       new QRCode(qrCodeCanvas, {
         text: dynamicQrLink,
@@ -2066,7 +2066,7 @@ async function executeUploadLogic(e) {
           contentTags: contentTags.length > 0 ? contentTags : ['none']
         };
 
-        var response = await fetch(BACKEND_URL + "/api/upload-task", {
+        var response = await fetch(API_BASE_URL + "/api/upload-task", {
           method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
         });
 
@@ -2095,7 +2095,7 @@ async function executeUploadLogic(e) {
             if(attempts === 5) updateProgressUI('Security & anti-spoofing verification...', 85, activeStatusMsg);
 
             try {
-                var res = await fetch(BACKEND_URL + "/api/check-submission?email=" + encodeURIComponent(userEmailAddress));
+                var res = await fetch(API_BASE_URL + "/api/check-submission?email=" + encodeURIComponent(userEmailAddress));
                 var checkData = await res.json();
                 
                 if (checkData.success && checkData.submission) {
@@ -2196,7 +2196,7 @@ async function executeUploadLogic(e) {
       };
 
       // ---- 3. Send to batch endpoint ----
-      var batchResponse = await fetch(BACKEND_URL + "/api/uploads/batch", {
+      var batchResponse = await fetch(API_BASE_URL + "/api/uploads/batch", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(batchPayload)
@@ -2364,7 +2364,7 @@ var XPAnimator = {
   async fetchAndRenderXP(email) {
     if (!email) return;
     try {
-      var response = await fetch(BACKEND_URL + "/api/xp-profile?email=" + encodeURIComponent(email));
+      var response = await fetch(API_BASE_URL + "/api/xp-profile?email=" + encodeURIComponent(email));
       var result = await response.json();
 
       if (result.success && result.profile) {
@@ -2614,7 +2614,7 @@ window.fetchAndRenderHistory = async function(email) {
     historyGrid.innerHTML = '<div style="text-align: center; color: #a1a1aa; padding: 40px;"><div class="spinner" style="margin: 0 auto 20px;"></div>Loading history...</div>';
     
     try {
-        var response = await fetch(BACKEND_URL + '/api/history?email=' + encodeURIComponent(email));
+        var response = await fetch(API_BASE_URL + '/api/history?email=' + encodeURIComponent(email));
         var data = await response.json();
         
         if (!data.success || !data.history || data.history.length === 0) {
