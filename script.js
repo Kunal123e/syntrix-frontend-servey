@@ -1076,6 +1076,7 @@ async function handleSurveySubmission(e) {
   if (animOverlay) animOverlay.style.display = "flex";
 
   var referralCodeUsed = localStorage.getItem("referralCode") || "";
+  var durationSeconds = Math.floor((Date.now() - surveyStartTime) / 1000);
 
   var finalPayload = {
     email: userEmailAddress,
@@ -1086,6 +1087,7 @@ async function handleSurveySubmission(e) {
     user_agent: clientUserAgent || navigator.userAgent,
     startTime: surveyStartTime, 
     submissionTime: Date.now(),
+    duration_seconds: durationSeconds,
     persona_badge: determinePersonaBadge(answers)
   };
 
@@ -1102,7 +1104,29 @@ async function handleSurveySubmission(e) {
       if (animOverlay) animOverlay.style.display = "none";
       if (result.success) {
         if (statusDiv) statusDiv.innerHTML = "";
-        window.hasCompletedSurvey = true; 
+        window.hasCompletedSurvey = true;
+
+        // Dynamic Reward Toast from backend
+        var rewardAmount = result.rewarded || 0;
+        var toast = document.getElementById('xpFloatingToast');
+        if (toast && rewardAmount > 0) {
+          var toastAmountEl = document.getElementById('xpToastAmount');
+          var toastReasonEl = document.getElementById('xpToastReason');
+          if (toastAmountEl) { toastAmountEl.innerText = "+" + rewardAmount + " SYNX"; toastAmountEl.style.color = "#10b981"; }
+          if (toastReasonEl) toastReasonEl.innerText = "AI Matrix Completed!";
+          toast.style.display = 'flex';
+          setTimeout(function() { toast.classList.add('show'); }, 10);
+          setTimeout(function() { toast.classList.remove('show'); setTimeout(function() { toast.style.display = 'none'; }, 600); }, 4000);
+        } else if (toast && rewardAmount === 0) {
+          var toastAmountEl = document.getElementById('xpToastAmount');
+          var toastReasonEl = document.getElementById('xpToastReason');
+          if (toastAmountEl) { toastAmountEl.innerText = "+0 SYNX"; toastAmountEl.style.color = "#ef4444"; }
+          if (toastReasonEl) toastReasonEl.innerText = result.warning || "Flagged for manual review.";
+          toast.style.display = 'flex';
+          setTimeout(function() { toast.classList.add('show'); }, 10);
+          setTimeout(function() { toast.classList.remove('show'); setTimeout(function() { toast.style.display = 'none'; }, 600); }, 4000);
+        }
+
         await runProfileLedgerVerification(userEmailAddress, false);
       } else {
         if (claimForm) { claimForm.classList.remove("hidden"); claimForm.style.display = "block"; }
