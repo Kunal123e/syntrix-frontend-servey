@@ -101,4 +101,3 @@ window.getSurveyData = function() {
     }
   ];
 };
-
