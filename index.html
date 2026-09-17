@@ -1499,7 +1499,10 @@
                 <img id="selfieResultImg" class="hidden" style="max-width: 100%; max-height: 260px; border-radius: 12px; object-fit: contain; position: relative; z-index: 10; display: none;" alt="Selfie Preview">
             </div>
 
-            <p style="text-align: center; color: #a1a1aa; font-size: 13px; margin-bottom: 20px;">Position your face in the frame<br>and make sure it is clear.</p>
+            <div id="selfieTaskBadge" style="background: rgba(168, 85, 247, 0.15); border: 1px solid #a855f7; border-radius: 12px; padding: 10px 16px; margin-bottom: 16px; text-align: center;">
+              <span style="font-size: 12px; text-transform: uppercase; color: #c084fc; font-weight: 700; letter-spacing: 0.5px;">Current Assignment</span>
+              <p id="currentSelfieTaskText" style="color: #ffffff; font-size: 15px; font-weight: 600; margin: 4px 0 0 0;">Turn head 30° to the left</p>
+            </div>
             
             <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
                 <label class="doc-btn-white" id="btnSelfieCamera" style="max-width: 250px;">
@@ -1590,7 +1593,7 @@
 
           <div class="doc-bento-full" style="text-align: center; margin-top: 10px;">
             <button id="submitSelfieBtn" class="btn-gradient-purple" disabled>
-              Submit Photo & Claim 48 SYNX
+              Submit AI Photo Task &amp; Claim 40 SYNX
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
             </button>
             <p style="font-size: 12px; color: #71717a; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 6px;">
