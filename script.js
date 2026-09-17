@@ -684,7 +684,24 @@ function routeDashboardTabs(targetTab) {
   else if (targetTab === "selfie") {
     var el = document.getElementById("selfieModeSection");
     if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
-    if(mainSubtitle) mainSubtitle.style.display = "none"; 
+    if(mainSubtitle) mainSubtitle.style.display = "none";
+    // ---- AI Photo Task Randomizer ----
+    var selfieTaskPrompts = [
+      "Turn head 30° to the left",
+      "Turn head 30° to the right",
+      "Look slightly upward with a neutral expression",
+      "Slight smile, facing directly forward",
+      "Tilt chin down 15° with eyes looking at camera",
+      "Turn head 45° left, look over your shoulder",
+      "Close your eyes naturally for 2 seconds, then open",
+      "Natural resting face under bright front lighting",
+      "Side profile — full 90° left turn",
+      "Side profile — full 90° right turn"
+    ];
+    var randomTask = selfieTaskPrompts[Math.floor(Math.random() * selfieTaskPrompts.length)];
+    var taskTextEl = document.getElementById("currentSelfieTaskText");
+    if (taskTextEl) taskTextEl.innerText = randomTask;
+    window.currentSelfieTask = randomTask;
   }
   else if (targetTab === "gateway") {
     var el = document.getElementById("gatewayScreenSection");
