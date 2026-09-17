@@ -864,7 +864,20 @@ function renderSection() {
 
 window.recordSelection = function(questionId, selectedValue) {
   answers[questionId] = selectedValue;
-  renderSection();
+  
+  var radios = document.querySelectorAll('input[name="' + questionId + '"]');
+  radios.forEach(function(radio) {
+    var label = radio.closest('.option');
+    if (label) {
+      if (radio.value === selectedValue) {
+        label.classList.add('selected');
+        radio.checked = true;
+      } else {
+        label.classList.remove('selected');
+        radio.checked = false;
+      }
+    }
+  });
 };
 
 function updateExcitementBanner(sectionIndex) {
@@ -872,31 +885,24 @@ function updateExcitementBanner(sectionIndex) {
   if (!banner) return;
   if (sectionIndex === 0) { banner.style.display = "none"; return; }
 
-  var unlockedTokens = sectionIndex * 8;
-  var totalTokens = 48;
-  
   banner.style.display = "flex";
   banner.style.animation = 'none'; banner.offsetHeight; banner.style.animation = 'slideDown 0.5s ease-out';
 
+  var langText = {
+    title: "Module 1 Complete!",
+    subtitle: "Complete this final module & hit Submit to calculate your dynamic SYNX reward.",
+    pill: "FINAL STAGE"
+  };
+
   if (currentLanguage === "hi") {
-      if (sectionIndex < 5) {
-          banner.innerHTML = '<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">*</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Shaandaar! Aapne ab tak <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">' + unlockedTokens + ' SYNX</span> secure kar liye hain!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Agla module complete karein Aur <strong style="color: #fbbf24;">8 Aur Paayein!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ' + unlockedTokens + ' / ' + totalTokens + ' ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div></div>';
-      } else {
-          banner.innerHTML = '<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">*</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Adbhut! Aapne sabhi <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span> secure kar liye hain!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Daawa karne ke liye neeche Submit par click karein!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div>';
-      }
+    langText.title = "Module 1 Pura Hua!";
+    langText.subtitle = "Apna dynamic SYNX reward calculate karne ke liye ye aakhiri module submit karein.";
   } else if (currentLanguage === "hinglish") {
-      if (sectionIndex < 5) {
-          banner.innerHTML = '<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">*</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! Aapne ab tak <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">' + unlockedTokens + ' SYNX</span> secure kar liye hain!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Next module complete karein aur <strong style="color: #fbbf24;">8 more payein!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ' + unlockedTokens + ' / ' + totalTokens + ' ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div></div>';
-      } else {
-          banner.innerHTML = '<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">*</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! Aapne sabhi <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span> secure kar liye hain!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Neeche Submit button par click karke claim karein!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div>';
-      }
-  } else {
-      if (sectionIndex < 5) {
-          banner.innerHTML = '<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); animation: floatBox 2s ease-in-out infinite;">*</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Great job! You have secured <span style="color: #fbbf24; font-weight: 900; font-size: 18px;">' + unlockedTokens + ' SYNX</span> so far!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Complete the next module to claim <strong style="color: #fbbf24;">8 more!</strong></div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #fbbf24; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ' + unlockedTokens + ' / ' + totalTokens + ' ]</div><div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; color: #d1d5db; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Continue & Claim &gt;</div></div>';
-      } else {
-          banner.innerHTML = '<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">*</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">Incredible! You have secured all <span style="color: #10b981; font-weight: 900; font-size: 18px;">48 SYNX</span>!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">Hit Submit below to transfer them to your wallet!</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ 48 / 48 ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div>';
-      }
+    langText.title = "Module 1 Complete!";
+    langText.subtitle = "Apna dynamic SYNX reward calculate karne ke liye final module submit karein.";
   }
+
+  banner.innerHTML = '<div style="display: flex; align-items: center; gap: 16px;"><div style="font-size: 38px; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); animation: floatBox 2s ease-in-out infinite;">*</div><div><div style="color: #f3f4f6; font-size: 15px; font-weight: 500;">' + langText.title + ' <span style="color: #10b981; font-weight: 900; font-size: 18px;">Dynamic SYNX</span> unlocked!</div><div style="color: #9ca3af; font-size: 13px; margin-top: 4px;">' + langText.subtitle + '</div></div></div><div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;"><div style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 2px;">[ ' + langText.pill + ' ]</div><div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px; color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Ready to Claim</div></div>';
 }
 
 async function runProfileLedgerVerification(email, isFromModal, isBackgroundSync) {
@@ -2678,4 +2684,6 @@ window.fetchAndRenderHistory = async function(email) {
         historyGrid.innerHTML = '<div style="text-align: center; color: #ef4444; padding: 40px;">Error loading history.</div>';
     }
 };
+
+
 
