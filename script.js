@@ -988,53 +988,53 @@ async function runProfileLedgerVerification(email, isFromModal, isBackgroundSync
 function determinePersonaBadge(answersObj) {
   var scores = { Analyzer: 0, Stylist: 0, Hedger: 0, Native: 0 };
   var mapping = {
-    "q_ecommerce_search": {
-      "Technical comparison sites and deep-dive Reddit threads.": "Analyzer",
-      "Curated Pinterest boards, Instagram aesthetics, or brand lookbooks.": "Stylist",
-      "Established retail giants (Amazon/Walmart) with guaranteed buyer protection.": "Hedger",
-      "TikTok feeds, YouTube reviews, or what my favorite creators recommend.": "Native"
+    "q_ecom_search": {
+      "Technical benchmark tests, spec sheets, and deep-dive Reddit threads.": "Analyzer",
+      "Aesthetic Instagram lookbooks, curated Pinterest boards, or design edits.": "Stylist",
+      "Amazon/Flipkart top-rated lists with verified brand warranties.": "Hedger",
+      "Creator reviews on YouTube, tech unboxings, or friend recommendations.": "Native"
     },
-    "q_ecommerce_trigger": {
-      "The price dropped to my target threshold based on tracking tools.": "Analyzer",
-      "It perfectly completes a specific look or aesthetic I am building.": "Stylist",
-      "I confirmed the 30-day free return policy, so there is zero risk.": "Hedger",
-      "I saw someone in my circle or a trusted influencer successfully using it.": "Native"
+    "q_ecom_sale_trigger": {
+      "Stacking credit card offers (10% instant bank discounts) to hit lowest price.": "Analyzer",
+      "Limited-edition design capsules or aesthetic drops that rarely discount.": "Stylist",
+      "Bundled protection plans, extended warranties, or no-cost EMI terms.": "Hedger",
+      "Viral flash deals trending in community channels or Telegram groups.": "Native"
     },
-    "q_ecommerce_abandon": {
-      "Hidden shipping fees or taxes that ruin the total value proposition.": "Analyzer",
-      "A clunky, ugly checkout interface that feels unbranded or cheap.": "Stylist",
-      "Lack of trusted payment gateways (like PayPal/Apple Pay) or missing security badges.": "Hedger",
-      "A sudden lack of social proof or bad recent reviews on the product page.": "Native"
+    "q_ecom_delivery": {
+      "Standard tracked shipping\u2014I refuse to pay convenience fees for fast dispatch.": "Analyzer",
+      "Pristine, tamper-proof packaging ensuring the product arrives in mint condition.": "Stylist",
+      "Open-Box Delivery or doorstep inspection before confirming receipt.": "Hedger",
+      "Ultra-fast fulfillment via 10-to-30 minute quick commerce (Blinkit/Zepto).": "Native"
     },
-    "q_ecommerce_impulse": {
-      "A mathematically unbeatable flash sale or stacking discount codes.": "Analyzer",
-      "A limited-edition drop with incredible packaging and exclusive design.": "Stylist",
-      "A 'buy now, pay later' option with a lifetime guarantee included.": "Hedger",
-      "A viral trend that is selling out quickly across my social feeds.": "Native"
+    "q_ecom_reviews": {
+      "Filtering by critical 2-star & 3-star reviews and searching Reddit for faults.": "Analyzer",
+      "Scanning user-uploaded photos to inspect real-world colors and build finish.": "Stylist",
+      "Checking verified buyer badges, seller return track records, and return windows.": "Hedger",
+      "Reading top comments on video reviews to see unedited community consensus.": "Native"
     },
-    "q_ecommerce_loyalty": {
-      "The product strictly meets all advertised benchmarks and longevity claims.": "Analyzer",
-      "The unboxing experience was premium and the product looks better in person.": "Stylist",
-      "Customer service instantly resolved a minor issue with zero friction.": "Hedger",
-      "The brand has an active, exclusive community or Discord I can join.": "Native"
+    "q_ecom_abandon": {
+      "Unexpected platform handling fees or delivery charges that skew the value.": "Analyzer",
+      "A cluttered, outdated checkout interface that feels untrustworthy.": "Stylist",
+      "Lack of secure buyer protection, missing return policy, or disabled COD.": "Hedger",
+      "A quick chat with friends or community groups warning against the brand.": "Native"
     },
-    "q_ecommerce_discovery": {
-      "Algorithmic tech articles, performance blogs, or SEO-driven guides.": "Analyzer",
-      "High-end digital lookbooks, design awards, or visual ad campaigns.": "Stylist",
-      "Verified consumer reports or established marketplace incubators.": "Hedger",
-      "Organic viral posts on TikTok or Instagram Reels.": "Native"
+    "q_ecom_payment": {
+      "Co-branded cashback credit cards to maximize points and dispute protection.": "Analyzer",
+      "Sleek 1-click biometric payments (Apple Pay / Google Pay / saved tokenized cards).": "Stylist",
+      "Cash on Delivery (COD) or Pay-on-Delivery UPI after inspecting the box.": "Hedger",
+      "Instant direct UPI QR scan\u2014frictionless, quick, and verified on my phone.": "Native"
     },
-    "q_ecommerce_premium": {
-      "The cost-per-use and material durability justify the higher upfront price.": "Analyzer",
-      "The silhouette, brand identity, and exclusivity are worth the premium.": "Stylist",
-      "It includes an extended warranty and priority customer support.": "Hedger",
-      "It carries cultural cachet and is recognized within my social circle.": "Native"
+    "q_ecom_loyalty": {
+      "Rock-solid durability and specifications that outlast the price paid.": "Analyzer",
+      "Distinctive aesthetic identity, premium unboxing, and design detail.": "Stylist",
+      "Frictionless replacement policies and prompt customer service via WhatsApp.": "Hedger",
+      "An authentic founder story, transparent mission, and active community.": "Native"
     },
-    "q_ecommerce_reviews": {
-      "I filter by 3-star reviews to find the most objective, detailed pros and cons.": "Analyzer",
-      "I look exclusively at user-uploaded photos to check the actual color and fit.": "Stylist",
-      "I search for terms like 'broken,' 'return,' or 'scam' to audit worst-case scenarios.": "Hedger",
-      "I skip text and look for video reviews from creators who share my lifestyle.": "Native"
+    "q_ecom_impulse": {
+      "An undeniable pricing glitch or verified historical low on a price tracker.": "Analyzer",
+      "A visually striking item that elevates your workspace, wardrobe, or setup.": "Stylist",
+      "A risk-free trial offer with guaranteed free doorstep returns.": "Hedger",
+      "A product going viral on your feed that everyone is currently talking about.": "Native"
     }
   };
   for (var qId in answersObj) {
@@ -1445,18 +1445,19 @@ document.addEventListener("DOMContentLoaded", async function() {
       startSurveyBtn.disabled = true;
       startSurveyBtn.innerText = "Verifying...";
 
+      var referralCodeVal = document.getElementById("referredByCode") ? document.getElementById("referredByCode").value.trim() : "";
+
       try {
         var response = await fetch(API_BASE_URL + "/api/verify-otp", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: userEmailAddress, otp: otpVal })
+          body: JSON.stringify({ email: userEmailAddress, otp: otpVal, referral_code: referralCodeVal })
         });
 
         var data = await response.json();
 
         if (data.success) {
-          var referralCode = document.getElementById("referredByCode").value.trim();
-          if(referralCode) localStorage.setItem("referralCode", normalizeReferralCode(referralCode));
+          if(referralCodeVal) localStorage.setItem("referralCode", normalizeReferralCode(referralCodeVal));
 
           if(splashLandingGate) splashLandingGate.style.display = "none"; 
           if(mainApplicationLayout) {
