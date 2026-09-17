@@ -643,24 +643,26 @@ html, body {
   }
 }
 
-/* Fixed Option Cards — eliminated WebKit repaint flash */
+/* ================= FIXED OPTION CARDS (NO BLINKING) ================= */
 .option {
-  background: rgba(18, 18, 28, 0.75);
+  -webkit-tap-highlight-color: transparent; /* Kills the mobile tap flash */
+  outline: none; /* Removes focus borders */
+  background-color: rgba(18, 18, 28, 0.75);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px !important;
   padding: 18px 20px !important;
   color: #a1a1aa !important;
   font-size: 14px;
-  font-weight: 600;
-  cursor: pointer !important;
-  position: relative;
-  z-index: 10;
-  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   display: flex !important;
   align-items: center;
   justify-content: flex-start;
   text-align: left;
   user-select: none;
+  cursor: pointer !important;
+  position: relative;
+  z-index: 10;
+  /* Animate ONLY specific properties, NEVER 'all' to prevent repainting glitches */
+  transition: background-color 0.15s ease-out, border-color 0.15s ease-out, color 0.15s ease-out, box-shadow 0.15s ease-out;
 }
 
 .optionText {
@@ -670,8 +672,8 @@ html, body {
 }
 
 .option:hover {
-  background: rgba(28, 28, 42, 0.9) !important;
-  border-color: rgba(168, 85, 247, 0.4) !important;
+  background-color: rgba(28, 28, 42, 0.9);
+  border-color: rgba(168, 85, 247, 0.4);
   color: #e4e4e7 !important;
 }
 
@@ -679,13 +681,17 @@ html, body {
   transform: scale(0.97);
 }
 
-/* The Premium Selected State — solid rgba, no gradient flash */
 .option.selected {
-  background: rgba(168, 85, 247, 0.15) !important;
+  background-color: rgba(168, 85, 247, 0.15) !important; 
   border: 1px solid #a855f7 !important;
-  color: #ffffff !important;
-  font-weight: 600 !important;
+  color: #ffffff !important; 
+  font-weight: 700 !important;
   box-shadow: 0 0 16px rgba(168, 85, 247, 0.2);
+}
+
+/* Guarantee nested text turns white when selected */
+.option.selected * {
+  color: #ffffff !important;
 }
 
 /* ================= PREMIUM ACTION BAR ================= */
