@@ -2308,30 +2308,133 @@
 <script src="data.js?v=final_launch"></script>
 <script src="script.js?v=final_launch"></script>
 
-<!-- PREMIUM FLOATING XP TOAST -->
+<!-- PREMIUM XP EXPLOSION MODAL -->
 <style>
-.xp-floating-toast {
-  position: fixed; bottom: 40px; right: 40px; 
-  background: rgba(12, 12, 20, 0.95); border: 1px solid rgba(139, 92, 246, 0.5); 
-  border-radius: 16px; padding: 14px 24px; display: flex; align-items: center; gap: 14px; 
-  z-index: 9999999; box-shadow: 0 15px 40px rgba(139, 92, 246, 0.25), inset 0 1px 0 rgba(255,255,255,0.06); 
-  transform: translateY(150px) scale(0.9); opacity: 0; 
-  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  backdrop-filter: blur(16px);
+/* ---- XP Explosion Container ---- */
+.xp-explosion-container {
+  position: fixed; bottom: 40px; right: 40px;
+  z-index: 9999999;
+  pointer-events: none;
+  transform: translateY(120px) scale(0.7);
+  opacity: 0;
+  transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.xp-floating-toast.show { transform: translateY(0) scale(1); opacity: 1; }
-.xp-toast-icon { font-size: 28px; animation: floatOrb 3s ease-in-out infinite; filter: drop-shadow(0 0 10px rgba(139,92,246,0.6)); }
-.xp-toast-text { display: flex; flex-direction: column; text-align: left;}
-.xp-toast-amount { color: #a855f7; font-weight: 900; font-size: 18px; letter-spacing: 0.5px; }
-.xp-toast-reason { color: #d1d5db; font-size: 13px; font-weight: 600; }
-@media(max-width: 900px) { .xp-floating-toast { bottom: 20px; right: 20px; left: 20px; justify-content: center; } }
+.xp-explosion-container.show {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ---- Glassmorphism Card ---- */
+.xp-explosion-card {
+  position: relative;
+  display: flex; align-items: center; gap: 16px;
+  background: rgba(10, 10, 18, 0.92);
+  border: 1px solid rgba(139, 92, 246, 0.45);
+  border-radius: 20px;
+  padding: 18px 28px;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow:
+    0 20px 60px rgba(139, 92, 246, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+    0 1px 0 rgba(255, 255, 255, 0.06) inset;
+  overflow: hidden;
+}
+
+/* ---- Animated Glow Ring ---- */
+.xp-glow-ring {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 200%; height: 200%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+  animation: xpPulseGlow 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes xpPulseGlow {
+  0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(0.9); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+}
+
+/* ---- Icon Wrapper ---- */
+.xp-icon-wrapper {
+  flex-shrink: 0;
+  width: 48px; height: 48px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 14px;
+  animation: xpIconFloat 3s ease-in-out infinite;
+  position: relative;
+  z-index: 2;
+}
+
+@keyframes xpIconFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* ---- Content Text ---- */
+.xp-content {
+  display: flex; flex-direction: column;
+  position: relative; z-index: 2;
+}
+.xp-content h4 {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  background: linear-gradient(135deg, #a855f7, #6366f1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+}
+.xp-content p {
+  margin: 2px 0 0 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #a1a1aa;
+  letter-spacing: 0.3px;
+}
+
+/* ---- Mobile Responsive ---- */
+@media(max-width: 900px) {
+  .xp-explosion-container {
+    bottom: 20px; right: 16px; left: 16px;
+  }
+  .xp-explosion-card {
+    justify-content: center;
+    padding: 16px 22px;
+  }
+}
 </style>
 
-<div id="xpFloatingToast" class="xp-floating-toast hidden">
-  <div class="xp-toast-icon">*</div>
-  <div class="xp-toast-text">
-    <span class="xp-toast-amount" id="xpToastAmount">+0 XP</span>
-    <span class="xp-toast-reason" id="xpToastReason">Task Completed</span>
+<!-- Premium XP Explosion Modal -->
+<div id="xpFloatingToast" class="xp-explosion-container">
+  <div class="xp-explosion-card">
+    <div class="xp-glow-ring"></div>
+    <div class="xp-icon-wrapper">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="url(#xpGradient)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <defs>
+          <linearGradient id="xpGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#a855f7" />
+            <stop offset="100%" stop-color="#6366f1" />
+          </linearGradient>
+        </defs>
+        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+        <path d="M2 17l10 5 10-5"></path>
+        <path d="M2 12l10 5 10-5"></path>
+      </svg>
+    </div>
+    <div class="xp-content">
+      <h4 id="xpToastAmount">+0 SYNX</h4>
+      <p id="xpToastReason">Task Completed</p>
+    </div>
   </div>
 </div>
 
