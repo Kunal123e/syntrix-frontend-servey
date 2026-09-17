@@ -782,6 +782,7 @@ function validateCurrentSectionAnswers() {
 }
 
 function renderSection() {
+  var progTxt = document.getElementById('progressIndicatorText'); if(progTxt) { var totalSec = window.getSurveyData().length; progTxt.innerText = (currentSection + 1) + '/' + totalSec; }
   var sections = getSurveyData();
   if (!sections || sections.length === 0 || !surveyContainer) return;
   var currentData = sections[currentSection];
