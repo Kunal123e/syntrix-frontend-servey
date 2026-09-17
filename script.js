@@ -2088,7 +2088,8 @@ async function executeUploadLogic(e) {
           taskType: taskType, 
           fileName: selectedFile.name || 'capture.jpg', 
           imageBase64: base64String,
-          contentTags: contentTags.length > 0 ? contentTags : ['none']
+          contentTags: contentTags.length > 0 ? contentTags : ['none'],
+          assignedTask: (isSelfieSubmit && window.currentSelfieTask) ? window.currentSelfieTask : null
         };
 
         var response = await fetch(API_BASE_URL + "/api/upload-task", {
@@ -2215,7 +2216,8 @@ async function executeUploadLogic(e) {
             taskType: taskType,
             fileName: cf.fileName,
             imageBase64: cf.base64,
-            contentTags: contentTags.length > 0 ? contentTags : ['none']
+            contentTags: contentTags.length > 0 ? contentTags : ['none'],
+            assignedTask: (isSelfieSubmit && window.currentSelfieTask) ? window.currentSelfieTask : null
           };
         })
       };
@@ -2684,6 +2686,7 @@ window.fetchAndRenderHistory = async function(email) {
         historyGrid.innerHTML = '<div style="text-align: center; color: #ef4444; padding: 40px;">Error loading history.</div>';
     }
 };
+
 
 
 
