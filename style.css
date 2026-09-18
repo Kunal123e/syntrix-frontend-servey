@@ -2610,3 +2610,31 @@ input, textarea, [contenteditable="true"] {
   user-select: text;
 }
 
+
+/* ================= WEBCAM & GREEN DETECTION HUD ================= */
+.scanner-circle-outer.streaming {
+  border-color: #6366f1 !important;
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.3) !important;
+  transition: all 0.3s ease;
+}
+
+/* Green Target Lock (Triggered when angle is aligned) */
+.scanner-circle-outer.angle-locked {
+  border-color: #10b981 !important;
+  box-shadow: 0 0 35px rgba(16, 185, 129, 0.6) !important;
+}
+
+.scanner-circle-outer.angle-locked video {
+  filter: contrast(1.05) brightness(1.02);
+}
+
+#angleDetectionBadge.locked {
+  background: rgba(16, 185, 129, 0.15) !important;
+  border-color: #10b981 !important;
+  color: #10b981 !important;
+}
+
+#angleDetectionBadge.locked .pulse-dot {
+  background: #10b981 !important;
+  box-shadow: 0 0 8px #10b981 !important;
+}
