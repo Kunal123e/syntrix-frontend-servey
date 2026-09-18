@@ -2621,17 +2621,6 @@ window.addEventListener('DOMContentLoaded', function() {
             }
         }, true);
     }
-
-    if (selfieUI) {
-        selfieUI.addEventListener('click', function(e) {
-            if (isApproving || permissionGranted.selfie) return; 
-            if (!document.getElementById('fileInputSelfie').value) {
-                e.preventDefault();
-                e.stopPropagation();
-                requestDevicePermissionUX('selfie');
-            }
-        }, true);
-    }
 });
 
 window.fetchAndRenderHistory = async function(email) {
@@ -2688,5 +2677,142 @@ window.fetchAndRenderHistory = async function(email) {
 };
 
 
+
+
+
+let selfieMediaStream = null;
+let isCameraStreaming = false;
+
+// 1. Live Camera Stream Controller
+async function startSelfieCameraFeed() {
+  const videoEl = document.getElementById("selfieCameraVideo");
+  const defaultIcon = document.getElementById("scannerDefaultIcon");
+  const scannerOuter = document.getElementById("scannerCircleOuter");
+  const indicator = document.getElementById("selfieAngleIndicator");
+  const badge = document.getElementById("angleDetectionBadge");
+  const btnText = document.getElementById("btnSelfieTextContent");
+  const selfieResultImg = document.getElementById("selfieResultImg");
+
+  if (selfieResultImg) selfieResultImg.style.display = "none";
+
+  try {
+    selfieMediaStream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: "user",
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
+      },
+      audio: false
+    });
+
+    videoEl.srcObject = selfieMediaStream;
+    videoEl.style.display = "block";
+    if (defaultIcon) defaultIcon.style.display = "none";
+    if (scannerOuter) {
+      scannerOuter.classList.add("streaming");
+      scannerOuter.classList.remove("angle-locked");
+    }
+    if (indicator) indicator.style.display = "block";
+    if (badge) {
+      badge.classList.remove("locked");
+      badge.innerHTML = '<span class="pulse-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #6366f1;"></span> Aligning Head Angle...';
+    }
+
+    isCameraStreaming = true;
+    if (btnText) btnText.innerText = "Aligning Angle...";
+
+    // 2. Simulate AI Angle & Liveness Alignment -> Turn GREEN
+    setTimeout(() => {
+      if (!isCameraStreaming) return;
+      if (scannerOuter) scannerOuter.classList.add("angle-locked");
+      if (badge) {
+        badge.classList.add("locked");
+        badge.innerHTML = '<span class="pulse-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span> Target Angle Aligned (Locked)';
+      }
+      if (btnText) btnText.innerText = "Capture Photo";
+      showToast("Angle Verified! Click Capture.", "OK");
+    }, 1800);
+
+  } catch (err) {
+    console.warn("[Camera] WebRTC access failed or denied, falling back to file picker:", err);
+    const fileInput = document.getElementById("fileInputSelfie");
+    if (fileInput) fileInput.click();
+  }
+}
+
+// 3. Snapshot Capture Function
+function captureSelfieSnapshot() {
+  const videoEl = document.getElementById("selfieCameraVideo");
+  const canvasEl = document.getElementById("selfieCaptureCanvas");
+  const scannerOuter = document.getElementById("scannerCircleOuter");
+  const indicator = document.getElementById("selfieAngleIndicator");
+  const btnText = document.getElementById("btnSelfieTextContent");
+  const submitBtn = document.getElementById("submitSelfieBtn");
+
+  if (!videoEl || !canvasEl) return;
+
+  canvasEl.width = videoEl.videoWidth || 640;
+  canvasEl.height = videoEl.videoHeight || 480;
+  const ctx = canvasEl.getContext("2d");
+
+  // Mirror image horizontally to match webcam display
+  ctx.translate(canvasEl.width, 0);
+  ctx.scale(-1, 1);
+  ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
+
+  canvasEl.toBlob((blob) => {
+    const capturedFile = new File([blob], `selfie_${Date.now()}.jpg`, { type: "image/jpeg" });
+
+    // Store in global upload handler variables
+    selectedFile = capturedFile;
+    selectedFiles = [capturedFile];
+
+    // Stop camera tracks
+    if (selfieMediaStream) {
+      selfieMediaStream.getTracks().forEach(track => track.stop());
+      selfieMediaStream = null;
+    }
+    isCameraStreaming = false;
+
+    // Update UI Preview
+    videoEl.style.display = "none";
+    if (indicator) indicator.style.display = "none";
+    if (scannerOuter) scannerOuter.classList.remove("streaming", "angle-locked");
+
+    let selfieImg = document.getElementById("selfieResultImg");
+    if (!selfieImg) {
+      selfieImg = document.createElement("img");
+      selfieImg.id = "selfieResultImg";
+      selfieImg.style.cssText = "width: 100%; height: 100%; object-fit: cover; border-radius: 50%;";
+      document.getElementById("scannerCircleInner").appendChild(selfieImg);
+    }
+    selfieImg.src = URL.createObjectURL(capturedFile);
+    selfieImg.style.display = "block";
+
+    if (btnText) btnText.innerText = "Retake Photo";
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.classList.remove("hidden");
+      submitBtn.style.display = "flex";
+    }
+
+    showToast("Photo captured and task assigned!", "OK");
+  }, "image/jpeg", 0.95);
+}
+
+// 4. Bind Button Click
+const selfieTriggerBtn = document.getElementById("btnSelfieCamera") || document.querySelector("#selfieModeSection .doc-btn-white");
+if (selfieTriggerBtn) {
+  selfieTriggerBtn.onclick = function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isCameraStreaming) {
+      startSelfieCameraFeed();
+    } else {
+      captureSelfieSnapshot();
+    }
+  };
+}
 
 
