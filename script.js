@@ -684,24 +684,40 @@ function routeDashboardTabs(targetTab) {
   else if (targetTab === "selfie") {
     var el = document.getElementById("selfieModeSection");
     if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
-    if(mainSubtitle) mainSubtitle.style.display = "none";
-    // ---- AI Photo Task Randomizer ----
+    if(mainSubtitle) mainSubtitle.style.display = "none";    // ---- AI Photo Task WEEKLY Rotator ----
     var selfieTaskPrompts = [
-      "Turn head 30° to the left",
-      "Turn head 30° to the right",
+      "Turn head 30\u00B0 to the left",
+      "Turn head 30\u00B0 to the right",
       "Look slightly upward with a neutral expression",
       "Slight smile, facing directly forward",
-      "Tilt chin down 15° with eyes looking at camera",
-      "Turn head 45° left, look over your shoulder",
+      "Tilt chin down 15\u00B0 with eyes looking at camera",
+      "Turn head 45\u00B0 left, look over your shoulder",
       "Close your eyes naturally for 2 seconds, then open",
       "Natural resting face under bright front lighting",
-      "Side profile — full 90° left turn",
-      "Side profile — full 90° right turn"
+      "Side profile \u2014 full 90\u00B0 left turn",
+      "Side profile \u2014 full 90\u00B0 right turn"
     ];
-    var randomTask = selfieTaskPrompts[Math.floor(Math.random() * selfieTaskPrompts.length)];
+    
+    // Calculate total weeks since epoch to deterministically select 1 task per week globally
+    var weeksSinceEpoch = Math.floor(Date.now() / (1000 * 60 * 60 * 24 * 7));
+    var taskIndex = weeksSinceEpoch % selfieTaskPrompts.length;
+    var weeklyTask = selfieTaskPrompts[taskIndex];
+    
     var taskTextEl = document.getElementById("currentSelfieTaskText");
-    if (taskTextEl) taskTextEl.innerText = randomTask;
-    window.currentSelfieTask = randomTask;
+    if (taskTextEl) taskTextEl.innerText = weeklyTask;
+    window.currentSelfieTask = weeklyTask;
+    
+    // Dynamically update the UI badge to reflect the weekly scarcity
+    var badgeTitleEl = document.querySelector("#selfieTaskBadge span");
+    if (badgeTitleEl) {
+        badgeTitleEl.innerText = "WEEKLY AI MISSION";
+        badgeTitleEl.style.color = "#10b981"; // Change to green for active mission vibe
+    }
+    var badgeBoxEl = document.getElementById("selfieTaskBadge");
+    if (badgeBoxEl) {
+        badgeBoxEl.style.borderColor = "#10b981";
+        badgeBoxEl.style.background = "rgba(16, 185, 129, 0.1)";
+    }
   }
   else if (targetTab === "gateway") {
     var el = document.getElementById("gatewayScreenSection");
@@ -1846,35 +1862,33 @@ function handleFileSelection(e) {
       var btnSelfieTextContent = document.getElementById('btnSelfieTextContent');
       if (btnSelfieTextContent) {
           btnSelfieTextContent.innerText = "Retake Photo";
-      }
-
-      try {
+      }      try {
         var url = URL.createObjectURL(selectedFile);
-        var scannerOuter = document.querySelector('.scanner-circle-outer');
-        var scannerInner = document.querySelector('.scanner-circle-inner');
-        if (scannerOuter) scannerOuter.style.display = 'none';
-        if (scannerInner) scannerInner.style.display = 'none';
+        var scannerOuter = document.getElementById('scannerCircleOuter');
+        var scannerInner = document.getElementById('scannerCircleInner');
+        var videoEl = document.getElementById('selfieCameraVideo');
+        var defaultIcon = document.getElementById('scannerDefaultIcon');
         
+        // Hide camera elements
+        if (videoEl) videoEl.style.display = 'none';
+        if (defaultIcon) defaultIcon.style.display = 'none';
+        if (scannerOuter) scannerOuter.classList.remove("streaming", "angle-locked");
+        
+        // Force the image into the scanner circle
         var selfieImg = document.getElementById('selfieResultImg');
-        if (!selfieImg) {
-            var container = document.querySelector('.selfie-scanner-container');
-            if (container) {
-                selfieImg = document.createElement('img');
-                selfieImg.id = 'selfieResultImg';
-                selfieImg.style.maxWidth = '100%';
-                selfieImg.style.maxHeight = '260px';
-                selfieImg.style.borderRadius = '12px';
-                selfieImg.style.objectFit = 'contain';
-                selfieImg.style.position = 'relative';
-                selfieImg.style.zIndex = '10';
-                container.appendChild(selfieImg);
-            }
+        if (!selfieImg && scannerInner) {
+            selfieImg = document.createElement('img');
+            selfieImg.id = 'selfieResultImg';
+            scannerInner.appendChild(selfieImg);
         }
+        
         if (selfieImg) {
+            selfieImg.style.cssText = "width: 100%; height: 100%; object-fit: cover; border-radius: 50%; position: relative; z-index: 10;";
             selfieImg.src = url;
             selfieImg.classList.remove('hidden');
             selfieImg.style.display = 'block';
         }
+        
         var clearSelfieBtn = document.getElementById('clearSelfieBtn');
         if (clearSelfieBtn) clearSelfieBtn.style.display = 'flex';
       } catch(err) {
@@ -2814,5 +2828,9 @@ if (selfieTriggerBtn) {
     }
   };
 }
+
+
+
+
 
 
