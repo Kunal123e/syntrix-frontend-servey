@@ -2754,8 +2754,9 @@ async function startSelfieCameraFeed() {
       showToast("Angle Verified! Click Capture.", "OK");
     }, 1800);
 
-  } catch (err) {
+    } catch (err) {
     console.warn("[Camera] WebRTC access failed or denied, falling back to file picker:", err);
+    isCameraStreaming = false; // CRITICAL FIX: Stops the fake green alignment animation
     const fileInput = document.getElementById("fileInputSelfie");
     if (fileInput) fileInput.click();
   }
@@ -2835,6 +2836,7 @@ if (selfieTriggerBtn) {
     }
   };
 }
+
 
 
 
