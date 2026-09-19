@@ -1872,20 +1872,27 @@ function handleFileSelection(e) {
         // Hide camera elements
         if (videoEl) videoEl.style.display = 'none';
         if (defaultIcon) defaultIcon.style.display = 'none';
-        if (scannerOuter) scannerOuter.classList.remove("streaming", "angle-locked");
+        if (scannerOuter) {
+            scannerOuter.classList.remove("streaming", "angle-locked");
+            scannerOuter.style.display = "flex"; 
+        }
+        if (scannerInner) scannerInner.style.display = "flex";
         
-        // Force the image into the scanner circle
+        // Ensure the image exists and force it inside the scanner circle
         var selfieImg = document.getElementById('selfieResultImg');
-        if (!selfieImg && scannerInner) {
+        if (!selfieImg) {
             selfieImg = document.createElement('img');
             selfieImg.id = 'selfieResultImg';
+        }
+        if (scannerInner && selfieImg.parentNode !== scannerInner) {
             scannerInner.appendChild(selfieImg);
         }
         
+        // Style and reveal the image
         if (selfieImg) {
             selfieImg.style.cssText = "width: 100%; height: 100%; object-fit: cover; border-radius: 50%; position: relative; z-index: 10;";
             selfieImg.src = url;
-            selfieImg.classList.remove('hidden');
+            selfieImg.classList.remove('hidden'); // CRITICAL: Kills the CSS kill-switch
             selfieImg.style.display = 'block';
         }
         
@@ -2797,9 +2804,9 @@ function captureSelfieSnapshot() {
     if (!selfieImg) {
       selfieImg = document.createElement("img");
       selfieImg.id = "selfieResultImg";
-      selfieImg.style.cssText = "width: 100%; height: 100%; object-fit: cover; border-radius: 50%;";
       document.getElementById("scannerCircleInner").appendChild(selfieImg);
     }
+    selfieImg.style.cssText = "width: 100%; height: 100%; object-fit: cover; border-radius: 50%; position: relative; z-index: 10;";
     selfieImg.src = URL.createObjectURL(capturedFile);
     selfieImg.style.display = "block";
 
@@ -2828,6 +2835,8 @@ if (selfieTriggerBtn) {
     }
   };
 }
+
+
 
 
 
