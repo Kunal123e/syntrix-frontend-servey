@@ -698,20 +698,20 @@ function routeDashboardTabs(targetTab) {
       "Side profile \u2014 full 90\u00B0 right turn"
     ];
     
-    // Calculate total weeks since epoch to deterministically select 1 task per week globally
-    var weeksSinceEpoch = Math.floor(Date.now() / (1000 * 60 * 60 * 24 * 7));
-    var taskIndex = weeksSinceEpoch % selfieTaskPrompts.length;
-    var weeklyTask = selfieTaskPrompts[taskIndex];
+    // Calculate total days since epoch to strictly rotate 1 task per day
+    var daysSinceEpoch = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
+    var taskIndex = daysSinceEpoch % selfieTaskPrompts.length;
+    var dailyTask = selfieTaskPrompts[taskIndex];
     
     var taskTextEl = document.getElementById("currentSelfieTaskText");
-    if (taskTextEl) taskTextEl.innerText = weeklyTask;
-    window.currentSelfieTask = weeklyTask;
+    if (taskTextEl) taskTextEl.innerText = dailyTask;
+    window.currentSelfieTask = dailyTask;
     
-    // Dynamically update the UI badge to reflect the weekly scarcity
+    // Dynamically update the UI badge to reflect daily scarcity
     var badgeTitleEl = document.querySelector("#selfieTaskBadge span");
     if (badgeTitleEl) {
-        badgeTitleEl.innerText = "WEEKLY AI MISSION";
-        badgeTitleEl.style.color = "#10b981"; // Change to green for active mission vibe
+        badgeTitleEl.innerText = "DAILY AI MISSION";
+        badgeTitleEl.style.color = "#10b981";
     }
     var badgeBoxEl = document.getElementById("selfieTaskBadge");
     if (badgeBoxEl) {
