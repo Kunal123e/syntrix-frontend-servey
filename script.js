@@ -2163,7 +2163,7 @@ async function executeUploadLogic(e) {
                                     '<div style="font-weight: 900; color: #10b981; font-size: 20px; margin-bottom: 5px; letter-spacing: -0.5px;">VERIFICATION SUCCESSFUL</div>' +
                                     '<div style="color: #a1a1aa; font-size: 14px; margin-bottom: 20px;">' + cleanReason + '</div>' +
                                     '<div style="background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 12px; display: inline-block;">' +
-                                        '<span style="color: #fbbf24; font-weight: 900; font-size: 18px;">+48 SYNX</span>' +
+                                        '<span style="color: #fbbf24; font-weight: 900; font-size: 18px;">+' + (isSelfieSubmit ? '40' : '100') + ' SYNX</span>' +
                                         '<span style="color: #71717a; font-size: 11px; display: block; margin-top: 3px; font-weight: 600; text-transform: uppercase;">Tokens Assigned to Ledger</span>' +
                                     '</div>' +
                                 '</div>';
