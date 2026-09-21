@@ -2163,7 +2163,7 @@ async function executeUploadLogic(e) {
                                     '<div style="font-weight: 900; color: #10b981; font-size: 20px; margin-bottom: 5px; letter-spacing: -0.5px;">VERIFICATION SUCCESSFUL</div>' +
                                     '<div style="color: #a1a1aa; font-size: 14px; margin-bottom: 20px;">' + cleanReason + '</div>' +
                                     '<div style="background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 12px; display: inline-block;">' +
-                                        '<span style="color: #fbbf24; font-weight: 900; font-size: 18px;">+' + (isSelfieSubmit ? '40' : '100') + ' SYNX</span>' +
+                                        '<span style="color: #fbbf24; font-weight: 900; font-size: 18px;">+' + (isSelfieSubmit ? '40' : 'Up to 100') + ' SYNX</span>' +
                                         '<span style="color: #71717a; font-size: 11px; display: block; margin-top: 3px; font-weight: 600; text-transform: uppercase;">Tokens Assigned to Ledger</span>' +
                                     '</div>' +
                                 '</div>';
@@ -2553,9 +2553,37 @@ var XPAnimator = {
         var days = Array.from(streakUI.children);
         var count = profile.dailyStreak > 7 ? 7 : profile.dailyStreak;
         days.forEach(function(dayEl, idx) {
-            if(idx < count) dayEl.classList.add('active');
-            else dayEl.classList.remove('active');
+            if(idx < count) {
+                dayEl.classList.add('active');
+                if (profile.streakStatus === "warning" && idx === count - 1) {
+                    dayEl.style.boxShadow = "0 0 15px rgba(251, 191, 36, 0.6)"; 
+                    dayEl.style.borderColor = "#fbbf24";
+                } else {
+                    dayEl.style.boxShadow = "";
+                    dayEl.style.borderColor = "";
+                }
+            } else {
+                dayEl.classList.remove('active');
+                dayEl.style.boxShadow = "";
+                dayEl.style.borderColor = "";
+            }
         });
+        
+        var streakNumEl = document.getElementById("bentoStreakDays");
+        if (streakNumEl) {
+            var headerContainer = streakNumEl.parentElement.previousElementSibling;
+            var headerText = headerContainer ? headerContainer.querySelector("h3") : null;
+            if (profile.streakStatus === "warning") {
+                streakNumEl.style.color = "#fbbf24";
+                if (headerText) headerText.innerHTML = 'DAILY STREAK <span style="background: rgba(239, 68, 68, 0.2); color: #ef4444; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 6px; animation: pulse 1.5s infinite;">AT RISK</span>';
+            } else if (profile.streakStatus === "lost") {
+                streakNumEl.style.color = "#71717a";
+                if (headerText) headerText.innerHTML = 'DAILY STREAK <span style="background: rgba(113, 113, 122, 0.2); color: #a1a1aa; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 6px;">RESET</span>';
+            } else {
+                streakNumEl.style.color = "#ffffff";
+                if (headerText) headerText.innerHTML = 'DAILY STREAK';
+            }
+        }
     }
   },
 
@@ -2566,16 +2594,32 @@ var XPAnimator = {
   showXPToast(amount, reason) {
     var toast = document.getElementById("xpFloatingToast");
     if (!toast) return;
-    document.getElementById("xpToastAmount").innerText = "+" + amount + " XP";
+    
+    var amtEl = document.getElementById("xpToastAmount");
+    amtEl.innerText = "+" + amount + " XP";
+    amtEl.style.textShadow = "0 0 20px rgba(168, 85, 247, 0.8)";
+    
     document.getElementById("xpToastReason").innerText = reason;
+    
+    // Add particle/bounce effect class if defined in CSS, otherwise just smooth transitions
+    toast.style.transform = "translateY(20px) scale(0.9)";
+    toast.style.transition = "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+    
     toast.classList.remove("hidden");
     
-    setTimeout(function() { toast.classList.add("show"); }, 10);
+    setTimeout(function() { 
+        toast.classList.add("show"); 
+        toast.style.transform = "translateY(0) scale(1)";
+    }, 10);
     
     setTimeout(function() {
         toast.classList.remove("show");
-        setTimeout(function() { toast.classList.add("hidden"); }, 600); 
-    }, 4000);
+        toast.style.transform = "translateY(-20px) scale(0.9)";
+        setTimeout(function() { 
+            toast.classList.add("hidden"); 
+            toast.style.transform = "";
+        }, 600); 
+    }, 4500);
   },
 
   animateValue(id, start, end, duration) {
