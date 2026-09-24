@@ -970,7 +970,7 @@ async function runProfileLedgerVerification(email, isFromModal, isBackgroundSync
         window.hasCompletedSurvey = true; 
         displayConsumerBadgesUI(statusResult.badge || "Analyzer");
 
-        // Populate the Vault
+        // ---- CRITICAL FIX: OFFLINE ANIMATION & VAULT POPULATION ----
         var totalBal = (statusResult.pendingRewards || 0) + (statusResult.claimedRewards || 0);
         var vaultTotalEl = document.getElementById("vaultTotalBalance");
         var vaultPendEl = document.getElementById("vaultPendingTransfer");
@@ -2168,9 +2168,7 @@ async function executeUploadLogic(e) {
         }
 
         // ---- CRITICAL: WAKE UP THE BACKGROUND WORKER ----
-        fetch(API_BASE_URL + "/api/public-wake", { 
-            method: 'POST'
-        }).catch(e => console.log("Worker wake signal sent from frontend."));
+        fetch(API_BASE_URL + "/api/public-wake", { method: 'POST' }).catch(e => console.log("Wake signal sent."));
 
         var attempts = 0;
         var maxAttempts = 120; // Increased to 360 seconds (120 * 3s) for cold-starts
@@ -2921,6 +2919,7 @@ if (selfieTriggerBtn) {
     }
   };
 }
+
 
 
 
