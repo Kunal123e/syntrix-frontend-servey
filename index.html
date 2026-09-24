@@ -719,7 +719,7 @@
           <h1 class="hero-title-v3 anim-1">REWARDS</h1>
           <h3 class="hero-subtitle-v3 anim-2">E A R N &nbsp; S Y N X</h3>
           <div class="hero-desc-v3 anim-3">
-            <p>Process your complete digital footprint across the Syntrix intelligence matrix—<br>including identity and research protocols—<br>to secure your 48 SYNX allocation.</p>
+            <p>Process your complete digital footprint across the Syntrix intelligence matrixâ€”<br>including identity and research protocolsâ€”<br>to secure your 48 SYNX allocation.</p>
           </div>
         </div>
         <div class="hg-right anim-3" style="display:flex; align-items:center; justify-content:center;">
@@ -1519,7 +1519,7 @@
 
             <div id="selfieTaskBadge" style="background: rgba(168, 85, 247, 0.15); border: 1px solid #a855f7; border-radius: 12px; padding: 10px 16px; margin-bottom: 16px; text-align: center;">
               <span style="font-size: 12px; text-transform: uppercase; color: #c084fc; font-weight: 700; letter-spacing: 0.5px;">Current Assignment</span>
-              <p id="currentSelfieTaskText" style="color: #ffffff; font-size: 15px; font-weight: 600; margin: 4px 0 0 0;">Turn head 30° to the left</p>
+              <p id="currentSelfieTaskText" style="color: #ffffff; font-size: 15px; font-weight: 600; margin: 4px 0 0 0;">Turn head 30Â° to the left</p>
             </div>
             
             <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
@@ -1632,7 +1632,7 @@
 
         <div class="premium-action-bar" id="surveyActionBar">
           <div class="action-info">
-            <div class="action-icon">✦</div>
+            <div class="action-icon">âœ¦</div>
             <div class="action-text">
               <span class="action-title">Syntrix <span class="highlight">Intelligence Matrix</span></span>
               <span class="action-sub">Secure your dynamic SYNX allocation</span>
@@ -1874,7 +1874,7 @@
           <div class="survey-expansion-card active" style="display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding-bottom: 20px;">
             <div style="font-size: 28px; margin-bottom: 20px;">&#128722;</div>
             <h4 style="font-size: 18px; font-weight: 800; color: #ffffff; margin-bottom: 10px;">Consumer Analytics Hub</h4>
-            <p style="font-size: 13px; color: #a1a1aa; line-height: 1.5; margin-bottom: 20px;">Process your complete digital footprint across the Syntrix intelligence matrix—including identity and research protocols—to secure your <span style="color: #10b981; font-weight: 800;">48 SYNX</span> allocation.</p>
+            <p style="font-size: 13px; color: #a1a1aa; line-height: 1.5; margin-bottom: 20px;">Process your complete digital footprint across the Syntrix intelligence matrixâ€”including identity and research protocolsâ€”to secure your <span style="color: #10b981; font-weight: 800;">48 SYNX</span> allocation.</p>
             <span style="background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 999px; padding: 4px 14px; font-weight: 700; font-size: 12px; display: inline-block; text-decoration: none;">Active</span>
           </div>
           
@@ -1965,6 +1965,35 @@
         </div>
         <div id="historyGrid" style="display: flex; flex-direction: column; gap: 16px;">
            <!-- Dynamic Content Loads Here via JS -->
+        </div>
+      </div>
+
+      <!-- ================= TOKEN VAULT SECTION ================= -->
+      <div id="tabScreenVault" class="hidden rewardCard auth-protected-ui" style="display: none; width: 100%; max-width: 900px; padding: 40px 20px; margin: 0 auto; background: transparent; border: none; box-shadow: none;">
+        <div style="text-align: center; margin-bottom: 40px;">
+          <h2 style="font-size: clamp(32px, 5vw, 44px); font-weight: 900; color: #fff; letter-spacing: -1px; margin-bottom: 12px;">SYNX VAULT</h2>
+          <p style="color: #a1a1aa; font-size: 16px;">Manage your verified data allocations and crypto rewards.</p>
+        </div>
+        
+        <div class="doc-card" style="text-align: center; background: linear-gradient(180deg, rgba(16, 185, 129, 0.05) 0%, rgba(9, 9, 11, 1) 100%); border: 1px solid rgba(16, 185, 129, 0.3); padding: 50px 20px;">
+          <div style="font-size: 14px; font-weight: 700; color: #a1a1aa; letter-spacing: 2px; margin-bottom: 15px;">TOTAL VERIFIED BALANCE</div>
+          <div style="display: flex; align-items: baseline; justify-content: center; gap: 12px; margin-bottom: 30px;">
+            <span id="vaultTotalBalance" style="font-size: 72px; font-weight: 900; color: #10b981; line-height: 1;">0</span>
+            <span style="font-size: 24px; font-weight: 800; color: #ffffff;">SYNX</span>
+          </div>
+          <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px 25px;">
+              <div style="font-size: 11px; color: #a1a1aa; font-weight: 600; text-transform: uppercase; margin-bottom: 5px;">Pending Network Transfer</div>
+              <div id="vaultPendingTransfer" style="font-size: 20px; color: #f59e0b; font-weight: 800;">0 SYNX</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px 25px;">
+              <div style="font-size: 11px; color: #a1a1aa; font-weight: 600; text-transform: uppercase; margin-bottom: 5px;">Claimed to Wallet</div>
+              <div id="vaultClaimed" style="font-size: 20px; color: #a855f7; font-weight: 800;">0 SYNX</div>
+            </div>
+          </div>
+          <button type="button" onclick="window.openModeEnhanced('hub')" style="margin-top: 40px; background: #ffffff; color: #000000; padding: 18px 40px; border-radius: 12px; font-weight: 800; font-size: 16px; border: none; cursor: pointer; transition: transform 0.2s;">
+            Initiate Blockchain Transfer &rarr;
+          </button>
         </div>
       </div>
 
@@ -2465,6 +2494,7 @@
 
 </body>
 </html>
+
 
 
 
