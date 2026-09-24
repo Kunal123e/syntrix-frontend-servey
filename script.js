@@ -970,6 +970,36 @@ async function runProfileLedgerVerification(email, isFromModal, isBackgroundSync
         window.hasCompletedSurvey = true; 
         displayConsumerBadgesUI(statusResult.badge || "Analyzer");
 
+        // Populate the Vault
+        var totalBal = (statusResult.pendingRewards || 0) + (statusResult.claimedRewards || 0);
+        var vaultTotalEl = document.getElementById("vaultTotalBalance");
+        var vaultPendEl = document.getElementById("vaultPendingTransfer");
+        var vaultClaimEl = document.getElementById("vaultClaimed");
+        if(vaultTotalEl) vaultTotalEl.innerText = totalBal;
+        if(vaultPendEl) vaultPendEl.innerText = (statusResult.pendingRewards || 0) + " SYNX";
+        if(vaultClaimEl) vaultClaimEl.innerText = (statusResult.claimedRewards || 0) + " SYNX";
+
+        // Trigger Offline Animation
+        if (!isBackgroundSync) {
+            var lastSeen = parseInt(localStorage.getItem('syntrix_last_seen_rewards') || '0');
+            var currentPending = statusResult.pendingRewards || 0;
+            if (currentPending > lastSeen && currentPending > 0) {
+                var newlyEarned = currentPending - lastSeen;
+                
+                var overlay = document.createElement('div');
+                overlay.style.cssText = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 3, 8, 0.95); z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px); opacity: 0; transition: opacity 0.5s;";
+                overlay.innerHTML = '<div style="font-size: 80px; margin-bottom: 20px; animation: slideUpFade 0.8s ease-out;">💎</div>' +
+                    '<div style="font-size: 14px; font-weight: 700; color: #a1a1aa; letter-spacing: 2px; margin-bottom: 10px; animation: slideUpFade 0.9s ease-out;">OFFLINE EARNINGS SECURED</div>' +
+                    '<h1 style="font-size: 56px; font-weight: 900; color: #10b981; margin: 0; text-align: center; animation: slideUpFade 1s ease-out;">+' + newlyEarned + ' SYNX</h1>' +
+                    '<p style="color: #d1d5db; font-size: 16px; margin-top: 15px; animation: slideUpFade 1.2s ease-out; text-align: center; max-width: 400px; line-height: 1.5;">Your files were successfully verified by our AI while you were offline!</p>' +
+                    '<button onclick="this.parentElement.style.opacity=\'0\'; setTimeout(() => this.parentElement.remove(), 500); window.openModeEnhanced(\'vault\');" style="margin-top: 35px; background: #ffffff; color: #000000; padding: 16px 36px; border-radius: 12px; font-weight: 800; font-size: 16px; border: none; cursor: pointer; animation: slideUpFade 1.4s ease-out; box-shadow: 0 10px 30px rgba(255,255,255,0.2);">Go to Vault &rarr;</button>';
+                
+                document.body.appendChild(overlay);
+                setTimeout(function() { overlay.style.opacity = '1'; }, 100);
+            }
+            localStorage.setItem('syntrix_last_seen_rewards', currentPending);
+        }
+
         if (!isBackgroundSync) {
             if (emailGateSection) { emailGateSection.classList.add("hidden"); emailGateSection.style.display = "none"; }
             if (claimForm) { claimForm.classList.add("hidden"); claimForm.style.display = "none"; }
@@ -2137,8 +2167,13 @@ async function executeUploadLogic(e) {
           return;
         }
 
+        // ---- CRITICAL: WAKE UP THE BACKGROUND WORKER ----
+        fetch(API_BASE_URL + "/api/public-wake", { 
+            method: 'POST'
+        }).catch(e => console.log("Worker wake signal sent from frontend."));
+
         var attempts = 0;
-        var maxAttempts = 45; // Increased to 45 for Gemini AI processing time
+        var maxAttempts = 120; // Increased to 360 seconds (120 * 3s) for cold-starts
         updateProgressUI('AI is verifying parameters...', 35, activeStatusMsg);
         if (currentPollInterval) clearTimeout(currentPollInterval);
 
@@ -2178,7 +2213,7 @@ async function executeUploadLogic(e) {
                         if (activeRetryBtn) activeRetryBtn.style.display = 'block'; 
                         return;
                     } 
-                    else if (status === 'rejected' || status === 'rejected_pii' || status === 'fraud' || status === 'duplicate') {
+                    else if (status === 'rejected' || status === 'rejected_pii' || status === 'fraud' || status === 'duplicate' || status === 'FAILED' || status === 'failed') {
                         if (submitDocBtn) submitDocBtn.style.display = 'none';
                         if (submitSelfieBtn) submitSelfieBtn.style.display = 'none';
                         if (activeStatusMsg) {
@@ -2886,6 +2921,10 @@ if (selfieTriggerBtn) {
     }
   };
 }
+
+
+
+
 
 
 
