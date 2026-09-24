@@ -643,7 +643,8 @@ function routeDashboardTabs(targetTab) {
     document.getElementById("claimForm"),
     document.getElementById("topProgressBox"),
     document.getElementById("tabScreenXP"),
-    document.getElementById("tabScreenHistory")
+    document.getElementById("tabScreenHistory"),
+    document.getElementById("tabScreenVault")
   ];
   
   cards.forEach(function(card) {
@@ -738,6 +739,11 @@ function routeDashboardTabs(targetTab) {
     var el = document.getElementById("tabScreenHistory");
     if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
     if(mainSubtitle) mainSubtitle.style.display = "none";
+  }
+  else if (targetTab === "vault") {
+    var el = document.getElementById("tabScreenVault");
+    if(el) { el.classList.remove("hidden"); el.style.display = "block"; }
+    if(mainSubtitle) mainSubtitle.style.display = "none"; 
   }
 }
 
@@ -2880,6 +2886,7 @@ if (selfieTriggerBtn) {
     }
   };
 }
+
 
 
 
