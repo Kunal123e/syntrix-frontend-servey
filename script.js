@@ -19,9 +19,7 @@ document.head.appendChild(styleSheet);
 // DYNAMIC HOST ROUTING: Automatically connects to local, staging, or production backend
 const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
   ? 'http://localhost:5000'
-  : (window.location.hostname.includes('vercel.app') && !window.location.hostname.includes('syntrixhub'))
-    ? 'PASTE_YOUR_STAGING_RENDER_URL_HERE' // e.g. https://syntrix-backend-develop.onrender.com
-    : 'https://syntrix-airdrop.onrender.com';
+  : 'https://syntrix-airdrop.onrender.com';
 
 const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 const WALLET_REGEX = /^0x[a-fA-F0-9]{40}$/;
