@@ -991,7 +991,7 @@ async function runProfileLedgerVerification(email, isFromModal, isBackgroundSync
                 
                 var overlay = document.createElement('div');
                 overlay.style.cssText = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 3, 8, 0.95); z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px); opacity: 0; transition: opacity 0.5s;";
-                overlay.innerHTML = '<div style="font-size: 80px; margin-bottom: 20px; animation: slideUpFade 0.8s ease-out;">💎</div>' +
+                overlay.innerHTML = '<div style="font-size: 80px; margin-bottom: 20px; animation: slideUpFade 0.8s ease-out;">ðŸ’Ž</div>' +
                     '<div style="font-size: 14px; font-weight: 700; color: #a1a1aa; letter-spacing: 2px; margin-bottom: 10px; animation: slideUpFade 0.9s ease-out;">OFFLINE EARNINGS SECURED</div>' +
                     '<h1 style="font-size: 56px; font-weight: 900; color: #10b981; margin: 0; text-align: center; animation: slideUpFade 1s ease-out;">+' + newlyEarned + ' SYNX</h1>' +
                     '<p style="color: #d1d5db; font-size: 16px; margin-top: 15px; animation: slideUpFade 1.2s ease-out; text-align: center; max-width: 400px; line-height: 1.5;">Your files were successfully verified by our AI while you were offline!</p>' +
@@ -1964,7 +1964,7 @@ function handleFileSelection(e) {
 
       try {
         if (fileList.length === 1) {
-          // Single file â€” original preview behavior
+          // Single file Ã¢â‚¬â€ original preview behavior
           var url = URL.createObjectURL(fileList[0]);
           if (imagePreview) {
               imagePreview.src = url;
@@ -1976,7 +1976,7 @@ function handleFileSelection(e) {
               previewContainer.style.display = 'flex';
           }
         } else {
-          // Multi-file â€” render thumbnail grid
+          // Multi-file Ã¢â‚¬â€ render thumbnail grid
           if (imagePreview) {
               imagePreview.src = '';
               imagePreview.style.setProperty('display', 'none', 'important');
@@ -2254,11 +2254,11 @@ async function executeUploadLogic(e) {
         if (submitDocBtn) submitDocBtn.disabled = false;
         if (submitSelfieBtn) submitSelfieBtn.disabled = false;
       }
-      return; // Exit â€” selfie flow done
+      return; // Exit Ã¢â‚¬â€ selfie flow done
     }
 
     // ================================================================
-    // DOCUMENT BATCH UPLOAD â€” Multi-file â†’ /api/uploads/batch
+    // DOCUMENT BATCH UPLOAD Ã¢â‚¬â€ Multi-file Ã¢â€ â€™ /api/uploads/batch
     // ================================================================
     updateProgressUI('Compressing ' + filesToUpload.length + ' file(s)...', 10, activeStatusMsg);
 
@@ -2324,7 +2324,7 @@ async function executeUploadLogic(e) {
               '<div style="width: 56px; height: 56px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);">' +
                   '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' +
               '</div>' +
-              '<div style="font-weight: 900; color: #10b981; font-size: 20px; margin-bottom: 5px; letter-spacing: -0.5px;">UPLOAD SUCCESSFUL! ðŸŽ‰</div>' +
+              '<div style="font-weight: 900; color: #10b981; font-size: 20px; margin-bottom: 5px; letter-spacing: -0.5px;">UPLOAD SUCCESSFUL! Ã°Å¸Å½â€°</div>' +
               '<div style="color: #a1a1aa; font-size: 14px; margin-bottom: 20px; line-height: 1.5;">Your files are in the AI queue. You can safely close this page. Check the \'History\' tab for your results and rewards.</div>' +
               '<button type="button" onclick="resetUploadState(false)" style="background: #ffffff; color: #000000; font-weight: 800; border: none; padding: 12px 24px; border-radius: 12px; cursor: pointer; font-size: 14px; transition: opacity 0.2s;">Upload More</button>' +
           '</div>';
@@ -2830,16 +2830,16 @@ async function startSelfieCameraFeed() {
     isCameraStreaming = true;
     if (btnText) btnText.innerText = "Aligning Angle...";
 
-    // 2. Simulate AI Angle & Liveness Alignment -> Turn GREEN
+    // 2. Camera Ready State (Removed fake AI verification)
     setTimeout(() => {
       if (!isCameraStreaming) return;
       if (scannerOuter) scannerOuter.classList.add("angle-locked");
       if (badge) {
         badge.classList.add("locked");
-        badge.innerHTML = '<span class="pulse-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span> Target Angle Aligned (Locked)';
+        badge.innerHTML = '<span class="pulse-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span> Camera Ready';
       }
       if (btnText) btnText.innerText = "Capture Photo";
-      showToast("Angle Verified! Click Capture.", "OK");
+      showToast("Please match the required angle manually, then click Capture.", "OK");
     }, 1800);
 
     } catch (err) {
@@ -2924,6 +2924,7 @@ if (selfieTriggerBtn) {
     }
   };
 }
+
 
 
 
