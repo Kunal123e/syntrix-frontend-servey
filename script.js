@@ -2771,7 +2771,17 @@ window.fetchAndRenderHistory = async function(email) {
             html += '</div>';
             
             if (job.reason) {
-                html += '<div style="background: #09090b; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #a1a1aa; margin-bottom: ' + (job.reward_amount ? '12px' : '0') + ';">' + job.reason + '</div>';
+                var reasonBg = '#09090b';
+                var reasonBorder = '#27272a';
+                var reasonIcon = '';
+                if (job.status === 'VERIFIED') { reasonBorder = 'rgba(16, 185, 129, 0.3)'; reasonIcon = '✅ '; }
+                else if (job.status === 'REJECTED' || job.status === 'FAILED') { reasonBorder = 'rgba(239, 68, 68, 0.3)'; reasonIcon = '⚠️ '; }
+                else if (job.status === 'QUEUED' || job.status === 'RETRYING' || job.status === 'PROCESSING') { reasonIcon = '⏳ '; }
+                
+                html += '<div style="background: ' + reasonBg + '; border: 1px solid ' + reasonBorder + '; padding: 12px 14px; border-radius: 8px; font-size: 13.5px; line-height: 1.5; color: #d4d4d8; margin-bottom: ' + (job.reward_amount ? '12px' : '0') + '; display: flex; gap: 8px; align-items: flex-start; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">';
+                html += '<span style="opacity: 0.9; font-size: 14px; margin-top: 1px;">' + reasonIcon + '</span>';
+                html += '<span style="flex: 1; word-break: break-word;">' + job.reason + '</span>';
+                html += '</div>';
             }
             if (job.reward_amount && job.status === 'VERIFIED') {
                 html += '<div style="display: inline-block; background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.2); padding: 4px 12px; border-radius: 999px; color: #fbbf24; font-weight: 800; font-size: 13px;">+' + job.reward_amount + ' SYNX Earned</div>';
@@ -2924,6 +2934,7 @@ if (selfieTriggerBtn) {
     }
   };
 }
+
 
 
 
