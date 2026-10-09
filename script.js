@@ -2838,19 +2838,65 @@ async function startSelfieCameraFeed() {
     }
 
     isCameraStreaming = true;
-    if (btnText) btnText.innerText = "Aligning Angle...";
+    if (btnText) btnText.innerText = "AI Scanning Face...";
 
-    // 2. Camera Ready State (Removed fake AI verification)
+    // 2. Determine visual guide based on task
+    var task = (window.currentSelfieTask || "").toLowerCase();
+    var guideHtml = '';
+    var guideText = 'Follow Mission Above';
+    if (task.includes('left')) { guideHtml = '👈'; guideText = 'Turn Head Left'; }
+    else if (task.includes('right')) { guideHtml = '👉'; guideText = 'Turn Head Right'; }
+    else if (task.includes('up')) { guideHtml = '👆'; guideText = 'Look Upwards'; }
+    else if (task.includes('down')) { guideHtml = '👇'; guideText = 'Look Downwards'; }
+    else if (task.includes('smile')) { guideHtml = '😁'; guideText = 'Smile Brightly'; }
+    else if (task.includes('straight')) { guideHtml = '⏺️'; guideText = 'Look Straight'; }
+
+    // Inject Guide Overlay
+    var overlay = document.getElementById('cameraGuideOverlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'cameraGuideOverlay';
+        overlay.style.position = 'absolute';
+        overlay.style.top = '50%';
+        overlay.style.left = '50%';
+        overlay.style.transform = 'translate(-50%, -50%)';
+        overlay.style.fontSize = '80px';
+        overlay.style.opacity = '0.7';
+        overlay.style.zIndex = '10';
+        overlay.style.pointerEvents = 'none';
+        overlay.style.textShadow = '0 0 20px rgba(0,0,0,0.8)';
+        var inner = document.getElementById('scannerCircleInner');
+        if (inner) {
+            inner.style.position = 'relative';
+            inner.appendChild(overlay);
+        }
+    }
+    overlay.innerHTML = guideHtml;
+    overlay.style.display = 'block';
+
+    // 3. Simulated AI Verification Flow
     setTimeout(() => {
       if (!isCameraStreaming) return;
-      if (scannerOuter) scannerOuter.classList.add("angle-locked");
       if (badge) {
-        badge.classList.add("locked");
-        badge.innerHTML = '<span class="pulse-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span> Camera Ready';
+        badge.innerHTML = '<span class="pulse-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #fbbf24;"></span> Please ' + guideText;
+      }
+    }, 1500);
+
+    setTimeout(() => {
+      if (!isCameraStreaming) return;
+      if (scannerOuter) scannerOuter.style.borderColor = "#10b981"; // Turn Green
+      if (overlay) {
+          overlay.innerHTML = '✅';
+          overlay.style.color = '#10b981';
+      }
+      if (badge) {
+        badge.style.background = "rgba(16, 185, 129, 0.1)";
+        badge.style.color = "#10b981";
+        badge.innerHTML = '<span class="pulse-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span> Target Pose Detected!';
       }
       if (btnText) btnText.innerText = "Capture Photo";
-      showToast("Please match the required angle manually, then click Capture.", "OK");
-    }, 1800);
+      showToast("Pose confirmed! Hold still and click Capture.", "OK");
+    }, 3800);
 
     } catch (err) {
     console.warn("[Camera] WebRTC access failed or denied, falling back to file picker:", err);
@@ -2875,10 +2921,9 @@ function captureSelfieSnapshot() {
   canvasEl.height = videoEl.videoHeight || 480;
   const ctx = canvasEl.getContext("2d");
 
-  // Mirror image horizontally to match webcam display
-  ctx.translate(canvasEl.width, 0);
-  ctx.scale(-1, 1);
-  ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
+  // Capture true unmirrored image for accurate AI analysis
+    ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
+    var overlay = document.getElementById('cameraGuideOverlay'); if(overlay) overlay.style.display='none';
 
   canvasEl.toBlob((blob) => {
     const capturedFile = new File([blob], `selfie_${Date.now()}.jpg`, { type: "image/jpeg" });
@@ -2934,6 +2979,10 @@ if (selfieTriggerBtn) {
     }
   };
 }
+
+
+
+
 
 
 
