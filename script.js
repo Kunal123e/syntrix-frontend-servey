@@ -2151,7 +2151,7 @@ async function executeUploadLogic(e) {
           fileName: selectedFile.name || 'capture.jpg', 
           imageBase64: base64String,
           contentTags: contentTags.length > 0 ? contentTags : ['none'],
-          assignedTask: (isSelfieSubmit && window.currentSelfieTask) ? window.currentSelfieTask : null
+          assignedTask: (isSelfieSubmit ? (window.currentSelfieTask || (document.getElementById("currentSelfieTaskText") ? document.getElementById("currentSelfieTaskText").innerText.trim() : null)) : null)
         };
 
         var response = await fetch(API_BASE_URL + "/api/upload-task", {
@@ -2282,7 +2282,7 @@ async function executeUploadLogic(e) {
             fileName: cf.fileName,
             imageBase64: cf.base64,
             contentTags: contentTags.length > 0 ? contentTags : ['none'],
-            assignedTask: (isSelfieSubmit && window.currentSelfieTask) ? window.currentSelfieTask : null
+            assignedTask: (isSelfieSubmit ? (window.currentSelfieTask || (document.getElementById("currentSelfieTaskText") ? document.getElementById("currentSelfieTaskText").innerText.trim() : null)) : null)
           };
         })
       };
@@ -2841,17 +2841,18 @@ async function startSelfieCameraFeed() {
     if (btnText) btnText.innerText = "AI Scanning Face...";
 
     // 2. Determine visual guide based on task
-    var task = (window.currentSelfieTask || "").toLowerCase();
-    var guideHtml = '';
+    // Ensure we always have today's assigned task
+    var task = (window.currentSelfieTask || (document.getElementById("currentSelfieTaskText") ? document.getElementById("currentSelfieTaskText").innerText.trim() : "")).toLowerCase();
+    var guideHtml = '&#9678;';
     var guideText = 'Follow Mission Above';
-    if (task.includes('left')) { guideHtml = '👈'; guideText = 'Turn Head Left'; }
-    else if (task.includes('right')) { guideHtml = '👉'; guideText = 'Turn Head Right'; }
-    else if (task.includes('up')) { guideHtml = '👆'; guideText = 'Look Upwards'; }
-    else if (task.includes('down')) { guideHtml = '👇'; guideText = 'Look Downwards'; }
-    else if (task.includes('smile')) { guideHtml = '😁'; guideText = 'Smile Brightly'; }
-    else if (task.includes('straight')) { guideHtml = '⏺️'; guideText = 'Look Straight'; }
+    if (task.includes('left')) { guideHtml = '&larr;'; guideText = 'Turn Head Left'; }
+    else if (task.includes('right')) { guideHtml = '&rarr;'; guideText = 'Turn Head Right'; }
+    else if (task.includes('up')) { guideHtml = '&uarr;'; guideText = 'Look Upwards'; }
+    else if (task.includes('down')) { guideHtml = '&darr;'; guideText = 'Look Downwards'; }
+    else if (task.includes('smile')) { guideHtml = '&#9786;'; guideText = 'Smile Brightly'; }
+    else if (task.includes('straight')) { guideHtml = '&#9678;'; guideText = 'Look Straight'; }
 
-    // Inject Guide Overlay
+    // Inject High-Tech HUD Guide Overlay
     var overlay = document.getElementById('cameraGuideOverlay');
     if (!overlay) {
         overlay = document.createElement('div');
@@ -2860,11 +2861,20 @@ async function startSelfieCameraFeed() {
         overlay.style.top = '50%';
         overlay.style.left = '50%';
         overlay.style.transform = 'translate(-50%, -50%)';
-        overlay.style.fontSize = '80px';
-        overlay.style.opacity = '0.7';
+        overlay.style.width = '120px';
+        overlay.style.height = '120px';
+        overlay.style.borderRadius = '50%';
+        overlay.style.border = '2px dashed rgba(255, 255, 255, 0.4)';
+        overlay.style.display = 'flex';
+        overlay.style.alignItems = 'center';
+        overlay.style.justifyContent = 'center';
+        overlay.style.fontSize = '44px';
+        overlay.style.color = '#ffffff';
+        overlay.style.background = 'rgba(0, 0, 0, 0.35)';
+        overlay.style.backdropFilter = 'blur(4px)';
         overlay.style.zIndex = '10';
         overlay.style.pointerEvents = 'none';
-        overlay.style.textShadow = '0 0 20px rgba(0,0,0,0.8)';
+        overlay.style.transition = 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
         var inner = document.getElementById('scannerCircleInner');
         if (inner) {
             inner.style.position = 'relative';
@@ -2872,31 +2882,40 @@ async function startSelfieCameraFeed() {
         }
     }
     overlay.innerHTML = guideHtml;
-    overlay.style.display = 'block';
+    overlay.style.borderColor = 'rgba(99, 102, 241, 0.6)';
+    overlay.style.color = '#ffffff';
+    overlay.style.display = 'flex';
 
-    // 3. Simulated AI Verification Flow
+    // Simulated Intelligent Alignment Sequence
     setTimeout(() => {
       if (!isCameraStreaming) return;
       if (badge) {
-        badge.innerHTML = '<span class="pulse-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #fbbf24;"></span> Please ' + guideText;
+        badge.innerHTML = '<span class="pulse-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #fbbf24;"></span> Aligning: ' + guideText;
+      }
+      if (overlay) {
+        overlay.style.borderColor = '#fbbf24';
+        overlay.style.boxShadow = '0 0 25px rgba(251, 191, 36, 0.4)';
       }
     }, 1500);
 
     setTimeout(() => {
       if (!isCameraStreaming) return;
-      if (scannerOuter) scannerOuter.style.borderColor = "#10b981"; // Turn Green
+      if (scannerOuter) scannerOuter.style.borderColor = "#10b981";
       if (overlay) {
-          overlay.innerHTML = '✅';
+          overlay.innerHTML = '&#10004;';
+          overlay.style.borderColor = '#10b981';
           overlay.style.color = '#10b981';
+          overlay.style.background = 'rgba(16, 185, 129, 0.2)';
+          overlay.style.boxShadow = '0 0 30px rgba(16, 185, 129, 0.5)';
       }
       if (badge) {
         badge.style.background = "rgba(16, 185, 129, 0.1)";
         badge.style.color = "#10b981";
-        badge.innerHTML = '<span class="pulse-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span> Target Pose Detected!';
+        badge.innerHTML = '<span class="pulse-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span> Target Pose Aligned!';
       }
       if (btnText) btnText.innerText = "Capture Photo";
-      showToast("Pose confirmed! Hold still and click Capture.", "OK");
-    }, 3800);
+      showToast("Pose aligned! Click Capture Photo now.", "OK");
+    }, 3500);
 
     } catch (err) {
     console.warn("[Camera] WebRTC access failed or denied, falling back to file picker:", err);
