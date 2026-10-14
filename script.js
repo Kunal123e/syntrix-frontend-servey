@@ -932,7 +932,7 @@ async function runProfileLedgerVerification(email, isFromModal, isBackgroundSync
   if (isFromModal === undefined) isFromModal = false;
   if (isBackgroundSync === undefined) isBackgroundSync = false;
   var outputTarget = isFromModal ? modalStatus : statusDiv;
-  if (!outputTarget) return;
+  if (!outputTarget) return false;
 
   if (!isBackgroundSync) {
     outputTarget.innerHTML = getUIText("checkingLedger");
@@ -943,9 +943,9 @@ async function runProfileLedgerVerification(email, isFromModal, isBackgroundSync
     var response = await fetchWithTimeout(API_BASE_URL + "/api/user-status?email=" + encodeURIComponent(email));
     var statusResult = await response.json();
 
-    if (isFromModal) dismissModal();
-
     if (statusResult.success) {
+      if (isFromModal) dismissModal();
+
       userEmailAddress = email;
       localStorage.setItem("syntrix_user_email", email);
       
@@ -967,9 +967,19 @@ async function runProfileLedgerVerification(email, isFromModal, isBackgroundSync
       var menuReferralWrapper = document.getElementById("menuReferralWrapper");
       if (menuReferralWrapper) menuReferralWrapper.style.display = "flex";
 
-      if (statusResult.exists === true) {
+      if (statusResult.exists === true || isFromModal) {
         window.hasCompletedSurvey = true; 
-        displayConsumerBadgesUI(statusResult.badge || "Analyzer");
+
+        // Resolve badge profile key safely
+        var resolvedBadge = statusResult.badge || "Analyzer";
+        if (typeof resolvedBadge === "object" && resolvedBadge !== null) {
+          if (resolvedBadge.id === "mindful" || (resolvedBadge.name && resolvedBadge.name.includes("Mindful"))) resolvedBadge = "Analyzer";
+          else if (resolvedBadge.id === "explorer" || (resolvedBadge.name && resolvedBadge.name.includes("Explorer"))) resolvedBadge = "Stylist";
+          else if (resolvedBadge.id === "planner" || (resolvedBadge.name && resolvedBadge.name.includes("Planner"))) resolvedBadge = "Hedger";
+          else if (resolvedBadge.id === "connected" || (resolvedBadge.name && resolvedBadge.name.includes("Connected"))) resolvedBadge = "Native";
+          else resolvedBadge = resolvedBadge.title || resolvedBadge.name || "Analyzer";
+        }
+        displayConsumerBadgesUI(resolvedBadge);
 
         // ---- CRITICAL FIX: OFFLINE ANIMATION & VAULT POPULATION ----
         var totalBal = (statusResult.pendingRewards || 0) + (statusResult.claimedRewards || 0);
@@ -991,7 +1001,7 @@ async function runProfileLedgerVerification(email, isFromModal, isBackgroundSync
                 
                 var overlay = document.createElement('div');
                 overlay.style.cssText = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 3, 8, 0.95); z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px); opacity: 0; transition: opacity 0.5s;";
-                overlay.innerHTML = '<div style="font-size: 80px; margin-bottom: 20px; animation: slideUpFade 0.8s ease-out;">ðŸ’Ž</div>' +
+                overlay.innerHTML = '<div style="font-size: 80px; margin-bottom: 20px; animation: slideUpFade 0.8s ease-out;">💎</div>' +
                     '<div style="font-size: 14px; font-weight: 700; color: #a1a1aa; letter-spacing: 2px; margin-bottom: 10px; animation: slideUpFade 0.9s ease-out;">OFFLINE EARNINGS SECURED</div>' +
                     '<h1 style="font-size: 56px; font-weight: 900; color: #10b981; margin: 0; text-align: center; animation: slideUpFade 1s ease-out;">+' + newlyEarned + ' SYNX</h1>' +
                     '<p style="color: #d1d5db; font-size: 16px; margin-top: 15px; animation: slideUpFade 1.2s ease-out; text-align: center; max-width: 400px; line-height: 1.5;">Your files were successfully verified by our AI while you were offline!</p>' +
@@ -1016,9 +1026,11 @@ async function runProfileLedgerVerification(email, isFromModal, isBackgroundSync
             var tabLinksContainer = document.getElementById("dashboardTabLinks");
             if (tabLinksContainer) { tabLinksContainer.classList.remove("hidden"); tabLinksContainer.style.display = "flex"; }
             
+            localStorage.setItem("syntrix_current_tab", "badge");
             routeDashboardTabs("badge");
         }
-        if (!isBackgroundSync) outputTarget.innerHTML = "";
+        if (!isBackgroundSync && outputTarget) outputTarget.innerHTML = "";
+        return true;
       } else {
         window.hasCompletedSurvey = false; 
         var menuPsychologyBadgeWrapper = document.getElementById("menuPsychologyBadgeWrapper");
@@ -1039,6 +1051,7 @@ async function runProfileLedgerVerification(email, isFromModal, isBackgroundSync
             routeDashboardTabs("gateway");
             outputTarget.innerHTML = "";
         }
+        return true;
       }
     } else {
       if (!isFromModal) {
@@ -1056,13 +1069,19 @@ async function runProfileLedgerVerification(email, isFromModal, isBackgroundSync
             outputTarget.innerHTML = "";
         }
       } else {
-        if (!isBackgroundSync) outputTarget.innerHTML = ""; 
+        if (!isBackgroundSync && outputTarget) {
+          outputTarget.innerHTML = '<span style="color:#ef4444;">Profile ledger entry not found.</span>';
+        }
         showToast("Profile ledger entry not found.", "X");
       }
+      return false;
     }
   } catch (err) {
-    if (!isBackgroundSync) outputTarget.innerHTML = ""; 
+    if (!isBackgroundSync && outputTarget) {
+      outputTarget.innerHTML = '<span style="color:#ef4444;">Server waking up or offline. Please try again.</span>';
+    }
     showToast("Server waking up or offline. Please try again.", "X");
+    return false;
   }
 }
 
@@ -1710,6 +1729,43 @@ document.addEventListener("DOMContentLoaded", async function() {
     };
   }
 
+  function handleProfileRetrieval() {
+    if (!confirmRetrieveBtn) return;
+    confirmRetrieveBtn.onclick = async function() {
+      var searchEmail = modalEmailInput ? modalEmailInput.value.trim().toLowerCase() : "";
+      if (!searchEmail || !EMAIL_REGEX.test(searchEmail)) {
+        showToast("Please provide a valid email structure.", "X");
+        if (modalStatus) {
+          modalStatus.innerHTML = '<span style="color:#ef4444;">Please provide a valid email structure.</span>';
+        }
+        return;
+      }
+
+      var originalText = confirmRetrieveBtn.innerText;
+      confirmRetrieveBtn.innerText = "Searching...";
+      confirmRetrieveBtn.disabled = true;
+      if (modalStatus) modalStatus.innerHTML = "";
+
+      var success = await runProfileLedgerVerification(searchEmail, true);
+
+      if (success) {
+        dismissModal();
+        if (splashLandingGate) splashLandingGate.style.display = "none";
+        if (mainApplicationLayout) {
+            mainApplicationLayout.classList.remove("hidden");
+            mainApplicationLayout.style.display = "block";
+        }
+        localStorage.setItem("syntrix_current_tab", "badge");
+        routeDashboardTabs("badge");
+      }
+
+      confirmRetrieveBtn.innerText = originalText;
+      confirmRetrieveBtn.disabled = false;
+    };
+  }
+
+  handleProfileRetrieval();
+
   if (menuRecoverBtn && retrieveModal) {
     menuRecoverBtn.onclick = function() {
       if(optionsPopover) {
@@ -1720,30 +1776,7 @@ document.addEventListener("DOMContentLoaded", async function() {
       retrieveModal.style.display = "flex";
       if (modalEmailInput) modalEmailInput.value = ""; 
       if (modalStatus) modalStatus.innerHTML = "";
-      
-      if (confirmRetrieveBtn) {
-        confirmRetrieveBtn.onclick = async function() {
-          var searchEmail = modalEmailInput ? modalEmailInput.value.trim().toLowerCase() : "";
-          if (!searchEmail || !EMAIL_REGEX.test(searchEmail)) {
-            showToast("Please provide a valid email structure.", "X");
-            return;
-          }
-          if (splashLandingGate) splashLandingGate.style.display = "none";
-          if (mainApplicationLayout) {
-              mainApplicationLayout.classList.remove("hidden");
-              mainApplicationLayout.style.display = "block";
-          }
-          
-          var originalText = confirmRetrieveBtn.innerText;
-          confirmRetrieveBtn.innerText = "Searching...";
-          confirmRetrieveBtn.disabled = true;
-          
-          await runProfileLedgerVerification(searchEmail, true);
-          
-          confirmRetrieveBtn.innerText = originalText;
-          confirmRetrieveBtn.disabled = false;
-        };
-      }
+      handleProfileRetrieval();
     };
   }
 
@@ -2258,7 +2291,7 @@ async function executeUploadLogic(e) {
     }
 
     // ================================================================
-    // DOCUMENT BATCH UPLOAD Ã¢â‚¬â€ Multi-file Ã¢â€ â€™ /api/uploads/batch
+    // DOCUMENT BATCH UPLOAD Ã¢â‚¬â€ Multi-file Ã¢â€ â€™ /api/uploads/batch
     // ================================================================
     updateProgressUI('Compressing ' + filesToUpload.length + ' file(s)...', 10, activeStatusMsg);
 
@@ -2700,8 +2733,11 @@ var XPAnimator = {
 // Wire up XP fetching after profile verification
 var originalLedgerVerificationXP = runProfileLedgerVerification;
 runProfileLedgerVerification = async function(email, isFromModal, isBackgroundSync) {
-  await originalLedgerVerificationXP(email, isFromModal, isBackgroundSync);
-  XPAnimator.fetchAndRenderXP(email);
+  var res = await originalLedgerVerificationXP(email, isFromModal, isBackgroundSync);
+  if (typeof XPAnimator !== "undefined" && XPAnimator.fetchAndRenderXP) {
+    XPAnimator.fetchAndRenderXP(email);
+  }
+  return res;
 };
 
 window.addEventListener('DOMContentLoaded', function() {
@@ -2998,6 +3034,7 @@ if (selfieTriggerBtn) {
     }
   };
 }
+
 
 
 
