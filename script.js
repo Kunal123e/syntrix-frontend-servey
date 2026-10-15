@@ -2768,6 +2768,79 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Function to show an animated floating badge & reward notification
+function triggerRewardCelebration(amount, taskType) {
+  const existingBanner = document.getElementById("syntrix-reward-toast");
+  if (existingBanner) existingBanner.remove();
+
+  const toast = document.createElement("div");
+  toast.id = "syntrix-reward-toast";
+  toast.innerHTML = `
+    <div style="
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: linear-gradient(135deg, #064e3b 0%, #022c22 100%);
+      border: 1px solid #10b981;
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.35);
+      border-radius: 14px;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      z-index: 99999;
+      animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      color: #fff;
+      font-family: inherit;
+    ">
+      <div style="
+        width: 44px;
+        height: 44px;
+        background: #10b981;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        box-shadow: 0 0 15px rgba(16, 185, 129, 0.6);
+      ">
+        ✓
+      </div>
+      <div>
+        <div style="font-weight: 700; font-size: 15px; color: #a7f3d0; text-transform: uppercase; letter-spacing: 0.5px;">
+          ${taskType === 'selfie' ? 'Selfie' : 'Document'} Verified!
+        </div>
+        <div style="font-size: 13px; color: #d1fae5; margin-top: 2px;">
+          Reward Credited: <strong style="color: #facc15; font-size: 15px;">+${amount} SYNX</strong>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(toast);
+
+  // Auto-dismiss after 6 seconds
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateY(15px)";
+    toast.style.transition = "all 0.5s ease";
+    setTimeout(() => toast.remove(), 500);
+  }, 6000);
+}
+
+// Add animation keyframes once to document head
+if (!document.getElementById("reward-anim-style")) {
+  const style = document.createElement("style");
+  style.id = "reward-anim-style";
+  style.innerHTML = `
+    @keyframes slideUpFade {
+      0% { opacity: 0; transform: translateY(30px) scale(0.95); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+  `;
+  document.head.appendChild(style);
+}
+
 window.fetchAndRenderHistory = async function(email) {
     var historyGrid = document.getElementById('historyGrid');
     if (!historyGrid) return;
