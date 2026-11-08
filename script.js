@@ -2223,7 +2223,7 @@ async function executeUploadLogic(e) {
                 var checkData = await res.json();
                 
                 if (checkData.success && checkData.submission) {
-                    var status = checkData.submission.status;
+                    var status = String(checkData.submission.status || '').toLowerCase();
                     var reason = checkData.submission.reason || "System processing error.";
                     
                     if (status === 'verified' || status === 'approved') {
@@ -2345,6 +2345,10 @@ async function executeUploadLogic(e) {
         if (activeStatusMsg) activeStatusMsg.innerHTML = '<span style="color:#ef4444;">Batch creation failed. ' + (batchResult.message || '') + '</span>';
         if (submitDocBtn) submitDocBtn.disabled = false;
         return;
+      }
+
+      if (typeof window.fetchAndRenderHistory === 'function') {
+        window.fetchAndRenderHistory(userEmailAddress);
       }
 
       // ---- 4. Fire and Forget UX ----
@@ -2849,9 +2853,16 @@ window.fetchAndRenderHistory = async function(email) {
     
     try {
         var response = await fetch(API_BASE_URL + '/api/history?email=' + encodeURIComponent(email));
+        if (!response.ok) {
+            throw new Error('History request failed with status ' + response.status);
+        }
         var data = await response.json();
         
-        if (!data.success || !data.history || data.history.length === 0) {
+        if (!data.success || !Array.isArray(data.history)) {
+            throw new Error('History API returned an unsuccessful response');
+        }
+
+        if (data.history.length === 0) {
             historyGrid.innerHTML = '<div style="text-align: center; color: #71717a; padding: 40px; background: #18181b; border-radius: 16px; border: 1px dashed #27272a;">No upload history found yet.</div>';
             return;
         }
@@ -2900,7 +2911,7 @@ window.fetchAndRenderHistory = async function(email) {
             historyGrid.insertAdjacentHTML('beforeend', html);
         });
     } catch (error) {
-        historyGrid.innerHTML = '<div style="text-align: center; color: #ef4444; padding: 40px;">Error loading history.</div>';
+        historyGrid.innerHTML = '<div style="text-align: center; color: #ef4444; padding: 40px; background: #18181b; border-radius: 16px;">Unable to load upload history. Please try again.<br><button type="button" onclick="window.fetchAndRenderHistory(window.userEmailAddress)" style="margin-top: 16px; padding: 8px 14px; border: 1px solid #52525b; border-radius: 8px; background: #27272a; color: #fff; cursor: pointer;">Refresh history</button></div>';
     }
 };
 
@@ -3107,7 +3118,6 @@ if (selfieTriggerBtn) {
     }
   };
 }
-
 
 
 
